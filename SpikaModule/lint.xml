@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="UseValueOf">
+        <ignore path="src/jp/co/vector/vectorchat/model/Character.java" />
+    </issue>
+</lint>

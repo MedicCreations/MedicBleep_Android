@@ -1,0 +1,319 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:background="@color/transparent" >
+
+    <RelativeLayout
+        android:id="@+id/loading_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:visibility="gone" >
+
+        <View
+            android:id="@+id/spliter3"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_alignParentTop="true" />
+
+        <ImageView
+            android:id="@+id/loading_bar_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spliter3"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@null"
+            android:src="@drawable/gb_process_frame1" />
+
+        <View
+            android:id="@+id/spliter"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@+id/loading_bar_img"
+            android:layout_marginTop="10dp"
+            android:background="@color/text_blue" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/spliter2"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_below="@+id/loading_bar" />
+
+    <RelativeLayout
+        android:id="@+id/dateSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spliter2"
+        android:layout_margin="10dp" >
+
+        <View
+            android:id="@+id/whiteDivider1"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/sectionDate"
+            android:background="@color/divider_gray" />
+
+        <TextView
+            android:id="@+id/sectionDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/white" />
+
+        <View
+            android:id="@+id/whiteDivider2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/sectionDate"
+            android:background="@color/divider_gray" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/messagesWholeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateSeparator" >
+
+        <!-- start: Me message layout -->
+
+        <RelativeLayout
+            android:id="@+id/meLayoutWholeMsg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/meItemMsgLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="5dp"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <RelativeLayout
+                    android:id="@+id/meIconLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true" >
+
+                    <ImageView
+                        android:id="@+id/meIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:contentDescription="@null" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:contentDescription="@null"
+                        android:src="@drawable/circle" />
+                </RelativeLayout>
+
+                <!-- start: MessageLayout -->
+
+                <LinearLayout
+                    android:id="@+id/defaultMsgLayoutMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/meIconLayout" >
+
+                    <include layout="@layout/msg_item_default_me" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/imageMsgLayoutMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/meIconLayout" >
+
+                    <include layout="@layout/msg_item_image_me" />
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+        <!-- end: MessageLayout -->
+
+        <RelativeLayout
+            android:id="@+id/settingsLayoutMe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/meLayoutWholeMsg"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/timeMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/likeMe"
+                android:background="@layout/time_gray_balloon"
+                android:padding="2dp"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/likeMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/likeNbrMe"
+                android:background="@layout/tab_mask"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:text="@string/good"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/likeNbrMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="3dp"
+                android:text="@string/default_good"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <!-- end: Me message layout -->
+
+
+        <!-- start: You message layout -->
+
+        <RelativeLayout
+            android:id="@+id/youItemMsgLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical"
+            android:visibility="visible" >
+
+            <RelativeLayout
+                android:id="@+id/youIconLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" >
+
+                <ImageView
+                    android:id="@+id/youIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/circle" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/circle" />
+            </RelativeLayout>
+
+            <!-- start: MessageLayout -->
+
+            <RelativeLayout
+                android:id="@+id/youMsgLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/youIconLayout" >
+
+                <include
+                    android:id="@+id/defaultMsgLayoutYou"
+                    layout="@layout/msg_item_default_you" />
+
+                <include
+                    android:id="@+id/imageMsgLayoutYou"
+                    layout="@layout/msg_item_image_you" />
+            </RelativeLayout>
+
+            <!-- end: MessageLayout -->
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/youMsgLayout"
+                android:layout_below="@+id/youMsgLayout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/likeYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:background="@layout/tab_mask"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/good"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/likeNbrYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_toRightOf="@+id/likeYou"
+                    android:text="@string/default_good"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/reportMsgYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/likeYou"
+                    android:layout_alignTop="@+id/likeYou"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/likeNbrYou"
+                    android:background="@layout/tab_mask"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/report_interjection"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/timeYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/reportMsgYou"
+                    android:background="@layout/time_gray_balloon"
+                    android:padding="2dp"
+                    android:textColor="@color/white" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- end: You message layout -->
+
+</RelativeLayout>
