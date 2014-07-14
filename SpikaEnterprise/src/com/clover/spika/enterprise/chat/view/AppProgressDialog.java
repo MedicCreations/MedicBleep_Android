@@ -23,7 +23,7 @@ public class AppProgressDialog extends Dialog {
 
 	public AppProgressDialog(Context context) {
 		super(context, R.style.Theme_Transparent);
-		setContentView(R.layout.progress_dialog);
+		setContentView(R.layout.dialog_progress);
 
 		dot1 = (TextView) findViewById(R.id.dot1);
 		dot2 = (TextView) findViewById(R.id.dot2);

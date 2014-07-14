@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="14" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,6 +19,7 @@
     <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- App receives GCM messages. -->
+s
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
@@ -49,19 +50,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.clover.spika.enterprise.chat.CharacterListActivity"
-            android:label="@string/app_name"
+            android:name="com.clover.spika.enterprise.chat.LoginActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
-        <activity
-            android:name="com.clover.spika.enterprise.chat.GroupListActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.CreateGroupActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ChatActivity"
             android:launchMode="singleTask"
@@ -81,6 +73,21 @@
 
         <service android:name="com.clover.spika.enterprise.chat.gcm.GcmIntentService" />
 
+        <!-- Old -->
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CharacterListActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.GroupListActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CreateGroupActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.AddMembers"
             android:screenOrientation="portrait" >
@@ -95,11 +102,6 @@
         </activity>
         <activity
             android:name="com.clover.spika.enterprise.chat.ProfileActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name="com.clover.spika.enterprise.chat.AccountBlockedActivity"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
     </application>

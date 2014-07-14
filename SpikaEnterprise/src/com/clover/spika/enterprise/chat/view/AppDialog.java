@@ -42,7 +42,7 @@ public class AppDialog extends Dialog {
      * @param message
      */
     public void setInfo(String message) {
-	this.setContentView(R.layout.alert_dialog);
+	this.setContentView(R.layout.dialog_alert);
 
 	LinearLayout btnOk = (LinearLayout) findViewById(R.id.controlLayout);
 	btnOk.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +67,7 @@ public class AppDialog extends Dialog {
      * Show succeeded dialog
      */
     public void setSucceed() {
-	this.setContentView(R.layout.succeed_dialog);
+	this.setContentView(R.layout.dialog_succeed);
 
 	LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 	btnOk.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +91,7 @@ public class AppDialog extends Dialog {
      * @param failedText
      */
     public void setFailed(final int errorCode) {
-	this.setContentView(R.layout.failed_dialog);
+	this.setContentView(R.layout.dialog_failed);
 
 	String failedText = Helper.errorDescriptions(cntx, errorCode);
 	
@@ -128,7 +128,7 @@ public class AppDialog extends Dialog {
      * @param failedText
      */
     public void setFailed(final String failedText) {
-	this.setContentView(R.layout.failed_dialog);
+	this.setContentView(R.layout.dialog_failed);
 
 	TextView failedDesc = (TextView) findViewById(R.id.failedDescription);
 	failedDesc.setText(failedText);
@@ -156,7 +156,7 @@ public class AppDialog extends Dialog {
      * @param alert
      */
     public void okCancelDialog(final int type, final String alert, final Object var) {
-	this.setContentView(R.layout.ok_cancel_do_not_show);
+	this.setContentView(R.layout.dialog_ok_cancel_checkbox);
 
 	TextView alertText = (TextView) findViewById(R.id.alertText);
 	alertText.setText(alert);

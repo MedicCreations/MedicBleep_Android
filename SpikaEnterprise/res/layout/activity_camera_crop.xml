@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center_vertical|center_horizontal"
-                android:background="@layout/crop_mask"
+                android:background="@drawable/crop_mask"
                 android:gravity="center_vertical|center_horizontal"
                 android:orientation="horizontal" >
             </LinearLayout>

@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/meIconLayout" >
 
-                    <include layout="@layout/msg_item_default_me" />
+                    <include layout="@layout/item_chat_default_me" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -139,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/meIconLayout" >
 
-                    <include layout="@layout/msg_item_image_me" />
+                    <include layout="@layout/item_chat_image_me" />
                 </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
@@ -164,7 +164,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:layout_toLeftOf="@+id/likeMe"
-                android:background="@layout/time_gray_balloon"
+                android:background="@drawable/time_gray_balloon"
                 android:padding="2dp"
                 android:textColor="@color/white" />
 
@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/likeNbrMe"
-                android:background="@layout/tab_mask"
+                android:background="@drawable/tab_mask"
                 android:gravity="center"
                 android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
@@ -240,11 +240,11 @@
 
                 <include
                     android:id="@+id/defaultMsgLayoutYou"
-                    layout="@layout/msg_item_default_you" />
+                    layout="@layout/item_chat_default_you" />
 
                 <include
                     android:id="@+id/imageMsgLayoutYou"
-                    layout="@layout/msg_item_image_you" />
+                    layout="@layout/item_chat_image_you" />
             </RelativeLayout>
 
             <!-- end: MessageLayout -->
@@ -263,7 +263,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:background="@layout/tab_mask"
+                    android:background="@drawable/tab_mask"
                     android:gravity="center"
                     android:paddingBottom="5dp"
                     android:paddingLeft="10dp"
@@ -291,7 +291,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="15dp"
                     android:layout_toRightOf="@+id/likeNbrYou"
-                    android:background="@layout/tab_mask"
+                    android:background="@drawable/tab_mask"
                     android:gravity="center"
                     android:paddingBottom="5dp"
                     android:paddingLeft="15dp"
@@ -307,7 +307,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="15dp"
                     android:layout_toRightOf="@+id/reportMsgYou"
-                    android:background="@layout/time_gray_balloon"
+                    android:background="@drawable/time_gray_balloon"
                     android:padding="2dp"
                     android:textColor="@color/white" />
             </RelativeLayout>

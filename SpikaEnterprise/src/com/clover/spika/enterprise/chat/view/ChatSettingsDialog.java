@@ -72,7 +72,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.wall_settings, container);
+		View view = inflater.inflate(R.layout.dialog_wall_settings, container);
 
 		goBackLayout = (TextView) view.findViewById(R.id.goBackLayout);
 		goBackLayout.setOnTouchListener(this);

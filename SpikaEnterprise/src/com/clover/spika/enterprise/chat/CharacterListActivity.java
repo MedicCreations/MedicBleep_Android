@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,183 +29,195 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class CharacterListActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
+public class CharacterListActivity extends BaseActivity implements
+		OnClickListener, OnItemClickListener {
 
-    public static final int FROM_FRIENDS_TAB = 1989;
-    public static final int FROM_UPDATE = 1988;
+	public static final int FROM_FRIENDS_TAB = 1989;
+	public static final int FROM_UPDATE = 1988;
 
-    ImageView headerEditBack;
-    RelativeLayout noItemsLayout;
+	ImageView headerEditBack;
+	RelativeLayout noItemsLayout;
 
-    ListView main_list_view;
+	ListView main_list_view;
 
-    CharacterAdapter profileAdapter;
+	CharacterAdapter profileAdapter;
 
-    private boolean isPaggingRunning = false;
+	private boolean isPaggingRunning = false;
 
-    String gameId = null;
-    String gameName = null;
+	String gameId = null;
+	String gameName = null;
 
-    @Override
-    protected void onCreate(Bundle arg0) {
-	super.onCreate(arg0);
-	setContentView(R.layout.activity_character_list);
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.activity_character_list);
 
-	headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
-	headerEditBack.setOnClickListener(this);
+		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
+		headerEditBack.setOnClickListener(this);
 
-	noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
+		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
-	profileAdapter = new CharacterAdapter(this, new ArrayList<Character>());
+		profileAdapter = new CharacterAdapter(this, new ArrayList<Character>());
 
-	main_list_view = (ListView) findViewById(R.id.main_list_view);
-	main_list_view.setOnItemClickListener(this);
-	main_list_view.setAdapter(profileAdapter);
-    }
-
-    @Override
-    protected void onResume() {
-	super.onResume();
-	findMyProfiles();
-    }
-
-    @Override
-    public void onClick(View view) {
-
-	int id = view.getId();
-	if (id == R.id.headerEditBack) {
-	    finish();
-	} else {
-	}
-    }
-
-    public void findMyProfiles() {
-
-	if (isPaggingRunning) {
-	    return;
+		main_list_view = (ListView) findViewById(R.id.main_list_view);
+		main_list_view.setOnItemClickListener(this);
+		main_list_view.setAdapter(profileAdapter);
 	}
 
-	new BaseAsyncTask<Void, Void, Integer>(this, true) {
+	@Override
+	protected void onResume() {
+		super.onResume();
+		findMyProfiles();
+	}
 
-	    List<Character> profGame = new ArrayList<Character>();
+	@Override
+	public void onClick(View view) {
 
-	    protected void onPreExecute() {
-		super.onPreExecute();
-
-		isPaggingRunning = true;
-	    };
-
-	    protected Integer doInBackground(Void... params) {
-		try {
-		    HashMap<String, String> getParams = new HashMap<String, String>();
-		    getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-		    getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
-		    getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
-
-		    JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
-
-		    if (result != null) {
-
-			JSONArray items = result.getJSONArray(Const.ITEMS);
-
-			for (int i = 0; i < items.length(); i++) {
-			    JSONObject obj = (JSONObject) items.get(i);
-
-			    Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-			    Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
-
-			    if (profile != null) {
-				profGame.add(profile);
-			    }
-			}
-
-			if (profGame.size() > 0) {
-			    return Const.E_SUCCESS;
-			}
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
-
-		return Const.E_FAILED;
-	    };
-
-	    protected void onPostExecute(Integer result) {
-		super.onPostExecute(result);
-
-		if (result.equals(Const.E_SUCCESS)) {
-		    profileAdapter.clearItems();
-		    profileAdapter.addItems(profGame);
-		}
-
-		if (profileAdapter.getCount() > 0) {
-		    noItemsLayout.setVisibility(View.GONE);
+		int id = view.getId();
+		if (id == R.id.headerEditBack) {
+			finish();
 		} else {
-		    noItemsLayout.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public void findMyProfiles() {
+
+		if (isPaggingRunning) {
+			return;
 		}
 
-		isPaggingRunning = false;
-	    };
+		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
-	}.execute();
-    }
+			List<Character> profGame = new ArrayList<Character>();
 
-    @Override
-    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+			protected void onPreExecute() {
+				super.onPreExecute();
 
-	final Character character = profileAdapter.getItem(position);
+				isPaggingRunning = true;
+			};
 
-	final String pushToken = getPushToken();
+			protected Integer doInBackground(Void... params) {
+				try {
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
+					getParams.put(Const.FUNCTION,
+							Const.F_USER_GET_ALL_CHARACTERS);
+					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
-	new BaseAsyncTask<Void, Void, Integer>(this, true) {
+					JSONObject result = NetworkManagement.httpPostRequest(
+							getParams, new JSONObject());
 
-	    protected void onPreExecute() {
-	    };
+					if (result != null) {
 
-	    protected Integer doInBackground(Void... params) {
-		try {
-		    HashMap<String, String> getParams = new HashMap<String, String>();
-		    getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-		    getParams.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
-		    getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
+						JSONArray items = result.getJSONArray(Const.ITEMS);
 
-		    JSONObject reqData = new JSONObject();
-		    reqData.put(Const.USERNAME, character.getUsername());
-		    reqData.put(Const.UUID_KEY, Const.getUUID(context));
-		    reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
+						for (int i = 0; i < items.length(); i++) {
+							JSONObject obj = (JSONObject) items.get(i);
 
-		    JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
+							Gson sGsonExpose = new GsonBuilder()
+									.excludeFieldsWithoutExposeAnnotation()
+									.create();
+							Character profile = sGsonExpose.fromJson(
+									obj.toString(), Character.class);
 
-		    if (result != null) {
+							if (profile != null) {
+								profGame.add(profile);
+							}
+						}
 
-			int code = result.getInt(Const.CODE);
+						if (profGame.size() > 0) {
+							return Const.E_SUCCESS;
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-			if (code == Const.C_SUCCESS) {
-			    String token = result.getString(Const.TOKEN);
-			    // String character_id =
-			    // result.getString(Const.CHARACTER_ID);
+				return Const.E_FAILED;
+			};
 
-			    BaseActivity.getPreferences().setUserTokenId(token);
-			    Helper.setUserProperties(character.getCharacterId(), character.getImage_name(), character.getUsername());
+			protected void onPostExecute(Integer result) {
+				super.onPostExecute(result);
 
-			    return Const.E_SUCCESS;
-			}
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+				if (result.equals(Const.E_SUCCESS)) {
+					profileAdapter.clearItems();
+					profileAdapter.addItems(profGame);
+				}
 
-		return Const.E_FAILED;
-	    };
+				if (profileAdapter.getCount() > 0) {
+					noItemsLayout.setVisibility(View.GONE);
+				} else {
+					noItemsLayout.setVisibility(View.VISIBLE);
+				}
 
-	    protected void onPostExecute(Integer result) {
-		super.onPostExecute(result);
-		if (result.equals(Const.E_SUCCESS)) {
-		    Intent intent = new Intent(context, GroupListActivity.class);
-		    ((BaseActivity) context).startActivity(intent);
-		}
-	    };
+				isPaggingRunning = false;
+			};
 
-	}.execute();
-    }
+		}.execute();
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+
+		final Character character = profileAdapter.getItem(position);
+
+		final String pushToken = getPushToken();
+
+		new BaseAsyncTask<Void, Void, Integer>(this, true) {
+
+			protected void onPreExecute() {
+			};
+
+			protected Integer doInBackground(Void... params) {
+				try {
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
+					getParams
+							.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
+					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
+
+					JSONObject reqData = new JSONObject();
+					reqData.put(Const.USERNAME, character.getUsername());
+					reqData.put(Const.UUID_KEY, Const.getUUID(context));
+					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
+
+					JSONObject result = NetworkManagement.httpPostRequest(
+							getParams, reqData);
+
+					if (result != null) {
+
+						int code = result.getInt(Const.CODE);
+
+						if (code == Const.C_SUCCESS) {
+							String token = result.getString(Const.TOKEN);
+							// String character_id =
+							// result.getString(Const.CHARACTER_ID);
+
+							BaseActivity.getPreferences().setUserTokenId(token);
+							Helper.setUserProperties(
+									character.getCharacterId(),
+									character.getImage_name(),
+									character.getUsername());
+
+							return Const.E_SUCCESS;
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return Const.E_FAILED;
+			};
+
+			protected void onPostExecute(Integer result) {
+				super.onPostExecute(result);
+				if (result.equals(Const.E_SUCCESS)) {
+					Intent intent = new Intent(context, GroupListActivity.class);
+					((BaseActivity) context).startActivity(intent);
+				}
+			};
+
+		}.execute();
+	}
 }

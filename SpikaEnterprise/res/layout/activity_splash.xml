@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:visibility="gone" >
 
-        <com.clover.spika.enterprise.chat.view.textviews.RobotoThinTextView
+        <com.clover.spika.enterprise.chat.view.RobotoThinTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -20,7 +20,7 @@
             android:textSize="30sp"
             android:textStyle="bold" />
 
-        <com.clover.spika.enterprise.chat.view.textviews.RobotoThinTextView
+        <com.clover.spika.enterprise.chat.view.RobotoThinTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
