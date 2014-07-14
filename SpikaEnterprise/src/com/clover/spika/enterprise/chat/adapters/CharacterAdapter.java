@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.model.Character;
+import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
 import com.clover.spika.enterprise.chat.R;
@@ -55,8 +55,7 @@ public class CharacterAdapter extends BaseAdapter {
 		final ViewHolderCharacter holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(
-					R.layout.item_person, null);
+			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_person, parent);
 
 			holder = new ViewHolderCharacter(convertView);
 			convertView.setTag(holder);
@@ -76,41 +75,33 @@ public class CharacterAdapter extends BaseAdapter {
 			holder.selectableImg.setVisibility(View.VISIBLE);
 
 			holder.itemCliclkLayout.setTag(position);
-			holder.itemCliclkLayout
-					.setOnClickListener(new View.OnClickListener() {
+			holder.itemCliclkLayout.setOnClickListener(new View.OnClickListener() {
 
-						@Override
-						public void onClick(View view) {
+				@Override
+				public void onClick(View view) {
 
-							if (data.get((Integer) view.getTag()).isSelected()) {
-								data.get((Integer) view.getTag()).setSelected(
-										false);
-							} else {
-								data.get((Integer) view.getTag()).setSelected(
-										true);
-							}
+					if (data.get((Integer) view.getTag()).isSelected()) {
+						data.get((Integer) view.getTag()).setSelected(false);
+					} else {
+						data.get((Integer) view.getTag()).setSelected(true);
+					}
 
-							selectedIdsEdit(data.get((Integer) view.getTag())
-									.getCharacterId());
+					selectedIdsEdit(data.get((Integer) view.getTag()).getCharacterId());
 
-							notifyDataSetChanged();
-						}
-					});
+					notifyDataSetChanged();
+				}
+			});
 
 			if (profile.isSelected()) {
-				holder.selectableImg.setImageDrawable(cntx.getResources()
-						.getDrawable(R.drawable.gb_tableview_edit_selected));
+				holder.selectableImg.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_tableview_edit_selected));
 			} else {
-				holder.selectableImg.setImageDrawable(cntx.getResources()
-						.getDrawable(R.drawable.gb_tableview_edit_deselected));
+				holder.selectableImg.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_tableview_edit_deselected));
 			}
 		}
 
-		holder.personName.setText(Helper.substringText(profile.getUsername(),
-				25));
+		holder.personName.setText(Helper.substringText(profile.getUsername(), 25));
 
-		imageLoader.displayImage(profile.getImage_name(), holder.profileImg,
-				true);
+		imageLoader.displayImage(profile.getImage_name(), holder.profileImg, true);
 
 		return convertView;
 	}
@@ -182,8 +173,7 @@ public class CharacterAdapter extends BaseAdapter {
 		public ViewHolderCharacter(View view) {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
-			itemCliclkLayout = (RelativeLayout) view
-					.findViewById(R.id.itemCliclkLayout);
+			itemCliclkLayout = (RelativeLayout) view.findViewById(R.id.itemCliclkLayout);
 			selectableImg = (ImageView) view.findViewById(R.id.selectableImg);
 			imageLayout = (RelativeLayout) view.findViewById(R.id.imageLayout);
 			profileImg = (ImageView) view.findViewById(R.id.gameImg);

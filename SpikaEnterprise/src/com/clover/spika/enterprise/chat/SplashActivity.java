@@ -1,12 +1,12 @@
 package com.clover.spika.enterprise.chat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,8 @@ public class SplashActivity extends Activity {
 			@Override
 			protected void onPostExecute(Void result) {
 				Intent intent = new Intent(context, LoginActivity.class);
-				context.startActivity(intent);
+				startActivity(intent);
+				finish();
 			}
 		}.execute();
 	}

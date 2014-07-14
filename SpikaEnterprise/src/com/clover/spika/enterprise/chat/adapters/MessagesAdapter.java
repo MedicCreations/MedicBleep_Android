@@ -14,15 +14,15 @@ import org.json.JSONObject;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.ProfileActivity;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.model.Message;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSorting;
-import com.clover.spika.enterprise.chat.view.AppDialog;
 
 import com.clover.spika.enterprise.chat.R;
 import android.content.Context;
@@ -83,8 +83,7 @@ public class MessagesAdapter extends BaseAdapter {
 		final ViewHolderChatMsg holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_chat_main,
-					null);
+			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_chat_main, parent);
 
 			holder = new ViewHolderChatMsg(convertView);
 			convertView.setTag(holder);
@@ -115,11 +114,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 		if (!isScrolling) {
 			if (me) {
-				imageLoader.displayImage(msg.getCharacter().getImage_name(),
-						holder.meIcon, true);
+				imageLoader.displayImage(msg.getCharacter().getImage_name(), holder.meIcon, true);
 			} else {
-				imageLoader.displayImage(msg.getCharacter().getImage_name(),
-						holder.youIcon, true);
+				imageLoader.displayImage(msg.getCharacter().getImage_name(), holder.youIcon, true);
 			}
 		}
 
@@ -133,12 +130,10 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == 1) {
 				holder.imageMsgLayoutMe.setVisibility(View.VISIBLE);
-				holder.mePersonNameImage.setText(msg.getCharacter()
-						.getUsername());
+				holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(msg.getFile(),
-							holder.imagePreviewMe, false);
+					imageLoader.displayImage(msg.getFile(), holder.imagePreviewMe, false);
 				}
 
 				holder.imagePreviewMe.setOnClickListener(new OnClickListener() {
@@ -157,13 +152,11 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.timeMe.setText(getTime(msg.getCreated()));
 
 			if (msg.getIs_rated() != null) {
-				holder.likeMe.setTextColor(cntx.getResources().getColor(
-						R.color.text_blue));
-				holder.likeMe.setBackgroundResource(R.layout.tab_mask_blue);
+				holder.likeMe.setTextColor(cntx.getResources().getColor(R.color.text_blue));
+				holder.likeMe.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else {
-				holder.likeMe.setTextColor(cntx.getResources().getColor(
-						R.color.white));
-				holder.likeMe.setBackgroundResource(R.layout.tab_mask);
+				holder.likeMe.setTextColor(cntx.getResources().getColor(R.color.white));
+				holder.likeMe.setBackgroundResource(R.drawable.tab_mask);
 			}
 
 			holder.likeNbrMe.setText("(" + msg.getRating() + ")");
@@ -183,10 +176,8 @@ public class MessagesAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter()
-							.getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter()
-							.getUsername());
+					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
+					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -203,25 +194,21 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == 1) {
 				holder.defaultMsgLayoutYou.setVisibility(View.GONE);
 				holder.imageMsgLayoutYou.setVisibility(View.VISIBLE);
-				holder.youPersonNameImage.setText(msg.getCharacter()
-						.getUsername());
+				holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(msg.getFile(),
-							holder.imagePreviewYou, false);
+					imageLoader.displayImage(msg.getFile(), holder.imagePreviewYou, false);
 				}
 
-				holder.imagePreviewYou
-						.setOnClickListener(new OnClickListener() {
+				holder.imagePreviewYou.setOnClickListener(new OnClickListener() {
 
-							@Override
-							public void onClick(View v) {
-								Intent intent = new Intent(cntx,
-										PhotoActivity.class);
-								intent.putExtra(Const.IMAGE_NAME, msg.getFile());
-								cntx.startActivity(intent);
-							}
-						});
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(cntx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE_NAME, msg.getFile());
+						cntx.startActivity(intent);
+					}
+				});
 			}
 
 			holder.timeYou.setText(getTime(msg.getCreated()));
@@ -229,14 +216,11 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.reportMsgYou.setVisibility(View.VISIBLE);
 
 			if (msg.getIs_reported() != null) {
-				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(
-						R.color.text_blue));
-				holder.reportMsgYou
-						.setBackgroundResource(R.layout.tab_mask_blue);
+				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(R.color.text_blue));
+				holder.reportMsgYou.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else {
-				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(
-						R.color.white));
-				holder.reportMsgYou.setBackgroundResource(R.layout.tab_mask);
+				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(R.color.white));
+				holder.reportMsgYou.setBackgroundResource(R.drawable.tab_mask);
 			}
 
 			holder.reportMsgYou.setOnClickListener(new OnClickListener() {
@@ -250,13 +234,11 @@ public class MessagesAdapter extends BaseAdapter {
 			});
 
 			if (msg.getIs_rated() != null) {
-				holder.likeYou.setTextColor(cntx.getResources().getColor(
-						R.color.text_blue));
-				holder.likeYou.setBackgroundResource(R.layout.tab_mask_blue);
+				holder.likeYou.setTextColor(cntx.getResources().getColor(R.color.text_blue));
+				holder.likeYou.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else {
-				holder.likeYou.setTextColor(cntx.getResources().getColor(
-						R.color.white));
-				holder.likeYou.setBackgroundResource(R.layout.tab_mask);
+				holder.likeYou.setTextColor(cntx.getResources().getColor(R.color.white));
+				holder.likeYou.setBackgroundResource(R.drawable.tab_mask);
 			}
 
 			holder.likeNbrYou.setText("(" + msg.getRating() + ")");
@@ -276,10 +258,8 @@ public class MessagesAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter()
-							.getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter()
-							.getUsername());
+					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
+					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -290,8 +270,7 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.dateSeparator.setVisibility(View.GONE);
 		} else {
 			holder.dateSeparator.setVisibility(View.VISIBLE);
-			holder.dateSeparator.setBackgroundColor(cntx.getResources()
-					.getColor(R.color.transparent));
+			holder.dateSeparator.setBackgroundColor(cntx.getResources().getColor(R.color.transparent));
 			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
 		}
 
@@ -301,8 +280,7 @@ public class MessagesAdapter extends BaseAdapter {
 			Helper.startPaggingAnimation(cntx, holder.loading_bar_img);
 
 			if (cntx instanceof ChatActivity) {
-				((ChatActivity) cntx).getMessages(false, false, true, false,
-						false, false);
+				((ChatActivity) cntx).getMessages(false, false, true, false, false, false);
 			}
 		}
 
@@ -313,8 +291,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 		try {
 
-			if (msgFromId.equals(BaseActivity.getPreferences().getCustomString(
-					Const.USER_ID))) {
+			if (msgFromId.equals(BaseActivity.getPreferences().getCustomString(Const.USER_ID))) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -340,8 +317,7 @@ public class MessagesAdapter extends BaseAdapter {
 		long created = Long.parseLong(createdString) * 1000;
 
 		Date date = new Date(created);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd. - EEEE",
-				Locale.US);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd. - EEEE", Locale.US);
 
 		String rez = dateFormat.format(date);
 
@@ -366,8 +342,7 @@ public class MessagesAdapter extends BaseAdapter {
 	private Integer getDayTimeStamp(String created) {
 		try {
 			String sDate = getSectionDate(created);
-			SimpleDateFormat format = new SimpleDateFormat("MM.dd. - EEEE",
-					Locale.US);
+			SimpleDateFormat format = new SimpleDateFormat("MM.dd. - EEEE", Locale.US);
 			Date oDate = format.parse(sDate);
 			Integer iDate = (int) oDate.getTime();
 
@@ -385,11 +360,9 @@ public class MessagesAdapter extends BaseAdapter {
 			for (int i = 0; i < newItems.size(); i++) {
 				boolean isFound = false;
 				for (int j = 0; j < data.size(); j++) {
-					if (newItems.get(i).getMessageId()
-							.equals(data.get(j).getMessageId())) {
+					if (newItems.get(i).getMessageId().equals(data.get(j).getMessageId())) {
 						isFound = true;
-						if (Long.parseLong(newItems.get(i).getModified()) > Long
-								.parseLong(data.get(j).getModified())) {
+						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
 							data.set(j, newItems.get(i));
 						}
 					}
@@ -487,14 +460,12 @@ public class MessagesAdapter extends BaseAdapter {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_RATE_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.MESSAGE_ID, msgId);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -513,8 +484,7 @@ public class MessagesAdapter extends BaseAdapter {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setSucceed();
 					if (cntx instanceof ChatActivity) {
-						((ChatActivity) cntx).getMessages(false, false, false,
-								true, true, true);
+						((ChatActivity) cntx).getMessages(false, false, false, true, true, true);
 					}
 				} else {
 					AppDialog dialog = new AppDialog(cntx, false);
@@ -535,14 +505,12 @@ public class MessagesAdapter extends BaseAdapter {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_REPORT_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.MESSAGE_ID, msgId);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -561,8 +529,7 @@ public class MessagesAdapter extends BaseAdapter {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setSucceed();
 					if (cntx instanceof ChatActivity) {
-						((ChatActivity) cntx).getMessages(false, false, false,
-								true, true, true);
+						((ChatActivity) cntx).getMessages(false, false, false, true, true, true);
 					}
 				} else {
 					AppDialog dialog = new AppDialog(cntx, false);
@@ -638,56 +605,41 @@ public class MessagesAdapter extends BaseAdapter {
 
 		public ViewHolderChatMsg(View view) {
 
-			dateSeparator = (RelativeLayout) view
-					.findViewById(R.id.dateSeparator);
+			dateSeparator = (RelativeLayout) view.findViewById(R.id.dateSeparator);
 
 			// start: message item for my message
-			meIconLayout = (RelativeLayout) view
-					.findViewById(R.id.meIconLayout);
+			meIconLayout = (RelativeLayout) view.findViewById(R.id.meIconLayout);
 			meIcon = (ImageView) view.findViewById(R.id.meIcon);
-			meItemMsgLayout = (RelativeLayout) view
-					.findViewById(R.id.meItemMsgLayout);
-			defaultMsgLayoutMe = (LinearLayout) view
-					.findViewById(R.id.defaultMsgLayoutMe);
+			meItemMsgLayout = (RelativeLayout) view.findViewById(R.id.meItemMsgLayout);
+			defaultMsgLayoutMe = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
 			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			timeMe = (TextView) view.findViewById(R.id.timeMe);
-			settingsLayoutMe = (RelativeLayout) view
-					.findViewById(R.id.settingsLayoutMe);
+			settingsLayoutMe = (RelativeLayout) view.findViewById(R.id.settingsLayoutMe);
 			// end: me msg
 
 			// start: me image msg
-			imageMsgLayoutMe = (LinearLayout) view
-					.findViewById(R.id.imageMsgLayoutMe);
-			mePersonNameImage = (TextView) view
-					.findViewById(R.id.mePersonNameImage);
+			imageMsgLayoutMe = (LinearLayout) view.findViewById(R.id.imageMsgLayoutMe);
+			mePersonNameImage = (TextView) view.findViewById(R.id.mePersonNameImage);
 			imagePreviewMe = (ImageView) view.findViewById(R.id.imagePreviewMe);
-			imgDescriptionMe = (TextView) view
-					.findViewById(R.id.imgDescriptionMe);
+			imgDescriptionMe = (TextView) view.findViewById(R.id.imgDescriptionMe);
 			// end: me image msg
 
 			// start: message item for you message
-			youIconLayout = (RelativeLayout) view
-					.findViewById(R.id.youIconLayout);
+			youIconLayout = (RelativeLayout) view.findViewById(R.id.youIconLayout);
 			youIcon = (ImageView) view.findViewById(R.id.youIcon);
-			youItemMsgLayout = (RelativeLayout) view
-					.findViewById(R.id.youItemMsgLayout);
-			defaultMsgLayoutYou = (RelativeLayout) view
-					.findViewById(R.id.defaultMsgLayoutYou);
+			youItemMsgLayout = (RelativeLayout) view.findViewById(R.id.youItemMsgLayout);
+			defaultMsgLayoutYou = (RelativeLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			timeYou = (TextView) view.findViewById(R.id.timeYou);
 			// end: you msg
 
 			// start: you image msg
-			imageMsgLayoutYou = (RelativeLayout) view
-					.findViewById(R.id.imageMsgLayoutYou);
-			youPersonNameImage = (TextView) view
-					.findViewById(R.id.youPersonNameImage);
-			imagePreviewYou = (ImageView) view
-					.findViewById(R.id.imagePreviewYou);
-			imgDescriptionYou = (TextView) view
-					.findViewById(R.id.imgDescriptionYou);
+			imageMsgLayoutYou = (RelativeLayout) view.findViewById(R.id.imageMsgLayoutYou);
+			youPersonNameImage = (TextView) view.findViewById(R.id.youPersonNameImage);
+			imagePreviewYou = (ImageView) view.findViewById(R.id.imagePreviewYou);
+			imgDescriptionYou = (TextView) view.findViewById(R.id.imgDescriptionYou);
 			// end: you image msg
 
 			// start: options layout
@@ -702,8 +654,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			// start: loading bar
 			loading_bar = (RelativeLayout) view.findViewById(R.id.loading_bar);
-			loading_bar_img = (ImageView) view
-					.findViewById(R.id.loading_bar_img);
+			loading_bar_img = (ImageView) view.findViewById(R.id.loading_bar_img);
 			// end: loading bar
 		}
 	}

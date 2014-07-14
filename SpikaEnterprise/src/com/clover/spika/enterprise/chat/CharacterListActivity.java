@@ -22,7 +22,7 @@ import android.widget.RelativeLayout;
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.model.Character;
+import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;

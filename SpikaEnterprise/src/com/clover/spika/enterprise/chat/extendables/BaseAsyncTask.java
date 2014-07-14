@@ -1,8 +1,8 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.view.AppDialog;
-import com.clover.spika.enterprise.chat.view.AppProgressDialog;
 
 import com.clover.spika.enterprise.chat.R;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.view;
+package com.clover.spika.enterprise.chat.views;
 
 import android.content.Context;
 import android.graphics.Typeface;

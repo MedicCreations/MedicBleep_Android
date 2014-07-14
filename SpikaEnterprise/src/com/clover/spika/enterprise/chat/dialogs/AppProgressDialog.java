@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.view;
+package com.clover.spika.enterprise.chat.dialogs;
 
 import com.clover.spika.enterprise.chat.R;
 

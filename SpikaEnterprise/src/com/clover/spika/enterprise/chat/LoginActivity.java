@@ -1,14 +1,27 @@
 package com.clover.spika.enterprise.chat;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-public class LoginActivity extends Activity {
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
+
+public class LoginActivity extends BaseActivity {
+
+	RobotoThinEditText username;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+
+		username = (RobotoThinEditText) findViewById(R.id.username);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		hideKeyboard(username);
 	}
 
 }

@@ -35,5 +35,7 @@
 
     <!-- Enterprise style -->
     <color name="default_blue">#3E92FF</color>
+    <color name="default_green">#57D171</color>
+    <color name="default_green_light">#61E680</color>
 
 </resources>

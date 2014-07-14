@@ -2,7 +2,7 @@ package com.clover.spika.enterprise.chat.utils;
 
 import java.util.Comparator;
 
-import com.clover.spika.enterprise.chat.model.Message;
+import com.clover.spika.enterprise.chat.models.Message;
 
 
 public class MessageSorting implements Comparator<Message> {

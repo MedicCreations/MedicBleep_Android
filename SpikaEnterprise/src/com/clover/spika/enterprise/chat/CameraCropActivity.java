@@ -11,14 +11,14 @@ import java.util.HashMap;
 
 import org.json.JSONObject;
 
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.BitmapManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.view.AppDialog;
-import com.clover.spika.enterprise.chat.view.CroppedImageView;
+import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 import com.clover.spika.enterprise.chat.R;
 

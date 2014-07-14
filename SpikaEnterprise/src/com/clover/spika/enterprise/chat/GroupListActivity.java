@@ -20,12 +20,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.model.Group;
+import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.view.AppDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

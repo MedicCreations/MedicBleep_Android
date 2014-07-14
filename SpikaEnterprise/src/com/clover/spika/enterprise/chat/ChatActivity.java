@@ -34,15 +34,15 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.ChatSettingsDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.model.Message;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.view.AppDialog;
-import com.clover.spika.enterprise.chat.view.ChatSettingsDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -309,9 +309,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 			}
 		} else if (id == R.id.photo) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				photo.setBackgroundResource(R.layout.tab_mask_blue);
+				photo.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				photo.setBackgroundResource(R.layout.tab_mask);
+				photo.setBackgroundResource(R.drawable.tab_mask);
 
 				Intent intent = new Intent(this, CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
@@ -321,9 +321,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 			}
 		} else if (id == R.id.gallery) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				gallery.setBackgroundResource(R.layout.tab_mask_blue);
+				gallery.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				gallery.setBackgroundResource(R.layout.tab_mask);
+				gallery.setBackgroundResource(R.drawable.tab_mask);
 
 				Intent intent = new Intent(this, CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);

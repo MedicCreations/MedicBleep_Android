@@ -6,7 +6,7 @@ import java.util.List;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.model.Group;
+import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -54,7 +54,7 @@ public class GroupAdapter extends BaseAdapter {
 		final ViewHolderGroup holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_group, null);
+			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_group, parent);
 
 			holder = new ViewHolderGroup(convertView);
 			convertView.setTag(holder);

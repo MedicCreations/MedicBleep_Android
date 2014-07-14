@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.model;
+package com.clover.spika.enterprise.chat.models;
 
 public class Push {
 

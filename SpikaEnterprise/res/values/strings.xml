@@ -83,5 +83,6 @@
     <string name="spika_enterprise">Enterprise Messeging</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="login_big">LOGIN</string>
 
 </resources>

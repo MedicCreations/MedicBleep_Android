@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.model;
+package com.clover.spika.enterprise.chat.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

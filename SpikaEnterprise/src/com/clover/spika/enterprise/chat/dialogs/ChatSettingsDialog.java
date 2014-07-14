@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.view;
+package com.clover.spika.enterprise.chat.dialogs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.model.Character;
+import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
@@ -115,33 +115,33 @@ public class ChatSettingsDialog extends DialogFragment implements
 			adapter.clearItems();
 		} else if (id == R.id.addMembers) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				addMembers.setBackgroundResource(R.layout.tab_mask_blue);
+				addMembers.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				addMembers.setBackgroundResource(R.layout.tab_mask);
+				addMembers.setBackgroundResource(R.drawable.tab_mask);
 
 				showList(ADD);
 			}
 		} else if (id == R.id.kickMembers) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				kickMembers.setBackgroundResource(R.layout.tab_mask_blue);
+				kickMembers.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				kickMembers.setBackgroundResource(R.layout.tab_mask);
+				kickMembers.setBackgroundResource(R.drawable.tab_mask);
 
 				showList(KICK);
 			}
 		} else if (id == R.id.clearGroup) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				clearGroup.setBackgroundResource(R.layout.tab_mask_blue);
+				clearGroup.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				clearGroup.setBackgroundResource(R.layout.tab_mask);
+				clearGroup.setBackgroundResource(R.drawable.tab_mask);
 
 				deleteGroup(groupId);
 			}
 		} else if (id == R.id.submitChanges) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				submitChanges.setBackgroundResource(R.layout.tab_mask_blue);
+				submitChanges.setBackgroundResource(R.drawable.tab_mask_blue);
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				submitChanges.setBackgroundResource(R.layout.tab_mask);
+				submitChanges.setBackgroundResource(R.drawable.tab_mask);
 
 				if (isAdd) {
 					if (adapter.getSelectedIds().length > 0) {
