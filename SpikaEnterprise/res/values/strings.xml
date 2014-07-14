@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">VectorChat VServer</string>
+    <string name="app_name">Spika Enterprise</string>
     <string name="good">Good</string>
     <string name="default_good">(0)</string>
     <string name="report_interjection">!</string>
@@ -77,5 +77,11 @@
     <string name="e_expired_token">Token expired, choose a character again.</string>
     <string name="e_allready_reported">You have already reported this message.</string>
     <string name="no_network_connection">You do not have a connection to the internet.</string>
+
+    <!-- New strings -->
+    <string name="spika_big">SPIKA</string>
+    <string name="spika_enterprise">Enterprise Messeging</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 
 </resources>

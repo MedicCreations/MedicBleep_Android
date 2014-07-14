@@ -23,7 +23,7 @@
         android:layout_below="@+id/topText"
         android:layout_centerHorizontal="true" >
 
-        <jp.co.vector.chat.view.CroppedImageView
+        <com.clover.spika.enterprise.chat.view.CroppedImageView
             android:id="@+id/ivCameraCropPhoto"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -57,5 +57,6 @@
     <color name="chat_menu_gray">#dde1e4</color>
     <color name="cloud_color">#9ecadc</color>
     <color name="text_gray_image">#7e7e7e</color>
+    <color name="default_blue">#3E92FF</color>
 
 </resources>
