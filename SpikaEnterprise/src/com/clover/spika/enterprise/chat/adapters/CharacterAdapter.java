@@ -67,7 +67,7 @@ public class CharacterAdapter extends BaseAdapter {
 		holder.profileImg.setImageDrawable(null);
 
 		// Assign values
-		final Character profile = (Character) getItem(position);
+		final Character profile = getItem(position);
 
 		if (!isSelect) {
 			holder.selectableImg.setVisibility(View.GONE);
