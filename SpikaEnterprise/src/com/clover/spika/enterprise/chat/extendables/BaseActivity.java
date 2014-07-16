@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -80,11 +79,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);
-		slidingMenu.setBehindWidth(950);
-	}
-
-	public void klik() {
-		Log.d("Vida", "aaaaaaaaaaa");
+		// Value 950 is not used, library method has been changed
+		slidingMenu.setBehindWidth(80);
 	}
 
 	@Override

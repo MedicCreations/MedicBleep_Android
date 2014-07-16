@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 
 import com.clover.spika.enterprise.chat.R;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -31,6 +33,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.widget.ImageView;
 
@@ -413,6 +416,16 @@ public class Helper {
 		bmp = null;
 
 		return output;
+	}
+
+	public static int dpToPx(Context ctx, int dp) {
+
+		DisplayMetrics metrics = new DisplayMetrics();
+		((Activity) ctx).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+		float logicalDensity = metrics.density;
+
+		return (int) Math.ceil(dp * logicalDensity);
 	}
 
 }
