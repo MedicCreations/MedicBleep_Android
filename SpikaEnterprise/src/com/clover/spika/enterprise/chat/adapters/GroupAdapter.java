@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,12 @@ public class GroupAdapter extends BaseAdapter {
 			holder.missedLayout.setVisibility(View.VISIBLE);
 		} else {
 			holder.missedLayout.setVisibility(View.GONE);
+		}
+		
+		if(position % 2 == 0){
+			holder.itemLayout.setBackgroundColor(cntx.getResources().getColor(R.color.gray_in_adapter));
+		}else{
+			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
 		holder.clickLayout.setOnClickListener(new View.OnClickListener() {
