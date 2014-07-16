@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.fragments;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.clover.spika.enterprise.chat.CharacterListActivity;
+import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -69,7 +69,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				Log.d("Vida", "Click");
+				startActivity(new Intent(getActivity(), GroupListActivity.class));
 			}
 		});
 
