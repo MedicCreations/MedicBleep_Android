@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -39,7 +37,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class BaseActivity extends SlidingFragmentActivity implements OnClickListener {
+public class BaseActivity extends SlidingFragmentActivity {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -61,7 +59,6 @@ public class BaseActivity extends SlidingFragmentActivity implements OnClickList
 
 	private SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
-	private SidebarFragment sidebarFrag;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,15 +68,10 @@ public class BaseActivity extends SlidingFragmentActivity implements OnClickList
 			mPreferences = new Preferences(this);
 		}
 
-		setBehindContentView(R.layout.sidebar_layout);
-		if (savedInstanceState == null) {
-			FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
-			sidebarFrag = new SidebarFragment(this);
-			transaction.replace(R.id.sidebar_layout, sidebarFrag);
-			transaction.commit();
-		} else {
-			sidebarFrag = (SidebarFragment) this.getFragmentManager().findFragmentById(R.id.sidebar_layout);
-		}
+		setBehindContentView(R.layout.sidebar_layout_empty);
+
+		// set the Behind View Fragment
+		getFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
 
 		slidingMenu = getSlidingMenu();
 		slidingMenu.setMode(SlidingMenu.LEFT);
@@ -91,10 +83,8 @@ public class BaseActivity extends SlidingFragmentActivity implements OnClickList
 		slidingMenu.setBehindWidth(950);
 	}
 
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		Log.d("Vida", "WWWWWWWWW");
+	public void klik() {
+		Log.d("Vida", "aaaaaaaaaaa");
 	}
 
 	@Override

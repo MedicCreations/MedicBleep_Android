@@ -141,6 +141,7 @@
                 android:drawableLeft="@drawable/log_out"
                 android:drawablePadding="10dp"
                 android:gravity="left"
+                android:onClick="klik"
                 android:padding="10dp"
                 android:text="@string/logout"
                 android:textColor="@android:color/white"

@@ -19,8 +19,7 @@ public class CustomViewBehind extends ViewGroup {
 
 	private static final String TAG = "CustomViewBehind";
 
-	// TODO
-	private static final int MARGIN_THRESHOLD = 1; // dips
+	private static final int MARGIN_THRESHOLD = 48; // dips
 	private int mTouchMode = SlidingMenu.TOUCHMODE_MARGIN;
 
 	private CustomViewAbove mViewAbove;

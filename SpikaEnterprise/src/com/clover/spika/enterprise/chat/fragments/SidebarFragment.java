@@ -16,8 +16,6 @@ import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class SidebarFragment extends Fragment {
 
-	OnClickListener listener;
-
 	RoundImageView userImage;
 	RobotoThinTextView userName;
 
@@ -27,8 +25,7 @@ public class SidebarFragment extends Fragment {
 	RobotoThinButton groups;
 	RobotoThinButton logout;
 
-	public SidebarFragment(OnClickListener listener) {
-		this.listener = listener;
+	public SidebarFragment() {
 	}
 
 	@Override
@@ -36,17 +33,35 @@ public class SidebarFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
-		Log.d("Vida", "onCreateView");
-
 		userImage = (RoundImageView) view.findViewById(R.id.userImage);
 		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
 
 		profile = (Button) view.findViewById(R.id.profile);
-		profile.setOnClickListener(listener);
+		profile.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			}
+		});
 
 		lobby = (RobotoThinButton) view.findViewById(R.id.lobby);
+		lobby.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			}
+		});
 
 		users = (RobotoThinButton) view.findViewById(R.id.users);
+		users.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+			}
+		});
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(new OnClickListener() {
