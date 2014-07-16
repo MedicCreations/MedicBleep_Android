@@ -35,10 +35,18 @@ public class Result<T> {
         this.state = state;
     }
 
+    /**
+     * @return true if result is marked as
+     * {@link com.clover.spika.enterprise.chat.models.Result.ApiResponseState#SUCCESS}
+     */
     public boolean isSuccess() {
         return ApiResponseState.SUCCESS == getState();
     }
 
+    /**
+     * @return true if result is marked as
+     * {@link com.clover.spika.enterprise.chat.models.Result.ApiResponseState#FAILURE}
+     */
     public boolean isFailure() {
         return ApiResponseState.FAILURE == getState();
     }
