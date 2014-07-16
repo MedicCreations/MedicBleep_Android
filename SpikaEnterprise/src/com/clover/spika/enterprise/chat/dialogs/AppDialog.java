@@ -10,6 +10,7 @@ import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -170,7 +171,7 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				BaseActivity.getPreferences().setCustomBoolean(String.valueOf(type), checked);
+				SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomBoolean(String.valueOf(type), checked);
 
 				if (Const.T_DELETE_MSG == type) {
 					deleteMessage((String) var);
@@ -223,7 +224,7 @@ public class AppDialog extends Dialog {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_DELETE_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.MESSAGE_ID, msgId);

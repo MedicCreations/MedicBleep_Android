@@ -23,6 +23,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -179,7 +180,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -247,7 +248,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_GET_GROUP_MEMBERS);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -323,7 +324,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_ADD_MEMBER);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -380,7 +381,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_KICK_MEMBER);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -433,7 +434,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_DELETE_GROUP);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqObj = new JSONObject();
 					reqObj.put(Const.GROUP_ID, String.valueOf(group_id));

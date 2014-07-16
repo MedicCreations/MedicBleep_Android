@@ -28,7 +28,7 @@ public class PhotoActivity extends BaseActivity {
 	    imageUrl = getIntent().getExtras().getString(Const.IMAGE_NAME, "");
 
 	    ImageLoader imageLoader = new ImageLoader(this);
-	    imageLoader.displayImage(imageUrl, mImageView, false);
+	    imageLoader.displayImage(this, imageUrl, mImageView, false);
 	}
     }
 }

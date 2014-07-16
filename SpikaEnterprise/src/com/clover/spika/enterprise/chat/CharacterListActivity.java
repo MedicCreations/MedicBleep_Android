@@ -1,27 +1,18 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -29,13 +20,18 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class CharacterListActivity extends BaseActivity implements
-		OnClickListener, OnItemClickListener {
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class CharacterListActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
 
 	public static final int FROM_FRIENDS_TAB = 1989;
 	public static final int FROM_UPDATE = 1988;
 
-	ImageView headerEditBack;
 	RelativeLayout noItemsLayout;
 
 	ListView main_list_view;
@@ -51,9 +47,6 @@ public class CharacterListActivity extends BaseActivity implements
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_character_list);
-
-		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
-		headerEditBack.setOnClickListener(this);
 
 		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
@@ -76,7 +69,6 @@ public class CharacterListActivity extends BaseActivity implements
 		int id = view.getId();
 		if (id == R.id.headerEditBack) {
 			finish();
-		} else {
 		}
 	}
 
@@ -94,18 +86,18 @@ public class CharacterListActivity extends BaseActivity implements
 				super.onPreExecute();
 
 				isPaggingRunning = true;
-			};
+			}
+
+			;
 
 			protected Integer doInBackground(Void... params) {
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams.put(Const.FUNCTION,
-							Const.F_USER_GET_ALL_CHARACTERS);
+					getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, new JSONObject());
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
 
 					if (result != null) {
 
@@ -114,11 +106,8 @@ public class CharacterListActivity extends BaseActivity implements
 						for (int i = 0; i < items.length(); i++) {
 							JSONObject obj = (JSONObject) items.get(i);
 
-							Gson sGsonExpose = new GsonBuilder()
-									.excludeFieldsWithoutExposeAnnotation()
-									.create();
-							Character profile = sGsonExpose.fromJson(
-									obj.toString(), Character.class);
+							Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+							Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
 
 							if (profile != null) {
 								profGame.add(profile);
@@ -134,7 +123,9 @@ public class CharacterListActivity extends BaseActivity implements
 				}
 
 				return Const.E_FAILED;
-			};
+			}
+
+			;
 
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
@@ -151,14 +142,15 @@ public class CharacterListActivity extends BaseActivity implements
 				}
 
 				isPaggingRunning = false;
-			};
+			}
+
+			;
 
 		}.execute();
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-			long arg3) {
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
 		final Character character = profileAdapter.getItem(position);
 
@@ -167,14 +159,15 @@ public class CharacterListActivity extends BaseActivity implements
 		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
 			protected void onPreExecute() {
-			};
+			}
+
+			;
 
 			protected Integer doInBackground(Void... params) {
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams
-							.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
+					getParams.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
 					JSONObject reqData = new JSONObject();
@@ -182,8 +175,7 @@ public class CharacterListActivity extends BaseActivity implements
 					reqData.put(Const.UUID_KEY, Const.getUUID(context));
 					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 
@@ -194,11 +186,8 @@ public class CharacterListActivity extends BaseActivity implements
 							// String character_id =
 							// result.getString(Const.CHARACTER_ID);
 
-							BaseActivity.getPreferences().setUserTokenId(token);
-							Helper.setUserProperties(
-									character.getCharacterId(),
-									character.getImage_name(),
-									character.getUsername());
+							SpikaEnterpriseApp.getSharedPreferences(context).setUserTokenId(token);
+							Helper.setUserProperties(context, character.getCharacterId(), character.getImage_name(), character.getUsername());
 
 							return Const.E_SUCCESS;
 						}
@@ -208,7 +197,9 @@ public class CharacterListActivity extends BaseActivity implements
 				}
 
 				return Const.E_FAILED;
-			};
+			}
+
+			;
 
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
@@ -216,7 +207,9 @@ public class CharacterListActivity extends BaseActivity implements
 					Intent intent = new Intent(context, GroupListActivity.class);
 					((BaseActivity) context).startActivity(intent);
 				}
-			};
+			}
+
+			;
 
 		}.execute();
 	}

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 
 import com.clover.spika.enterprise.chat.R;
 
@@ -90,11 +90,11 @@ public class Helper {
 
 			int currentVersion = packageInfo.versionCode;
 
-			if (BaseActivity.getPreferences().getCustomInt(Const.CURRENT_APP_VERSION) == -1) {
-				BaseActivity.getPreferences().setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
+			if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomInt(Const.CURRENT_APP_VERSION) == -1) {
+				SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
 
 				return false;
-			} else if (BaseActivity.getPreferences().getCustomInt(Const.CURRENT_APP_VERSION) < currentVersion) {
+			} else if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomInt(Const.CURRENT_APP_VERSION) < currentVersion) {
 				return true;
 			}
 		} catch (NameNotFoundException e) {
@@ -114,7 +114,7 @@ public class Helper {
 		try {
 			PackageInfo packageInfo = cntx.getPackageManager().getPackageInfo(cntx.getPackageName(), 0);
 			int currentVersion = packageInfo.versionCode;
-			BaseActivity.getPreferences().setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
+			SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
 		} catch (NameNotFoundException e) {
 			Logger.info("Could not get package name for app version checkup.");
 			e.printStackTrace();
@@ -180,19 +180,19 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(String userId, String userImageName, String userNickname) {
-		BaseActivity.getPreferences().setCustomString(Const.USER_ID, userId);
-		BaseActivity.getPreferences().setCustomString(Const.USER_IMAGE_NAME, userImageName);
-		BaseActivity.getPreferences().setCustomString(Const.USER_NICKNAME, userNickname);
+	public static void setUserProperties(Context ctx, String userId, String userImageName, String userNickname) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, userId);
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, userImageName);
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_NICKNAME, userNickname);
 	}
 
 	/**
 	 * Clear user properties
 	 */
-	public static void clearUserProperties() {
-		BaseActivity.getPreferences().setCustomString(Const.USER_ID, "");
-		BaseActivity.getPreferences().setCustomString(Const.USER_IMAGE_NAME, "");
-		BaseActivity.getPreferences().setCustomString(Const.USER_NICKNAME, "");
+	public static void clearUserProperties(Context ctx) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, "");
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, "");
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_NICKNAME, "");
 	}
 
 	/**
@@ -387,36 +387,41 @@ public class Helper {
 		return inSampleSize;
 	}
 
-	public static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
+    public static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
 
-		Bitmap sbmp;
+        Bitmap sbmp;
+        int smaller = bmp.getWidth() < bmp.getHeight() ? bmp.getWidth() : bmp.getHeight();
 
-		if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
-			sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
-		} else {
-			sbmp = bmp;
-		}
+        if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
+            double coefficient = (double) radius / (double) smaller;
+            sbmp = Bitmap.createScaledBitmap(bmp,
+                    (int) (bmp.getWidth() * coefficient),
+                    (int) (bmp.getHeight() * coefficient),
+                    false);
+        } else {
+            sbmp = bmp;
+        }
 
-		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(output);
+        Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
 
-		final Paint paint = new Paint();
-		final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, radius, radius);
 
-		paint.setAntiAlias(true);
-		paint.setFilterBitmap(true);
-		paint.setDither(true);
-		canvas.drawARGB(0, 0, 0, 0);
-		paint.setColor(Color.parseColor("#FFFFFF"));
-		canvas.drawCircle(sbmp.getWidth() / 2, sbmp.getHeight() / 2, sbmp.getWidth() / 2, paint);
-		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		canvas.drawBitmap(sbmp, rect, rect, paint);
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.parseColor("#FFFFFF"));
+        canvas.drawCircle(radius / 2, radius / 2, radius / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(sbmp, rect, rect, paint);
 
-		sbmp = null;
-		bmp = null;
+        sbmp = null;
+        bmp = null;
 
-		return output;
-	}
+        return output;
+    }
 
 	public static int dpToPx(Context ctx, int dp) {
 
