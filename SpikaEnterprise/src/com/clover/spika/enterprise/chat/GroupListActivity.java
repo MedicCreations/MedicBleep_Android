@@ -59,6 +59,24 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 	}
 
 	public void getList() {
+		
+		List<Group> tempDiscussion = new ArrayList<Group>();
+		Group group = new Group();
+		group.setCreated("1010");
+		group.setGroup_name("group name");
+		group.setGroupId("1");
+		group.setImage_name(null);
+		group.setOwner_id("2");
+		tempDiscussion.add(group);
+		tempDiscussion.add(group);
+		tempDiscussion.add(group);
+		
+		noItemsLayout.setVisibility(View.GONE);
+		adapter.clearItems();
+		adapter.addItems(tempDiscussion);
+		adapter.setNewGroupPeriod("1200");
+		
+		if(true) return;
 		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
 			List<Group> tempDiscussion = new ArrayList<Group>();

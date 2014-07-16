@@ -17,41 +17,24 @@
             android:layout_height="65dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp" >
-
-            <ImageView
-                android:id="@+id/gameImg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null" />
-
-            <ImageView
-                android:id="@+id/circleImg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null"
-                android:src="@drawable/circle" />
-
-            <ImageView
-                android:id="@+id/circleImgNew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null"
-                android:src="@drawable/gb_new_game_icon"
-                android:visibility="gone" />
+            
+            <com.clover.spika.enterprise.chat.views.RoundImageView
+                android:id="@+id/groupImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"/>
 
             <RelativeLayout
                 android:id="@+id/missedLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
-                android:visibility="gone" >
+                android:visibility="visible" >
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@null"
-                    android:src="@drawable/gb_missed_messages" />
+                    android:contentDescription="@null" />
 
                 <TextView
                     android:id="@+id/missedtext"
@@ -74,19 +57,13 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/gameName"
+                android:id="@+id/groupName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/gameStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
         </LinearLayout>
 
         <LinearLayout
