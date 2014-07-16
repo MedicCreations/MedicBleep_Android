@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -93,7 +94,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_GET_GROUPS);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
 
@@ -152,7 +153,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-		
 	}
 
 	@Override

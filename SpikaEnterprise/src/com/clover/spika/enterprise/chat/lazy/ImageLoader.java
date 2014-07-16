@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.R;
 import org.json.JSONObject;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -57,7 +58,7 @@ public class ImageLoader {
 		bitmapBorder = null;
 	}
 
-	public void displayImage(String url, ImageView imageView, boolean isRoundedLive) {
+	public void displayImage(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
 		// Store image and url in Map
 		imageViews.put(imageView, url);
 
@@ -71,11 +72,11 @@ public class ImageLoader {
 			imageView.setImageBitmap(bitmap);
 		} else {
 			// queue Photo to download from url
-			queuePhoto(url, imageView, isRoundedLive);
+			queuePhoto(ctx, url, imageView, isRoundedLive);
 		}
 	}
 
-	private void queuePhoto(String url, ImageView imageView, boolean isRoundedLive) {
+	private void queuePhoto(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
 		// Store image and url in PhotoToLoad object
 		PhotoToLoad p = new PhotoToLoad(url, imageView, isRoundedLive);
 
@@ -83,7 +84,7 @@ public class ImageLoader {
 		// and submit PhotosLoader runnable to executers to run runnable
 		// Submits a PhotosLoader runnable task for execution
 
-		executorService.submit(new PhotosLoader(p));
+		executorService.submit(new PhotosLoader(p, ctx));
 	}
 
 	// Task for the queue
@@ -101,9 +102,11 @@ public class ImageLoader {
 
 	class PhotosLoader implements Runnable {
 		PhotoToLoad photoToLoad;
+		Context context;
 
-		PhotosLoader(PhotoToLoad photoToLoad) {
+		PhotosLoader(PhotoToLoad photoToLoad, Context context) {
 			this.photoToLoad = photoToLoad;
+			this.context = context;
 		}
 
 		@Override
@@ -113,7 +116,7 @@ public class ImageLoader {
 				if (imageViewReused(photoToLoad))
 					return;
 				// download image from web url
-				Bitmap bmp = getBitmap(photoToLoad.url, photoToLoad.isRoundedLive);
+				Bitmap bmp = getBitmap(context, photoToLoad.url, photoToLoad.isRoundedLive);
 
 				// set image data in Memory Cache
 				memoryCache.put(photoToLoad.url, bmp);
@@ -137,7 +140,7 @@ public class ImageLoader {
 		}
 	}
 
-	private Bitmap getBitmap(String url, boolean isRoundedLive) {
+	private Bitmap getBitmap(Context context, String url, boolean isRoundedLive) {
 		File f = fileCache.getFile(url);
 
 		// from SD cache
@@ -158,7 +161,7 @@ public class ImageLoader {
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 			getParams.put(Const.FUNCTION, Const.F_USER_GET_FILE);
-			getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+			getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 			JSONObject reqData = new JSONObject();
 			reqData.put(Const.FILE_ID, url);

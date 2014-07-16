@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
@@ -114,9 +115,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 		if (!isScrolling) {
 			if (me) {
-				imageLoader.displayImage(msg.getCharacter().getImage_name(), holder.meIcon, true);
+				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.meIcon, true);
 			} else {
-				imageLoader.displayImage(msg.getCharacter().getImage_name(), holder.youIcon, true);
+				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.youIcon, true);
 			}
 		}
 
@@ -133,7 +134,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(msg.getFile(), holder.imagePreviewMe, false);
+					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewMe, false);
 				}
 
 				holder.imagePreviewMe.setOnClickListener(new OnClickListener() {
@@ -197,7 +198,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(msg.getFile(), holder.imagePreviewYou, false);
+					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewYou, false);
 				}
 
 				holder.imagePreviewYou.setOnClickListener(new OnClickListener() {
@@ -291,7 +292,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 		try {
 
-			if (msgFromId.equals(BaseActivity.getPreferences().getCustomString(Const.USER_ID))) {
+			if (msgFromId.equals(SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomString(Const.USER_ID))) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -460,7 +461,7 @@ public class MessagesAdapter extends BaseAdapter {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_RATE_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.MESSAGE_ID, msgId);
@@ -505,7 +506,7 @@ public class MessagesAdapter extends BaseAdapter {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_REPORT_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.MESSAGE_ID, msgId);

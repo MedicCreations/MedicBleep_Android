@@ -38,6 +38,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChatSettingsDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
@@ -46,8 +47,7 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ChatActivity extends BaseActivity implements OnClickListener,
-		OnTouchListener {
+public class ChatActivity extends BaseActivity implements OnClickListener, OnTouchListener {
 
 	private static final int OPENED = 1003;
 	private static final int CLOSED = 1004;
@@ -117,18 +117,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 
 		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.slDrawer);
 		chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
-		mParamsClosed = new RelativeLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, (int) getResources().getDimension(
-						R.dimen.menu_height));
+		mParamsClosed = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
 		mParamsClosed.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
-		mParamsOpened = new RelativeLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, (int) getResources().getDimension(
-						R.dimen.menu_height));
+		mParamsOpened = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
 		mParamsOpened.addRule(RelativeLayout.ABOVE, mSlidingDrawer.getId());
 
-		Bitmap bitmapBorder = BitmapFactory.decodeResource(getResources(),
-				R.drawable.circle);
+		Bitmap bitmapBorder = BitmapFactory.decodeResource(getResources(), R.drawable.circle);
 		radius = bitmapBorder.getWidth();
 		bitmapBorder = null;
 
@@ -136,8 +131,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		main_list_view.setAdapter(adapter);
 		main_list_view.setOnScrollListener(new OnScrollListener() {
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			}
 
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -150,38 +144,28 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 			}
 		});
 
-		main_list_view
-				.setOnItemLongClickListener(new OnItemLongClickListener() {
+		main_list_view.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-					@Override
-					public boolean onItemLongClick(AdapterView<?> parent,
-							View view, int position, long id) {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-						if (adapter.getData().get(position).getCharacter()
-								.getCharacterId().equals(fromProfileId)) {
-							AppDialog dialog = new AppDialog(instance, false);
-							dialog.okCancelDialog(
-									Const.T_DELETE_MSG,
-									instance.getResources().getString(
-											R.string.ask_delete), adapter
-											.getData().get(position)
-											.getMessageId());
+				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
+					AppDialog dialog = new AppDialog(instance, false);
+					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
 
-							return true;
-						}
+					return true;
+				}
 
-						return false;
-					}
-				});
+				return false;
+			}
+		});
 
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnTouchListener(this);
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event) {
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
-						|| (actionId == EditorInfo.IME_ACTION_DONE)) {
+				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
 					String text;
 
 					if (!TextUtils.isEmpty(etMessage.getText().toString())) {
@@ -216,7 +200,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 		adapter.notifyDataSetChanged();
 
 		if (!TextUtils.isEmpty(myProfileImg)) {
-			imageLoader.displayImage(myProfileImg, meIcon, true);
+			imageLoader.displayImage(this, myProfileImg, meIcon, true);
 		}
 
 		if (isResume) {
@@ -262,18 +246,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 					login();
 				}
 
-				fromProfileId = BaseActivity.getPreferences().getCustomString(
-						Const.USER_ID);
-				myProfileImg = BaseActivity.getPreferences().getCustomString(
-						Const.USER_IMAGE_NAME);
-				myNickName = BaseActivity.getPreferences().getCustomString(
-						Const.USER_NICKNAME);
+				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
+				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_IMAGE_NAME);
+				myNickName = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_NICKNAME);
 
 				groupId = intent.getExtras().getString(Const.GROUP_ID);
 				groupName = intent.getExtras().getString(Const.GROUP_NAME);
 				groupOwner = intent.getExtras().getString(Const.OWNER_ID);
 
-				BaseActivity.getPreferences().setCustomBoolean(groupId, false);
+				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
 
 				if (!fromProfileId.equals(groupOwner)) {
 					headerMore.setVisibility(View.INVISIBLE);
@@ -299,11 +280,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 			setSlidingDrawer(CLOSED);
 		} else if (id == R.id.footerMore) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				footerMore.setImageDrawable(getResources().getDrawable(
-						R.drawable.gb_chat_plus_icon_clicked));
+				footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon_clicked));
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				footerMore.setImageDrawable(getResources().getDrawable(
-						R.drawable.gb_chat_plus_icon));
+				footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon));
 
 				setSlidingDrawer(OPENED);
 			}
@@ -367,8 +346,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
 					getParams.put(Const.FUNCTION, Const.F_POST_MESSAGE);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -381,8 +359,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 
 					reqData.put(Const.MSG_TYPE, String.valueOf(type));
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -437,9 +414,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 		}.execute();
 	}
 
-	public void getMessages(final boolean isClear, final boolean processing,
-			final boolean isPagging, final boolean isNewMsg,
-			final boolean isSend, final boolean isRefresh) {
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
 
 		if (isRunning) {
 			return;
@@ -466,8 +441,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -475,37 +449,29 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 					if (isPagging) {
 						getParams.put(Const.FUNCTION, Const.F_GET_MESSAGES);
 
-						if (!isClear && !adapter.getData().isEmpty()
-								&& adapter.getCount() > 0) {
-							reqData.put(Const.LAST_MSG_ID, adapter.getData()
-									.get(0).getMessageId());
+						if (!isClear && !adapter.getData().isEmpty() && adapter.getCount() > 0) {
+							reqData.put(Const.LAST_MSG_ID, adapter.getData().get(0).getMessageId());
 						}
 					} else if (isNewMsg) {
 						getParams.put(Const.FUNCTION, Const.F_GET_NEW_MESSAGES);
 
 						if ((adapter.getCount() - 1) >= 0) {
-							reqData.put(Const.FIRST_MSG_ID, adapter.getData()
-									.get(adapter.getCount() - 1).getMessageId());
+							reqData.put(Const.FIRST_MSG_ID, adapter.getData().get(adapter.getCount() - 1).getMessageId());
 						}
 					}
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
-						totalItems = Integer.parseInt(result
-								.getString(Const.TOTAL_ITEMS));
+						totalItems = Integer.parseInt(result.getString(Const.TOTAL_ITEMS));
 
 						JSONArray items = result.getJSONArray(Const.ITEMS);
 
 						for (int i = 0; i < items.length(); i++) {
 							JSONObject obj = (JSONObject) items.get(i);
 
-							Gson sGsonExpose = new GsonBuilder()
-									.excludeFieldsWithoutExposeAnnotation()
-									.create();
-							Message msg = sGsonExpose.fromJson(obj.toString(),
-									Message.class);
+							Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+							Message msg = sGsonExpose.fromJson(obj.toString(), Message.class);
 
 							if (msg != null) {
 								tempMessage.add(msg);
@@ -535,14 +501,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 
 					if (!isRefresh) {
 						if (isClear || isSend) {
-							main_list_view.setSelectionFromTop(
-									adapter.getCount(), 0);
+							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
 						} else if (isPagging) {
 							main_list_view.setSelection(tempMessage.size());
 						}
 					} else {
-						int visibleItem = main_list_view
-								.getFirstVisiblePosition();
+						int visibleItem = main_list_view.getFirstVisiblePosition();
 
 						boolean isScroll = false;
 
@@ -551,8 +515,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 						}
 
 						if (isScroll && !isSend) {
-							main_list_view.setSelectionFromTop(
-									adapter.getCount(), 0);
+							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
 						}
 					}
 
@@ -573,18 +536,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams
-							.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
+					getParams.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
 					JSONObject reqData = new JSONObject();
-					reqData.put(Const.USERNAME, BaseActivity.getPreferences()
-							.getCustomString(Const.USER_NICKNAME));
+					reqData.put(Const.USERNAME, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.USER_NICKNAME));
 					reqData.put(Const.UUID_KEY, Const.getUUID(context));
 					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 
@@ -593,7 +553,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 						if (code == Const.C_SUCCESS) {
 							String token = result.getString(Const.TOKEN);
 
-							BaseActivity.getPreferences().setUserTokenId(token);
+							SpikaEnterpriseApp.getSharedPreferences(context).setUserTokenId(token);
 
 							return Const.E_SUCCESS;
 						}
@@ -632,7 +592,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener,
 
 			return;
 		} else {
-			BaseActivity.getPreferences().setCustomBoolean(groupId, false);
+			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
 			super.onBackPressed();
 		}
 	}

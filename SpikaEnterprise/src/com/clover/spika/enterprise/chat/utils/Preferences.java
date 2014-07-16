@@ -11,68 +11,63 @@ import android.preference.PreferenceManager;
 
 public class Preferences {
 
-    private SharedPreferences sharedPreferences;
+	private SharedPreferences sharedPreferences;
 
-    public Preferences(Context context) {
-	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-    }
+	public Preferences(Context context) {
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+	}
 
-    public String getCustomString(String key) {
-	return sharedPreferences.getString(key, null);
-    }
+	public String getCustomString(String key) {
+		return sharedPreferences.getString(key, null);
+	}
 
-    public void setCustomString(String key, String value) {
-	SharedPreferences.Editor editor = sharedPreferences.edit();
+	public void setCustomString(String key, String value) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-	editor.putString(key, value);
+		editor.putString(key, value);
 
-	editor.commit();
-    }
+		editor.commit();
+	}
 
-    public void setUserTokenId(String token) {
-	SharedPreferences.Editor editor = sharedPreferences.edit();
+	public void setUserTokenId(String token) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-	long tokenExpires = (System.currentTimeMillis() / 1000L) + Const.DAY;
+		long tokenExpires = (System.currentTimeMillis() / 1000L) + Const.DAY;
 
-	editor.putLong(Const.CLIENT_TOKEN_EXPIRES, tokenExpires);
-	editor.putString(Const.TOKEN, token);
+		editor.putLong(Const.CLIENT_TOKEN_EXPIRES, tokenExpires);
+		editor.putString(Const.TOKEN, token);
 
-	editor.commit();
-    }
+		editor.commit();
+	}
 
-    public String getToken() throws ClientProtocolException, IOException, JSONException {
-	// long tokenTime =
-	// sharedPreferences.getLong(Const.CLIENT_TOKEN_EXPIRES, 0L);
-	// long currentTime = System.currentTimeMillis() / 1000L;
+	public String getToken() throws ClientProtocolException, IOException, JSONException {
+		long tokenTime = sharedPreferences.getLong(Const.CLIENT_TOKEN_EXPIRES, 0L);
+		long currentTime = System.currentTimeMillis() / 1000L;
 
-	// TODO
-	// return (tokenTime > currentTime) ?
-	// sharedPreferences.getString(Const.TOKEN, null) :
-	// Api.login(Const.getUUID());
-	return sharedPreferences.getString(Const.TOKEN, "");
-    }
+		return (tokenTime > currentTime) ? sharedPreferences.getString(Const.TOKEN, null) : null;
+	}
 
-    public void setCustomBoolean(String key, boolean value) {
-	SharedPreferences.Editor editor = sharedPreferences.edit();
+	public void setCustomBoolean(String key, boolean value) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-	editor.putBoolean(key, value);
+		editor.putBoolean(key, value);
 
-	editor.commit();
-    }
+		editor.commit();
+	}
 
-    public boolean getCustomBoolean(String key) {
-	return sharedPreferences.getBoolean(key, false);
-    }
+	public boolean getCustomBoolean(String key) {
+		return sharedPreferences.getBoolean(key, false);
+	}
 
-    public void setCustomInt(String key, int value) {
-	SharedPreferences.Editor editor = sharedPreferences.edit();
+	public void setCustomInt(String key, int value) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-	editor.putInt(key, value);
+		editor.putInt(key, value);
 
-	editor.commit();
-    }
+		editor.commit();
+	}
 
-    public int getCustomInt(String key) {
-	return sharedPreferences.getInt(key, -1);
-    }
+	public int getCustomInt(String key) {
+		return sharedPreferences.getInt(key, -1);
+	}
 }

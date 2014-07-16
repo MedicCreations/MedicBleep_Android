@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,6 +21,7 @@ import android.widget.RelativeLayout;
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -30,161 +30,161 @@ import com.google.gson.GsonBuilder;
 
 public class AddMembers extends BaseActivity implements OnClickListener {
 
-    ImageView headerEditBack;
-    ImageView headerRightIcon;
-    ListView main_list_view;
-    RelativeLayout noItemsLayout;
+	ImageView headerEditBack;
+	ImageView headerRightIcon;
+	ListView main_list_view;
+	RelativeLayout noItemsLayout;
 
-    CharacterAdapter profileAdapter;
+	CharacterAdapter profileAdapter;
 
-    String groupName = "";
+	String groupName = "";
 
-    @Override
+	@Override
 	public void onCreate(Bundle arg0) {
-	super.onCreate(arg0);
-	setContentView(R.layout.activity_add_members);
+		super.onCreate(arg0);
+		setContentView(R.layout.activity_add_members);
 
-	headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
-	headerEditBack.setOnClickListener(this);
-	headerRightIcon = (ImageView) findViewById(R.id.headerRightIcon);
-	headerRightIcon.setOnClickListener(this);
-	main_list_view = (ListView) findViewById(R.id.main_list_view);
-	noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
+		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
+		headerEditBack.setOnClickListener(this);
+		headerRightIcon = (ImageView) findViewById(R.id.headerRightIcon);
+		headerRightIcon.setOnClickListener(this);
+		main_list_view = (ListView) findViewById(R.id.main_list_view);
+		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
-	profileAdapter = new CharacterAdapter(this, new ArrayList<Character>());
-	profileAdapter.setSelect(true);
-	main_list_view.setAdapter(profileAdapter);
+		profileAdapter = new CharacterAdapter(this, new ArrayList<Character>());
+		profileAdapter.setSelect(true);
+		main_list_view.setAdapter(profileAdapter);
 
-	if (getIntent().getExtras().containsKey(Const.GROUP_NAME)) {
-	    groupName = getIntent().getExtras().getString(Const.GROUP_NAME);
-	}
-    }
-
-    @Override
-    protected void onResume() {
-	super.onResume();
-	findMyProfiles();
-    }
-
-    @Override
-    public void onClick(View view) {
-
-	int id = view.getId();
-	if (id == R.id.headerEditBack) {
-	    finish();
-	} else if (id == R.id.headerRightIcon) {
-	    if (profileAdapter.getSelectedIds().length > 0) {
-		createGroup(groupName, profileAdapter.getSelectedIds());
-	    }
-	} else {
-	}
-    }
-
-    public void findMyProfiles() {
-	new BaseAsyncTask<Void, Void, Integer>(this, true) {
-
-	    List<Character> profGame = new ArrayList<Character>();
-
-	    protected Integer doInBackground(Void... params) {
-		try {
-		    HashMap<String, String> getParams = new HashMap<String, String>();
-		    getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-		    getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
-		    getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
-
-		    JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
-
-		    if (result != null) {
-
-			JSONArray items = result.getJSONArray(Const.ITEMS);
-
-			for (int i = 0; i < items.length(); i++) {
-			    JSONObject obj = (JSONObject) items.get(i);
-
-			    Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-			    Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
-
-			    if (profile != null) {
-				profGame.add(profile);
-			    }
-			}
-
-			if (profGame.size() > 0) {
-			    return Const.E_SUCCESS;
-			}
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
+		if (getIntent().getExtras().containsKey(Const.GROUP_NAME)) {
+			groupName = getIntent().getExtras().getString(Const.GROUP_NAME);
 		}
+	}
 
-		return Const.E_FAILED;
-	    };
+	@Override
+	protected void onResume() {
+		super.onResume();
+		findMyProfiles();
+	}
 
-	    protected void onPostExecute(Integer result) {
-		super.onPostExecute(result);
+	@Override
+	public void onClick(View view) {
 
-		if (result.equals(Const.E_SUCCESS)) {
-		    profileAdapter.clearItems();
-		    profileAdapter.addItems(profGame);
-		}
-
-		if (profileAdapter.getCount() > 0) {
-		    noItemsLayout.setVisibility(View.GONE);
+		int id = view.getId();
+		if (id == R.id.headerEditBack) {
+			finish();
+		} else if (id == R.id.headerRightIcon) {
+			if (profileAdapter.getSelectedIds().length > 0) {
+				createGroup(groupName, profileAdapter.getSelectedIds());
+			}
 		} else {
-		    noItemsLayout.setVisibility(View.VISIBLE);
 		}
-	    };
+	}
 
-	}.execute();
-    }
+	public void findMyProfiles() {
+		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
-    private void createGroup(final String groupName, final String[] selected) {
-	new BaseAsyncTask<Void, Void, Integer>(this, true) {
+			List<Character> profGame = new ArrayList<Character>();
 
-	    protected Integer doInBackground(Void... params) {
-		try {
-		    HashMap<String, String> getParams = new HashMap<String, String>();
-		    getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-		    getParams.put(Const.FUNCTION, Const.F_USER_CREATE_GROUP);
-		    getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
+			protected Integer doInBackground(Void... params) {
+				try {
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
+					getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
-		    JSONObject reqData = new JSONObject();
-		    reqData.put(Const.GROUP_NAME, groupName);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
 
-		    StringBuilder finalString = new StringBuilder();
+					if (result != null) {
 
-		    for (int i = 0; i < selected.length; i++) {
-			finalString.append(selected[i]);
+						JSONArray items = result.getJSONArray(Const.ITEMS);
 
-			if (i != selected.length - 1) {
-			    finalString.append(",");
-			}
+						for (int i = 0; i < items.length(); i++) {
+							JSONObject obj = (JSONObject) items.get(i);
 
-		    }
+							Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+							Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
 
-		    reqData.put(Const.ADD_MEMBERS, finalString.toString());
+							if (profile != null) {
+								profGame.add(profile);
+							}
+						}
 
-		    JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
+						if (profGame.size() > 0) {
+							return Const.E_SUCCESS;
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-		    if (result != null) {
-			return result.getInt(Const.CODE);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		}
+				return Const.E_FAILED;
+			};
 
-		return Const.E_FAILED;
-	    };
+			protected void onPostExecute(Integer result) {
+				super.onPostExecute(result);
 
-	    protected void onPostExecute(Integer result) {
-		super.onPostExecute(result);
+				if (result.equals(Const.E_SUCCESS)) {
+					profileAdapter.clearItems();
+					profileAdapter.addItems(profGame);
+				}
 
-		Intent intent = new Intent();
-		intent.putExtra(Const.CODE, result);
-		setResult(RESULT_OK, intent);
-		((Activity) context).finish();
-	    };
+				if (profileAdapter.getCount() > 0) {
+					noItemsLayout.setVisibility(View.GONE);
+				} else {
+					noItemsLayout.setVisibility(View.VISIBLE);
+				}
+			};
 
-	}.execute();
-    }
+		}.execute();
+	}
+
+	private void createGroup(final String groupName, final String[] selected) {
+		new BaseAsyncTask<Void, Void, Integer>(this, true) {
+
+			protected Integer doInBackground(Void... params) {
+				try {
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
+					getParams.put(Const.FUNCTION, Const.F_USER_CREATE_GROUP);
+					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					JSONObject reqData = new JSONObject();
+					reqData.put(Const.GROUP_NAME, groupName);
+
+					StringBuilder finalString = new StringBuilder();
+
+					for (int i = 0; i < selected.length; i++) {
+						finalString.append(selected[i]);
+
+						if (i != selected.length - 1) {
+							finalString.append(",");
+						}
+
+					}
+
+					reqData.put(Const.ADD_MEMBERS, finalString.toString());
+
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
+
+					if (result != null) {
+						return result.getInt(Const.CODE);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return Const.E_FAILED;
+			};
+
+			protected void onPostExecute(Integer result) {
+				super.onPostExecute(result);
+
+				Intent intent = new Intent();
+				intent.putExtra(Const.CODE, result);
+				setResult(RESULT_OK, intent);
+				((Activity) context).finish();
+			};
+
+		}.execute();
+	}
 }
