@@ -29,7 +29,6 @@ import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -52,8 +51,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public ImageView tabFriends;
 	public ImageView tabSettings;
 
-	public static Preferences mPreferences;
-
 	public final static int slidingDuration = 160;
 
 	private SlidingMenu slidingMenu;
@@ -62,10 +59,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (mPreferences == null) {
-			mPreferences = new Preferences(this);
-		}
 
 		setBehindContentView(R.layout.sidebar_layout_empty);
 
@@ -114,14 +107,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	public static BaseActivity getInstance() {
 		return instance;
-	}
-
-	public static Preferences getPreferences() {
-		return mPreferences;
-	}
-
-	public static void setPreferences(Preferences preferences) {
-		mPreferences = preferences;
 	}
 
 	/**
@@ -173,7 +158,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 *         registration ID.
 	 */
 	public String getRegistrationId(Context context) {
-		String registrationId = BaseActivity.getPreferences().getCustomString(Const.REGISTRATION_ID);
+		String registrationId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.REGISTRATION_ID);
 		if (registrationId == null || registrationId.isEmpty()) {
 			Logger.info("GCM registration ID not found");
 			return "";
@@ -192,7 +177,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void showPopUp(final String msg, final String groupId, final int type) {
 
 		if (type == Const.PT_MESSAGE) {
-			BaseActivity.getPreferences().setCustomBoolean(groupId, true);
+			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, true);
 		}
 
 		if (isPushShowing) {
@@ -218,7 +203,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			protected void onPostExecute(Integer result) {
 				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content).getRootView());
-				final View view = LayoutInflater.from(instance).inflate(R.layout.in_app_notification_layout, contentRoot);
+				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, contentRoot);
 				TextView text = (TextView) view.findViewById(R.id.msgPop);
 				text.setText(msg);
 
@@ -371,7 +356,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 */
 	private void storeRegistrationId(Context context, String regId) {
 		Helper.updateAppVersion(context);
-		BaseActivity.getPreferences().setCustomString(Const.REGISTRATION_ID, regId);
+		SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.REGISTRATION_ID, regId);
 	}
 
 	@Override

@@ -101,7 +101,7 @@ public class CharacterAdapter extends BaseAdapter {
 
 		holder.personName.setText(Helper.substringText(profile.getUsername(), 25));
 
-		imageLoader.displayImage(profile.getImage_name(), holder.profileImg, true);
+		imageLoader.displayImage(cntx, profile.getImage_name(), holder.profileImg, true);
 
 		return convertView;
 	}

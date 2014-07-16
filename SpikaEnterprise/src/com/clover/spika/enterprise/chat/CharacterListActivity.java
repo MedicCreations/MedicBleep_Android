@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -29,8 +30,7 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class CharacterListActivity extends BaseActivity implements
-		OnClickListener, OnItemClickListener {
+public class CharacterListActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
 
 	public static final int FROM_FRIENDS_TAB = 1989;
 	public static final int FROM_UPDATE = 1988;
@@ -100,12 +100,10 @@ public class CharacterListActivity extends BaseActivity implements
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams.put(Const.FUNCTION,
-							Const.F_USER_GET_ALL_CHARACTERS);
+					getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, new JSONObject());
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, new JSONObject());
 
 					if (result != null) {
 
@@ -114,11 +112,8 @@ public class CharacterListActivity extends BaseActivity implements
 						for (int i = 0; i < items.length(); i++) {
 							JSONObject obj = (JSONObject) items.get(i);
 
-							Gson sGsonExpose = new GsonBuilder()
-									.excludeFieldsWithoutExposeAnnotation()
-									.create();
-							Character profile = sGsonExpose.fromJson(
-									obj.toString(), Character.class);
+							Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+							Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
 
 							if (profile != null) {
 								profGame.add(profile);
@@ -157,8 +152,7 @@ public class CharacterListActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-			long arg3) {
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
 		final Character character = profileAdapter.getItem(position);
 
@@ -173,8 +167,7 @@ public class CharacterListActivity extends BaseActivity implements
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams
-							.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
+					getParams.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
 					JSONObject reqData = new JSONObject();
@@ -182,8 +175,7 @@ public class CharacterListActivity extends BaseActivity implements
 					reqData.put(Const.UUID_KEY, Const.getUUID(context));
 					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 
@@ -194,11 +186,8 @@ public class CharacterListActivity extends BaseActivity implements
 							// String character_id =
 							// result.getString(Const.CHARACTER_ID);
 
-							BaseActivity.getPreferences().setUserTokenId(token);
-							Helper.setUserProperties(
-									character.getCharacterId(),
-									character.getImage_name(),
-									character.getUsername());
+							SpikaEnterpriseApp.getSharedPreferences(context).setUserTokenId(token);
+							Helper.setUserProperties(context, character.getCharacterId(), character.getImage_name(), character.getUsername());
 
 							return Const.E_SUCCESS;
 						}

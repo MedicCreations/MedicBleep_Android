@@ -32,9 +32,9 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -97,13 +97,13 @@ public class NetworkManagement {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject httpPostFileRequest(HashMap<String, String> postParams) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams) throws ClientProtocolException, IOException, JSONException {
 
         HttpPost httppost = new HttpPost(Const.BASE_URL);
 
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-        httppost.setHeader(TOKEN, BaseActivity.getPreferences().getToken());
+        httppost.setHeader(TOKEN, prefs.getToken());
 
         if (postParams.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();

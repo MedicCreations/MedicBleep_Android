@@ -29,6 +29,7 @@
     <uses-permission android:name="com.clover.spika.enterprise.chat.gcm.permission.C2D_MESSAGE" />
 
     <application
+        android:name="com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
