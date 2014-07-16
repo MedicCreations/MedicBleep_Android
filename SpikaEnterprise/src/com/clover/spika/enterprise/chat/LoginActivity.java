@@ -67,7 +67,7 @@ public class LoginActivity extends Activity {
 			};
 
 			protected void onPostExecute(Void result) {
-				Intent intent = new Intent(context, LobbyActivity.class);
+				Intent intent = new Intent(getContext(), LobbyActivity.class);
 				startActivity(intent);
 				finish();
 			};

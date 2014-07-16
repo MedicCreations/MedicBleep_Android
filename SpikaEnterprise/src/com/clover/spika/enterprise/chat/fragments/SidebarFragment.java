@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.clover.spika.enterprise.chat.CharacterListActivity;
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
@@ -55,14 +56,13 @@ public class SidebarFragment extends Fragment {
 			}
 		});
 
-		users = (RobotoThinButton) view.findViewById(R.id.users);
-		users.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-			}
-		});
+        users = (RobotoThinButton) view.findViewById(R.id.users);
+        users.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CharacterListActivity.class));
+            }
+        });
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(new OnClickListener() {

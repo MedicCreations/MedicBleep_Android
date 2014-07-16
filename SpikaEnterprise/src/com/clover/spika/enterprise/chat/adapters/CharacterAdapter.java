@@ -1,13 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.Character;
-import com.clover.spika.enterprise.chat.utils.Helper;
-
-import com.clover.spika.enterprise.chat.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +8,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Character;
+import com.clover.spika.enterprise.chat.utils.Helper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CharacterAdapter extends BaseAdapter {
 
@@ -55,7 +55,7 @@ public class CharacterAdapter extends BaseAdapter {
 		final ViewHolderCharacter holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_person, parent);
+			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_person, null);
 
 			holder = new ViewHolderCharacter(convertView);
 			convertView.setTag(holder);
@@ -176,7 +176,7 @@ public class CharacterAdapter extends BaseAdapter {
 			itemCliclkLayout = (RelativeLayout) view.findViewById(R.id.itemCliclkLayout);
 			selectableImg = (ImageView) view.findViewById(R.id.selectableImg);
 			imageLayout = (RelativeLayout) view.findViewById(R.id.imageLayout);
-			profileImg = (ImageView) view.findViewById(R.id.gameImg);
+			profileImg = (ImageView) view.findViewById(R.id.userImage);
 
 			personName = (TextView) view.findViewById(R.id.personName);
 			gameName = (TextView) view.findViewById(R.id.gameName);

@@ -31,18 +31,19 @@
             android:layout_marginRight="10dp"
             android:layout_toRightOf="@+id/selectableImg" >
 
-            <ImageView
-                android:id="@+id/gameImg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@null" />
+            <com.clover.spika.enterprise.chat.views.RoundImageView
+                android:id="@+id/userImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"/>
 
             <ImageView
                 android:id="@+id/circleImg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:contentDescription="@null"
                 android:src="@drawable/circle" />
+
         </RelativeLayout>
 
         <LinearLayout

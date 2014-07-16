@@ -1,13 +1,13 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-
-import com.clover.spika.enterprise.chat.R;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 
 public class BaseAsyncTask<Params, Progress, Result> extends
 		AsyncTask<Params, Progress, Result> {
@@ -76,4 +76,8 @@ public class BaseAsyncTask<Params, Progress, Result> extends
 	protected Result doInBackground(Params... params) {
 		return null;
 	}
+
+    public Context getContext() {
+        return context;
+    }
 }

@@ -29,10 +29,9 @@
     <uses-permission android:name="com.clover.spika.enterprise.chat.gcm.permission.C2D_MESSAGE" />
 
     <application
-        android:allowBackup="false"
-        android:icon="@drawable/ic_launcher"
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:largeHeap="true"
+        android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.Custom" >
         <meta-data
             android:name="com.google.android.gms.version"
