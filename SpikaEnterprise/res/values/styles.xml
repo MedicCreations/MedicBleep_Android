@@ -1,41 +1,16 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Transparent" parent="android:Theme">
+    <style name="Theme.Custom" parent="@android:style/Theme.Holo.Light">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Dialog" parent="android:Theme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
-
-    <color name="transparent">#00000000</color>
-    <color name="black">#000000</color>
-    <color name="white">#ffffffff</color>
-    <color name="text_blue">#52bbe2</color>
-    <color name="green">#71d654</color>
-    <color name="red">#d75555</color>
-    <color name="divider_gray">#d8e1e7</color>
-    <color name="text_gray">#c0c0c0</color>
-    <color name="text_dark_gray">#949494</color>
-    <color name="button_gray">#c0c0c0</color>
-    <color name="white_trans">#b3b7c8d2</color>
-    <color name="white_trans2">#d9e0e5</color>
-    <color name="blue_button">#75bcda</color>
-    <color name="hint_color">#d9e2e7</color>
-    <color name="list_highlight">#99ffffff</color>
-    <color name="message_bg">#d8e0e6</color>
-    <color name="baloon_blue">#9fcadb</color>
-    <color name="person_blue">#379cc8</color>
-    <color name="time_gray">#b5c2cb</color>
-    <color name="blocked_shadow">#0D000000</color>
-    <color name="notification_shadow">#80000000</color>
-    <color name="chat_menu_gray">#dde1e4</color>
-    <color name="cloud_color">#9ecadc</color>
-    <color name="text_gray_image">#7e7e7e</color>
-
-    <!-- Enterprise style -->
-    <color name="default_blue">#3E92FF</color>
-    <color name="default_green">#57D171</color>
-    <color name="default_green_light">#61E680</color>
 
 </resources>

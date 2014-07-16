@@ -40,7 +40,7 @@ public class AddMembers extends BaseActivity implements OnClickListener {
     String groupName = "";
 
     @Override
-    protected void onCreate(Bundle arg0) {
+	public void onCreate(Bundle arg0) {
 	super.onCreate(arg0);
 	setContentView(R.layout.activity_add_members);
 

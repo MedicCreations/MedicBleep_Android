@@ -84,5 +84,13 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login_big">LOGIN</string>
+    <string name="hi">Hi!</string>
+    <string name="john_doe">John Doe</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="lobby">Lobby</string>
+    <string name="users">Users</string>
+    <string name="groups">Groups</string>
+    <string name="title_lobby">Lobby</string>
 
 </resources>

@@ -48,7 +48,7 @@ public class CharacterListActivity extends BaseActivity implements
 	String gameName = null;
 
 	@Override
-	protected void onCreate(Bundle arg0) {
+	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_character_list);
 

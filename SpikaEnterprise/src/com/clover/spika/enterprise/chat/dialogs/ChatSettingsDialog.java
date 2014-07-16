@@ -29,8 +29,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ChatSettingsDialog extends DialogFragment implements
-		OnTouchListener {
+public class ChatSettingsDialog extends DialogFragment implements OnTouchListener {
 
 	private static final int ADD = 0;
 	private static final int KICK = 1;
@@ -59,7 +58,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_Transparent);
+		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_Dialog);
 
 		Bundle bundle = getArguments();
 
@@ -69,16 +68,14 @@ public class ChatSettingsDialog extends DialogFragment implements
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.dialog_wall_settings, container);
 
 		goBackLayout = (TextView) view.findViewById(R.id.goBackLayout);
 		goBackLayout.setOnTouchListener(this);
 
-		settingsLayout = (RelativeLayout) view
-				.findViewById(R.id.settingsLayout);
+		settingsLayout = (RelativeLayout) view.findViewById(R.id.settingsLayout);
 
 		addMembers = (TextView) view.findViewById(R.id.addMembers);
 		addMembers.setOnTouchListener(this);
@@ -87,12 +84,10 @@ public class ChatSettingsDialog extends DialogFragment implements
 		clearGroup = (TextView) view.findViewById(R.id.clearGroup);
 		clearGroup.setOnTouchListener(this);
 
-		settingsListLayout = (RelativeLayout) view
-				.findViewById(R.id.settingsListLayout);
+		settingsListLayout = (RelativeLayout) view.findViewById(R.id.settingsListLayout);
 
 		main_list_view = (ListView) view.findViewById(R.id.main_list_view);
-		adapter = new CharacterAdapter(getActivity(),
-				new ArrayList<Character>());
+		adapter = new CharacterAdapter(getActivity(), new ArrayList<Character>());
 		adapter.setSelect(true);
 
 		main_list_view.setAdapter(adapter);
@@ -183,16 +178,13 @@ public class ChatSettingsDialog extends DialogFragment implements
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams.put(Const.FUNCTION,
-							Const.F_USER_GET_ALL_CHARACTERS);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.FUNCTION, Const.F_USER_GET_ALL_CHARACTERS);
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 
@@ -204,11 +196,8 @@ public class ChatSettingsDialog extends DialogFragment implements
 							for (int i = 0; i < items.length(); i++) {
 								JSONObject obj = (JSONObject) items.get(i);
 
-								Gson sGsonExpose = new GsonBuilder()
-										.excludeFieldsWithoutExposeAnnotation()
-										.create();
-								Character profile = sGsonExpose.fromJson(
-										obj.toString(), Character.class);
+								Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+								Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
 
 								if (profile != null) {
 									profGame.add(profile);
@@ -257,16 +246,13 @@ public class ChatSettingsDialog extends DialogFragment implements
 				try {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams.put(Const.FUNCTION,
-							Const.F_USER_GET_GROUP_MEMBERS);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.FUNCTION, Const.F_USER_GET_GROUP_MEMBERS);
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 
@@ -278,11 +264,8 @@ public class ChatSettingsDialog extends DialogFragment implements
 							for (int i = 0; i < items.length(); i++) {
 								JSONObject obj = (JSONObject) items.get(i);
 
-								Gson sGsonExpose = new GsonBuilder()
-										.excludeFieldsWithoutExposeAnnotation()
-										.create();
-								Character profile = sGsonExpose.fromJson(
-										obj.toString(), Character.class);
+								Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+								Character profile = sGsonExpose.fromJson(obj.toString(), Character.class);
 
 								if (profile != null) {
 									profGame.add(profile);
@@ -340,8 +323,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_ADD_MEMBER);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -358,8 +340,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 
 					reqData.put(Const.ADD_MEMBERS, finalString.toString());
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -399,8 +380,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_KICK_MEMBER);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqData = new JSONObject();
 					reqData.put(Const.GROUP_ID, groupId);
@@ -417,8 +397,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 
 					reqData.put(Const.KICK_MEMBERS, finalString.toString());
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -454,14 +433,12 @@ public class ChatSettingsDialog extends DialogFragment implements
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
 					getParams.put(Const.FUNCTION, Const.F_USER_DELETE_GROUP);
-					getParams.put(Const.TOKEN, BaseActivity.getPreferences()
-							.getToken());
+					getParams.put(Const.TOKEN, BaseActivity.getPreferences().getToken());
 
 					JSONObject reqObj = new JSONObject();
 					reqObj.put(Const.GROUP_ID, String.valueOf(group_id));
 
-					JSONObject result = NetworkManagement.httpPostRequest(
-							getParams, reqObj);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqObj);
 
 					if (result != null) {
 						return result.getInt(Const.CODE);
@@ -479,8 +456,7 @@ public class ChatSettingsDialog extends DialogFragment implements
 					dismiss();
 
 					if (ChatActivity.instance != null) {
-						AppDialog dialog = new AppDialog(ChatActivity.instance,
-								true);
+						AppDialog dialog = new AppDialog(ChatActivity.instance, true);
 						dialog.setSucceed();
 					}
 

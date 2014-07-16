@@ -9,20 +9,20 @@ public class RobotoThinButton extends Button {
 
 	public RobotoThinButton(Context context) {
 		super(context);
-		setFont();
+		init();
 	}
 
 	public RobotoThinButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setFont();
+		init();
 	}
 
 	public RobotoThinButton(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		setFont();
+		init();
 	}
 
-	private void setFont() {
+	private void init() {
 		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Thin.ttf");
 		setTypeface(typeface);
 	}

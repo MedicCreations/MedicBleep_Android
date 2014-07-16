@@ -17,7 +17,7 @@ public class PhotoActivity extends BaseActivity {
     String imageUrl;
 
     @Override
-    protected void onCreate(Bundle arg0) {
+    public void onCreate(Bundle arg0) {
 	super.onCreate(arg0);
 	setContentView(R.layout.activity_photo);
 

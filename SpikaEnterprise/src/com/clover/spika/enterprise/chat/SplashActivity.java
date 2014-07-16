@@ -1,15 +1,15 @@
 package com.clover.spika.enterprise.chat;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends Activity {
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
@@ -39,6 +39,12 @@ public class SplashActivity extends BaseActivity {
 				finish();
 			}
 		}.execute();
+	}
+
+	@Override
+	public void startActivity(Intent intent) {
+		super.startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
 }

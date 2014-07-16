@@ -29,7 +29,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
     ImageLoader imageLoader;
 
     @Override
-    protected void onCreate(Bundle arg0) {
+    public void onCreate(Bundle arg0) {
 	super.onCreate(arg0);
 	setContentView(R.layout.activity_profile);
 

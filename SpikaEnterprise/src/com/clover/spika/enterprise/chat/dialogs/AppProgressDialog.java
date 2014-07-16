@@ -22,7 +22,7 @@ public class AppProgressDialog extends Dialog {
 	Runnable run;
 
 	public AppProgressDialog(Context context) {
-		super(context, R.style.Theme_Transparent);
+		super(context, R.style.Theme_Dialog);
 		setContentView(R.layout.dialog_progress);
 
 		dot1 = (TextView) findViewById(R.id.dot1);
@@ -33,27 +33,19 @@ public class AppProgressDialog extends Dialog {
 		run = new Runnable() {
 			public void run() {
 
-				if (dot1.getVisibility() == View.VISIBLE
-						&& dot2.getVisibility() == View.VISIBLE
-						&& dot3.getVisibility() == View.VISIBLE) {
+				if (dot1.getVisibility() == View.VISIBLE && dot2.getVisibility() == View.VISIBLE && dot3.getVisibility() == View.VISIBLE) {
 					dot1.setVisibility(View.INVISIBLE);
 					dot2.setVisibility(View.INVISIBLE);
 					dot3.setVisibility(View.INVISIBLE);
-				} else if (dot1.getVisibility() == View.INVISIBLE
-						&& dot2.getVisibility() == View.INVISIBLE
-						&& dot3.getVisibility() == View.INVISIBLE) {
+				} else if (dot1.getVisibility() == View.INVISIBLE && dot2.getVisibility() == View.INVISIBLE && dot3.getVisibility() == View.INVISIBLE) {
 					dot1.setVisibility(View.VISIBLE);
 					dot2.setVisibility(View.INVISIBLE);
 					dot3.setVisibility(View.INVISIBLE);
-				} else if (dot1.getVisibility() == View.VISIBLE
-						&& dot2.getVisibility() == View.INVISIBLE
-						&& dot3.getVisibility() == View.INVISIBLE) {
+				} else if (dot1.getVisibility() == View.VISIBLE && dot2.getVisibility() == View.INVISIBLE && dot3.getVisibility() == View.INVISIBLE) {
 					dot1.setVisibility(View.VISIBLE);
 					dot2.setVisibility(View.VISIBLE);
 					dot3.setVisibility(View.INVISIBLE);
-				} else if (dot1.getVisibility() == View.VISIBLE
-						&& dot2.getVisibility() == View.VISIBLE
-						&& dot3.getVisibility() == View.INVISIBLE) {
+				} else if (dot1.getVisibility() == View.VISIBLE && dot2.getVisibility() == View.VISIBLE && dot3.getVisibility() == View.INVISIBLE) {
 					dot1.setVisibility(View.VISIBLE);
 					dot2.setVisibility(View.VISIBLE);
 					dot3.setVisibility(View.VISIBLE);

@@ -4,25 +4,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.clover.spika.enterprise.chat.R;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.GroupListActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -31,8 +36,10 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class BaseActivity extends FragmentActivity {
+public class BaseActivity extends SlidingFragmentActivity implements OnClickListener {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -52,14 +59,58 @@ public class BaseActivity extends FragmentActivity {
 
 	public final static int slidingDuration = 160;
 
-	@Override
-	protected void onCreate(Bundle arg0) {
-		super.onCreate(arg0);
+	private SlidingMenu slidingMenu;
+	private ImageButton sidebarBtn;
+	private SidebarFragment sidebarFrag;
 
-		instance = this;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
 		if (mPreferences == null) {
 			mPreferences = new Preferences(this);
+		}
+
+		setBehindContentView(R.layout.sidebar_layout);
+		if (savedInstanceState == null) {
+			FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
+			sidebarFrag = new SidebarFragment(this);
+			transaction.replace(R.id.sidebar_layout, sidebarFrag);
+			transaction.commit();
+		} else {
+			sidebarFrag = (SidebarFragment) this.getFragmentManager().findFragmentById(R.id.sidebar_layout);
+		}
+
+		slidingMenu = getSlidingMenu();
+		slidingMenu.setMode(SlidingMenu.LEFT);
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setBehindScrollScale(0.35f);
+		slidingMenu.setShadowDrawable(null);
+		slidingMenu.setFadeDegree(0.35f);
+		slidingMenu.setBehindWidth(950);
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		Log.d("Vida", "WWWWWWWWW");
+	}
+
+	@Override
+	public void setContentView(int id) {
+		super.setContentView(id);
+
+		sidebarBtn = (ImageButton) findViewById(R.id.sidebarBtn);
+
+		if (sidebarBtn != null) {
+			sidebarBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					slidingMenu.toggle(true);
+				}
+			});
 		}
 	}
 
@@ -346,11 +397,6 @@ public class BaseActivity extends FragmentActivity {
 	public void startActivity(Intent intent) {
 		super.startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-	}
-
-	@Override
-	public void finish() {
-		super.finish();
 	}
 
 	public void hideKeyboard(EditText et) {

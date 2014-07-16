@@ -108,7 +108,8 @@
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/login_big"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
     </LinearLayout>
 
 </RelativeLayout>

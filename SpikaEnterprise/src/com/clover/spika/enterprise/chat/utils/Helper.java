@@ -234,37 +234,6 @@ public class Helper {
 		}
 	}
 
-	private static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
-
-		Bitmap sbmp;
-
-		if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
-			sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
-		} else {
-			sbmp = bmp;
-		}
-
-		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(output);
-
-		final Paint paint = new Paint();
-		final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
-
-		paint.setAntiAlias(true);
-		paint.setFilterBitmap(true);
-		paint.setDither(true);
-		canvas.drawARGB(0, 0, 0, 0);
-		paint.setColor(Color.parseColor("#BAB399"));
-		canvas.drawCircle(sbmp.getWidth() / 2 + 0.7f, sbmp.getHeight() / 2 + 0.7f, sbmp.getWidth() / 2 + 0.1f, paint);
-		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		canvas.drawBitmap(sbmp, rect, rect, paint);
-
-		sbmp = null;
-		bmp = null;
-
-		return output;
-	}
-
 	/**
 	 * Set pagging animation
 	 */
@@ -377,6 +346,73 @@ public class Helper {
 			dir.mkdirs();
 		}
 		return dir;
+	}
+
+	public static Bitmap BitmapFromFile(File f) {
+
+		Bitmap mBitmap = null;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		options.inSampleSize = calculateInSampleSize(options, 640, 640);
+		options.inJustDecodeBounds = false;
+		mBitmap = BitmapFactory.decodeFile(f.getPath(), options);
+		mBitmap = Bitmap.createScaledBitmap(mBitmap, 640, 640, true);
+
+		return mBitmap;
+	}
+
+	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
+
+		if (height > reqHeight || width > reqWidth) {
+
+			// Calculate ratios of height and width to requested height and
+			// width
+			final int heightRatio = Math.round((float) height / (float) reqHeight);
+			final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+			// Choose the smallest ratio as inSampleSize value, this will
+			// guarantee
+			// a final image with both dimensions larger than or equal to the
+			// requested height and width.
+			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+		}
+
+		return inSampleSize;
+	}
+
+	public static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
+
+		Bitmap sbmp;
+
+		if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
+			sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
+		} else {
+			sbmp = bmp;
+		}
+
+		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
+
+		final Paint paint = new Paint();
+		final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
+
+		paint.setAntiAlias(true);
+		paint.setFilterBitmap(true);
+		paint.setDither(true);
+		canvas.drawARGB(0, 0, 0, 0);
+		paint.setColor(Color.parseColor("#FFFFFF"));
+		canvas.drawCircle(sbmp.getWidth() / 2, sbmp.getHeight() / 2, sbmp.getWidth() / 2, paint);
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(sbmp, rect, rect, paint);
+
+		sbmp = null;
+		bmp = null;
+
+		return output;
 	}
 
 }

@@ -43,7 +43,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
     public GroupAdapter adapter;
 
     @Override
-    protected void onCreate(Bundle arg0) {
+    public void onCreate(Bundle arg0) {
 	setContentView(R.layout.activity_group_list);
 	super.onCreate(arg0);
 

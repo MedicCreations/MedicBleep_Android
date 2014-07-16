@@ -622,8 +622,7 @@ public class CustomViewAbove extends ViewGroup {
 			if (action == MotionEvent.ACTION_DOWN)
 				Log.v(TAG, "Received ACTION_DOWN");
 
-		if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP
-				|| (action != MotionEvent.ACTION_DOWN && mIsUnableToDrag)) {
+		if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP || (action != MotionEvent.ACTION_DOWN && mIsUnableToDrag)) {
 			endDrag();
 			return false;
 		}
@@ -673,8 +672,8 @@ public class CustomViewAbove extends ViewGroup {
 		if (!mIsBeingDragged && !thisTouchAllowed(ev))
 			return false;
 
-		//		if (!mIsBeingDragged && !mQuickReturn)
-		//			return false;
+		// if (!mIsBeingDragged && !mQuickReturn)
+		// return false;
 
 		final int action = ev.getAction();
 
@@ -697,7 +696,7 @@ public class CustomViewAbove extends ViewGroup {
 			mLastMotionX = mInitialMotionX = ev.getX();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			if (!mIsBeingDragged) {	
+			if (!mIsBeingDragged) {
 				determineDrag(ev);
 				if (mIsUnableToDrag)
 					return false;
@@ -729,8 +728,7 @@ public class CustomViewAbove extends ViewGroup {
 			if (mIsBeingDragged) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
-				int initialVelocity = (int) VelocityTrackerCompat.getXVelocity(
-						velocityTracker, mActivePointerId);
+				int initialVelocity = (int) VelocityTrackerCompat.getXVelocity(velocityTracker, mActivePointerId);
 				final int scrollX = getScrollX();
 				final float pageOffset = (float) (scrollX - getDestScrollX(mCurItem)) / getBehindWidth();
 				final int activePointerIndex = getPointerIndex(ev, mActivePointerId);
@@ -739,7 +737,7 @@ public class CustomViewAbove extends ViewGroup {
 					final int totalDelta = (int) (x - mInitialMotionX);
 					int nextPage = determineTargetPage(pageOffset, initialVelocity, totalDelta);
 					setCurrentItemInternal(nextPage, true, true, initialVelocity);
-				} else {	
+				} else {
 					setCurrentItemInternal(mCurItem, true, true, initialVelocity);
 				}
 				mActivePointerId = INVALID_POINTER;

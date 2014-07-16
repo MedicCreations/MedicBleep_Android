@@ -25,7 +25,7 @@ public class CreateGroupActivity extends BaseActivity implements OnClickListener
     LinearLayout btnCancel;
 
     @Override
-    protected void onCreate(Bundle arg0) {
+    public void onCreate(Bundle arg0) {
 	super.onCreate(arg0);
 	setContentView(R.layout.activity_create_group);
 

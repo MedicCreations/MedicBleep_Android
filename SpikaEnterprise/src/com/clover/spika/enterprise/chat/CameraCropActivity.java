@@ -15,7 +15,6 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.utils.BitmapManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
@@ -91,7 +90,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
     private LinearLayout btnCancel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_camera_crop);
 
@@ -429,7 +428,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		    float maxHeight = 1024.0f;
 		    float maxWidth = 1024.0f;
 
-		    optionsMeta.inSampleSize = BitmapManagement.calculateInSampleSize(optionsMeta, (int) maxWidth, (int) maxHeight);
+		    optionsMeta.inSampleSize = Helper.calculateInSampleSize(optionsMeta, (int) maxWidth, (int) maxHeight);
 
 		    // max Height and width values of the compressed image
 		    // is
