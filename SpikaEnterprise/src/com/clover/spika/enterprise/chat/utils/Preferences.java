@@ -1,13 +1,13 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.io.IOException;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import java.io.IOException;
 
 public class Preferences {
 
@@ -26,7 +26,7 @@ public class Preferences {
 
 		editor.putString(key, value);
 
-		editor.commit();
+		editor.apply();
 	}
 
 	public void setUserTokenId(String token) {
@@ -37,7 +37,7 @@ public class Preferences {
 		editor.putLong(Const.CLIENT_TOKEN_EXPIRES, tokenExpires);
 		editor.putString(Const.TOKEN, token);
 
-		editor.commit();
+        editor.apply();
 	}
 
 	public String getToken() throws ClientProtocolException, IOException, JSONException {
@@ -52,7 +52,7 @@ public class Preferences {
 
 		editor.putBoolean(key, value);
 
-		editor.commit();
+        editor.apply();
 	}
 
 	public boolean getCustomBoolean(String key) {
@@ -64,7 +64,7 @@ public class Preferences {
 
 		editor.putInt(key, value);
 
-		editor.commit();
+        editor.apply();
 	}
 
 	public int getCustomInt(String key) {

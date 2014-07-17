@@ -1,55 +1,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+    
     <RelativeLayout
-        android:id="@+id/headerInclude"
+        android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
-        android:layout_alignParentTop="true"
-        android:background="@color/white" >
+        android:background="@color/default_blue" >
 
-        <ImageView
-            android:id="@+id/headerEditBack"
+        <ImageButton
+            android:id="@+id/sidebarBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
             android:contentDescription="@null"
             android:padding="10dp"
-            android:src="@drawable/gb_navbar_back_icon" />
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_sidebar" />
 
-        <TextView
-            android:id="@+id/headerTitle"
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toLeftOf="@+id/headerRightIcon"
-            android:layout_toRightOf="@+id/headerEditBack"
-            android:gravity="center"
-            android:text="Title"
-            android:textColor="@color/text_blue"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/headerRightIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:contentDescription="@null"
-            android:padding="10dp"
-            android:src="@drawable/gb_navbar_add_icon" />
+            android:text="@string/title_lobby"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
     </RelativeLayout>
 
     <ListView
-        android:id="@+id/main_list_view"
+        android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/headerInclude"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_below="@id/actionBarLayout"
         android:background="@color/transparent"
         android:divider="@null"
         android:dividerHeight="0dp"
@@ -60,8 +46,8 @@
     <RelativeLayout
         android:id="@+id/noItemsLayout"
         android:layout_width="match_parent"
+        android:layout_below="@id/actionBarLayout"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/headerInclude"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp" >

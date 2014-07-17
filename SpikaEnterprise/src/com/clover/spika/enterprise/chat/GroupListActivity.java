@@ -1,19 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.R;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,39 +18,39 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class GroupListActivity extends BaseActivity implements OnClickListener {
 
 	public static GroupListActivity instance;
 
-	ImageView headerEditBack;
-	TextView headerTitle;
-	ImageView headerRightIcon;
+	TextView screenTitle;
 
 	RelativeLayout noItemsLayout;
 
-	ListView main_list_view;
+	ListView mainListView;
 	public GroupAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle arg0) {
-		setContentView(R.layout.activity_group_list);
 		super.onCreate(arg0);
+		setContentView(R.layout.activity_group_list);
 
 		instance = this;
 
-		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
-		headerEditBack.setOnClickListener(this);
-
-		headerTitle = (TextView) findViewById(R.id.headerTitle);
-		headerRightIcon = (ImageView) findViewById(R.id.headerRightIcon);
-		headerRightIcon.setOnClickListener(this);
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
-		main_list_view = (ListView) findViewById(R.id.main_list_view);
+		mainListView = (ListView) findViewById(R.id.mainListView);
 		adapter = new GroupAdapter(this, new ArrayList<Group>());
 
-		main_list_view.setAdapter(adapter);
+		mainListView.setAdapter(adapter);
 	}
 
 	@Override
@@ -71,6 +60,24 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 	}
 
 	public void getList() {
+		
+		List<Group> tempDiscussion = new ArrayList<Group>();
+		Group group = new Group();
+//		group.setCreated("1010");
+//		group.setGroup_name("group name");
+//		group.setGroupId("1");
+//		group.setImage_name(null);
+//		group.setOwner_id("2");
+		tempDiscussion.add(group);
+		tempDiscussion.add(group);
+		tempDiscussion.add(group);
+		
+		noItemsLayout.setVisibility(View.GONE);
+		adapter.clearItems();
+		adapter.addItems(tempDiscussion);
+		adapter.setNewGroupPeriod("1200");
+		
+		if(true) return;
 		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
 			List<Group> tempDiscussion = new ArrayList<Group>();
@@ -146,15 +153,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-
-		int id = view.getId();
-		if (id == R.id.headerEditBack) {
-			finish();
-		} else if (id == R.id.headerRightIcon) {
-			Intent intent = new Intent(this, CreateGroupActivity.class);
-			startActivity(intent);
-		} else {
-		}
 	}
 
 	@Override

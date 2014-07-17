@@ -1,22 +1,9 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-
-import com.clover.spika.enterprise.chat.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.text.TextUtils;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +11,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Group;
+import com.clover.spika.enterprise.chat.utils.Const;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupAdapter extends BaseAdapter {
 
@@ -43,9 +39,6 @@ public class GroupAdapter extends BaseAdapter {
 
 		imageLoader = new ImageLoader(context);
 
-		Bitmap bitmapBorder = BitmapFactory.decodeResource(cntx.getResources(), R.drawable.circle);
-		radius = bitmapBorder.getWidth();
-		bitmapBorder = null;
 	}
 
 	@Override
@@ -54,7 +47,7 @@ public class GroupAdapter extends BaseAdapter {
 		final ViewHolderGroup holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_group, parent);
+			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_group, parent, false);
 
 			holder = new ViewHolderGroup(convertView);
 			convertView.setTag(holder);
@@ -68,25 +61,24 @@ public class GroupAdapter extends BaseAdapter {
 		// Assign values
 		final Group group = (Group) getItem(position);
 
-		imageLoader.displayImage(cntx, group.getImage_name(), holder.talkImg, true);
-
-		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
-
-		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
-		holder.clickLayout.setTag(groupData);
-
-		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
-			holder.missedLayout.setVisibility(View.VISIBLE);
-		} else {
-			holder.missedLayout.setVisibility(View.GONE);
-		}
-
-		if (!TextUtils.isEmpty(getNewGroupPeriod())) {
-			if (isShowNew(getNewGroupPeriod(), group.getCreated())) {
-				holder.circleImgNew.setVisibility(View.VISIBLE);
-			} else {
-				holder.circleImgNew.setVisibility(View.GONE);
-			}
+//		imageLoader.displayImage(cntx, group.getImage_name(), holder.talkImg, true);
+		holder.talkImg.setImageResource(R.drawable.skiper);
+		
+//		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
+//
+//		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
+//		holder.clickLayout.setTag(groupData);
+//
+//		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
+//			holder.missedLayout.setVisibility(View.VISIBLE);
+//		} else {
+//			holder.missedLayout.setVisibility(View.GONE);
+//		}
+		
+		if(position % 2 == 0){
+			holder.itemLayout.setBackgroundColor(cntx.getResources().getColor(R.color.gray_in_adapter));
+		}else{
+			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
 		holder.clickLayout.setOnClickListener(new View.OnClickListener() {
@@ -136,19 +128,6 @@ public class GroupAdapter extends BaseAdapter {
 		return 0;
 	}
 
-	private boolean isShowNew(String time, String created) {
-
-		long howLong = Long.parseLong(time);
-		long groupCreated = Long.parseLong(created) * 1000;
-		long current = System.currentTimeMillis();
-
-		if ((howLong + groupCreated) > current) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public String getNewGroupPeriod() {
 		return newGroupPeriod;
 	}
@@ -162,9 +141,7 @@ public class GroupAdapter extends BaseAdapter {
 		public RelativeLayout itemLayout;
 		public RelativeLayout clickLayout;
 		public ImageView talkImg;
-		public ImageView circleImgNew;
 		public TextView talkName;
-		public TextView talkDesc;
 
 		public RelativeLayout missedLayout;
 		public TextView missedtext;
@@ -175,10 +152,8 @@ public class GroupAdapter extends BaseAdapter {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			clickLayout = (RelativeLayout) view.findViewById(R.id.clickLayout);
-			talkImg = (ImageView) view.findViewById(R.id.gameImg);
-			circleImgNew = (ImageView) view.findViewById(R.id.circleImgNew);
-			talkName = (TextView) view.findViewById(R.id.gameName);
-			talkDesc = (TextView) view.findViewById(R.id.gameStatus);
+			talkImg = (ImageView) view.findViewById(R.id.groupImage);
+			talkName = (TextView) view.findViewById(R.id.groupName);
 
 			missedLayout = (RelativeLayout) view.findViewById(R.id.missedLayout);
 			missedtext = (TextView) view.findViewById(R.id.missedtext);
