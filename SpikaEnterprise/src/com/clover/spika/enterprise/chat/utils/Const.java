@@ -50,6 +50,7 @@ public class Const {
     public static final String REQDATA = "reqdata";
     public static final String UUID_KEY = "uuid";
     public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
     public static final String ANDROID_PUSH_TOKEN = "android_push_token_list";
     public static final String CODE = "code";
     public static final String CHARACTER_ID = "character_id";
@@ -81,6 +82,7 @@ public class Const {
     public static final String USER_NICKNAME = "user_nickname";
     public static final String EMAIL = "email";
     public static final String MESSAGE = "message";
+    public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
     // Message types
     public static final int MSG_BUBBLE_DEFAULT = 0;
@@ -129,6 +131,8 @@ public class Const {
 
     public static final int LIKE_MSG = 1;
     public static final int REPORT_MSG = 2;
+
+    public static final int API_SUCCESS = 2000;
 
     // Error constants
     public static final int E_INVALID_TOKEN = 1000;

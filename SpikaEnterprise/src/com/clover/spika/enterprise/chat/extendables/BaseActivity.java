@@ -113,7 +113,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 			if(searchEt.getVisibility() == View.GONE){
 				//open search view
 			}else {
-				//search all 
+				//search  
 			}
 		}
 	};
