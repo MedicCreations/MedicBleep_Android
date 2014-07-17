@@ -24,6 +24,9 @@ public class LoginApi {
 		}.execute();
 	}
 
+	public static void loginWithExistingCredentials(final LoginListener listener, Context ctx) {
+	}
+
 	interface LoginListener {
 		void onLogin();
 
