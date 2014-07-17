@@ -57,6 +57,6 @@ public class Login extends BaseModel {
         return "Login{" +
                 "userId='" + userId + '\'' +
                 ", token='" + token + '\'' +
-                '}';
+                "} " + super.toString();
     }
 }

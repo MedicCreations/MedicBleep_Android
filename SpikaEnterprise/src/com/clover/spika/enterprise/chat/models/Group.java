@@ -5,43 +5,71 @@ import com.google.gson.annotations.SerializedName;
 
 public class Group {
 
-	@SerializedName("group_id")
-	@Expose
-	private String group_id;
+    @SerializedName("id")
+    @Expose
+    private int id;
 
-	@SerializedName("group_name")
-	@Expose
-	private String group_name;
+    @SerializedName("groupname")
+    @Expose
+    private String groupName;
 
-	@SerializedName("image_name")
-	@Expose
-	private String image_name;
+    @SerializedName("image")
+    @Expose
+    private String image;
 
-	public Group() {
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getGroupId() {
-		return group_id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setGroupId(String group_id) {
-		this.group_id = group_id;
-	}
+    public String getGroupName() {
+        return groupName == null ? "" : groupName;
+    }
 
-	public String getGroup_name() {
-		return group_name;
-	}
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
-	public void setGroup_name(String group_name) {
-		this.group_name = group_name;
-	}
+    public String getImage() {
+        return image == null ? "" : image;
+    }
 
-	public String getImage_name() {
-		return image_name;
-	}
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-	public void setImage_name(String image_name) {
-		this.image_name = image_name;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Group group = (Group) o;
+
+        if (id != group.id) return false;
+        if (groupName != null ? !groupName.equals(group.groupName) : group.groupName != null)
+            return false;
+        if (image != null ? !image.equals(group.image) : group.image != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", groupName='" + groupName + '\'' +
+                ", image='" + image + '\'' +
+                '}';
+    }
 }

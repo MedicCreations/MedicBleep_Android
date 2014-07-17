@@ -44,6 +44,8 @@ public class LoginApi {
             }
 
             protected void onPostExecute(Login result) {
+                super.onPostExecute(result);
+
                 if (listener != null) {
                     Result<Login> apiResult;
 

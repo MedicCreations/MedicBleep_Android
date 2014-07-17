@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.networking;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -16,7 +17,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -52,7 +55,7 @@ public class NetworkManagement {
 
     public static final String TOKEN = "Token";
 
-    public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
         return httpPostRequest("", postParams, reqData);
     }
 
@@ -66,19 +69,19 @@ public class NetworkManagement {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
 
         // TODO: što s parametrom reqData?
 
-        HttpPost httppost = new HttpPost(Const.BASE_URL + apiUrl);
+        HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
         Logger.custom("RawRequest", httppost.getURI().toString());
 
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
         httppost.setHeader("Encoding", "utf-8");
 
-        // form paramaters
-        if (!postParams.isEmpty()) {
+        // form parameters
+        if (postParams != null && !postParams.isEmpty()) {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             for (Map.Entry<String, String> entity : postParams.entrySet()) {
                 nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
@@ -88,6 +91,38 @@ public class NetworkManagement {
         }
 
         HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+        HttpEntity entity = response.getEntity();
+
+        return Helper.jObjectFromString(getString(entity.getContent()));
+    }
+
+    public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+        return httpGetRequest(apiUrl, getParams, null);
+    }
+
+    public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
+
+        String params = "";
+
+        // form parameters
+        if (getParams != null && !getParams.isEmpty()) {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            for (Map.Entry<String, String> entity : getParams.entrySet()) {
+                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+            }
+
+            params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+        }
+
+        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + params);
+        Logger.custom("RawRequest", httpGet.getURI().toString());
+
+        httpGet.setHeader("Encoding", "utf-8");
+        if (!TextUtils.isEmpty(token)) {
+            httpGet.setHeader("token", token);
+        }
+
+        HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
         HttpEntity entity = response.getEntity();
 
         return Helper.jObjectFromString(getString(entity.getContent()));

@@ -21,7 +21,6 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class GroupAdapter extends BaseAdapter {
 
@@ -66,12 +65,12 @@ public class GroupAdapter extends BaseAdapter {
 //		imageLoader.displayImage(cntx, group.getImage_name(), holder.talkImg, true);
 		holder.talkImg.setImageResource(R.drawable.skiper);
 		
-		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
+		holder.talkName.setText(group.getGroupName());
 
-		String[] groupData = { group.getGroupId(), group.getGroup_name() };
+		String[] groupData = { String.valueOf(group.getId()), group.getGroupName() };
 		holder.clickLayout.setTag(groupData);
 
-		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
+		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(String.valueOf(group.getId()))) {
 			holder.missedLayout.setVisibility(View.VISIBLE);
 		} else {
 			holder.missedLayout.setVisibility(View.GONE);
