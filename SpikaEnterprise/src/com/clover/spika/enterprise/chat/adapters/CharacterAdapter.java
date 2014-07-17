@@ -92,11 +92,6 @@ public class CharacterAdapter extends BaseAdapter {
 				}
 			});
 
-			if (profile.isSelected()) {
-				holder.selectableImg.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_tableview_edit_selected));
-			} else {
-				holder.selectableImg.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_tableview_edit_deselected));
-			}
 		}
 
 		holder.personName.setText(Helper.substringText(profile.getUsername(), 25));

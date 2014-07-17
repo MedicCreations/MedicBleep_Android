@@ -33,7 +33,6 @@
         android:layout_height="10dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:contentDescription="@null"
-        android:src="@drawable/gb_bubble_arrow_right" />
+        android:contentDescription="@null" />
 
 </RelativeLayout>

@@ -18,8 +18,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:contentDescription="@null"
-            android:padding="10dp"
-            android:src="@drawable/gb_navbar_back_icon" />
+            android:padding="10dp" />
     </RelativeLayout>
 
     <ScrollView

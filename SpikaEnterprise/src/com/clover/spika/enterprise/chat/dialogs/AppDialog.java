@@ -192,10 +192,12 @@ public class AppDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				if (checked) {
-					checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_unchecked));
+					// TODO
+					// checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_unchecked));
 					checked = false;
 				} else {
-					checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_checked));
+					// TODO
+					// checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_checked));
 					checked = true;
 				}
 			}

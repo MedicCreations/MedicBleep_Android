@@ -54,8 +54,8 @@ public class Const {
     public static final String ANDROID_PUSH_TOKEN = "android_push_token_list";
     public static final String CODE = "code";
     public static final String CHARACTER_ID = "character_id";
-    public static final String GROUP_NAME = "group_name";
-    public static final String GROUP_ID = "group_id";
+    public static final String CHAT_NAME = "chat_name";
+    public static final String CHAT_ID = "chat_id";
     public static final String LAST_MSG_ID = "last_msg_id";
     public static final String FIRST_MSG_ID = "first_msg_id";
     public static final String ITEMS = "items";

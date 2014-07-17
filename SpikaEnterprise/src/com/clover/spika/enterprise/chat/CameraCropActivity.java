@@ -124,7 +124,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			}
 		}
 
-		groupId = getIntent().getStringExtra(Const.GROUP_ID);
+		groupId = getIntent().getStringExtra(Const.CHAT_ID);
 	}
 
 	public void startCamera() {
@@ -675,7 +675,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
-					reqData.put(Const.GROUP_ID, groupId);
+					reqData.put(Const.CHAT_ID, groupId);
 					reqData.put(Const.FILE_ID, imagePath);
 
 					reqData.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));

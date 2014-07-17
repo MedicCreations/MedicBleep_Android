@@ -1,9 +1,6 @@
 package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,15 +29,12 @@ import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.dialogs.ChatSettingsDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -67,8 +61,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 	String fromProfileId = null;
 	String myProfileImg = null;
-	String groupId = null;
-	String groupName = null;
+	String chatId = null;
+	String chatName = null;
 
 	int radius = 0;
 	int totalItems = 0;
@@ -164,7 +158,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 						return false;
 					}
 
-					if (TextUtils.isEmpty(groupId)) {
+					if (TextUtils.isEmpty(chatId)) {
 						return false;
 					}
 
@@ -228,23 +222,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			if (intent.getExtras().containsKey(Const.GROUP_ID)) {
-
-				if (intent.getExtras().getBoolean(Const.FROM_NOTIFICATION)) {
-					login();
-				}
+			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_IMAGE_NAME);
 
-				groupId = intent.getExtras().getString(Const.GROUP_ID);
-				groupName = intent.getExtras().getString(Const.GROUP_NAME);
+				chatId = intent.getExtras().getString(Const.CHAT_ID);
+				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 
-				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
+				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(chatId, false);
 
-				headerTitle.setText(Helper.substringText(groupName, 15));
+				headerTitle.setText(Helper.substringText(chatName, 15));
 
-				adapter.setGroupId(groupId);
+				adapter.setGroupId(chatId);
 				adapter.clearItems();
 				getMessages(true, true, true, false, false, false);
 			}
@@ -260,9 +250,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			setSlidingDrawer(CLOSED);
 		} else if (id == R.id.footerMore) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon_clicked));
+				// TODO
+				// footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon_clicked));
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon));
+				// TODO
+				// footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon));
 
 				setSlidingDrawer(OPENED);
 			}
@@ -275,7 +267,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 				Intent intent = new Intent(this, CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.GROUP_ID, groupId);
+				intent.putExtra(Const.CHAT_ID, chatId);
 				startActivity(intent);
 			}
 		} else if (id == R.id.gallery) {
@@ -287,7 +279,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 				Intent intent = new Intent(this, CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.GROUP_ID, groupId);
+				intent.putExtra(Const.CHAT_ID, chatId);
 				startActivity(intent);
 			}
 		} else {
@@ -301,18 +293,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 		int id = view.getId();
 		if (id == R.id.headerBack) {
 			finish();
-		} else if (id == R.id.headerMore) {
-			ChatSettingsDialog dialog = new ChatSettingsDialog();
-			Bundle bundle = new Bundle();
-			bundle.putString(Const.GROUP_ID, groupId);
-			dialog.setArguments(bundle);
-			dialog.show(getSupportFragmentManager(), "dialog");
-		} else {
 		}
 	}
 
 	public void sendMessage(final String text, final int type) {
-		new ChatApi().sendMessage(text, type, groupId, this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(text, type, chatId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
@@ -385,7 +370,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			}
 		}
 
-		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, groupId, msgId, adapterCount, this, new ApiCallback<Chat>() {
+		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
@@ -430,56 +415,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 	}
 
-	private void login() {
-
-		final String pushToken = getPushToken();
-
-		new BaseAsyncTask<Void, Void, Integer>(this, true) {
-
-			protected Integer doInBackground(Void... params) {
-				try {
-					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-					getParams.put(Const.FUNCTION, Const.F_USER_CREATE_CHARACTER);
-					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
-
-					JSONObject reqData = new JSONObject();
-					reqData.put(Const.USERNAME, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.USERNAME));
-					reqData.put(Const.UUID_KEY, Const.getUUID(context));
-					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
-
-					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
-
-					if (result != null) {
-
-						int code = result.getInt(Const.CODE);
-
-						if (code == Const.C_SUCCESS) {
-							String token = result.getString(Const.TOKEN);
-
-							SpikaEnterpriseApp.getSharedPreferences(context).setUserTokenId(token);
-
-							return Const.E_SUCCESS;
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				return Const.E_FAILED;
-			};
-
-			protected void onPostExecute(Integer result) {
-				super.onPostExecute(result);
-				if (!result.equals(Const.E_SUCCESS)) {
-					AppDialog dialog = new AppDialog(context, true);
-					dialog.setFailed(result);
-				}
-			};
-
-		}.execute();
-	}
-
 	public void callNewMsgs() {
 		if (adapter.getCount() > 0) {
 			getMessages(false, false, false, true, true, false);
@@ -496,13 +431,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 			return;
 		} else {
-			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
+			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(chatId, false);
 			super.onBackPressed();
 		}
 	}
 
 	public void callAfterPush(String disId, String msg, int type) {
-		if (disId.equals(groupId)) {
+		if (disId.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
 		} else {
 			showPopUp(msg, disId, type);
