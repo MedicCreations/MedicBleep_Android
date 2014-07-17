@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.Collection;
+import com.clover.spika.enterprise.chat.models.GroupModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -18,11 +18,11 @@ import java.util.HashMap;
 
 public class GroupsApi {
 
-    public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar, final ApiCallback<Collection> listener) {
-        new BaseAsyncTask<Void, Void, Collection>(ctx, showProgressBar) {
+    public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar, final ApiCallback<GroupModel> listener) {
+        new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
 
             @Override
-            protected Collection doInBackground(Void... params) {
+            protected GroupModel doInBackground(Void... params) {
 
                 JSONObject jsonObject = new JSONObject();
                 
@@ -38,21 +38,26 @@ public class GroupsApi {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return new Gson().fromJson(jsonObject.toString(), Collection.class);
+                return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
             }
 
             @Override
-            protected void onPostExecute(Collection collection) {
-                super.onPostExecute(collection);
+            protected void onPostExecute(GroupModel groupModel) {
+                super.onPostExecute(groupModel);
 
                 if (listener != null) {
-                    Result<Collection> result;
+                    Result<GroupModel> result;
 
-                    if (collection != null && collection.getCode() == Const.API_SUCCESS) {
-                        result = new Result<Collection>(Result.ApiResponseState.SUCCESS);
-                        result.setResultData(collection);
+                    if (groupModel != null) {
+                        if (groupModel.getCode() == Const.API_SUCCESS) {
+                            result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
+                            result.setResultData(groupModel);
+                        } else {
+                            result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+                            result.setResultData(groupModel);
+                        }
                     } else {
-                        result = new Result<Collection>(Result.ApiResponseState.FAILURE);
+                        result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
                     }
 
                     listener.onApiResponse(result);

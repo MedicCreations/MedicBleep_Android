@@ -12,7 +12,7 @@ import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GroupsApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.models.Collection;
+import com.clover.spika.enterprise.chat.models.GroupModel;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
@@ -94,10 +94,10 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	public void getGroup(int page, String search) {
 		GroupsApi groupApi=new GroupsApi();
 		if(search == null){
-			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<Collection>() {
+			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<GroupModel>() {
 				
 				@Override
-				public void onApiResponse(Result<Collection> result) {
+				public void onApiResponse(Result<GroupModel> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getGroupList());
 				}

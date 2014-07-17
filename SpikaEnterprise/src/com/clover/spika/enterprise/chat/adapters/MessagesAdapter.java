@@ -1,31 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.PhotoActivity;
-import com.clover.spika.enterprise.chat.ProfileActivity;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.Message;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.MessageSorting;
-
-import com.clover.spika.enterprise.chat.R;
 import android.content.Context;
 import android.content.Intent;
 import android.util.SparseIntArray;
@@ -38,6 +12,31 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.PhotoActivity;
+import com.clover.spika.enterprise.chat.ProfileActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.MessageSorting;
+
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class MessagesAdapter extends BaseAdapter {
 
@@ -111,14 +110,15 @@ public class MessagesAdapter extends BaseAdapter {
 		// Assign values
 		final Message msg = (Message) getItem(position);
 
-		final boolean me = isMe(msg.getCharacter().getCharacterId());
+//		final boolean me = isMe(msg.getCharacter().getCharacterId());
+		final boolean me = true;
 
 		if (!isScrolling) {
-			if (me) {
-				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.meIcon, true);
-			} else {
-				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.youIcon, true);
-			}
+//			if (me) {
+//				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.meIcon, true);
+//			} else {
+//				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.youIcon, true);
+//			}
 		}
 
 		if (me) {
@@ -127,11 +127,11 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (msg.getType() == 0) {
 				holder.defaultMsgLayoutMe.setVisibility(View.VISIBLE);
-				holder.mePersonName.setText(msg.getCharacter().getUsername());
+//				holder.mePersonName.setText(msg.getCharacter().getUsername());
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == 1) {
 				holder.imageMsgLayoutMe.setVisibility(View.VISIBLE);
-				holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
+//				holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
 					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewMe, false);
@@ -177,8 +177,8 @@ public class MessagesAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+//					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
+//					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -191,11 +191,11 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.defaultMsgLayoutYou.setVisibility(View.VISIBLE);
 				holder.imageMsgLayoutYou.setVisibility(View.GONE);
 				holder.youMsgContent.setText(msg.getText());
-				holder.youPersonName.setText(msg.getCharacter().getUsername());
+//				holder.youPersonName.setText(msg.getCharacter().getUsername());
 			} else if (msg.getType() == 1) {
 				holder.defaultMsgLayoutYou.setVisibility(View.GONE);
 				holder.imageMsgLayoutYou.setVisibility(View.VISIBLE);
-				holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
+//				holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
 					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewYou, false);
@@ -259,8 +259,8 @@ public class MessagesAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+//					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
+//					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}

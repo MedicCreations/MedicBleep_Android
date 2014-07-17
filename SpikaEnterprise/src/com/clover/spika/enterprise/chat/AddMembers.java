@@ -1,14 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,15 +9,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
+import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.Character;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AddMembers extends BaseActivity implements OnClickListener {
 
@@ -35,7 +33,7 @@ public class AddMembers extends BaseActivity implements OnClickListener {
 	ListView main_list_view;
 	RelativeLayout noItemsLayout;
 
-	CharacterAdapter profileAdapter;
+	UserAdapter profileAdapter;
 
 	String groupName = "";
 
@@ -51,8 +49,8 @@ public class AddMembers extends BaseActivity implements OnClickListener {
 		main_list_view = (ListView) findViewById(R.id.main_list_view);
 		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
-		profileAdapter = new CharacterAdapter(this, new ArrayList<Character>());
-		profileAdapter.setSelect(true);
+		profileAdapter = new UserAdapter(this, new ArrayList<User>());
+//		profileAdapter.setSelect(true);
 		main_list_view.setAdapter(profileAdapter);
 
 		if (getIntent().getExtras().containsKey(Const.GROUP_NAME)) {
@@ -73,9 +71,9 @@ public class AddMembers extends BaseActivity implements OnClickListener {
 		if (id == R.id.headerEditBack) {
 			finish();
 		} else if (id == R.id.headerRightIcon) {
-			if (profileAdapter.getSelectedIds().length > 0) {
-				createGroup(groupName, profileAdapter.getSelectedIds());
-			}
+//			if (profileAdapter.getSelectedIds().length > 0) {
+//				createGroup(groupName, profileAdapter.getSelectedIds());
+//			}
 		} else {
 		}
 	}
@@ -124,8 +122,8 @@ public class AddMembers extends BaseActivity implements OnClickListener {
 				super.onPostExecute(result);
 
 				if (result.equals(Const.E_SUCCESS)) {
-					profileAdapter.clearItems();
-					profileAdapter.addItems(profGame);
+//					profileAdapter.clearItems();
+//					profileAdapter.addItems(profGame);
 				}
 
 				if (profileAdapter.getCount() > 0) {

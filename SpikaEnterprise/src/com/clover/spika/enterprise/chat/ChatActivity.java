@@ -1,12 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,9 +34,15 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ChatActivity extends BaseActivity implements OnClickListener, OnTouchListener {
 
@@ -146,12 +145,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
-					AppDialog dialog = new AppDialog(instance, false);
-					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
-
-					return true;
-				}
+//				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
+//					AppDialog dialog = new AppDialog(instance, false);
+//					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
+//
+//					return true;
+//				}
 
 				return false;
 			}
@@ -252,7 +251,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
 
-				headerTitle.setText(Helper.substringText(groupName, 15));
+				headerTitle.setText(groupName);
 
 				adapter.setGroupId(groupId);
 				adapter.clearItems();

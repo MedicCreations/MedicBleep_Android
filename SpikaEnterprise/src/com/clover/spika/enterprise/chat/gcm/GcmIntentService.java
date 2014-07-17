@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.clover.spika.enterprise.chat.CharacterListActivity;
+import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -110,7 +110,7 @@ public class GcmIntentService extends IntentService {
 
 		PendingIntent contentIntent;
 
-		Intent intent = new Intent(this, CharacterListActivity.class);
+		Intent intent = new Intent(this, UserListActivity.class);
 
 		contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
