@@ -678,7 +678,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					reqData.put(Const.GROUP_ID, groupId);
 					reqData.put(Const.FILE_ID, imagePath);
 
-					reqData.put(Const.MSG_TYPE, String.valueOf(ChatActivity.T_IMAGE));
+					reqData.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
 
 					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
 

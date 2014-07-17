@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,16 +18,20 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
+import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -38,8 +45,6 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 public class BaseActivity extends SlidingFragmentActivity {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-	public static BaseActivity instance = null;
 
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
@@ -55,10 +60,14 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
-	
+
 	private ImageButton searchBtn;
 	private TextView screenTitle;
 	private EditText searchEt;
+	
+	private int screenWidth;
+	private int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
+	private OnSearchListener mSearchListener;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +77,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		// set the Behind View Fragment
 		getFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
+		
+		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		slidingMenu = getSlidingMenu();
 		slidingMenu.setMode(SlidingMenu.LEFT);
@@ -97,45 +108,91 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 	}
 	
-	public void setSearch(){
+	public void setScreenTitle(String title){
+		if (screenTitle == null) screenTitle = (TextView) findViewById(R.id.screenTitle);
+		if (screenTitle != null) screenTitle.setText(title);
+	}
+	
+	public void setSearch(OnSearchListener listener){
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 		if(searchBtn == null || searchEt == null) return;
 		
-		searchBtn.setOnClickListener(searchOnClickListener);
-	}
-	
-	private OnClickListener searchOnClickListener = new OnClickListener() {
+		mSearchListener = listener;
 		
+		searchBtn.setOnClickListener(searchOnClickListener);
+		
+		searchEt.setOnEditorActionListener(editorActionListener);
+		searchEt.setImeActionLabel("Search",EditorInfo.IME_ACTION_SEARCH);
+	}
+
+	private OnClickListener searchOnClickListener = new OnClickListener() {
+
 		@Override
 		public void onClick(View v) {
 			if(searchEt.getVisibility() == View.GONE){
-				//open search view
+				openSearchAnimation();
 			}else {
-				//search  
+				if(mSearchListener != null){
+					String data = searchEt.getText().toString();
+					hideKeyboard(searchEt);
+					mSearchListener.onSearch(data);
+				}
 			}
 		}
 	};
 	
-	private void openSearchAnimation(){
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
 		
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			if(actionId == EditorInfo.IME_ACTION_SEARCH){
+				hideKeyboard(searchEt);
+				if(mSearchListener != null) mSearchListener.onSearch(v.getText().toString());
+			}
+			return false;
+		}
+	};
+	
+	private void openSearchAnimation(){
+		searchBtn.setClickable(false);
+		sidebarBtn.setClickable(false);
+		searchEt.setVisibility(View.VISIBLE);
+		
+		AnimUtils.translationX(searchEt, screenWidth, 0f, speedSearchAnimation, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				searchBtn.setClickable(true);
+				sidebarBtn.setClickable(true);
+				showKeyboardForced(searchEt);
+			}
+		});
+		AnimUtils.translationX(searchBtn, 0, -(screenWidth - searchBtn.getWidth()), speedSearchAnimation, null);
+		AnimUtils.fadeAnim(sidebarBtn, 1, 0, speedSearchAnimation);
+		AnimUtils.translationX(screenTitle, 0, -screenWidth, speedSearchAnimation, null);
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		instance = this;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		instance = null;
-	}
-
-	public static BaseActivity getInstance() {
-		return instance;
+	
+	private void closeSearchAnimation(){
+		searchBtn.setClickable(false);
+		sidebarBtn.setClickable(false);
+		hideKeyboard(searchEt);
+		
+		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				searchEt.setVisibility(View.GONE);
+				searchEt.setText("");
+				super.onAnimationEnd(animation);
+				searchBtn.setClickable(true);
+				sidebarBtn.setClickable(true);
+			}
+		});
+		AnimUtils.translationX(searchBtn, -(screenWidth - searchBtn.getWidth()), 0, speedSearchAnimation, null);
+		AnimUtils.fadeAnim(sidebarBtn, 0, 1, speedSearchAnimation);
+		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
+		
 	}
 
 	/**
@@ -309,7 +366,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					if (type == Const.PT_MESSAGE) {
 						GroupListActivity.instance.adapter.notifyDataSetChanged();
 					} else if (type == Const.PT_GROUP_CREATED) {
-						GroupListActivity.instance.getGroup(0, null);
+						GroupListActivity.instance.getGroup(0, null, true);
 					}
 				}
 			};
@@ -390,6 +447,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	public void onBackPressed() {
+		if(searchEt != null && searchEt.getVisibility() == View.VISIBLE){
+			closeSearchAnimation();
+			return;
+		}
 		finish();
 	}
 
@@ -399,7 +460,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
-	public void hideKeyboard(EditText et) {
+	public void hideKeyboard(View et) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 	}
@@ -407,6 +468,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void showKeyboard(EditText et) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.showSoftInput(et, 0);
+	}
+	
+	public void showKeyboardForced(EditText et) {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInputFromWindow(et.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+		et.requestFocus();
 	}
 
 }

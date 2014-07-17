@@ -454,10 +454,8 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 				if (result == Const.E_SUCCESS) {
 					dismiss();
 
-					if (ChatActivity.instance != null) {
-						AppDialog dialog = new AppDialog(ChatActivity.instance, true);
-						dialog.setSucceed();
-					}
+					AppDialog dialog = new AppDialog(context, true);
+					dialog.setSucceed();
 
 				} else {
 					AppDialog dialog = new AppDialog(context, false);

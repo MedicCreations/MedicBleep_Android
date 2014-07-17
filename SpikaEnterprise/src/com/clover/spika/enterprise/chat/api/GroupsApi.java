@@ -65,5 +65,49 @@ public class GroupsApi {
             }
         }.execute();
     }
+    
+    public void getGroupsByName(final int page, final String data, Context ctx, boolean showProgressBar, final ApiCallback<GroupModel> listener){
+    	 new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
+
+             @Override
+             protected GroupModel doInBackground(Void... params) {
+
+                 JSONObject jsonObject = new JSONObject();
+                 
+                 HashMap<String, String> getParams = new HashMap<String, String>();
+                 getParams.put(Const.PAGE, String.valueOf(page));
+                 getParams.put(Const.SEARCH, data);
+
+                 try {
+
+                     jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_GROUPS, getParams,
+                             SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+                 return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
+             }
+
+             @Override
+             protected void onPostExecute(GroupModel groups) {
+                 super.onPostExecute(groups);
+
+                 if (listener != null) {
+                     Result<GroupModel> result;
+
+                     if (groups != null && groups.getCode() == 2000) { //TODO
+                         result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
+                         result.setResultData(groups);
+                     } else {
+                         result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+                     }
+
+                     listener.onApiResponse(result);
+                 }
+             }
+         }.execute();
+    }
 
 }

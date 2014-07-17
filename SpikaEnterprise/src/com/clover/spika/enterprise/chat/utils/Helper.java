@@ -183,7 +183,7 @@ public class Helper {
 	public static void setUserProperties(Context ctx, String userId, String userImageName, String userNickname) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, userId);
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, userImageName);
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_NICKNAME, userNickname);
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USERNAME, userNickname);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class Helper {
 	public static void clearUserProperties(Context ctx) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, "");
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, "");
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_NICKNAME, "");
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USERNAME, "");
 	}
 
 	/**
