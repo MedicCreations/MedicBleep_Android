@@ -25,6 +25,8 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
+import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -36,8 +38,11 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 
 	RelativeLayout noItemsLayout;
 
-	ListView mainListView;
+	PullToRefreshListView mainListView;
 	public GroupAdapter adapter;
+	
+	private int mCurrentIndex = 0;
+	private int mTotalCount = 0;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -50,23 +55,56 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 
 		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
-		mainListView = (ListView) findViewById(R.id.mainListView);
+		mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
+		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		adapter = new GroupAdapter(this, new ArrayList<Group>());
 
 		mainListView.setAdapter(adapter);
 		
-		SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-	    swipeLayout.setOnRefreshListener(this);
-	    swipeLayout.setColorScheme(android.R.color.holo_blue_bright, 
-	            android.R.color.holo_green_light, 
-	            android.R.color.holo_orange_light, 
-	            android.R.color.holo_red_light);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
+		@Override
+		public void onPullDownToRefresh(PullToRefreshBase refreshView) {
+//			mCurrentIndex--; don't need this for now
+		}
+
+		@Override
+		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+			mCurrentIndex++;
+			getGroup();
+		}
+	};
+	
+	private void setData(List<Group> data, boolean toPullDown){
+		noItemsLayout.setVisibility(View.GONE);
+		
+		if(data.size() >= mTotalCount){
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		}else if(data.size() < mTotalCount){
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+		}
+		
+		adapter.clearItems();
+		adapter.addItems(data);
+		
+		if (toPullDown) {
+			mainListView.getRefreshableView().setSelection(0);
+		} else {
+			mainListView.getRefreshableView().setSelection(data.size());
+		}
+		mainListView.onRefreshComplete();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		getList();
+	}
+	
+	private void getGroup() {
+		
 	}
 
 	public void getList() {
@@ -149,9 +187,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 				super.onPostExecute(result);
 
 				if (result.equals(Const.E_SUCCESS)) {
-					noItemsLayout.setVisibility(View.GONE);
-					adapter.clearItems();
-					adapter.addItems(tempDiscussion);
+					setData(tempDiscussion, true);
 				} else {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setFailed(result);

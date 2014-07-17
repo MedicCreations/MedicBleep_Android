@@ -31,23 +31,16 @@
             android:textSize="20sp" />
     </RelativeLayout>
 
-    <com.clover.spika.enterprise.chat.views.CustomSwipeRefresh
-        android:id="@+id/swipe_container"
+    <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
+        android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/actionBarLayout" >
-
-        <ListView
-            android:id="@+id/mainListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:fadingEdge="none"
-            android:listSelector="@color/transparent"
-            android:scrollbars="none" />
-    </com.clover.spika.enterprise.chat.views.CustomSwipeRefresh>
+        android:background="@color/transparent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:listSelector="@color/transparent"
+        android:scrollbars="none" />
 
     <RelativeLayout
         android:id="@+id/noItemsLayout"
