@@ -80,7 +80,6 @@ public class Const {
     public static final String IMAGE_NAME = "image_name";
     public static final String USER_ID = "user_id";
     public static final String USER_IMAGE_NAME = "user_image_name";
-    public static final String USER_NICKNAME = "user_nickname";
     public static final String EMAIL = "email";
     public static final String MESSAGE = "message";
     public static final String REMEMBER_CREDENTIALS = "remember_credentials";

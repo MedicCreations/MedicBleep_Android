@@ -17,62 +17,62 @@ import android.widget.TextView;
 
 public class ProfileActivity extends BaseActivity implements OnClickListener {
 
-    ImageView headerEditBack;
+	ImageView headerEditBack;
 
-    ImageView profileImg;
-    TextView nickname;
+	ImageView profileImg;
+	TextView nickname;
 
-    LinearLayout btnOk;
+	LinearLayout btnOk;
 
-    int radius = 0;
+	int radius = 0;
 
-    ImageLoader imageLoader;
+	ImageLoader imageLoader;
 
-    @Override
-    public void onCreate(Bundle arg0) {
-	super.onCreate(arg0);
-	setContentView(R.layout.activity_profile);
+	@Override
+	public void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		setContentView(R.layout.activity_profile);
 
-	Bitmap bitmapBorder = BitmapFactory.decodeResource(this.getResources(), R.drawable.circle);
-	radius = bitmapBorder.getWidth();
-	bitmapBorder = null;
+		Bitmap bitmapBorder = BitmapFactory.decodeResource(this.getResources(), R.drawable.circle);
+		radius = bitmapBorder.getWidth();
+		bitmapBorder = null;
 
-	imageLoader = new ImageLoader(this);
+		imageLoader = new ImageLoader(this);
 
-	headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
-	headerEditBack.setOnClickListener(this);
+		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
+		headerEditBack.setOnClickListener(this);
 
-	profileImg = (ImageView) findViewById(R.id.profileImg);
+		profileImg = (ImageView) findViewById(R.id.profileImg);
 
-	nickname = (TextView) findViewById(R.id.nickname);
+		nickname = (TextView) findViewById(R.id.nickname);
 
-	btnOk = (LinearLayout) findViewById(R.id.btnOk);
-	btnOk.setOnClickListener(this);
+		btnOk = (LinearLayout) findViewById(R.id.btnOk);
+		btnOk.setOnClickListener(this);
 
-	getIntentData(getIntent());
-    }
-
-    private void getIntentData(Intent intent) {
-	if (intent != null && intent.getExtras() != null) {
-	    imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImg, true);
-	    nickname.setText(intent.getExtras().getString(Const.USER_NICKNAME));
+		getIntentData(getIntent());
 	}
-    }
 
-    @Override
-    public void onClick(View view) {
-
-	int id = view.getId();
-	if (id == R.id.headerEditBack || id == R.id.btnOk) {
-	    finish();
-	} else {
+	private void getIntentData(Intent intent) {
+		if (intent != null && intent.getExtras() != null) {
+			imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImg, true);
+			nickname.setText(intent.getExtras().getString(Const.USERNAME));
+		}
 	}
-    }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-	super.onNewIntent(intent);
-	getIntentData(intent);
-    }
+	@Override
+	public void onClick(View view) {
+
+		int id = view.getId();
+		if (id == R.id.headerEditBack || id == R.id.btnOk) {
+			finish();
+		} else {
+		}
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		getIntentData(intent);
+	}
 
 }

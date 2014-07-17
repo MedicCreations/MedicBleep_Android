@@ -46,8 +46,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-	public static BaseActivity instance = null;
-
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
 
@@ -62,7 +60,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
-	
+
 	private ImageButton searchBtn;
 	private TextView screenTitle;
 	private EditText searchEt;
@@ -128,9 +126,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 		searchEt.setOnEditorActionListener(editorActionListener);
 		searchEt.setImeActionLabel("Search",EditorInfo.IME_ACTION_SEARCH);
 	}
-	
+
 	private OnClickListener searchOnClickListener = new OnClickListener() {
-		
+
 		@Override
 		public void onClick(View v) {
 			if(searchEt.getVisibility() == View.GONE){
@@ -195,22 +193,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 		AnimUtils.fadeAnim(sidebarBtn, 0, 1, speedSearchAnimation);
 		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
 		
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		instance = this;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		instance = null;
-	}
-
-	public static BaseActivity getInstance() {
-		return instance;
 	}
 
 	/**
