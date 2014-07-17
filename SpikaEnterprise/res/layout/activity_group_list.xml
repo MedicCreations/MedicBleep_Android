@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white" >
-    
+
     <RelativeLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
@@ -31,23 +31,29 @@
             android:textSize="20sp" />
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/mainListView"
+    <com.clover.spika.enterprise.chat.views.CustomSwipeRefresh
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/actionBarLayout"
-        android:background="@color/transparent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:fadingEdge="none"
-        android:listSelector="@color/transparent"
-        android:scrollbars="none" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/actionBarLayout" >
+
+        <ListView
+            android:id="@+id/mainListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:fadingEdge="none"
+            android:listSelector="@color/transparent"
+            android:scrollbars="none" />
+    </com.clover.spika.enterprise.chat.views.CustomSwipeRefresh>
 
     <RelativeLayout
         android:id="@+id/noItemsLayout"
         android:layout_width="match_parent"
-        android:layout_below="@id/actionBarLayout"
         android:layout_height="wrap_content"
+        android:layout_below="@id/actionBarLayout"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp" >

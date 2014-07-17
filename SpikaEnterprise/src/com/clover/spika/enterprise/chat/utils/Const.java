@@ -57,7 +57,6 @@ public class Const {
     public static final String GROUP_ID = "group_id";
     public static final String LAST_MSG_ID = "last_msg_id";
     public static final String FIRST_MSG_ID = "first_msg_id";
-    public static final String OWNER_ID = "owner_id";
     public static final String ITEMS = "items";
     public static final String NEW_GROUP_PERIOD = "new_group_period";
     public static final String MESSAGE_ID = "message_id";
@@ -108,7 +107,7 @@ public class Const {
     public static final String F_USER_CREATE_CHARACTER = "create_character";
     public static final String F_USER_GET_ALL_CHARACTERS = "get_all_characters";
     public static final String F_USER_CREATE_GROUP = "create_group";
-    public static final String F_USER_GET_GROUPS = "get_groups";
+    public static final String F_USER_GET_GROUPS = "/groups/list";
     public static final String F_USER_DELETE_GROUP = "delete_group";
     public static final String F_USER_ADD_MEMBER = "add_member";
     public static final String F_USER_KICK_MEMBER = "kick_member";

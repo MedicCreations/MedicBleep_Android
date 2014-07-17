@@ -76,7 +76,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 	String myNickName = null;
 	String groupId = null;
 	String groupName = null;
-	String groupOwner = null;
 
 	int radius = 0;
 	int totalItems = 0;
@@ -250,15 +249,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 				groupId = intent.getExtras().getString(Const.GROUP_ID);
 				groupName = intent.getExtras().getString(Const.GROUP_NAME);
-				groupOwner = intent.getExtras().getString(Const.OWNER_ID);
 
 				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
-
-				if (!fromProfileId.equals(groupOwner)) {
-					headerMore.setVisibility(View.INVISIBLE);
-				} else {
-					headerMore.setVisibility(View.VISIBLE);
-				}
 
 				headerTitle.setText(Helper.substringText(groupName, 15));
 

@@ -68,7 +68,7 @@ public class GroupAdapter extends BaseAdapter {
 		
 		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
 
-		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
+		String[] groupData = { group.getGroupId(), group.getGroup_name() };
 		holder.clickLayout.setTag(groupData);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
@@ -92,8 +92,7 @@ public class GroupAdapter extends BaseAdapter {
 
 				Intent intent = new Intent(cntx, ChatActivity.class);
 				intent.putExtra(Const.GROUP_ID, groupData[0]);
-				intent.putExtra(Const.OWNER_ID, groupData[1]);
-				intent.putExtra(Const.GROUP_NAME, groupData[2]);
+				intent.putExtra(Const.GROUP_NAME, groupData[1]);
 				((Activity) cntx).startActivity(intent);
 			}
 		});

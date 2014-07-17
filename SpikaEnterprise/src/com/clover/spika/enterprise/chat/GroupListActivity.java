@@ -8,6 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
@@ -25,7 +28,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GroupListActivity extends BaseActivity implements OnClickListener {
+public class GroupListActivity extends BaseActivity implements OnClickListener, OnRefreshListener {
 
 	public static GroupListActivity instance;
 
@@ -51,6 +54,13 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 		adapter = new GroupAdapter(this, new ArrayList<Group>());
 
 		mainListView.setAdapter(adapter);
+		
+		SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+	    swipeLayout.setOnRefreshListener(this);
+	    swipeLayout.setColorScheme(android.R.color.holo_blue_bright, 
+	            android.R.color.holo_green_light, 
+	            android.R.color.holo_orange_light, 
+	            android.R.color.holo_red_light);
 	}
 
 	@Override
@@ -62,12 +72,17 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 	public void getList() {
 		
 		List<Group> tempDiscussion = new ArrayList<Group>();
+		for(int i=0;i<20;i++){
+			Group group = new Group();
+			group.setGroup_name("group name");
+			group.setGroupId("1");
+			group.setImage_name(null);
+			tempDiscussion.add(group);
+		}
 		Group group = new Group();
-		group.setCreated("1010");
 		group.setGroup_name("group name");
 		group.setGroupId("1");
 		group.setImage_name(null);
-		group.setOwner_id("2");
 		tempDiscussion.add(group);
 		tempDiscussion.add(group);
 		tempDiscussion.add(group);
@@ -81,7 +96,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 		new BaseAsyncTask<Void, Void, Integer>(this, true) {
 
 			List<Group> tempDiscussion = new ArrayList<Group>();
-			String newGroupPeriod = null;
 			Integer code = 0;
 
 			protected void onPreExecute() {
@@ -103,8 +117,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 						code = result.getInt(Const.CODE);
 
 						if (code == Const.E_SUCCESS) {
-
-							newGroupPeriod = result.getString(Const.NEW_GROUP_PERIOD);
 
 							JSONArray items = result.getJSONArray(Const.ITEMS);
 
@@ -140,7 +152,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 					noItemsLayout.setVisibility(View.GONE);
 					adapter.clearItems();
 					adapter.addItems(tempDiscussion);
-					adapter.setNewGroupPeriod(newGroupPeriod);
 				} else {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setFailed(result);
@@ -159,6 +170,11 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 	protected void onDestroy() {
 		super.onDestroy();
 		instance = null;
+	}
+
+	@Override
+	public void onRefresh() {
+		Log.d("LOG", "go to next page");
 	}
 
 }

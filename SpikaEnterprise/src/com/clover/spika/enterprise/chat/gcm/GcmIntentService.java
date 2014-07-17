@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.gcm;
 
-import com.clover.spika.enterprise.chat.R;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 
 import com.clover.spika.enterprise.chat.CharacterListActivity;
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
@@ -44,7 +44,6 @@ public class GcmIntentService extends IntentService {
 		String type = "";
 		String groupId = "";
 		String groupName = "";
-		String ownerId = "";
 
 		if (extras.containsKey(Const.MSG_TYPE)) {
 		    type = extras.getString(Const.MSG_TYPE);
@@ -58,18 +57,14 @@ public class GcmIntentService extends IntentService {
 		    groupName = extras.getString(Const.GROUP_NAME);
 		}
 
-		if (extras.containsKey(Const.OWNER_ID)) {
-		    ownerId = extras.getString(Const.OWNER_ID);
-		}
-
-		sendNotification(type, groupId, groupName, ownerId);
+		sendNotification(type, groupId, groupName);
 	    }
 	}
 
 	GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(final String type, final String groupId, final String groupName, final String ownerId) {
+    private void sendNotification(final String type, final String groupId, final String groupName) {
 
 	NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -86,7 +81,6 @@ public class GcmIntentService extends IntentService {
 
 		Intent intent = new Intent(this, ChatActivity.class);
 		intent.putExtra(Const.GROUP_ID, groupId);
-		intent.putExtra(Const.OWNER_ID, ownerId);
 		intent.putExtra(Const.GROUP_NAME, groupName);
 		intent.putExtra(Const.FROM_NOTIFICATION, true);
 
@@ -142,7 +136,6 @@ public class GcmIntentService extends IntentService {
 
 		Intent intent = new Intent(this, ChatActivity.class);
 		intent.putExtra(Const.GROUP_ID, groupId);
-		intent.putExtra(Const.OWNER_ID, ownerId);
 		intent.putExtra(Const.GROUP_NAME, groupName);
 		intent.putExtra(Const.FROM_NOTIFICATION, true);
 
