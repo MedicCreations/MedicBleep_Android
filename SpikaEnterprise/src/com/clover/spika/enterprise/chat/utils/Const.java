@@ -129,6 +129,8 @@ public class Const {
     public static final int LIKE_MSG = 1;
     public static final int REPORT_MSG = 2;
 
+    public static final int API_SUCCESS = 2000;
+
     // Error constants
     public static final int E_INVALID_TOKEN = 1000;
     public static final int E_EXPIRED_TOKEN = 1001;
