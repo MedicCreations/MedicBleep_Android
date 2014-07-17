@@ -1,9 +1,9 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.util.UUID;
-
 import android.content.Context;
 import android.provider.Settings;
+
+import java.util.UUID;
 
 public class Const {
 
@@ -98,12 +98,13 @@ public class Const {
     public static final int PT_GROUP_CREATED = 3;
 
     // Api urls
-    public static final String BASE_URL = "http://180.148.170.207/VectorAPI/wwwroot/vse/api/";
+    public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
 
     public static final int M_USERS = 1;
     public static final int M_CHAT = 4;
     public static final int M_PUSH = 5;
 
+    public static final String F_LOGIN = "/user/login";
     public static final String F_USER_CREATE_CHARACTER = "create_character";
     public static final String F_USER_GET_ALL_CHARACTERS = "get_all_characters";
     public static final String F_USER_CREATE_GROUP = "create_group";
@@ -146,7 +147,7 @@ public class Const {
 
     // Get an UUID for this phone
     public static String getUUID(Context cntx) {
-	String androidID = Settings.Secure.getString(cntx.getContentResolver(), Settings.Secure.ANDROID_ID);
-	return UUID.nameUUIDFromBytes(androidID.getBytes()).toString();
+        String androidID = Settings.Secure.getString(cntx.getContentResolver(), Settings.Secure.ANDROID_ID);
+        return UUID.nameUUIDFromBytes(androidID.getBytes()).toString();
     }
 }

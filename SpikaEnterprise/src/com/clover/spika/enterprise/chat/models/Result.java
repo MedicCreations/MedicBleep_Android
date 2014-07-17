@@ -51,6 +51,35 @@ public class Result<T> {
         return ApiResponseState.FAILURE == getState();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Result result = (Result) o;
+
+        if (resultData != null ? !resultData.equals(result.resultData) : result.resultData != null)
+            return false;
+        if (state != result.state) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = resultData != null ? resultData.hashCode() : 0;
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "resultData=" + resultData +
+                ", state=" + state +
+                '}';
+    }
+
     public enum ApiResponseState {
         SUCCESS, FAILURE
     }
