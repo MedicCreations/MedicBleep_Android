@@ -48,9 +48,11 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/searchBtn"
             android:layout_toRightOf="@id/sidebarBtn"
+            android:imeOptions="actionSearch"
             android:inputType="text"
+            android:singleLine="true"
+            android:textColor="@color/white"
             android:visibility="gone" />
     </RelativeLayout>
 

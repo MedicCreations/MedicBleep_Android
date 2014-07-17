@@ -146,8 +146,6 @@ public class GroupAdapter extends BaseAdapter {
 		public RelativeLayout missedLayout;
 		public TextView missedtext;
 
-		public ImageView goImage;
-
 		public ViewHolderGroup(View view) {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
@@ -158,7 +156,6 @@ public class GroupAdapter extends BaseAdapter {
 			missedLayout = (RelativeLayout) view.findViewById(R.id.missedLayout);
 			missedtext = (TextView) view.findViewById(R.id.missedtext);
 
-			goImage = (ImageView) view.findViewById(R.id.goImage);
 		}
 	}
 

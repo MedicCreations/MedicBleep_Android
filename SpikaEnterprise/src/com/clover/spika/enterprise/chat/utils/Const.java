@@ -75,6 +75,7 @@ public class Const {
     public static final String PAGE_SIZE = "pageSize";
     
     public static final String PAGE = "page";
+    public static final String SEARCH = "search";
 
     public static final String IMAGE_NAME = "image_name";
     public static final String USER_ID = "user_id";
@@ -108,10 +109,10 @@ public class Const {
     public static final int M_PUSH = 5;
 
     public static final String F_LOGIN = "/user/login";
-    public static final String F_USER_CREATE_CHARACTER = "create_character";
-    public static final String F_USER_GET_ALL_CHARACTERS = "get_all_characters";
-    public static final String F_USER_CREATE_GROUP = "create_group";
     public static final String F_USER_GET_GROUPS = "/groups/list";
+    public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";
+    public static final String F_USER_CREATE_CHARACTER = "create_character";
+    public static final String F_USER_CREATE_GROUP = "create_group";
     public static final String F_USER_DELETE_GROUP = "delete_group";
     public static final String F_USER_ADD_MEMBER = "add_member";
     public static final String F_USER_KICK_MEMBER = "kick_member";

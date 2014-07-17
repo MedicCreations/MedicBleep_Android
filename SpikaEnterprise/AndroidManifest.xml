@@ -80,7 +80,7 @@
 
         <!-- Old -->
         <activity
-            android:name="com.clover.spika.enterprise.chat.CharacterListActivity"
+            android:name=".UserListActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />

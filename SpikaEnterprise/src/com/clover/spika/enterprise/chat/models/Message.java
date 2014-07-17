@@ -77,7 +77,7 @@ public class Message implements Parcelable {
 	is_rated = source.readString();
 	is_reported = source.readString();
 	type = source.readInt();
-	character = source.readParcelable(Character.class.getClassLoader());
+//	character = source.readParcelable(Character.class.getClassLoader());
 	created = source.readString();
 	modified = source.readString();
     }
@@ -116,7 +116,7 @@ public class Message implements Parcelable {
 	parcel.writeString(is_rated);
 	parcel.writeString(is_reported);
 	parcel.writeInt(type);
-	parcel.writeParcelable((Parcelable) character, flags);
+//	parcel.writeParcelable((Parcelable) character, flags);
 	parcel.writeString(created);
 	parcel.writeString(modified);
     }

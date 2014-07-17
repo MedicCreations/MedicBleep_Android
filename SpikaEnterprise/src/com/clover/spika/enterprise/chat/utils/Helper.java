@@ -304,21 +304,6 @@ public class Helper {
 	}
 
 	/**
-	 * Substring adapter
-	 */
-	public static String substringText(String text, int size) {
-		try {
-			if (text.length() < size) {
-				return text;
-			} else {
-				return text.substring(0, size) + "...";
-			}
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
-	/**
 	 * Get error description
 	 */
 	public static String errorDescriptions(Context cntx, Integer code) {

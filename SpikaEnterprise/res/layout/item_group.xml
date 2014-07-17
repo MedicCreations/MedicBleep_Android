@@ -72,23 +72,16 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/imageLayoutControl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/imageLayout"
             android:layout_alignBottom="@id/imageLayout"
             android:layout_alignParentRight="true"
-            android:orientation="horizontal" >
+            android:background="@drawable/icon_tablearrow">
 
-            <ImageView
-                android:id="@+id/goImage"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:contentDescription="@null"
-                android:background="@drawable/icon_tablearrow" />
-        </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

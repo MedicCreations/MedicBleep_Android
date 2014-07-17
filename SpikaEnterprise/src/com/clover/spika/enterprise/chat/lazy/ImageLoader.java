@@ -155,7 +155,7 @@ public class ImageLoader {
 			Bitmap bitmap = null;
 
 			HashMap<String, String> getParams = new HashMap<String, String>();
-			getParams.put(Const.FILE, url);
+			getParams.put(Const.FILE_ID, url);
 
 			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
 

@@ -36,7 +36,6 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class ChatActivity extends BaseActivity implements OnClickListener, OnTouchListener {
 
@@ -133,12 +132,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.okCancelDialog(Const.T_DELETE_MSG, ChatActivity.this.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
-
-					return true;
-				}
+//				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
+//					AppDialog dialog = new AppDialog(instance, false);
+//					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
+//
+//					return true;
+//				}
 
 				return false;
 			}
@@ -232,7 +231,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(chatId, false);
 
-				headerTitle.setText(Helper.substringText(chatName, 15));
+				headerTitle.setText(chatName);
 
 				adapter.setGroupId(chatId);
 				adapter.clearItems();
