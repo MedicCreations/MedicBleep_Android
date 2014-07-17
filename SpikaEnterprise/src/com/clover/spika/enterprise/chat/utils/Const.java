@@ -50,6 +50,7 @@ public class Const {
     public static final String REQDATA = "reqdata";
     public static final String UUID_KEY = "uuid";
     public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
     public static final String ANDROID_PUSH_TOKEN = "android_push_token_list";
     public static final String CODE = "code";
     public static final String CHARACTER_ID = "character_id";
@@ -57,7 +58,6 @@ public class Const {
     public static final String GROUP_ID = "group_id";
     public static final String LAST_MSG_ID = "last_msg_id";
     public static final String FIRST_MSG_ID = "first_msg_id";
-    public static final String OWNER_ID = "owner_id";
     public static final String ITEMS = "items";
     public static final String NEW_GROUP_PERIOD = "new_group_period";
     public static final String MESSAGE_ID = "message_id";
@@ -73,13 +73,15 @@ public class Const {
     public static final String TOTAL_ITEMS = "total_items";
     public static final String PAGE_NUMBER = "pageNumber";
     public static final String PAGE_SIZE = "pageSize";
+    
+    public static final String PAGE = "page";
 
     public static final String IMAGE_NAME = "image_name";
     public static final String USER_ID = "user_id";
     public static final String USER_IMAGE_NAME = "user_image_name";
-    public static final String USER_NICKNAME = "user_nickname";
     public static final String EMAIL = "email";
     public static final String MESSAGE = "message";
+    public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
     // Message types
     public static final int MSG_BUBBLE_DEFAULT = 0;
@@ -109,12 +111,12 @@ public class Const {
     public static final String F_USER_CREATE_CHARACTER = "create_character";
     public static final String F_USER_GET_ALL_CHARACTERS = "get_all_characters";
     public static final String F_USER_CREATE_GROUP = "create_group";
-    public static final String F_USER_GET_GROUPS = "get_groups";
+    public static final String F_USER_GET_GROUPS = "/groups/list";
     public static final String F_USER_DELETE_GROUP = "delete_group";
     public static final String F_USER_ADD_MEMBER = "add_member";
     public static final String F_USER_KICK_MEMBER = "kick_member";
     public static final String F_USER_GET_GROUP_MEMBERS = "get_group_members";
-    public static final String F_USER_GET_FILE = "get_file";
+    public static final String F_USER_GET_FILE = "/file/download";
     public static final String F_POST_MESSAGE = "post_message";
     public static final String F_GET_MESSAGES = "get_messages_paging";
     public static final String F_GET_NEW_MESSAGES = "get_messages_new";
@@ -128,6 +130,8 @@ public class Const {
 
     public static final int LIKE_MSG = 1;
     public static final int REPORT_MSG = 2;
+
+    public static final int API_SUCCESS = 2000;
 
     // Error constants
     public static final int E_INVALID_TOKEN = 1000;

@@ -49,8 +49,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 	private static final int OPENED = 1003;
 	private static final int CLOSED = 1004;
 
-	public static ChatActivity instance;
-
 	ImageLoader imageLoader;
 
 	TextView headerTitle;
@@ -69,10 +67,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 	String fromProfileId = null;
 	String myProfileImg = null;
-	String myNickName = null;
 	String groupId = null;
 	String groupName = null;
-	String groupOwner = null;
 
 	int radius = 0;
 	int totalItems = 0;
@@ -144,8 +140,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
 				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
-					AppDialog dialog = new AppDialog(instance, false);
-					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.okCancelDialog(Const.T_DELETE_MSG, ChatActivity.this.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
 
 					return true;
 				}
@@ -184,8 +180,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		instance = this;
 
 		if (mSlidingDrawer.isOpened()) {
 			setSlidingDrawer(CLOSED);
@@ -242,19 +236,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_IMAGE_NAME);
-				myNickName = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_NICKNAME);
 
 				groupId = intent.getExtras().getString(Const.GROUP_ID);
 				groupName = intent.getExtras().getString(Const.GROUP_NAME);
-				groupOwner = intent.getExtras().getString(Const.OWNER_ID);
 
 				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, false);
-
-				if (!fromProfileId.equals(groupOwner)) {
-					headerMore.setVisibility(View.INVISIBLE);
-				} else {
-					headerMore.setVisibility(View.VISIBLE);
-				}
 
 				headerTitle.setText(Helper.substringText(groupName, 15));
 
@@ -458,7 +444,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 					getParams.put(Const.TOKEN, Const.TOKEN_DEFAULT);
 
 					JSONObject reqData = new JSONObject();
-					reqData.put(Const.USERNAME, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.USER_NICKNAME));
+					reqData.put(Const.USERNAME, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.USERNAME));
 					reqData.put(Const.UUID_KEY, Const.getUUID(context));
 					reqData.put(Const.ANDROID_PUSH_TOKEN, pushToken);
 
@@ -521,12 +507,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 		} else {
 			showPopUp(msg, disId, type);
 		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		instance = null;
 	}
 
 }

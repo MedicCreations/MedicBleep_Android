@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +17,10 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.utils.Const;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GroupAdapter extends BaseAdapter {
 
@@ -61,19 +62,19 @@ public class GroupAdapter extends BaseAdapter {
 		// Assign values
 		final Group group = (Group) getItem(position);
 
-//		imageLoader.displayImage(cntx, group.getImage_name(), holder.talkImg, true);
-		holder.talkImg.setImageResource(R.drawable.skiper);
+		imageLoader.displayImage(cntx, group.getImage(), holder.talkImg, true);
+//		holder.talkImg.setImageResource(R.drawable.skiper);
 		
-//		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
-//
-//		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
-//		holder.clickLayout.setTag(groupData);
-//
-//		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
-//			holder.missedLayout.setVisibility(View.VISIBLE);
-//		} else {
-//			holder.missedLayout.setVisibility(View.GONE);
-//		}
+		holder.talkName.setText(group.getGroupName());
+
+		String[] groupData = { String.valueOf(group.getId()), group.getGroupName() };
+		holder.clickLayout.setTag(groupData);
+
+		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(String.valueOf(group.getId()))) {
+			holder.missedLayout.setVisibility(View.VISIBLE);
+		} else {
+			holder.missedLayout.setVisibility(View.GONE);
+		}
 		
 		if(position % 2 == 0){
 			holder.itemLayout.setBackgroundColor(cntx.getResources().getColor(R.color.gray_in_adapter));
@@ -90,8 +91,7 @@ public class GroupAdapter extends BaseAdapter {
 
 				Intent intent = new Intent(cntx, ChatActivity.class);
 				intent.putExtra(Const.GROUP_ID, groupData[0]);
-				intent.putExtra(Const.OWNER_ID, groupData[1]);
-				intent.putExtra(Const.GROUP_NAME, groupData[2]);
+				intent.putExtra(Const.GROUP_NAME, groupData[1]);
 				((Activity) cntx).startActivity(intent);
 			}
 		});

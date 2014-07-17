@@ -18,7 +18,7 @@ public class Preferences {
 	}
 
 	public String getCustomString(String key) {
-		return sharedPreferences.getString(key, null);
+		return sharedPreferences.getString(key, "");
 	}
 
 	public void setCustomString(String key, String value) {
@@ -70,4 +70,16 @@ public class Preferences {
 	public int getCustomInt(String key) {
 		return sharedPreferences.getInt(key, -1);
 	}
+
+    public void removePreference(String key) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
+    public void clear() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+    }
 }

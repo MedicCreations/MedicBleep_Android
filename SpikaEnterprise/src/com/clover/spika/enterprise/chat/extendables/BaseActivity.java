@@ -39,8 +39,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-	public static BaseActivity instance = null;
-
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
 
@@ -55,6 +53,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
+
+	private ImageButton searchBtn;
+	private TextView screenTitle;
+	private EditText searchEt;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -93,21 +95,27 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		instance = this;
+	public void setSearch() {
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchEt = (EditText) findViewById(R.id.searchEt);
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
+		if (searchBtn == null || searchEt == null)
+			return;
+
+		searchBtn.setOnClickListener(searchOnClickListener);
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		instance = null;
-	}
+	private OnClickListener searchOnClickListener = new OnClickListener() {
 
-	public static BaseActivity getInstance() {
-		return instance;
-	}
+		@Override
+		public void onClick(View v) {
+			if (searchEt.getVisibility() == View.GONE) {
+				// open search view
+			} else {
+				// search
+			}
+		}
+	};
 
 	/**
 	 * Check the device to make sure it has the Google Play Services APK. If it
@@ -280,7 +288,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					if (type == Const.PT_MESSAGE) {
 						GroupListActivity.instance.adapter.notifyDataSetChanged();
 					} else if (type == Const.PT_GROUP_CREATED) {
-						GroupListActivity.instance.getList();
+						GroupListActivity.instance.getGroup(0, null);
 					}
 				}
 			};

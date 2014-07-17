@@ -11,7 +11,9 @@ import android.widget.Button;
 
 import com.clover.spika.enterprise.chat.CharacterListActivity;
 import com.clover.spika.enterprise.chat.GroupListActivity;
+import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -78,7 +80,12 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+                SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
+
+                Intent logoutIntent = new Intent(getActivity(), LoginActivity.class);
+                logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(logoutIntent);
+                getActivity().finish();
 			}
 		});
 

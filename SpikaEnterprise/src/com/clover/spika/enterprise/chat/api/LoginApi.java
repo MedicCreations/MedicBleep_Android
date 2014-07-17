@@ -42,18 +42,23 @@ public class LoginApi {
 				return new Gson().fromJson(String.valueOf(jsonObject), Login.class);
 			}
 
-			protected void onPostExecute(Login result) {
-				super.onPostExecute(result);
+			protected void onPostExecute(Login login) {
+				super.onPostExecute(login);
 
 				if (listener != null) {
 					Result<Login> apiResult;
 
-					if (result != null) {
-						apiResult = new Result<Login>(Result.ApiResponseState.SUCCESS);
-						apiResult.setResultData(result);
+					if (login != null) {
+						if (login.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<Login>(Result.ApiResponseState.SUCCESS);
+							apiResult.setResultData(login);
 
-						if (!TextUtils.isEmpty(result.getToken())) {
-							SpikaEnterpriseApp.getSharedPreferences(getContext()).setUserTokenId(result.getToken());
+							if (!TextUtils.isEmpty(login.getToken())) {
+								SpikaEnterpriseApp.getSharedPreferences(getContext()).setUserTokenId(login.getToken());
+							}
+						} else {
+							apiResult = new Result<Login>(Result.ApiResponseState.FAILURE);
+							apiResult.setResultData(login);
 						}
 					} else {
 						apiResult = new Result<Login>(Result.ApiResponseState.FAILURE);
@@ -62,6 +67,7 @@ public class LoginApi {
 					listener.onApiResponse(apiResult);
 				}
 			}
+
 		}.execute();
 	}
 

@@ -51,6 +51,13 @@ public class Result<T> {
         return ApiResponseState.FAILURE == getState();
     }
 
+    /**
+     * @return true if resultData has been set, false if it's null
+     */
+    public boolean hasResultData() {
+        return getResultData() != null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

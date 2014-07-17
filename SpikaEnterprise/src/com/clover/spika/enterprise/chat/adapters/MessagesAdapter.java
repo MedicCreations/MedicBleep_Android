@@ -178,7 +178,7 @@ public class MessagesAdapter extends BaseAdapter {
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
 					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+					intent.putExtra(Const.USERNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -260,7 +260,7 @@ public class MessagesAdapter extends BaseAdapter {
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
 					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+					intent.putExtra(Const.USERNAME, msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
