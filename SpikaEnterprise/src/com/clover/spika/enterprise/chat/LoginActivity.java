@@ -9,13 +9,18 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.models.Login;
+import com.clover.spika.enterprise.chat.models.Result;
 
 public class LoginActivity extends Activity {
 
-	RobotoThinEditText username;
+	private EditText username;
+    private EditText password;
+
 	Button loginBtn;
 
 	@Override
@@ -23,7 +28,8 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		username = (RobotoThinEditText) findViewById(R.id.username);
+		username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
 
 		loginBtn = (Button) findViewById(R.id.loginBtn);
 		loginBtn.setOnClickListener(new OnClickListener() {
@@ -53,25 +59,27 @@ public class LoginActivity extends Activity {
 	}
 
 	private void login() {
-		new BaseAsyncTask<Void, Void, Void>(this, true) {
+        new LoginApi().loginWithCredentials(
+                username.getText().toString(),
+                password.getText().toString(),
+                this, true, new ApiCallback<Login>() {
+            @Override
+            public void onApiResponse(Result<Login> result) {
+                // TODO: srediti logiku za fail i success response
+                if (result.isSuccess()) {
+                    Toast.makeText(LoginActivity.this,
+                            result.getResultData() == null ? "no data" : result.getResultData().toString(),
+                            Toast.LENGTH_SHORT).show();
 
-			protected Void doInBackground(Void... params) {
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				return null;
-			};
-
-			protected void onPostExecute(Void result) {
-				Intent intent = new Intent(getContext(), LobbyActivity.class);
-				startActivity(intent);
-				finish();
-			};
-
-		}.execute();
+                    Intent intent = new Intent(LoginActivity.this, LobbyActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this,
+                            "Failure",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 	}
 }

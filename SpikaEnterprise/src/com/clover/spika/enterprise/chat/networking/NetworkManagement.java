@@ -1,19 +1,21 @@
 package com.clover.spika.enterprise.chat.networking;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -26,19 +28,22 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Preferences;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NetworkManagement {
 
@@ -47,39 +52,39 @@ public class NetworkManagement {
 
     public static final String TOKEN = "Token";
 
+    public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws ClientProtocolException, IOException, JSONException {
+        return httpPostRequest("", postParams, reqData);
+    }
+
     /**
      * Http POST request
      *
-     * @param url
+     * @param apiUrl
      * @param postParams
-     * @param postFiles
      * @return
      * @throws ClientProtocolException
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws ClientProtocolException, IOException, JSONException {
 
-        HttpPost httppost = new HttpPost(Const.BASE_URL);
+        // TODO: što s parametrom reqData?
+
+        HttpPost httppost = new HttpPost(Const.BASE_URL + apiUrl);
+        Logger.custom("RawRequest", httppost.getURI().toString());
 
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-        httppost.setHeader("Content-Type", "application/json");
         httppost.setHeader("Encoding", "utf-8");
 
         // form paramaters
-        if (postParams.size() > 0) {
-            JSONObject postBody = new JSONObject();
-
-            for (Map.Entry<String, String> entry : postParams.entrySet()) {
-                postBody.put(entry.getKey(), entry.getValue());
+        if (!postParams.isEmpty()) {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            for (Map.Entry<String, String> entity : postParams.entrySet()) {
+                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
             }
-
-            if (reqData != null) {
-                postBody.put(Const.REQDATA, reqData);
-            }
-
-            httppost.setEntity(new StringEntity(postBody.toString(), "UTF-8"));
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            Logger.custom("RawRequestParams", nameValuePairs.toString()); // TODO: maknuti ovaj logger !!
         }
 
         HttpResponse response = HttpSingleton.getInstance().execute(httppost);
