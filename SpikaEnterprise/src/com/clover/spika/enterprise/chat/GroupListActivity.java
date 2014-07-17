@@ -1,12 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +17,13 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class GroupListActivity extends BaseActivity implements OnClickListener {
 
@@ -63,11 +63,11 @@ public class GroupListActivity extends BaseActivity implements OnClickListener {
 		
 		List<Group> tempDiscussion = new ArrayList<Group>();
 		Group group = new Group();
-		group.setCreated("1010");
-		group.setGroup_name("group name");
-		group.setGroupId("1");
-		group.setImage_name(null);
-		group.setOwner_id("2");
+//		group.setCreated("1010");
+//		group.setGroup_name("group name");
+//		group.setGroupId("1");
+//		group.setImage_name(null);
+//		group.setOwner_id("2");
 		tempDiscussion.add(group);
 		tempDiscussion.add(group);
 		tempDiscussion.add(group);

@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +14,12 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupAdapter extends BaseAdapter {
 
@@ -66,16 +64,16 @@ public class GroupAdapter extends BaseAdapter {
 //		imageLoader.displayImage(cntx, group.getImage_name(), holder.talkImg, true);
 		holder.talkImg.setImageResource(R.drawable.skiper);
 		
-		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
-
-		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
-		holder.clickLayout.setTag(groupData);
-
-		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
-			holder.missedLayout.setVisibility(View.VISIBLE);
-		} else {
-			holder.missedLayout.setVisibility(View.GONE);
-		}
+//		holder.talkName.setText(Helper.substringText(group.getGroup_name(), 25));
+//
+//		String[] groupData = { group.getGroupId(), group.getOwner_id(), group.getGroup_name() };
+//		holder.clickLayout.setTag(groupData);
+//
+//		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(group.getGroupId())) {
+//			holder.missedLayout.setVisibility(View.VISIBLE);
+//		} else {
+//			holder.missedLayout.setVisibility(View.GONE);
+//		}
 		
 		if(position % 2 == 0){
 			holder.itemLayout.setBackgroundColor(cntx.getResources().getColor(R.color.gray_in_adapter));
