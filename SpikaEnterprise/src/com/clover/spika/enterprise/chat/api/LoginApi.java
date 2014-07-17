@@ -13,7 +13,7 @@ public class LoginApi {
 
 			protected Void doInBackground(Void... params) {
 				return null;
-			};
+			}
 
 			protected void onPostExecute(Void result) {
 				if (listener != null) {
