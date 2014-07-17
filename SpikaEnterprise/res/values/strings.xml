@@ -92,5 +92,6 @@
     <string name="users">Users</string>
     <string name="groups">Groups</string>
     <string name="title_lobby">Lobby</string>
+    <string name="login_remember_me">Remember me</string>
 
 </resources>

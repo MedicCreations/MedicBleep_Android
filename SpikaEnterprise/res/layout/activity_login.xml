@@ -97,6 +97,13 @@
                 android:background="@color/default_blue" />
         </RelativeLayout>
 
+        <com.clover.spika.enterprise.chat.views.RobotoCheckBox
+            android:id="@+id/checkBoxRememberLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/login_remember_me"/>
+
         <com.clover.spika.enterprise.chat.views.RobotoThinButton
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"

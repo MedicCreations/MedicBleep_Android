@@ -7,18 +7,23 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 
 public class LoginActivity extends Activity {
 
     private EditText username;
     private EditText password;
+    private CheckBox rememberMeCheckBox;
 
     @Override
 
@@ -28,6 +33,18 @@ public class LoginActivity extends Activity {
 
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
+        rememberMeCheckBox = (CheckBox) findViewById(R.id.checkBoxRememberLogin);
+        rememberMeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).removePreference(Const.USERNAME);
+                    SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).removePreference(Const.PASSWORD);
+                }
+
+                SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).setCustomBoolean(Const.REMEMBER_CREDENTIALS, isChecked);
+            }
+        });
 
     }
 
@@ -35,6 +52,14 @@ public class LoginActivity extends Activity {
     protected void onResume() {
         super.onResume();
         hideKeyboard(username);
+
+        username.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME));
+        password.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
+
+        if (!TextUtils.isEmpty(username.getText().toString())
+                && !TextUtils.isEmpty(password.getText().toString())) {
+            login();
+        }
     }
 
     @Override
@@ -46,6 +71,10 @@ public class LoginActivity extends Activity {
     public void hideKeyboard(EditText et) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+    }
+
+    public void onLoginClick(View view) {
+        login();
     }
 
     private void login() {
@@ -64,6 +93,11 @@ public class LoginActivity extends Activity {
 
         if (!errorLock) {
             executeLoginApi();
+
+            if (rememberMeCheckBox.isChecked()) {
+                SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
+                SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.PASSWORD, password.getText().toString());
+            }
         }
     }
 
@@ -91,7 +125,4 @@ public class LoginActivity extends Activity {
         );
     }
 
-    public void onLoginClick(View view) {
-        login();
-    }
 }
