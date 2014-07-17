@@ -55,6 +55,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
+	
+	private ImageButton searchBtn;
+	private TextView screenTitle;
+	private EditText searchEt;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,31 @@ public class BaseActivity extends SlidingFragmentActivity {
 				}
 			});
 		}
+	}
+	
+	public void setSearch(){
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchEt = (EditText) findViewById(R.id.searchEt);
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
+		if(searchBtn == null || searchEt == null) return;
+		
+		searchBtn.setOnClickListener(searchOnClickListener);
+	}
+	
+	private OnClickListener searchOnClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if(searchEt.getVisibility() == View.GONE){
+				//open search view
+			}else {
+				//search all 
+			}
+		}
+	};
+	
+	private void openSearchAnimation(){
+		
 	}
 
 	@Override
@@ -280,7 +309,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					if (type == Const.PT_MESSAGE) {
 						GroupListActivity.instance.adapter.notifyDataSetChanged();
 					} else if (type == Const.PT_GROUP_CREATED) {
-						GroupListActivity.instance.getList();
+						GroupListActivity.instance.getGroup(0, null);
 					}
 				}
 			};

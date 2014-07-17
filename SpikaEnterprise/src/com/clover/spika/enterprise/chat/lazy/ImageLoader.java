@@ -14,20 +14,16 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.clover.spika.enterprise.chat.R;
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class ImageLoader {
 
@@ -159,14 +155,9 @@ public class ImageLoader {
 			Bitmap bitmap = null;
 
 			HashMap<String, String> getParams = new HashMap<String, String>();
-			getParams.put(Const.MODULE, String.valueOf(Const.M_USERS));
-			getParams.put(Const.FUNCTION, Const.F_USER_GET_FILE);
-			getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+			getParams.put(Const.FILE, url);
 
-			JSONObject reqData = new JSONObject();
-			reqData.put(Const.FILE_ID, url);
-
-			InputStream is = NetworkManagement.httpPostGetFile(getParams, reqData);
+			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
 
 			// TODO this needs to be fixed
 			// try {

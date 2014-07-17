@@ -114,7 +114,7 @@ public class NetworkManagement {
             params += URLEncodedUtils.format(nameValuePairs, "utf-8");
         }
 
-        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + params);
+        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
         Logger.custom("RawRequest", httpGet.getURI().toString());
 
         httpGet.setHeader("Encoding", "utf-8");
@@ -199,6 +199,30 @@ public class NetworkManagement {
         }
 
         HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+        HttpEntity entity = response.getEntity();
+
+        return entity.getContent();
+    }
+    
+    public static InputStream httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
+    	String params = "";
+
+        // form parameters
+        if (getParams != null && !getParams.isEmpty()) {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            for (Map.Entry<String, String> entity : getParams.entrySet()) {
+                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+            }
+
+            params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+        }
+
+        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
+        Logger.custom("RawRequest", httpGet.getURI().toString());
+
+        httpGet.setHeader("Encoding", "utf-8");
+
+        HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
         HttpEntity entity = response.getEntity();
 
         return entity.getContent();

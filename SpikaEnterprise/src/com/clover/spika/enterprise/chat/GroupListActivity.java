@@ -35,6 +35,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
@@ -51,6 +52,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 		adapter = new GroupAdapter(this, new ArrayList<Group>());
 
 		mainListView.setAdapter(adapter);
+		mainListView.setOnRefreshListener(refreshListener2);
 		
 		getGroup(mCurrentIndex, null);
 		
@@ -89,7 +91,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 		super.onResume();
 	}
 	
-	private void getGroup(int page, String search) {
+	public void getGroup(int page, String search) {
 		GroupsApi groupApi=new GroupsApi();
 		if(search == null){
 			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<Groups>() {

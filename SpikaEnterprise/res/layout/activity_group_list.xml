@@ -29,12 +29,36 @@
             android:text="@string/title_lobby"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+        
+        <ImageButton
+            android:id="@+id/searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_search"
+             />
+        
+        <EditText android:id="@+id/searchEt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/sidebarBtn"
+            android:layout_toLeftOf="@id/searchBtn"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" 
+            android:visibility="gone"
+            android:inputType="text"/>
     </RelativeLayout>
 
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/actionBarLayout"
         android:background="@color/transparent"
         android:divider="@null"
         android:dividerHeight="0dp"

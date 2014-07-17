@@ -115,7 +115,7 @@ public class Const {
     public static final String F_USER_ADD_MEMBER = "add_member";
     public static final String F_USER_KICK_MEMBER = "kick_member";
     public static final String F_USER_GET_GROUP_MEMBERS = "get_group_members";
-    public static final String F_USER_GET_FILE = "get_file";
+    public static final String F_USER_GET_FILE = "/file/download";
     public static final String F_POST_MESSAGE = "post_message";
     public static final String F_GET_MESSAGES = "get_messages_paging";
     public static final String F_GET_NEW_MESSAGES = "get_messages_new";
