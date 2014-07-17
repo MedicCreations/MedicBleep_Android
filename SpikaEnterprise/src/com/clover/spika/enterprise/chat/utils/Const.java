@@ -75,6 +75,7 @@ public class Const {
     public static final String PAGE_SIZE = "pageSize";
     
     public static final String PAGE = "page";
+    public static final String SEARCH = "search";
 
     public static final String IMAGE_NAME = "image_name";
     public static final String USER_ID = "user_id";
