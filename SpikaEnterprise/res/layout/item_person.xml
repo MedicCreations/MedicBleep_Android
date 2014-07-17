@@ -6,61 +6,37 @@
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     android:background="@color/transparent"
-    android:padding="10dp" >
+    android:padding="10dp">
 
-    <RelativeLayout
-        android:id="@+id/itemCliclkLayout"
+    <com.clover.spika.enterprise.chat.views.RoundImageView
+        android:id="@+id/userImage"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@null"
+        tools:background="#55ff0000"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/userImage"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/selectableImg"
+        <TextView
+            android:id="@+id/personName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:contentDescription="@null"
-            android:src="@drawable/gb_tableview_edit_selected" />
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="pero"/>
 
-        <RelativeLayout
-            android:id="@+id/imageLayout"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toRightOf="@+id/selectableImg" >
+    </LinearLayout>
 
-            <com.clover.spika.enterprise.chat.views.RoundImageView
-                android:id="@+id/userImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"/>
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/imageLayout"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/personName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/gameName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </RelativeLayout>
 
 </RelativeLayout>

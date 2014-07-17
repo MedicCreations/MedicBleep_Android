@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.Groups;
+import com.clover.spika.enterprise.chat.models.GroupModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -18,11 +18,11 @@ import java.util.HashMap;
 
 public class GroupsApi {
 
-    public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar, final ApiCallback<Groups> listener) {
-        new BaseAsyncTask<Void, Void, Groups>(ctx, showProgressBar) {
+    public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar, final ApiCallback<GroupModel> listener) {
+        new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
 
             @Override
-            protected Groups doInBackground(Void... params) {
+            protected GroupModel doInBackground(Void... params) {
 
                 JSONObject jsonObject = new JSONObject();
                 
@@ -38,21 +38,26 @@ public class GroupsApi {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return new Gson().fromJson(jsonObject.toString(), Groups.class);
+                return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
             }
 
             @Override
-            protected void onPostExecute(Groups groups) {
-                super.onPostExecute(groups);
+            protected void onPostExecute(GroupModel groupModel) {
+                super.onPostExecute(groupModel);
 
                 if (listener != null) {
-                    Result<Groups> result;
+                    Result<GroupModel> result;
 
-                    if (groups != null && groups.getCode() == 2000) { //TODO
-                        result = new Result<Groups>(Result.ApiResponseState.SUCCESS);
-                        result.setResultData(groups);
+                    if (groupModel != null) {
+                        if (groupModel.getCode() == Const.API_SUCCESS) {
+                            result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
+                            result.setResultData(groupModel);
+                        } else {
+                            result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+                            result.setResultData(groupModel);
+                        }
                     } else {
-                        result = new Result<Groups>(Result.ApiResponseState.FAILURE);
+                        result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
                     }
 
                     listener.onApiResponse(result);
@@ -61,11 +66,11 @@ public class GroupsApi {
         }.execute();
     }
     
-    public void getGroupsByName(final int page, final String data, Context ctx, boolean showProgressBar, final ApiCallback<Groups> listener){
-    	 new BaseAsyncTask<Void, Void, Groups>(ctx, showProgressBar) {
+    public void getGroupsByName(final int page, final String data, Context ctx, boolean showProgressBar, final ApiCallback<GroupModel> listener){
+    	 new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
 
              @Override
-             protected Groups doInBackground(Void... params) {
+             protected GroupModel doInBackground(Void... params) {
 
                  JSONObject jsonObject = new JSONObject();
                  
@@ -82,21 +87,21 @@ public class GroupsApi {
                  } catch (IOException e) {
                      e.printStackTrace();
                  }
-                 return new Gson().fromJson(jsonObject.toString(), Groups.class);
+                 return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
              }
 
              @Override
-             protected void onPostExecute(Groups groups) {
+             protected void onPostExecute(GroupModel groups) {
                  super.onPostExecute(groups);
 
                  if (listener != null) {
-                     Result<Groups> result;
+                     Result<GroupModel> result;
 
                      if (groups != null && groups.getCode() == 2000) { //TODO
-                         result = new Result<Groups>(Result.ApiResponseState.SUCCESS);
+                         result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
                          result.setResultData(groups);
                      } else {
-                         result = new Result<Groups>(Result.ApiResponseState.FAILURE);
+                         result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
                      }
 
                      listener.onApiResponse(result);

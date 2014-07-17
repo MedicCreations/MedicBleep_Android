@@ -1,13 +1,5 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.R;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -20,15 +12,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.adapters.CharacterAdapter;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.Character;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ChatSettingsDialog extends DialogFragment implements OnTouchListener {
 
@@ -48,7 +46,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 	RelativeLayout settingsListLayout;
 
 	ListView main_list_view;
-	CharacterAdapter adapter;
+	UserAdapter adapter;
 	TextView noItemsView;
 
 	TextView submitChanges;
@@ -88,8 +86,8 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 		settingsListLayout = (RelativeLayout) view.findViewById(R.id.settingsListLayout);
 
 		main_list_view = (ListView) view.findViewById(R.id.main_list_view);
-		adapter = new CharacterAdapter(getActivity(), new ArrayList<Character>());
-		adapter.setSelect(true);
+//		adapter = new UserAdapter(getActivity(), new ArrayList<Character>());
+//		adapter.setSelect(true);
 
 		main_list_view.setAdapter(adapter);
 
@@ -108,7 +106,7 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 		if (id == R.id.goBackLayout) {
 			settingsListLayout.setVisibility(View.GONE);
 			settingsLayout.setVisibility(View.VISIBLE);
-			adapter.clearItems();
+//			adapter.clearItems();
 		} else if (id == R.id.addMembers) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				addMembers.setBackgroundResource(R.drawable.tab_mask_blue);
@@ -139,15 +137,15 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 			} else if (event.getAction() == MotionEvent.ACTION_UP) {
 				submitChanges.setBackgroundResource(R.drawable.tab_mask);
 
-				if (isAdd) {
-					if (adapter.getSelectedIds().length > 0) {
-						addMembers(groupId, adapter.getSelectedIds());
-					}
-				} else if (isKick) {
-					if (adapter.getSelectedIds().length > 0) {
-						kickMembers(groupId, adapter.getSelectedIds());
-					}
-				}
+//				if (isAdd) {
+//					if (adapter.getSelectedIds().length > 0) {
+//						addMembers(groupId, adapter.getSelectedIds());
+//					}
+//				} else if (isKick) {
+//					if (adapter.getSelectedIds().length > 0) {
+//						kickMembers(groupId, adapter.getSelectedIds());
+//					}
+//				}
 			}
 		} else {
 		}
@@ -221,8 +219,8 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 				super.onPostExecute(result);
 
 				if (result == Const.E_SUCCESS) {
-					adapter.clearItems();
-					adapter.addItems(profGame);
+//					adapter.clearItems();
+//					adapter.addItems(profGame);
 				} else {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setFailed(result);
@@ -289,13 +287,13 @@ public class ChatSettingsDialog extends DialogFragment implements OnTouchListene
 				super.onPostExecute(result);
 
 				if (result.equals(Const.E_SUCCESS)) {
-					adapter.clearItems();
-
-					for (int i = 0; i < profGame.size(); i++) {
-						profGame.get(i).setSelected(true);
-					}
-
-					adapter.addItems(profGame);
+//					adapter.clearItems();
+//
+//					for (int i = 0; i < profGame.size(); i++) {
+//						profGame.get(i).setSelected(true);
+//					}
+//
+//					adapter.addItems(profGame);
 				} else {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setFailed(result);
