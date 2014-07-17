@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -72,7 +71,6 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 
 	@Override
 	public void onPageSelected(int position) {
-		Log.e("ping", "state");
 		setTabsStates(position);
 	}
 
