@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO: renameati u nešto smisleno
-public class Groups extends BaseModel {
+public class Collection extends BaseModel {
 
     @SerializedName("page")
     @Expose
@@ -52,11 +52,11 @@ public class Groups extends BaseModel {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        Groups groups = (Groups) o;
+        Collection collection = (Collection) o;
 
-        if (page != groups.page) return false;
-        if (totalCount != groups.totalCount) return false;
-        if (groupList != null ? !groupList.equals(groups.groupList) : groups.groupList != null)
+        if (page != collection.page) return false;
+        if (totalCount != collection.totalCount) return false;
+        if (groupList != null ? !groupList.equals(collection.groupList) : collection.groupList != null)
             return false;
 
         return true;
@@ -73,7 +73,7 @@ public class Groups extends BaseModel {
 
     @Override
     public String toString() {
-        return "Groups{" +
+        return "Collection{" +
                 "page=" + page +
                 ", totalCount=" + totalCount +
                 ", groupList=" + groupList +

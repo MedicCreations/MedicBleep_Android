@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
@@ -15,11 +12,14 @@ import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GroupsApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.models.Collection;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.Groups;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupListActivity extends BaseActivity implements OnClickListener, OnRefreshListener {
 
@@ -94,10 +94,10 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	public void getGroup(int page, String search) {
 		GroupsApi groupApi=new GroupsApi();
 		if(search == null){
-			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<Groups>() {
+			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<Collection>() {
 				
 				@Override
-				public void onApiResponse(Result<Groups> result) {
+				public void onApiResponse(Result<Collection> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getGroupList());
 				}
