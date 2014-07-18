@@ -42,9 +42,9 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
 		headerEditBack.setOnClickListener(this);
 
-		profileImg = (ImageView) findViewById(R.id.profileImg);
-
-		nickname = (TextView) findViewById(R.id.nickname);
+//		profileImg = (ImageView) findViewById(R.id.profileImg);
+//
+//		nickname = (TextView) findViewById(R.id.nickname);
 
 		btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(this);
