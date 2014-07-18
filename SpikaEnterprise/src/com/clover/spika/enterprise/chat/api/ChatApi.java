@@ -92,7 +92,7 @@ public class ChatApi {
 						}
 					}
 
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_GET_MESSAGES, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_MESSAGES, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (IOException e) {
