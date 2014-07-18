@@ -26,14 +26,14 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class GroupLobbyFragment extends Fragment implements LobbyChangedListener, OnItemClickListener{
-	
+public class GroupLobbyFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
+
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
-	
+
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,10 +48,10 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		return view;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
 		@Override
@@ -65,15 +65,15 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 			getLobby(mCurrentIndex, false);
 		}
 	};
-	
+
 	private void setData(List<ChatsLobby> data, boolean toClearPrevious) {
-		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size(); 
-		
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-		} else{
+		} else {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
 
@@ -86,10 +86,10 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 
 		mainListView.onRefreshComplete();
 	}
-	
+
 	public void getLobby(int page, final boolean toClear) {
 		new LobbyApi().getLobbyByType(page, Const.GROUPS_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
-			
+
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
@@ -106,12 +106,12 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 
 	@Override
 	public void onChangeGroup(LobbyModel model) {
-		
+
 	}
 
 	@Override
 	public void onChangeUser(LobbyModel model) {
-		
+
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 			ChatsLobby user = adapter.getItem(position);
 
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, user.getChatId());
+			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			startActivity(intent);
 		}

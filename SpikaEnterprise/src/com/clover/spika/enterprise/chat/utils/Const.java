@@ -6,7 +6,7 @@ import android.provider.Settings;
 import java.util.UUID;
 
 public class Const {
-	
+
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
@@ -62,6 +62,7 @@ public class Const {
 	public static final String MSG_TYPE = "type";
 	public static final String TOTAL_COUNT = "total_count";
 	public static final String USER_IMAGE_NAME = "user_image_name";
+	public static final String IS_GROUP = "isGroup";
 
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
@@ -75,12 +76,12 @@ public class Const {
 	public static final int MSG_TYPE_DEFAULT = 0;
 	public static final int MSG_TYPE_PHOTO = 1;
 
-	//Lobby
+	// Lobby
 	public static final int ALL_TYPE = 0;
 	public static final int USERS_TYPE = 1;
 	public static final int GROUPS_TYPE = 2;
 	public static final String TYPE = "type";
-	
+
 	// push type
 	public static final int PT_MESSAGE = 1;
 
@@ -94,6 +95,7 @@ public class Const {
 	public static final String F_POST_MESSAGE = "post_message";
 	public static final String F_GET_MESSAGES = "/message/paging";
 	public static final String F_START_NEW_CHAT = "/user/chat/start";
+	public static final String F_START_NEW_GROUP = "/groups/chat/start";
 	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";

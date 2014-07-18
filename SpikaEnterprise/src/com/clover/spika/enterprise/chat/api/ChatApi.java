@@ -1,10 +1,7 @@
 package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +11,6 @@ import android.text.TextUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -22,7 +18,7 @@ import com.google.gson.Gson;
 
 public class ChatApi {
 
-	public void startChat(final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx, final ApiCallback<Chat> listener) {
+	public void startChat(final boolean isGroup, final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, showProgressBar) {
 
 			protected Chat doInBackground(Void... params) {
@@ -34,7 +30,14 @@ public class ChatApi {
 
 				JSONObject jsonObject = new JSONObject();
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_START_NEW_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					String url = Const.F_START_NEW_CHAT;
+
+					if (isGroup) {
+						url = Const.F_START_NEW_GROUP;
+					}
+
+					jsonObject = NetworkManagement.httpPostRequest(url, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
@@ -72,9 +75,6 @@ public class ChatApi {
 			final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, processing) {
 
-			List<Message> tempMessage = new ArrayList<Message>();
-			int totalItems = -1;
-
 			protected Chat doInBackground(Void... params) {
 
 				try {
@@ -111,16 +111,13 @@ public class ChatApi {
 
 					Result<Chat> apiResult;
 
-					if (result != null && result.equals(Const.API_SUCCESS)) {
+					if (result != null && result.getCode() == Const.API_SUCCESS) {
 
-						result.setMessagesList(tempMessage);
 						result.setNewMsg(isNewMsg);
 						result.setRefresh(isRefresh);
 						result.setClear(isClear);
 						result.setSend(isSend);
-						result.setAdapterCount(adapterCount);
 						result.setPagging(isPagging);
-						result.setTotal_count(String.valueOf(totalItems));
 
 						apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
 						apiResult.setResultData(result);

@@ -63,8 +63,8 @@ public class GroupAdapter extends BaseAdapter {
 		final Group group = (Group) getItem(position);
 
 		imageLoader.displayImage(cntx, group.getImage(), holder.talkImg, true);
-//		holder.talkImg.setImageResource(R.drawable.skiper);
-		
+		// holder.talkImg.setImageResource(R.drawable.skiper);
+
 		holder.talkName.setText(group.getGroupName());
 
 		String[] groupData = { String.valueOf(group.getId()), group.getGroupName() };
@@ -75,10 +75,10 @@ public class GroupAdapter extends BaseAdapter {
 		} else {
 			holder.missedLayout.setVisibility(View.GONE);
 		}
-		
-		if(position % 2 == 0){
+
+		if (position % 2 == 0) {
 			holder.itemLayout.setBackgroundColor(cntx.getResources().getColor(R.color.gray_in_adapter));
-		}else{
+		} else {
 			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
@@ -92,6 +92,7 @@ public class GroupAdapter extends BaseAdapter {
 				Intent intent = new Intent(cntx, ChatActivity.class);
 				intent.putExtra(Const.CHAT_ID, groupData[0]);
 				intent.putExtra(Const.CHAT_NAME, groupData[1]);
+				intent.putExtra(Const.IS_GROUP, true);
 				((Activity) cntx).startActivity(intent);
 			}
 		});

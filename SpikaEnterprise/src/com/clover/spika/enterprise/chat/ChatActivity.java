@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -156,7 +157,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			imageLoader.displayImage(this, chatImage, partnerIcon, true);
 		} else {
 			// TODO
-//			imageLoader.setDefaultImage(R.drawable.default_user_image);
+			// imageLoader.setDefaultImage(R.drawable.default_user_image);
 		}
 
 		if (isResume) {
@@ -216,7 +217,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 
-				new ChatApi().startChat(intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
+				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
+
+				new ChatApi().startChat(isGroup, intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
 
 					@Override
 					public void onApiResponse(Result<Chat> result) {
@@ -358,8 +361,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				isRunning = false;
 
 				if (result.isSuccess()) {
+					
+					Log.d("Vida", "In");
 
 					Chat chat = result.getResultData();
+					
+					Log.d("Vida", "In1: " + chat.getMessagesList().size());
+					Log.d("Vida", "isNewMsg: " + isNewMsg);
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 
@@ -388,6 +396,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					adapter.setScrolling(false);
 				}
+				
+				Log.d("Vida", "Out");
 			}
 		});
 	}
