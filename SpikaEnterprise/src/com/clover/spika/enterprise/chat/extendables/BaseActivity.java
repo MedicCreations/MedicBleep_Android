@@ -453,18 +453,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	public void startActivity(Intent intent) {
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		super.startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+		if (slidingMenu.isActivated()) {
+			slidingMenu.toggle();
+		}
 	}
-	
-	public void openProfile(String fileId){
-		if(TextUtils.isEmpty(fileId)){
+
+	public void openProfile(String fileId) {
+		if (TextUtils.isEmpty(fileId)) {
 			fileId = Helper.getUserImage(this);
 		}
-		Intent intent = new Intent(this, ProfileActivity.class)
-				.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(this))
-				.putExtra(Const.LASTNAME, Helper.getUserLastName(this))
-				.putExtra(Const.USER_IMAGE_NAME, fileId);
+		Intent intent = new Intent(this, ProfileActivity.class).putExtra(Const.FIRSTNAME, Helper.getUserFirstName(this)).putExtra(Const.LASTNAME, Helper.getUserLastName(this)).putExtra(Const.USER_IMAGE_NAME, fileId);
 		startActivity(intent);
 	}
 

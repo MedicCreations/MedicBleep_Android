@@ -47,7 +47,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity)getActivity()).openProfile(null);
+				((BaseActivity) getActivity()).openProfile(null);
 			}
 		});
 
@@ -56,24 +56,24 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), LobbyActivity.class));
+				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), LobbyActivity.class));
 			}
 		});
 
-        users = (RobotoThinButton) view.findViewById(R.id.users);
-        users.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
-            }
-        });
+		users = (RobotoThinButton) view.findViewById(R.id.users);
+		users.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
+			}
+		});
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), GroupListActivity.class));
+				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), GroupListActivity.class));
 			}
 		});
 
@@ -82,12 +82,12 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-                SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
+				SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
 
-                Intent logoutIntent = new Intent(getActivity(), LoginActivity.class);
-                logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(logoutIntent);
-                getActivity().finish();
+				Intent logoutIntent = new Intent(getActivity(), LoginActivity.class);
+				logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(logoutIntent);
+				getActivity().finish();
 			}
 		});
 

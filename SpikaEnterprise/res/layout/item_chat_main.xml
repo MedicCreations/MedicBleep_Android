@@ -34,19 +34,19 @@
             android:layout_below="@+id/loading_bar_img"
             android:layout_marginTop="10dp"
             android:background="@color/text_blue" />
-    </RelativeLayout>
 
-    <View
-        android:id="@+id/spliter2"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:layout_below="@+id/loading_bar" />
+        <View
+            android:id="@+id/spliter2"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_below="@+id/spliter" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/messagesWholeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/spliter2" >
+        android:layout_below="@+id/loading_bar" >
 
         <!-- start: Me message layout -->
 

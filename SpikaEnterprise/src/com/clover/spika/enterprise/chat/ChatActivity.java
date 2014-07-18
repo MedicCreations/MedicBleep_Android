@@ -362,13 +362,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 				if (result.isSuccess()) {
 					
-					Log.d("Vida", "In");
-
 					Chat chat = result.getResultData();
 					
-					Log.d("Vida", "In1: " + chat.getMessagesList().size());
-					Log.d("Vida", "isNewMsg: " + isNewMsg);
-
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 
 					totalItems = Integer.valueOf(chat.getTotal_count());
@@ -396,8 +391,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					adapter.setScrolling(false);
 				}
-				
-				Log.d("Vida", "Out");
 			}
 		});
 	}

@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,9 +161,6 @@ public class MessagesAdapter extends BaseAdapter {
 
 	public void addItems(List<Message> newItems, boolean isNew) {
 		
-		Log.d("Vida", "newCount: " + newItems.size());
-		Log.d("Vida", "isNew: " + isNew);
-
 		if (isNew) {
 			for (int i = 0; i < newItems.size(); i++) {
 				boolean isFound = false;
@@ -230,9 +226,6 @@ public class MessagesAdapter extends BaseAdapter {
 	public void setTotalCount(int totalItem) {
 		this.totalCount = totalItem;
 		
-		Log.d("Vida", "Count1: " + getCount());
-		Log.d("Vida", "Count2: " + totalItem);
-
 		if (getCount() >= totalItem) {
 			setEndOfSearch(true);
 		} else {
