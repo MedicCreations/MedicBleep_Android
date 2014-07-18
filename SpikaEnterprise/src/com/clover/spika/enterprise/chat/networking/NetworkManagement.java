@@ -1,14 +1,14 @@
 package com.clover.spika.enterprise.chat.networking;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.TextUtils;
-
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Preferences;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,15 +38,17 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.TextUtils;
+
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
+import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
@@ -70,6 +72,10 @@ public class NetworkManagement {
      * @throws JSONException
      */
     public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
+    	return httpPostRequest(apiUrl, postParams, reqData, null); 
+    }
+    
+    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData, String token) throws IOException, JSONException {
 
         // TODO: što s parametrom reqData?
 
@@ -79,6 +85,9 @@ public class NetworkManagement {
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
         httppost.setHeader("Encoding", "utf-8");
+        if (!TextUtils.isEmpty(token)) {
+        	httppost.setHeader("token", token);
+        }
 
         // form parameters
         if (postParams != null && !postParams.isEmpty()) {
@@ -137,9 +146,9 @@ public class NetworkManagement {
      * @throws IOException
      * @throws JSONException
      */
-    public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException, IOException, JSONException {
 
-        HttpPost httppost = new HttpPost(Const.BASE_URL);
+        HttpPost httppost = new HttpPost(Const.BASE_URL+Const.F_USER_UPLOAD_FILE);
 
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
@@ -148,16 +157,23 @@ public class NetworkManagement {
         if (postParams.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
-            for (Map.Entry<String, String> entry : postParams.entrySet()) {
-                final File file = new File(entry.getValue());
-                FileBody fb = new FileBody(file);
-
-                builder.addPart(entry.getKey(), fb);
-            }
-
+            
+            final File file = new File(postParams.get(Const.FILE));
+            FileBody fb = new FileBody(file);
+            
+            builder.addPart(Const.FILE, fb);
+            
             final HttpEntity entity = builder.build();
-            httppost.setEntity(entity);
+            CustomMultiPartEntity progEntity = new CustomMultiPartEntity(new ProgressListener() {
+				
+				@Override
+				public void transferred(long num, long total) {
+					listener.onSetMax(total);
+					listener.onProgress(num);
+				}
+			}, entity);
+            httppost.setEntity(progEntity);
+
         }
 
         HttpResponse response = HttpSingleton.getInstance().execute(httppost);

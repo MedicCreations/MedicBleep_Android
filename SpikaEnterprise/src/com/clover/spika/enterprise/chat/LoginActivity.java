@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class LoginActivity extends Activity {
 
@@ -110,6 +111,10 @@ public class LoginActivity extends Activity {
                     public void onApiResponse(Result<Login> result) {
                         // TODO: srediti logiku za fail i success response
                         if (result.isSuccess()) {
+                        	Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(),
+                        			result.getResultData().getImage(), 
+                        			result.getResultData().getFirstname(),
+                        			result.getResultData().getLastname());
                             Intent intent = new Intent(LoginActivity.this, LobbyActivity.class);
                             startActivity(intent);
                             finish();

@@ -29,32 +29,49 @@
             android:text="@string/title_lobby"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
-        
     </RelativeLayout>
-    
-    <RelativeLayout android:id="@+id/mainHolder"
+
+    <RelativeLayout
+        android:id="@+id/mainHolder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/actionBarLayout">
-        
-        <com.clover.spika.enterprise.chat.views.RoundImageView 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+        android:layout_below="@id/actionBarLayout"
+        android:background="@color/default_blue" >
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/profileImage"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/circle_with_white_border"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="50dp" />
         
+        <ImageView
+            android:id="@+id/addPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/add_photo"
+            android:layout_alignRight="@id/profileImage"
+            android:layout_alignTop="@id/profileImage"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@null" />
+
         <com.clover.spika.enterprise.chat.views.RobotoThinTextView
             android:id="@+id/profileName"
-            android:layout_below="@id/profileImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/profileImage"
             android:layout_margin="20dp"
-            android:layout_centerInParent="true"
-            android:text="@string/title_lobby"
+            android:gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
-        
+            android:textSize="50sp" />
     </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/actionBarLayout"
+        android:background="@color/blocked_shadow" />
 
 </RelativeLayout>

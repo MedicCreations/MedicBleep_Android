@@ -12,10 +12,6 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-
-import com.clover.spika.enterprise.chat.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -36,6 +32,9 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 
 public class Helper {
 
@@ -180,19 +179,28 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(Context ctx, String userId, String userImageName, String userNickname) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, userId);
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, userImageName);
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USERNAME, userNickname);
+	public static void setUserProperties(Context ctx, String userId, String userImageName, String firstName, String lastName) {
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+		pref.setCustomString(Const.USER_ID, userId);
+		pref.setCustomString(Const.USER_IMAGE_NAME, userImageName);
+		pref.setCustomString(Const.FIRSTNAME, firstName);
+		pref.setCustomString(Const.LASTNAME, lastName);
 	}
-
-	/**
-	 * Clear user properties
-	 */
-	public static void clearUserProperties(Context ctx) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_ID, "");
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, "");
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USERNAME, "");
+	
+	public static String getUserFirstName(Context ctx){
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.FIRSTNAME);
+	}
+	
+	public static String getUserLastName(Context ctx){
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.LASTNAME);
+	}
+	
+	public static String getUserImage(Context ctx){
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_IMAGE_NAME);
+	}
+	
+	public static String getUserId(Context ctx){
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
 	}
 
 	/**

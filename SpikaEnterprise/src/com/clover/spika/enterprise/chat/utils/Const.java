@@ -34,6 +34,7 @@ public class Const {
 
     // Intent const
     public static final String INTENT_TYPE = "IntentType";
+    public static final String PROFILE_INTENT = "profileIntent";
     public static final String PHOTO_INTENT = "PhotoIntent";
     public static final String VIDEO_INTENT = "VideoIntent";
     public static final String GALLERY_INTENT = "GalleryIntent";
@@ -73,10 +74,14 @@ public class Const {
     public static final String TOTAL_ITEMS = "total_items";
     public static final String PAGE_NUMBER = "pageNumber";
     public static final String PAGE_SIZE = "pageSize";
+    public static final String NICKNAME = "nickname";
+    public static final String FIRSTNAME = "firstname";
+    public static final String LASTNAME = "lastname";
     
     public static final String PAGE = "page";
     public static final String SEARCH = "search";
 
+    public static final String IMAGE = "image";
     public static final String IMAGE_NAME = "image_name";
     public static final String USER_ID = "user_id";
     public static final String USER_IMAGE_NAME = "user_image_name";
@@ -118,17 +123,19 @@ public class Const {
     public static final String F_USER_KICK_MEMBER = "kick_member";
     public static final String F_USER_GET_GROUP_MEMBERS = "get_group_members";
     public static final String F_USER_GET_FILE = "/file/download";
+    public static final String F_USER_UPLOAD_FILE = "/file/upload";
     public static final String F_POST_MESSAGE = "post_message";
     public static final String F_GET_MESSAGES = "get_messages_paging";
     public static final String F_GET_NEW_MESSAGES = "get_messages_new";
     public static final String F_RATE_MESSAGE = "rate_message";
     public static final String F_DELETE_MESSAGE = "delete_message";
     public static final String F_REPORT_MESSAGE = "report_message";
+    public static final String F_UPDATE_USER = "/user/update";
 
     // TODO
     // define ('UPDATE_CHARACTER_PUSH_TOKEN', 'update_push_token');
     // define ('USER_UPLOAD_FILE', 'upload_file');
-
+    
     public static final int LIKE_MSG = 1;
     public static final int REPORT_MSG = 2;
 

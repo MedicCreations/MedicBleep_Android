@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
@@ -454,6 +456,17 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void startActivity(Intent intent) {
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 		super.startActivity(intent);
+	}
+	
+	public void openProfile(String fileId){
+		if(TextUtils.isEmpty(fileId)){
+			fileId = Helper.getUserImage(this);
+		}
+		Intent intent = new Intent(this, ProfileActivity.class)
+				.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(this))
+				.putExtra(Const.LASTNAME, Helper.getUserLastName(this))
+				.putExtra(Const.USER_IMAGE_NAME, fileId);
+		startActivity(intent);
 	}
 
 	public void hideKeyboard(View et) {
