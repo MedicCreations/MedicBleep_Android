@@ -86,7 +86,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private String mFilePath;
 	private String groupId = "";
 
-	private LinearLayout btnCreate;
+	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
 
 	@Override
@@ -99,8 +99,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		mImageView = (CroppedImageView) findViewById(R.id.ivCameraCropPhoto);
 		mImageView.setDrawingCacheEnabled(true);
 
-		btnCreate = (LinearLayout) findViewById(R.id.btnCreate);
-		btnCreate.setOnClickListener(this);
+		btnSend = (LinearLayout) findViewById(R.id.btnSend);
+		btnSend.setOnClickListener(this);
 		btnCancel = (LinearLayout) findViewById(R.id.btnCancel);
 		btnCancel.setOnClickListener(this);
 
@@ -569,7 +569,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	public void onClick(View view) {
 
 		int id = view.getId();
-		if (id == R.id.btnCreate) {
+		if (id == R.id.btnSend) {
 			Bitmap resizedBitmap = getBitmapFromView(mImageView);
 			ByteArrayOutputStream bs = new ByteArrayOutputStream();
 			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);

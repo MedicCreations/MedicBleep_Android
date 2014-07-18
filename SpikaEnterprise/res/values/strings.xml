@@ -30,6 +30,7 @@
     <string name="leave_talk">Leve talk</string>
     <string name="change_bg">Change background</string>
     <string name="create_big">CREATE</string>
+    <string name="send_big">SEND</string>
     <string name="cancel_big">CANCEL</string>
     <string name="ok">OK</string>
     <string name="succeed">Success</string>
