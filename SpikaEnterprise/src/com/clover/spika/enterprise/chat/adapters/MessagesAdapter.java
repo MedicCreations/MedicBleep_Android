@@ -110,15 +110,17 @@ public class MessagesAdapter extends BaseAdapter {
 		// Assign values
 		final Message msg = (Message) getItem(position);
 
-//		final boolean me = isMe(msg.getCharacter().getCharacterId());
+		// final boolean me = isMe(msg.getCharacter().getCharacterId());
 		final boolean me = true;
 
 		if (!isScrolling) {
-//			if (me) {
-//				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.meIcon, true);
-//			} else {
-//				imageLoader.displayImage(cntx, msg.getCharacter().getImage_name(), holder.youIcon, true);
-//			}
+			// if (me) {
+			// imageLoader.displayImage(cntx,
+			// msg.getCharacter().getImage_name(), holder.meIcon, true);
+			// } else {
+			// imageLoader.displayImage(cntx,
+			// msg.getCharacter().getImage_name(), holder.youIcon, true);
+			// }
 		}
 
 		if (me) {
@@ -127,14 +129,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (msg.getType() == 0) {
 				holder.defaultMsgLayoutMe.setVisibility(View.VISIBLE);
-//				holder.mePersonName.setText(msg.getCharacter().getUsername());
+				// holder.mePersonName.setText(msg.getCharacter().getUsername());
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == 1) {
 				holder.imageMsgLayoutMe.setVisibility(View.VISIBLE);
-//				holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
+				// holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewMe, false);
+					imageLoader.displayImage(cntx, msg.getFile_id(), holder.imagePreviewMe, false);
 				}
 
 				holder.imagePreviewMe.setOnClickListener(new OnClickListener() {
@@ -142,7 +144,7 @@ public class MessagesAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE_NAME, msg.getFile());
+						intent.putExtra(Const.IMAGE_NAME, msg.getFile_id());
 						cntx.startActivity(intent);
 					}
 				});
@@ -152,33 +154,15 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.timeMe.setText(getTime(msg.getCreated()));
 
-			if (msg.getIs_rated() != null) {
-				holder.likeMe.setTextColor(cntx.getResources().getColor(R.color.text_blue));
-				holder.likeMe.setBackgroundResource(R.drawable.tab_mask_blue);
-			} else {
-				holder.likeMe.setTextColor(cntx.getResources().getColor(R.color.white));
-				holder.likeMe.setBackgroundResource(R.drawable.tab_mask);
-			}
-
-			holder.likeNbrMe.setText("(" + msg.getRating() + ")");
-
-			holder.likeMe.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					if (cntx instanceof ChatActivity) {
-						likeMessage(msg.getMessageId());
-					}
-				}
-			});
-
 			holder.meIcon.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-//					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-//					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+					// intent.putExtra(Const.USER_IMAGE_NAME,
+					// msg.getCharacter().getImage_name());
+					// intent.putExtra(Const.USER_NICKNAME,
+					// msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -191,14 +175,14 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.defaultMsgLayoutYou.setVisibility(View.VISIBLE);
 				holder.imageMsgLayoutYou.setVisibility(View.GONE);
 				holder.youMsgContent.setText(msg.getText());
-//				holder.youPersonName.setText(msg.getCharacter().getUsername());
+				// holder.youPersonName.setText(msg.getCharacter().getUsername());
 			} else if (msg.getType() == 1) {
 				holder.defaultMsgLayoutYou.setVisibility(View.GONE);
 				holder.imageMsgLayoutYou.setVisibility(View.VISIBLE);
-//				holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
+				// holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
 
 				if (!isScrolling) {
-					imageLoader.displayImage(cntx, msg.getFile(), holder.imagePreviewYou, false);
+					imageLoader.displayImage(cntx, msg.getFile_id(), holder.imagePreviewYou, false);
 				}
 
 				holder.imagePreviewYou.setOnClickListener(new OnClickListener() {
@@ -206,7 +190,7 @@ public class MessagesAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE_NAME, msg.getFile());
+						intent.putExtra(Const.IMAGE_NAME, msg.getFile_id());
 						cntx.startActivity(intent);
 					}
 				});
@@ -216,51 +200,15 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.reportMsgYou.setVisibility(View.VISIBLE);
 
-			if (msg.getIs_reported() != null) {
-				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(R.color.text_blue));
-				holder.reportMsgYou.setBackgroundResource(R.drawable.tab_mask_blue);
-			} else {
-				holder.reportMsgYou.setTextColor(cntx.getResources().getColor(R.color.white));
-				holder.reportMsgYou.setBackgroundResource(R.drawable.tab_mask);
-			}
-
-			holder.reportMsgYou.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					if (cntx instanceof ChatActivity) {
-						reportMessage(msg.getMessageId());
-					}
-				}
-			});
-
-			if (msg.getIs_rated() != null) {
-				holder.likeYou.setTextColor(cntx.getResources().getColor(R.color.text_blue));
-				holder.likeYou.setBackgroundResource(R.drawable.tab_mask_blue);
-			} else {
-				holder.likeYou.setTextColor(cntx.getResources().getColor(R.color.white));
-				holder.likeYou.setBackgroundResource(R.drawable.tab_mask);
-			}
-
-			holder.likeNbrYou.setText("(" + msg.getRating() + ")");
-
-			holder.likeYou.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					if (cntx instanceof ChatActivity) {
-						likeMessage(msg.getMessageId());
-					}
-				}
-			});
-
 			holder.youIcon.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(cntx, ProfileActivity.class);
-//					intent.putExtra(Const.USER_IMAGE_NAME, msg.getCharacter().getImage_name());
-//					intent.putExtra(Const.USER_NICKNAME, msg.getCharacter().getUsername());
+					// intent.putExtra(Const.USER_IMAGE_NAME,
+					// msg.getCharacter().getImage_name());
+					// intent.putExtra(Const.USER_NICKNAME,
+					// msg.getCharacter().getUsername());
 
 					cntx.startActivity(intent);
 				}
@@ -286,20 +234,6 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		return convertView;
-	}
-
-	private boolean isMe(String msgFromId) {
-
-		try {
-
-			if (msgFromId.equals(SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomString(Const.USER_ID))) {
-				return true;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return false;
 	}
 
 	private String getTime(String createdString) {
@@ -361,7 +295,7 @@ public class MessagesAdapter extends BaseAdapter {
 			for (int i = 0; i < newItems.size(); i++) {
 				boolean isFound = false;
 				for (int j = 0; j < data.size(); j++) {
-					if (newItems.get(i).getMessageId().equals(data.get(j).getMessageId())) {
+					if (newItems.get(i).getId().equals(data.get(j).getId())) {
 						isFound = true;
 						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
 							data.set(j, newItems.get(i));
@@ -387,7 +321,7 @@ public class MessagesAdapter extends BaseAdapter {
 		int position = 0;
 
 		for (int i = 0; i < data.size(); i++) {
-			if (data.get(i).getMessageId().equals(msgId)) {
+			if (data.get(i).getId().equals(msgId)) {
 				isFound = true;
 				position = i;
 

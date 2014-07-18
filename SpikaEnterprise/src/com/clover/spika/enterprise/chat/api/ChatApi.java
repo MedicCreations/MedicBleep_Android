@@ -21,6 +21,11 @@ import com.google.gson.GsonBuilder;
 
 public class ChatApi {
 
+	public void startChat(Context ctx, boolean showProgressBar) {
+		new BaseAsyncTask<Void, Void, Result>(ctx, showProgressBar) {
+		}.execute();
+	}
+
 	public void sendMessage(final String text, final int type, final String groupId, Context ctx, final ApiCallback<Integer> listener) {
 		new BaseAsyncTask<Void, Void, Integer>(ctx, true) {
 

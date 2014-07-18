@@ -132,12 +132,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-//				if (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId)) {
-//					AppDialog dialog = new AppDialog(instance, false);
-//					dialog.okCancelDialog(Const.T_DELETE_MSG, instance.getResources().getString(R.string.ask_delete), adapter.getData().get(position).getMessageId());
-//
-//					return true;
-//				}
+				// if
+				// (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId))
+				// {
+				// AppDialog dialog = new AppDialog(instance, false);
+				// dialog.okCancelDialog(Const.T_DELETE_MSG,
+				// instance.getResources().getString(R.string.ask_delete),
+				// adapter.getData().get(position).getMessageId());
+				//
+				// return true;
+				// }
 
 				return false;
 			}
@@ -358,14 +362,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			adapterCount = adapter.getCount();
 
 			if (!isClear && !adapter.getData().isEmpty() && adapter.getCount() > 0) {
-				msgId = adapter.getData().get(0).getMessageId();
+				msgId = adapter.getData().get(0).getId();
 			}
 		} else if (isNewMsg) {
 
 			adapterCount = adapter.getCount();
 
 			if ((adapter.getCount() - 1) >= 0) {
-				msgId = adapter.getData().get(adapter.getCount() - 1).getMessageId();
+				msgId = adapter.getData().get(adapter.getCount() - 1).getId();
 			}
 		}
 
