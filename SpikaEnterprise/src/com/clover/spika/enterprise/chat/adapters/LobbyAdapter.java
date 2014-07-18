@@ -16,33 +16,37 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.ChatsLobby;
 
-public class UserAdapter extends BaseAdapter {
+public class LobbyAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<User> data = new ArrayList<User>();
+    private List<ChatsLobby> data = new ArrayList<ChatsLobby>();
 
     private ImageLoader imageLoader;
 
-    public UserAdapter(Context context, Collection<User> users) {
+    public LobbyAdapter(Context context, Collection<ChatsLobby> users, boolean isUsers) {
         this.mContext = context;
         this.data.addAll(users);
 
         imageLoader = new ImageLoader(context);
-        imageLoader.setDefaultImage(R.drawable.default_user_image);
+        if(isUsers){
+        	imageLoader.setDefaultImage(R.drawable.default_user_image);
+        }else{
+        	imageLoader.setDefaultImage(R.drawable.default_group_image);
+        }
     }
 
     public Context getContext() {
         return mContext;
     }
     
-    public void setData(List<User> list){
+    public void setData(List<ChatsLobby> list){
     	data = list;
     	notifyDataSetChanged();
     }
     
-    public void addData(List<User> list){
+    public void addData(List<ChatsLobby> list){
     	data.addAll(list);
     	notifyDataSetChanged();
     }
@@ -53,7 +57,7 @@ public class UserAdapter extends BaseAdapter {
     }
 
     @Override
-    public User getItem(int position) {
+    public ChatsLobby getItem(int position) {
         return data.get(position);
     }
 
@@ -68,7 +72,7 @@ public class UserAdapter extends BaseAdapter {
         final ViewHolderCharacter holder;
         if (convertView == null) {
 
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_person, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_lobby, parent, false);
 
             holder = new ViewHolderCharacter(convertView);
             convertView.setTag(holder);
@@ -77,16 +81,24 @@ public class UserAdapter extends BaseAdapter {
         }
 
         // set image to null
-        holder.profileImg.setImageDrawable(null);
+        holder.lobbyImage.setImageDrawable(null);
 
-        if (position % 2 == 0) {
+        if (position % 2 != 0) {
             holder.itemLayout.setBackgroundColor(getContext().getResources().getColor(R.color.gray_in_adapter));
         } else {
             holder.itemLayout.setBackgroundColor(Color.WHITE);
         }
 
-        imageLoader.displayImage(getContext(), getItem(position).getImage(), holder.profileImg, true);
-        holder.personName.setText(getItem(position).getFirstName() + " " + getItem(position).getLastName());
+        imageLoader.displayImage(getContext(), getItem(position).getImage(), holder.lobbyImage, true);
+        holder.lobbyName.setText(getItem(position).getChatName());
+        
+        if(Integer.parseInt(getItem(position).getUnread()) > 0){
+        	holder.unreadLayout.setVisibility(View.VISIBLE);
+        	holder.unreadText.setText(getItem(position).getUnread());
+        }else{
+        	holder.unreadLayout.setVisibility(View.INVISIBLE);
+        	holder.unreadText.setText("");
+        }
 
         return convertView;
     }
@@ -94,16 +106,22 @@ public class UserAdapter extends BaseAdapter {
     public class ViewHolderCharacter {
 
         public RelativeLayout itemLayout;
-        public ImageView profileImg;
+        public ImageView lobbyImage;
 
-        public TextView personName;
+        public TextView lobbyName;
+        
+        public TextView unreadText;
+        public RelativeLayout unreadLayout;
 
         public ViewHolderCharacter(View view) {
 
             itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
-            profileImg = (ImageView) view.findViewById(R.id.userImage);
+            lobbyImage = (ImageView) view.findViewById(R.id.lobbyImage);
 
-            personName = (TextView) view.findViewById(R.id.personName);
+            lobbyName = (TextView) view.findViewById(R.id.lobbyName);
+            
+            unreadText = (TextView) view.findViewById(R.id.unreadText);
+            unreadLayout = (RelativeLayout) view.findViewById(R.id.unreadLayout);
         }
 
     }

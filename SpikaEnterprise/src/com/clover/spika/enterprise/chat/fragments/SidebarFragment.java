@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.clover.spika.enterprise.chat.GroupListActivity;
+import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
@@ -55,7 +56,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), LobbyActivity.class));
 			}
 		});
 

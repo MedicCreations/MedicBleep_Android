@@ -86,7 +86,7 @@ public class UserListActivity extends BaseActivity implements OnClickListener, O
 
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		} else if (data.size() < mTotalCount) {
+		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
 
@@ -139,7 +139,7 @@ public class UserListActivity extends BaseActivity implements OnClickListener, O
 
 		position = position - 1;
 
-		if (position != 0 && position != adapter.getCount()) {
+		if (position != -1 && position != adapter.getCount()) {
 			User user = adapter.getItem(position);
 
 			Intent intent = new Intent(this, ChatActivity.class);

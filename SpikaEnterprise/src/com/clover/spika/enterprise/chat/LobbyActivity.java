@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,15 +13,24 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ToggleButton;
 
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.GroupLobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.UserLobbyFragment;
+import com.clover.spika.enterprise.chat.listeners.LobbyChangedListener;
+import com.clover.spika.enterprise.chat.models.LobbyModel;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 
 public class LobbyActivity extends BaseActivity implements OnPageChangeListener, OnClickListener {
 
 	ViewPager viewPager;
 	ToggleButton groupsTab;
 	ToggleButton usersTab;
+	
+	private LobbyModel model;
+	private List<LobbyChangedListener> lobbyChangedListener;
 	
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -36,10 +48,45 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
         usersTab.setOnClickListener(this);
 	}
 	
+	private void setLobbyChangedListener(LobbyChangedListener listener) {
+		if (lobbyChangedListener == null) {
+			lobbyChangedListener = new ArrayList<LobbyChangedListener>();
+		}
+		if (!this.lobbyChangedListener.contains(listener)) {
+			this.lobbyChangedListener.add(listener);
+		}
+	}
+	
+	public void getLobby(LobbyChangedListener listener) {
+		
+		if (listener == null)
+			return;
+
+		setLobbyChangedListener(listener);
+		if (this.model != null) {
+			listener.onChangeAll(this.model);
+		}
+
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
 		setTabsStates(viewPager.getCurrentItem());
+		getAllLobby(true, 0);
+	}
+	
+	private void getAllLobby(boolean showProgress, int page){
+		new LobbyApi().getLobbyByType(page, Const.ALL_TYPE, this, showProgress, new ApiCallback<LobbyModel>() {
+			
+			@Override
+			public void onApiResponse(Result<LobbyModel> result) {
+				model = result.getResultData();
+				for (LobbyChangedListener listener : lobbyChangedListener) {
+					listener.onChangeAll(result.getResultData());
+				}
+			}
+		});
 	}
 
 	public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
