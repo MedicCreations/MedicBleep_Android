@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -103,9 +102,6 @@ public class AppDialog extends Dialog {
 					((BaseActivity) cntx).startActivity(intent);
 					((BaseActivity) cntx).finish();
 
-					if (GroupListActivity.instance != null) {
-						GroupListActivity.instance.finish();
-					}
 				} else if (isFinish) {
 					((BaseActivity) cntx).finish();
 				}

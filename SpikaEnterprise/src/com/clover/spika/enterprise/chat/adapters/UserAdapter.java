@@ -1,7 +1,12 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +18,6 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.User;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class UserAdapter extends BaseAdapter {
 
@@ -34,6 +35,18 @@ public class UserAdapter extends BaseAdapter {
 
     public Context getContext() {
         return mContext;
+    }
+    
+    public void setData(List<User> list){
+    	data = list;
+    	notifyDataSetChanged();
+    	Log.d("LOG", "set data");
+    }
+    
+    public void addData(List<User> list){
+    	data.addAll(list);
+    	notifyDataSetChanged();
+    	Log.d("LOG", "add data");
     }
 
     @Override
@@ -57,7 +70,7 @@ public class UserAdapter extends BaseAdapter {
         final ViewHolderCharacter holder;
         if (convertView == null) {
 
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_person, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_person, parent, false);
 
             holder = new ViewHolderCharacter(convertView);
             convertView.setTag(holder);

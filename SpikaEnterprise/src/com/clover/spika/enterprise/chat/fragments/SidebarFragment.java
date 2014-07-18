@@ -9,10 +9,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -45,7 +47,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), ProfileActivity.class));
 			}
 		});
 
@@ -62,7 +64,7 @@ public class SidebarFragment extends Fragment {
         users.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), UserListActivity.class));
+                ((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
             }
         });
 
@@ -71,7 +73,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getActivity(), GroupListActivity.class));
+				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
 			}
 		});
 

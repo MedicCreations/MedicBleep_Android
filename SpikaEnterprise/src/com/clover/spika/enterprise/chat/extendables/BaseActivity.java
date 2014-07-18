@@ -27,7 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
