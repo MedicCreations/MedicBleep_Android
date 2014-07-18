@@ -1,174 +1,165 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootView"
+    xmlns:custom="http://schemas.android.com/apk/res/com.clover.spika.enterprise.chat.views"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <RelativeLayout
-        android:id="@+id/header"
+        android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
-        android:layout_alignParentTop="true" >
+        android:background="@color/default_blue" >
 
-        <ImageView
-            android:id="@+id/headerBack"
+        <ImageButton
+            android:id="@+id/sidebarBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
             android:contentDescription="@null"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:src="@drawable/icon_sidebar" />
 
-        <TextView
-            android:id="@+id/headerTitle"
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@color/text_blue"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_toLeftOf="@+id/userImage"
+            android:layout_toRightOf="@+id/sidebarBtn"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
-        <RelativeLayout
-            android:id="@+id/headerPerson"
-            android:layout_width="wrap_content"
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/userImage"
+            android:layout_width="@dimen/menu_height"
             android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/headerMore"
-            android:layout_toRightOf="@+id/headerTitle"
-            android:gravity="right"
-            android:padding="2dp" >
-
-            <ImageView
-                android:id="@+id/meIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="@null" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="@null" />
-        </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/headerMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/headerPerson"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/headerPerson"
             android:layout_centerVertical="true"
-            android:contentDescription="@null"
-            android:padding="10dp" />
+            android:layout_marginRight="10dp"
+            android:contentDescription="@null" />
     </RelativeLayout>
-
-    <ListView
-        android:id="@+id/main_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/chatLayout"
-        android:layout_below="@+id/header"
-        android:background="@color/transparent"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:fadingEdge="none"
-        android:listSelector="@color/transparent"
-        android:scrollbars="none" />
 
     <RelativeLayout
-        android:id="@+id/chatLayout"
+        android:id="@+id/mainContent"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/menu_height"
-        android:layout_alignParentBottom="true"
-        android:padding="5dp" >
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBarLayout"
+        android:background="@android:color/white" >
 
-        <ImageView
-            android:id="@+id/footerMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@null"
-            android:padding="5dp" />
-
-        <EditText
-            android:id="@+id/etMessage"
+        <ListView
+            android:id="@+id/main_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/footerMore"
-            android:background="@drawable/chat_mask"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:padding="5dp"
-            android:singleLine="true" />
-    </RelativeLayout>
-
-    <SlidingDrawer
-        android:id="@+id/slDrawer"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentBottom="true"
-        android:content="@+id/addContent"
-        android:handle="@+id/handle"
-        android:orientation="vertical" >
+            android:layout_above="@+id/chatLayout"
+            android:background="@color/transparent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:fadingEdge="none"
+            android:listSelector="@color/transparent"
+            android:scrollbars="none" />
 
         <RelativeLayout
-            android:id="@+id/handle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:id="@+id/chatLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/menu_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/default_blue"
+            android:padding="5dp" >
 
-            <Button
+            <ImageButton
+                android:id="@+id/footerMore"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/more_button_selector" />
+
+            <EditText
+                android:id="@+id/etMessage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" >
-            </Button>
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/footerMore"
+                android:background="@drawable/chat_mask"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:padding="5dp"
+                android:singleLine="true" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/addContent"
+        <SlidingDrawer
+            android:id="@+id/slDrawer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/chat_menu_gray"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingBottom="20dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="20dp"
-            android:weightSum="2" >
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:content="@+id/addContent"
+            android:handle="@+id/handle"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/photo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/tab_mask"
-                android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:text="@string/photo"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+            <RelativeLayout
+                android:id="@+id/handle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/gallery"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/tab_mask"
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" >
+                </Button>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/addContent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/chat_menu_gray"
                 android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:text="@string/gallery"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </SlidingDrawer>
+                android:orientation="horizontal"
+                android:paddingBottom="20dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="20dp"
+                android:weightSum="2" >
+
+                <TextView
+                    android:id="@+id/photo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/tab_mask"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/photo"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/gallery"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/tab_mask"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/gallery"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </SlidingDrawer>
+    </RelativeLayout>
 
 </RelativeLayout>

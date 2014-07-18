@@ -55,6 +55,8 @@ public class Const {
 	public static final String MESSAGES = "messages";
 	public static final String MESSAGE_ID = "message_id";
 	public static final String FILE_ID = "file_id";
+	public static final String LONGITUDE = "longitude";
+	public static final String LATITUDE = "latitude";
 	public static final String FILE = "file";
 	public static final String TEXT = "text";
 	public static final String MSG_TYPE = "type";
@@ -86,7 +88,7 @@ public class Const {
 	public static final String F_POST_MESSAGE = "post_message";
 	public static final String F_GET_MESSAGES = "/message/paging";
 	public static final String F_START_NEW_CHAT = "/user/chat/start";
-	public static final String F_GET_NEW_MESSAGES = "get_messages_new";
+	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
 

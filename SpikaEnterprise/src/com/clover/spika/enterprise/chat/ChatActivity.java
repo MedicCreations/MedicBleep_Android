@@ -1,22 +1,19 @@
 package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
+
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -36,19 +33,20 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
-public class ChatActivity extends BaseActivity implements OnClickListener, OnTouchListener {
+public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private static final int OPENED = 1003;
 	private static final int CLOSED = 1004;
 
 	ImageLoader imageLoader;
 
-	TextView headerTitle;
+	RobotoThinTextView screenTitle;
 	ImageView headerBack;
 	RelativeLayout headerPerson;
 	ImageView meIcon;
-	ImageView headerMore;
 
 	TextView photo;
 	TextView gallery;
@@ -63,56 +61,48 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 	String chatId = null;
 	String chatName = null;
 
-	int radius = 0;
 	int totalItems = 0;
 
 	boolean isRunning = false;
 	boolean isResume = false;
 
-	ImageView footerMore;
+	ImageButton footerMore;
 	RelativeLayout chatLayout;
 	SlidingDrawer mSlidingDrawer;
 	RelativeLayout.LayoutParams mParamsOpened;
 	RelativeLayout.LayoutParams mParamsClosed;
 
 	@Override
-	public void onCreate(Bundle arg0) {
-		super.onCreate(arg0);
+	public void onCreate(Bundle bundle) {
+		super.onCreate(bundle);
 		setContentView(R.layout.activity_chat);
 
 		imageLoader = new ImageLoader(this);
 
-		headerTitle = (TextView) findViewById(R.id.headerTitle);
-		headerBack = (ImageView) findViewById(R.id.headerBack);
-		headerBack.setOnClickListener(this);
-		headerPerson = (RelativeLayout) findViewById(R.id.headerPerson);
-		headerPerson.setOnClickListener(this);
-		headerMore = (ImageView) findViewById(R.id.headerMore);
-		headerMore.setOnClickListener(this);
+		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		meIcon = (ImageView) findViewById(R.id.meIcon);
-		footerMore = (ImageView) findViewById(R.id.footerMore);
-		footerMore.setOnTouchListener(this);
+
+		footerMore = (ImageButton) findViewById(R.id.footerMore);
+		footerMore.setOnClickListener(this);
 
 		photo = (TextView) findViewById(R.id.photo);
-		photo.setOnTouchListener(this);
+		photo.setOnClickListener(this);
 		gallery = (TextView) findViewById(R.id.gallery);
-		gallery.setOnTouchListener(this);
+		gallery.setOnClickListener(this);
 
 		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.slDrawer);
 		chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
+
 		mParamsClosed = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
 		mParamsClosed.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
 		mParamsOpened = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
 		mParamsOpened.addRule(RelativeLayout.ABOVE, mSlidingDrawer.getId());
 
-		Bitmap bitmapBorder = BitmapFactory.decodeResource(getResources(), R.drawable.circle);
-		radius = bitmapBorder.getWidth();
-		bitmapBorder = null;
-
 		main_list_view = (ListView) findViewById(R.id.main_list_view);
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		main_list_view.setAdapter(adapter);
+
 		main_list_view.setOnScrollListener(new OnScrollListener() {
 			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			}
@@ -127,28 +117,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			}
 		});
 
-		main_list_view.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-				// if
-				// (adapter.getData().get(position).getCharacter().getCharacterId().equals(fromProfileId))
-				// {
-				// AppDialog dialog = new AppDialog(instance, false);
-				// dialog.okCancelDialog(Const.T_DELETE_MSG,
-				// instance.getResources().getString(R.string.ask_delete),
-				// adapter.getData().get(position).getMessageId());
-				//
-				// return true;
-				// }
-
-				return false;
-			}
-		});
-
 		etMessage = (EditText) findViewById(R.id.etMessage);
-		etMessage.setOnTouchListener(this);
+		etMessage.setOnClickListener(this);
+
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
@@ -182,8 +153,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			setSlidingDrawer(CLOSED);
 		}
 
-		adapter.notifyDataSetChanged();
-
 		if (!TextUtils.isEmpty(myProfileImg)) {
 			imageLoader.displayImage(this, myProfileImg, meIcon, true);
 		}
@@ -197,6 +166,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 		} else {
 			isResume = true;
 		}
+
+		adapter.notifyDataSetChanged();
 	}
 
 	private void setSlidingDrawer(int state) {
@@ -233,9 +204,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 
-				SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(chatId, false);
-
-				headerTitle.setText(chatName);
+				screenTitle.setText(chatName);
 
 				adapter.setGroupId(chatId);
 				adapter.clearItems();
@@ -245,85 +214,88 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
-				// getMessages(true, true, true, false, false, false);
-
 				new ChatApi().startChat(intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
 
 					@Override
 					public void onApiResponse(Result<Chat> result) {
-						chatId = result.getResultData().getChat_id();
-						chatName = result.getResultData().getChat_name();
 
-						SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).setCustomBoolean(chatId, false);
+						if (result.isSuccess()) {
 
-						headerTitle.setText(chatName);
+							chatId = result.getResultData().getChat_id();
+							chatName = result.getResultData().getChat_name();
 
-						adapter.setGroupId(chatId);
-						adapter.clearItems();
+							screenTitle.setText(chatName);
+
+							adapter.setGroupId(chatId);
+							adapter.clearItems();
+						} else {
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+
+							if (result.getResultData() != null) {
+								dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
+							} else {
+								dialog.setFailed("");
+							}
+						}
 					}
 				});
-
 			}
 		}
 	}
 
-	@Override
-	public boolean onTouch(View view, MotionEvent event) {
-
-		int id = view.getId();
-		if (id == R.id.etMessage) {
-			showKeyboard(etMessage);
-			setSlidingDrawer(CLOSED);
-		} else if (id == R.id.footerMore) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				// TODO
-				// footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon_clicked));
-			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				// TODO
-				// footerMore.setImageDrawable(getResources().getDrawable(R.drawable.gb_chat_plus_icon));
-
-				setSlidingDrawer(OPENED);
-			}
-		} else if (id == R.id.photo) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				photo.setBackgroundResource(R.drawable.tab_mask_blue);
-			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				photo.setBackgroundResource(R.drawable.tab_mask);
-
-				Intent intent = new Intent(this, CameraCropActivity.class);
-				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
-				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.CHAT_ID, chatId);
-				startActivity(intent);
-			}
-		} else if (id == R.id.gallery) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				gallery.setBackgroundResource(R.drawable.tab_mask_blue);
-			} else if (event.getAction() == MotionEvent.ACTION_UP) {
-				gallery.setBackgroundResource(R.drawable.tab_mask);
-
-				Intent intent = new Intent(this, CameraCropActivity.class);
-				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.CHAT_ID, chatId);
-				startActivity(intent);
-			}
+	private void callNewMsgs() {
+		if (adapter.getCount() > 0) {
+			getMessages(false, false, false, true, true, false);
 		} else {
+			getMessages(true, true, true, false, true, false);
 		}
+	}
 
-		return true;
+	@Override
+	public void onBackPressed() {
+
+		if (mSlidingDrawer.isOpened()) {
+			setSlidingDrawer(CLOSED);
+
+			return;
+		} else {
+			super.onBackPressed();
+		}
+	}
+
+	public void callAfterPush(String disId, String msg, int type) {
+		if (disId.equals(chatId)) {
+			getMessages(false, false, false, true, false, true);
+		} else {
+			showPopUp(msg, disId, type);
+		}
 	}
 
 	@Override
 	public void onClick(View view) {
 		int id = view.getId();
-		if (id == R.id.headerBack) {
-			finish();
+		if (id == R.id.etMessage) {
+			showKeyboard(etMessage);
+			setSlidingDrawer(CLOSED);
+		} else if (id == R.id.footerMore) {
+			setSlidingDrawer(OPENED);
+		} else if (id == R.id.photo) {
+			Intent intent = new Intent(this, CameraCropActivity.class);
+			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+			intent.putExtra(Const.FROM_WAll, true);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivity(intent);
+		} else if (id == R.id.gallery) {
+			Intent intent = new Intent(this, CameraCropActivity.class);
+			intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+			intent.putExtra(Const.FROM_WAll, true);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivity(intent);
 		}
 	}
 
 	public void sendMessage(final String text, final int type) {
-		new ChatApi().sendMessage(text, type, chatId, this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(type, chatId, text, null, null, null, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
@@ -332,32 +304,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 					hideKeyboard(etMessage);
 
 					callNewMsgs();
-
-					// XXX
-					// // Temporary message
-					// Message tempMessage = new Message();
-					// tempMessage.setText(text);
-					//
-					// Character character = new Character();
-					//
-					// tempMessage.setCharacter(character);
-					//
-					// tempMessage.getCharacter().setUsername(myNickName);
-					// tempMessage.getCharacter().setImage_name(myProfileImg);
-					// tempMessage.getCharacter().setCharacter_id(fromProfileId);
-					//
-					// tempMessage.setRating("0");
-					// tempMessage.setType(type);
-					//
-					// tempMessage.setId("TempMessage");
-					// tempMessage.setCreated(String.valueOf(System.currentTimeMillis()
-					// / 1000L));
-					//
-					// adapter.addTempMsg(tempMessage);
-					//
-					// main_list_view.setSelectionFromTop(adapter.getCount(),
-					// 0);
-					// adapter.setScrolling(false);
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
 					dialog.setFailed(result.getResultData());
@@ -435,39 +381,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 
 					adapter.setScrolling(false);
 				}
-
 			}
 		});
-
-	}
-
-	public void callNewMsgs() {
-		if (adapter.getCount() > 0) {
-			getMessages(false, false, false, true, true, false);
-		} else {
-			getMessages(true, true, true, false, true, false);
-		}
-	}
-
-	@Override
-	public void onBackPressed() {
-
-		if (mSlidingDrawer.isOpened()) {
-			setSlidingDrawer(CLOSED);
-
-			return;
-		} else {
-			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(chatId, false);
-			super.onBackPressed();
-		}
-	}
-
-	public void callAfterPush(String disId, String msg, int type) {
-		if (disId.equals(chatId)) {
-			getMessages(false, false, false, true, false, true);
-		} else {
-			showPopUp(msg, disId, type);
-		}
 	}
 
 }

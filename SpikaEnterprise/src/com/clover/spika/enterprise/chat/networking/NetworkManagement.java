@@ -56,37 +56,35 @@ public class NetworkManagement {
 
 	public static final String TOKEN = "Token";
 
-	public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
-		return httpPostRequest("", postParams, reqData);
+	public static JSONObject httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
+		return httpPostRequest("", postParams, token);
 	}
 
-    /**
-     * Http POST request
-     *
-     * @param apiUrl
-     * @param postParams
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
-    	return httpPostRequest(apiUrl, postParams, reqData, null); 
-    }
-    
-    public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData, String token) throws IOException, JSONException {
+	/**
+	 * Http POST request
+	 * 
+	 * @param apiUrl
+	 * @param postParams
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams) throws IOException, JSONException {
+		return httpPostRequest(apiUrl, postParams, null);
+	}
+
+	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException, JSONException {
 
 		HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
 		Logger.custom("RawRequest", httppost.getURI().toString());
 
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-        httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
-
-        httppost.setHeader("Encoding", "utf-8");
-        if (!TextUtils.isEmpty(token)) {
-        	httppost.setHeader("token", token);
-        }
+		httppost.setHeader("Encoding", "utf-8");
+		if (!TextUtils.isEmpty(token)) {
+			httppost.setHeader("token", token);
+		}
 
 		// form parameters
 		if (postParams != null && !postParams.isEmpty()) {
@@ -135,47 +133,47 @@ public class NetworkManagement {
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
 
-    /**
-     * Post/upload file
-     *
-     * @param postParams
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException, IOException, JSONException {
+	/**
+	 * Post/upload file
+	 * 
+	 * @param postParams
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException, IOException, JSONException {
 
-        HttpPost httppost = new HttpPost(Const.BASE_URL+Const.F_USER_UPLOAD_FILE);
+		HttpPost httppost = new HttpPost(Const.BASE_URL + Const.F_USER_UPLOAD_FILE);
 
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
 		httppost.setHeader(TOKEN, prefs.getToken());
 
-        if (postParams.size() > 0) {
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            
-            final File file = new File(postParams.get(Const.FILE));
-            FileBody fb = new FileBody(file);
-            
-            builder.addPart(Const.FILE, fb);
-            
-            final HttpEntity entity = builder.build();
-            CustomMultiPartEntity progEntity = new CustomMultiPartEntity(new ProgressListener() {
-				
+		if (postParams.size() > 0) {
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+			final File file = new File(postParams.get(Const.FILE));
+			FileBody fb = new FileBody(file);
+
+			builder.addPart(Const.FILE, fb);
+
+			final HttpEntity entity = builder.build();
+			CustomMultiPartEntity progEntity = new CustomMultiPartEntity(new ProgressListener() {
+
 				@Override
 				public void transferred(long num, long total) {
 					listener.onSetMax(total);
 					listener.onProgress(num);
 				}
 			}, entity);
-            httppost.setEntity(progEntity);
+			httppost.setEntity(progEntity);
 
-        }
+		}
 
-        HttpResponse response = HttpSingleton.getInstance().execute(httppost);
-        HttpEntity entity = response.getEntity();
+		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+		HttpEntity entity = response.getEntity();
 
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
