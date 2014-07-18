@@ -27,7 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
@@ -361,14 +360,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				});
 
 				view.startAnimation(notAnimIn);
-
-				if (GroupListActivity.instance != null && GroupListActivity.instance.adapter != null) {
-					if (type == Const.PT_MESSAGE) {
-						GroupListActivity.instance.adapter.notifyDataSetChanged();
-					} else if (type == Const.PT_GROUP_CREATED) {
-						GroupListActivity.instance.getGroup(0, null, true);
-					}
-				}
+				
 			};
 		}.execute();
 	}

@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
+import java.util.HashMap;
+
+import org.json.JSONObject;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -18,10 +21,6 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class AppDialog extends Dialog {
 
@@ -110,9 +109,6 @@ public class AppDialog extends Dialog {
 					((BaseActivity) cntx).startActivity(intent);
 					((BaseActivity) cntx).finish();
 
-					if (GroupListActivity.instance != null) {
-						GroupListActivity.instance.finish();
-					}
 				} else if (isFinish) {
 					((BaseActivity) cntx).finish();
 				}

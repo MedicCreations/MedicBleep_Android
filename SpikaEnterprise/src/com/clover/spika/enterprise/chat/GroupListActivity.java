@@ -1,11 +1,13 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -18,14 +20,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GroupListActivity extends BaseActivity implements OnClickListener, OnSearchListener {
-
-	public static GroupListActivity instance;
-
-	TextView screenTitle;
 
 	RelativeLayout noItemsLayout;
 
@@ -41,10 +36,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_group_list);
-
-		instance = this;
-
-		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
 
@@ -124,12 +115,6 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 
 	@Override
 	public void onClick(View view) {
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		instance = null;
 	}
 
 	@Override
