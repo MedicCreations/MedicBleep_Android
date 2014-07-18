@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ public class UserAdapter extends BaseAdapter {
         this.data.addAll(users);
 
         imageLoader = new ImageLoader(context);
+        imageLoader.setDefaultImage(R.drawable.default_user_image);
     }
 
     public Context getContext() {
@@ -40,13 +40,11 @@ public class UserAdapter extends BaseAdapter {
     public void setData(List<User> list){
     	data = list;
     	notifyDataSetChanged();
-    	Log.d("LOG", "set data");
     }
     
     public void addData(List<User> list){
     	data.addAll(list);
     	notifyDataSetChanged();
-    	Log.d("LOG", "add data");
     }
 
     @Override

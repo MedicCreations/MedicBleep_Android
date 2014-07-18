@@ -39,7 +39,7 @@ public class GroupAdapter extends BaseAdapter {
 		this.data = arrayList;
 
 		imageLoader = new ImageLoader(context);
-
+		imageLoader.setDefaultImage(R.drawable.default_group_image);
 	}
 
 	@Override

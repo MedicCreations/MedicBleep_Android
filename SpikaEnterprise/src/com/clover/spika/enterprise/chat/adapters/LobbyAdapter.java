@@ -25,11 +25,16 @@ public class LobbyAdapter extends BaseAdapter {
 
     private ImageLoader imageLoader;
 
-    public LobbyAdapter(Context context, Collection<ChatsLobby> users) {
+    public LobbyAdapter(Context context, Collection<ChatsLobby> users, boolean isUsers) {
         this.mContext = context;
         this.data.addAll(users);
 
         imageLoader = new ImageLoader(context);
+        if(isUsers){
+        	imageLoader.setDefaultImage(R.drawable.default_user_image);
+        }else{
+        	imageLoader.setDefaultImage(R.drawable.default_group_image);
+        }
     }
 
     public Context getContext() {

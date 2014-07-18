@@ -44,7 +44,7 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>());
+		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);

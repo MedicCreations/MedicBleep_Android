@@ -39,7 +39,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		
 		addPhoto = (ImageView) findViewById(R.id.addPhoto);
 		addPhoto.setOnClickListener(this);
-
+		
 		getIntentData(getIntent());
 	}
 
@@ -47,6 +47,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		if (intent != null && intent.getExtras() != null) {
 			imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImage, true);
 			profileName.setText(intent.getExtras().getString(Const.FIRSTNAME)+" "+intent.getExtras().getString(Const.LASTNAME));
+			
+			setScreenTitle(intent.getExtras().getString(Const.FIRSTNAME));
 		}
 	}
 	

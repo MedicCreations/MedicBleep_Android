@@ -40,6 +40,7 @@ public class ImageLoader {
 	Handler handler = new Handler();
 
 	int radius = 0;
+	int id = -1;
 
 	public ImageLoader(Context context) {
 
@@ -54,8 +55,12 @@ public class ImageLoader {
 		bitmapBorder = null;
 	}
 
+	public void setDefaultImage(int id){
+		this.id = id;
+	}
 	public void displayImage(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
 		// Store image and url in Map
+		if(id != -1) imageView.setImageResource(id);
 		imageViews.put(imageView, url);
 
 		// Check image is stored in MemoryCache Map or not (see
