@@ -31,7 +31,7 @@ public class UserApi {
 				getParams.put(Const.IMAGE, image);
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, getParams, new JSONObject(), 
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, getParams, 
 							SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
 				} catch (JSONException e) {
 					e.printStackTrace();
