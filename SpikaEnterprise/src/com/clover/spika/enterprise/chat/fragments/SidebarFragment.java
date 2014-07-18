@@ -9,11 +9,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.clover.spika.enterprise.chat.ProfileActivity;
-import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
@@ -47,7 +46,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), ProfileActivity.class));
+				((BaseActivity)getActivity()).openProfile(null);
 			}
 		});
 
@@ -73,7 +72,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
+				((BaseActivity)getActivity()).startActivity(new Intent(getActivity(), GroupListActivity.class));
 			}
 		});
 

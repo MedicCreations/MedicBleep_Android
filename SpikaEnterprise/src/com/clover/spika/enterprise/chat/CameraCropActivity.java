@@ -6,20 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-
-import org.json.JSONObject;
-
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.views.CroppedImageView;
-
-import com.clover.spika.enterprise.chat.R;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -50,6 +36,20 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.FileUploadApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UpdateUserModel;
+import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
 
@@ -586,49 +586,26 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void fileUploadAsync(final String filePath) {
-		new BaseAsyncTask<Void, Void, Integer>(this, true) {
+		new FileUploadApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
-			String imageName = null;
-			int resultCode = 0;
-
-			protected void onPreExecute() {
-				super.onPreExecute();
-			};
-
-			protected Integer doInBackground(Void... params) {
-
-				try {
-
-					HashMap<String, String> postParams = new HashMap<String, String>();
-					postParams.put(Const.IMAGE, filePath);
-
-					JSONObject result = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams);
-
-					if (result != null) {
-						resultCode = result.getInt(Const.CODE);
-						imageName = result.getString(Const.FILE_ID);
-						return resultCode;
+			@Override
+			public void onApiResponse(Result<UploadFileModel> result) {
+				if (result.isSuccess()) {
+					if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
+						// send message
+						sendMessage(result.getResultData().getFileId());
+					} else {
+						// update user
+						updateUser(result.getResultData().getFileId());
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					return resultCode;
-				}
-
-				return Const.E_FAILED;
-			};
-
-			protected void onPostExecute(Integer result) {
-				super.onPostExecute(result);
-
-				if (result.equals(Const.API_SUCCESS)) {
-					sendMessage(imageName);
 				} else {
-					AppDialog dialog = new AppDialog(context, false);
-					dialog.setFailed(result);
+					if (result.hasResultData()) {
+						Toast.makeText(CameraCropActivity.this, result.getResultData().getMessage(), Toast.LENGTH_SHORT).show();
+						finish();
+					}
 				}
-			};
-
-		}.execute();
+			}
+		});
 	}
 
 	public void copy(File src, File dst) {
@@ -658,50 +635,73 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void sendMessage(final String imagePath) {
+		// new BaseAsyncTask<Void, Void, Integer>(this, true) {
+		//
+		// protected void onPreExecute() {
+		// super.onPreExecute();
+		// };
+		//
+		// protected Integer doInBackground(Void... params) {
+		//
+		// try {
+		//
+		// HashMap<String, String> getParams = new HashMap<String, String>();
+		// getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
+		// getParams.put(Const.FUNCTION, Const.F_POST_MESSAGE);
+		// getParams.put(Const.TOKEN,
+		// SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+		//
+		// JSONObject reqData = new JSONObject();
+		// reqData.put(Const.CHAT_ID, groupId);
+		// reqData.put(Const.FILE_ID, imagePath);
+		//
+		// reqData.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
+		//
+		// JSONObject result = NetworkManagement.httpPostRequest(getParams,
+		// reqData);
+		//
+		// if (result != null) {
+		// return result.getInt(Const.CODE);
+		// }
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		//
+		// return Const.E_FAILED;
+		// };
+		//
+		// protected void onPostExecute(Integer result) {
+		// super.onPostExecute(result);
+		//
+		// if (result == Const.E_SUCCESS) {
+		// AppDialog dialog = new AppDialog(context, true);
+		// dialog.setSucceed();
+		// } else {
+		// AppDialog dialog = new AppDialog(context, true);
+		// dialog.setFailed(result);
+		// }
+		// };
+		//
+		// }.execute();
+	}
 
-		new BaseAsyncTask<Void, Void, Integer>(this, true) {
+	private void updateUser(final String fileId) {
+		new UserApi().updateUserImage(fileId, this, true, new ApiCallback<UpdateUserModel>() {
 
-			protected void onPreExecute() {
-				super.onPreExecute();
-			};
-
-			protected Integer doInBackground(Void... params) {
-
-				try {
-
-					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-
-					getParams.put(Const.CHAT_ID, groupId);
-					getParams.put(Const.FILE_ID, imagePath);
-
-					getParams.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
-
-					JSONObject result = NetworkManagement.httpPostRequest(getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-
-					if (result != null) {
-						return result.getInt(Const.CODE);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				return Const.E_FAILED;
-			};
-
-			protected void onPostExecute(Integer result) {
-				super.onPostExecute(result);
-
-				if (result == Const.API_SUCCESS) {
-					AppDialog dialog = new AppDialog(context, true);
-					dialog.setSucceed();
+			@Override
+			public void onApiResponse(Result<UpdateUserModel> result) {
+				if (result.isSuccess()) {
+					Toast.makeText(CameraCropActivity.this, "UPDATED", Toast.LENGTH_SHORT).show();
+					openProfile(fileId);
+					finish();
 				} else {
-					AppDialog dialog = new AppDialog(context, true);
-					dialog.setFailed(result);
+					if (result.hasResultData()) {
+						Toast.makeText(CameraCropActivity.this, result.getResultData().getMessage(), Toast.LENGTH_SHORT).show();
+						finish();
+					}
 				}
-			};
-
-		}.execute();
+			}
+		});
 	}
 
 }

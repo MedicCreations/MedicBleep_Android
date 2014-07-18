@@ -6,7 +6,7 @@ import android.provider.Settings;
 import java.util.UUID;
 
 public class Const {
-
+	
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
@@ -33,6 +33,7 @@ public class Const {
 	public static final String APP_FILES_DIRECTORY = "SpikaEnterprise/";
 
 	// Intent const
+	public static final String PROFILE_INTENT = "profileIntent";
 	public static final String INTENT_TYPE = "IntentType";
 	public static final String PHOTO_INTENT = "PhotoIntent";
 	public static final String VIDEO_INTENT = "VideoIntent";
@@ -56,9 +57,11 @@ public class Const {
 	public static final String FILE_ID = "file_id";
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
+	public static final String FILE = "file";
 	public static final String TEXT = "text";
 	public static final String MSG_TYPE = "type";
 	public static final String TOTAL_COUNT = "total_count";
+	public static final String USER_IMAGE_NAME = "user_image_name";
 
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
@@ -86,6 +89,8 @@ public class Const {
 	public static final String F_GET_MESSAGES = "/message/paging";
 	public static final String F_START_NEW_CHAT = "/user/chat/start";
 	public static final String F_SEND_MESSAGE = "/message/send";
+	public static final String F_USER_UPLOAD_FILE = "/file/upload";
+	public static final String F_UPDATE_USER = "/user/update";
 
 	public static final int API_SUCCESS = 2000;
 

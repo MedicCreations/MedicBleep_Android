@@ -13,6 +13,18 @@ public class Login extends BaseModel {
     @SerializedName("token")
     @Expose
     private String token;
+    
+    @SerializedName("image")
+    @Expose
+    private String image;
+    
+    @SerializedName("firstname")
+    @Expose
+    private String firstname;
+    
+    @SerializedName("lastname")
+    @Expose
+    private String lastname;
 
     public String getUserId() {
         return userId == null ? "" : userId;
@@ -29,8 +41,32 @@ public class Login extends BaseModel {
     public void setToken(String token) {
         this.token = token;
     }
+    
+    public String getImage() {
+		return image;
+	}
 
-    @Override
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
