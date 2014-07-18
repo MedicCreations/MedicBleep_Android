@@ -74,7 +74,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 		
 		if(currentCount >= mTotalCount){
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		}else if(data.size() < mTotalCount){
+		}else if(currentCount < mTotalCount){
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
 		

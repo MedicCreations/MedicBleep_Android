@@ -3,12 +3,15 @@
     android:layout_height="match_parent"
     android:background="@color/default_blue">
     
-    <TextView
-        android:id="@+id/tempText"
+    <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
+        android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:listSelector="@color/transparent"
+        android:scrollbars="none" />
     
 </FrameLayout>

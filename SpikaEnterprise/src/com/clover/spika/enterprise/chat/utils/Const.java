@@ -75,6 +75,12 @@ public class Const {
 	public static final int MSG_TYPE_DEFAULT = 0;
 	public static final int MSG_TYPE_PHOTO = 1;
 
+	//Lobby
+	public static final int ALL_TYPE = 0;
+	public static final int USERS_TYPE = 1;
+	public static final int GROUPS_TYPE = 2;
+	public static final String TYPE = "type";
+	
 	// push type
 	public static final int PT_MESSAGE = 1;
 
@@ -91,6 +97,7 @@ public class Const {
 	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
+	public static final String F_USER_GET_LOBBY = "/lobby/list";
 
 	public static final int API_SUCCESS = 2000;
 
