@@ -366,7 +366,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 				});
 
 				view.startAnimation(notAnimIn);
-				
 			};
 		}.execute();
 	}

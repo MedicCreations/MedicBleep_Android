@@ -18,7 +18,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 /**
  * GCMIntentService
- *
+ * 
  * Handles push broadcast and generates HookUp notification if application is in
  * foreground or Android notification if application is in background.
  */
@@ -94,64 +94,8 @@ public class GcmIntentService extends IntentService {
 			notif.flags = Notification.FLAG_AUTO_CANCEL;
 
 			CharSequence message = msg;
-			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
-
-			mNotificationManager.notify(getIntId(chatId), notif);
-			//
-			// }
-		} else if (Integer.parseInt(type) == Const.PT_REPORT) {
-			String msg = "One of your messages has been reported.";
-
-			// if (BaseActivity.instance != null) {
-			// if (ChatActivity.instance != null) {
-			// ChatActivity.instance.callAfterPush(groupId, msg,
-			// Const.PT_REPORT);
-			// } else {
-			// BaseActivity.instance.showPopUp(msg, groupId, Const.PT_REPORT);
-			// }
-			// } else {
-
-			PendingIntent contentIntent;
-
-    		Intent intent = new Intent(this, UserListActivity.class);
-
-			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Push with display
-			Notification notif = new Notification(R.drawable.ic_launcher, msg, System.currentTimeMillis());
-			notif.defaults = Notification.DEFAULT_ALL;
-			notif.flags = Notification.FLAG_AUTO_CANCEL;
-
-			CharSequence message = msg;
-			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
-
-			mNotificationManager.notify(getIntId(chatId), notif);
-			//
-			// }
-		} else if (Integer.parseInt(type) == Const.PT_GROUP_CREATED) {
-			String msg = "New group named " + chatName + " has been created.";
-
-			// if (BaseActivity.instance != null) {
-			// BaseActivity.instance.showPopUp(msg, groupId,
-			// Const.PT_GROUP_CREATED);
-			// } else {
-
-			PendingIntent contentIntent;
-
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, chatId);
-			intent.putExtra(Const.CHAT_NAME, chatName);
-			intent.putExtra(Const.FROM_NOTIFICATION, true);
-
-			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Push with display
-			Notification notif = new Notification(R.drawable.ic_launcher, msg, System.currentTimeMillis());
-			notif.defaults = Notification.DEFAULT_ALL;
-			notif.flags = Notification.FLAG_AUTO_CANCEL;
-
-			CharSequence message = msg;
-			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
+			// notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message,
+			// contentIntent);
 
 			mNotificationManager.notify(getIntId(chatId), notif);
 			//

@@ -25,7 +25,6 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -52,14 +51,14 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
-    // <!-- HTTP User Agent -->
-    private static final String HTTP_USER_AGENT = "VectorChat Android v1.0";
+	// <!-- HTTP User Agent -->
+	private static final String HTTP_USER_AGENT = "VectorChat Android v1.0";
 
-    public static final String TOKEN = "Token";
+	public static final String TOKEN = "Token";
 
-    public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
-        return httpPostRequest("", postParams, reqData);
-    }
+	public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
+		return httpPostRequest("", postParams, reqData);
+	}
 
     /**
      * Http POST request
@@ -77,10 +76,10 @@ public class NetworkManagement {
     
     public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData, String token) throws IOException, JSONException {
 
-        // TODO: što s parametrom reqData?
+		HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
+		Logger.custom("RawRequest", httppost.getURI().toString());
 
-        HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
-        Logger.custom("RawRequest", httppost.getURI().toString());
+		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
         httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
@@ -89,53 +88,52 @@ public class NetworkManagement {
         	httppost.setHeader("token", token);
         }
 
-        // form parameters
-        if (postParams != null && !postParams.isEmpty()) {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            for (Map.Entry<String, String> entity : postParams.entrySet()) {
-                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-            }
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            Logger.custom("RawRequestParams", nameValuePairs.toString()); // TODO: maknuti ovaj logger !!
-        }
+		// form parameters
+		if (postParams != null && !postParams.isEmpty()) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			for (Map.Entry<String, String> entity : postParams.entrySet()) {
+				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+			}
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		}
 
-        HttpResponse response = HttpSingleton.getInstance().execute(httppost);
-        HttpEntity entity = response.getEntity();
+		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+		HttpEntity entity = response.getEntity();
 
-        return Helper.jObjectFromString(getString(entity.getContent()));
-    }
+		return Helper.jObjectFromString(getString(entity.getContent()));
+	}
 
-    public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
-        return httpGetRequest(apiUrl, getParams, null);
-    }
+	public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+		return httpGetRequest(apiUrl, getParams, null);
+	}
 
-    public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
+	public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
 
-        String params = "";
+		String params = "";
 
-        // form parameters
-        if (getParams != null && !getParams.isEmpty()) {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            for (Map.Entry<String, String> entity : getParams.entrySet()) {
-                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-            }
+		// form parameters
+		if (getParams != null && !getParams.isEmpty()) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			for (Map.Entry<String, String> entity : getParams.entrySet()) {
+				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+			}
 
-            params += URLEncodedUtils.format(nameValuePairs, "utf-8");
-        }
+			params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+		}
 
-        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
-        Logger.custom("RawRequest", httpGet.getURI().toString());
+		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
+		Logger.custom("RawRequest", httpGet.getURI().toString());
 
-        httpGet.setHeader("Encoding", "utf-8");
-        if (!TextUtils.isEmpty(token)) {
-            httpGet.setHeader("token", token);
-        }
+		httpGet.setHeader("Encoding", "utf-8");
+		if (!TextUtils.isEmpty(token)) {
+			httpGet.setHeader("token", token);
+		}
 
-        HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-        HttpEntity entity = response.getEntity();
+		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
+		HttpEntity entity = response.getEntity();
 
-        return Helper.jObjectFromString(getString(entity.getContent()));
-    }
+		return Helper.jObjectFromString(getString(entity.getContent()));
+	}
 
     /**
      * Post/upload file
@@ -150,9 +148,9 @@ public class NetworkManagement {
 
         HttpPost httppost = new HttpPost(Const.BASE_URL+Const.F_USER_UPLOAD_FILE);
 
-        httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
+		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-        httppost.setHeader(TOKEN, prefs.getToken());
+		httppost.setHeader(TOKEN, prefs.getToken());
 
         if (postParams.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -179,152 +177,114 @@ public class NetworkManagement {
         HttpResponse response = HttpSingleton.getInstance().execute(httppost);
         HttpEntity entity = response.getEntity();
 
-        return Helper.jObjectFromString(getString(entity.getContent()));
-    }
+		return Helper.jObjectFromString(getString(entity.getContent()));
+	}
 
-    /**
-     * Post method for downloading a file
-     *
-     * @param params
-     * @param reqData
-     * @return InputStream
-     * @throws IllegalStateException
-     * @throws IOException
-     * @throws JSONException
-     */
-    public static InputStream httpPostGetFile(HashMap<String, String> params, JSONObject reqData) throws IllegalStateException, IOException, JSONException {
-        HttpPost httppost = new HttpPost(Const.BASE_URL);
+	public static InputStream httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
+		String params = "";
 
-        httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
+		// form parameters
+		if (getParams != null && !getParams.isEmpty()) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			for (Map.Entry<String, String> entity : getParams.entrySet()) {
+				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+			}
 
-        httppost.setHeader("Content-Type", "application/json");
-        httppost.setHeader("Encoding", "utf-8");
+			params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+		}
 
-        if (params.size() > 0) {
-            JSONObject postBody = new JSONObject();
+		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
+		Logger.custom("RawRequest", httpGet.getURI().toString());
 
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                postBody.put(entry.getKey(), entry.getValue());
-            }
+		httpGet.setHeader("Encoding", "utf-8");
 
-            if (reqData != null) {
-                postBody.put(Const.REQDATA, reqData);
-            }
+		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
+		HttpEntity entity = response.getEntity();
 
-            httppost.setEntity(new StringEntity(postBody.toString(), "UTF-8"));
-        }
+		return entity.getContent();
+	}
 
-        HttpResponse response = HttpSingleton.getInstance().execute(httppost);
-        HttpEntity entity = response.getEntity();
+	/**
+	 * Get string from InputStream, Http response
+	 * 
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getString(InputStream is) throws IOException {
 
-        return entity.getContent();
-    }
-    
-    public static InputStream httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
-    	String params = "";
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+		StringBuilder builder = new StringBuilder();
+		String line = null;
 
-        // form parameters
-        if (getParams != null && !getParams.isEmpty()) {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            for (Map.Entry<String, String> entity : getParams.entrySet()) {
-                nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-            }
+		while ((line = reader.readLine()) != null) {
+			builder.append(line + "\n");
+		}
 
-            params += URLEncodedUtils.format(nameValuePairs, "utf-8");
-        }
+		is.close();
 
-        HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
-        Logger.custom("RawRequest", httpGet.getURI().toString());
+		return builder.toString();
+	}
 
-        httpGet.setHeader("Encoding", "utf-8");
+	/**
+	 * Checks whether this app has mobile or wireless internet connection
+	 * 
+	 * @return
+	 */
+	public static boolean hasNetworkConnection(Context context) {
 
-        HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-        HttpEntity entity = response.getEntity();
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
 
-        return entity.getContent();
-    }
+		for (NetworkInfo ni : networkInfo) {
 
-    /**
-     * Get string from InputStream, Http response
-     *
-     * @param is
-     * @return
-     * @throws IOException
-     */
-    public static String getString(InputStream is) throws IOException {
+			if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
+				if (ni.isConnected()) {
+					return true;
+				}
+			}
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-        StringBuilder builder = new StringBuilder();
-        String line = null;
+			if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
+				if (ni.isConnected()) {
+					return true;
+				}
+			}
+		}
 
-        while ((line = reader.readLine()) != null) {
-            builder.append(line + "\n");
-        }
+		return false;
+	}
 
-        is.close();
+	/**
+	 * HttpClient mini singleton
+	 */
+	public static class HttpSingleton {
+		private static HttpClient sInstance = null;
+		private static long sTimestamp = 0L;
+		private static long sHour = 3600L;
 
-        return builder.toString();
-    }
+		public static HttpClient getInstance() {
 
-    /**
-     * Checks whether this app has mobile or wireless internet connection
-     *
-     * @return
-     */
-    public static boolean hasNetworkConnection(Context context) {
+			long current = System.currentTimeMillis() / 1000L;
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+			if (sInstance == null || (current > (sTimestamp + sHour))) {
 
-        for (NetworkInfo ni : networkInfo) {
+				sTimestamp = System.currentTimeMillis() / 1000L;
 
-            if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-                if (ni.isConnected()) {
-                    return true;
-                }
-            }
+				HttpParams params = new BasicHttpParams();
+				params.setParameter(CoreProtocolPNames.USER_AGENT, HTTP_USER_AGENT);
+				params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-                if (ni.isConnected()) {
-                    return true;
-                }
-            }
-        }
+				SchemeRegistry schemeRegistry = new SchemeRegistry();
+				schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+				final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+				schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+				ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
 
-        return false;
-    }
+				sInstance = new DefaultHttpClient(cm, params);
+			}
 
-    /**
-     * HttpClient mini singleton
-     */
-    public static class HttpSingleton {
-        private static HttpClient sInstance = null;
-        private static long sTimestamp = 0L;
-        private static long sHour = 3600L;
-
-        public static HttpClient getInstance() {
-
-            long current = System.currentTimeMillis() / 1000L;
-
-            if (sInstance == null || (current > (sTimestamp + sHour))) {
-
-                sTimestamp = System.currentTimeMillis() / 1000L;
-
-                HttpParams params = new BasicHttpParams();
-                params.setParameter(CoreProtocolPNames.USER_AGENT, HTTP_USER_AGENT);
-                params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-
-                SchemeRegistry schemeRegistry = new SchemeRegistry();
-                schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-                final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
-                schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
-                ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-
-                sInstance = new DefaultHttpClient(cm, params);
-            }
-
-            return sInstance;
-        }
-    }
+			return sInstance;
+		}
+	}
 
 }

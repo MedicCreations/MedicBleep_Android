@@ -320,11 +320,7 @@ public class Helper {
 
 		errors.put(Const.E_INVALID_TOKEN, cntx.getResources().getString(R.string.e_invalid_token));
 		errors.put(Const.E_EXPIRED_TOKEN, cntx.getResources().getString(R.string.e_expired_token));
-		errors.put(Const.E_MESSAGE_ALLREADY_REPORTED, cntx.getResources().getString(R.string.e_allready_reported));
 		errors.put(Const.E_SOMETHING_WENT_WRONG, cntx.getResources().getString(R.string.e_something_went_wrong));
-		errors.put(Const.E_YOUR_ACC_IS_BLOCKED, cntx.getResources().getString(R.string.e_your_acc_has_been_blocked));
-		errors.put(Const.E_GROUP_DELETED, cntx.getResources().getString(R.string.e_group_has_been_deleted));
-		errors.put(Const.E_NG_WORD_DETECTED, cntx.getResources().getString(R.string.e_ng_word_detected));
 
 		for (int i = 0; i < errors.size(); i++) {
 			if (code == errors.keyAt(i)) {

@@ -24,8 +24,8 @@ public class PhotoActivity extends BaseActivity {
 	imageLayout = (RelativeLayout) findViewById(R.id.imageLayout);
 	mImageView = (ImageView) findViewById(R.id.mImageView);
 
-	if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Const.IMAGE_NAME)) {
-	    imageUrl = getIntent().getExtras().getString(Const.IMAGE_NAME, "");
+	if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(Const.IMAGE)) {
+	    imageUrl = getIntent().getExtras().getString(Const.IMAGE, "");
 
 	    ImageLoader imageLoader = new ImageLoader(this);
 	    imageLoader.displayImage(this, imageUrl, mImageView, false);
