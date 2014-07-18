@@ -113,14 +113,14 @@ public class ChatApi {
 
 					if (result != null && result.equals(Const.API_SUCCESS)) {
 
-						result.setMsgList(tempMessage);
+						result.setMessagesList(tempMessage);
 						result.setNewMsg(isNewMsg);
 						result.setRefresh(isRefresh);
 						result.setClear(isClear);
 						result.setSend(isSend);
 						result.setAdapterCount(adapterCount);
 						result.setPagging(isPagging);
-						result.setTotalItems(totalItems);
+						result.setTotal_count(String.valueOf(totalItems));
 
 						apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
 						apiResult.setResultData(result);

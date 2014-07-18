@@ -35,42 +35,41 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private static final int OPENED = 1003;
 	private static final int CLOSED = 1004;
 
-	ImageLoader imageLoader;
+	private ImageLoader imageLoader;
 
-	RobotoThinTextView screenTitle;
-	ImageView headerBack;
-	RelativeLayout headerPerson;
-	ImageView meIcon;
+	private RobotoThinTextView screenTitle;
+	private RoundImageView partnerIcon;
 
-	TextView photo;
-	TextView gallery;
+	private TextView photo;
+	private TextView gallery;
 
-	ListView main_list_view;
+	private ListView main_list_view;
 	public MessagesAdapter adapter;
 
-	EditText etMessage;
+	private EditText etMessage;
 
-	String fromProfileId = null;
-	String myProfileImg = null;
-	String chatId = null;
-	String chatName = null;
+	private String myUserId = null;
+	private String chatImage = null;
+	private String chatId = null;
+	private String chatName = null;
 
-	int totalItems = 0;
+	private int totalItems = 0;
 
-	boolean isRunning = false;
-	boolean isResume = false;
+	private boolean isRunning = false;
+	private boolean isResume = false;
 
-	ImageButton footerMore;
-	RelativeLayout chatLayout;
-	SlidingDrawer mSlidingDrawer;
-	RelativeLayout.LayoutParams mParamsOpened;
-	RelativeLayout.LayoutParams mParamsClosed;
+	private ImageButton footerMore;
+	private RelativeLayout chatLayout;
+	private SlidingDrawer mSlidingDrawer;
+	private RelativeLayout.LayoutParams mParamsOpened;
+	private RelativeLayout.LayoutParams mParamsClosed;
 
 	@Override
 	public void onCreate(Bundle bundle) {
@@ -80,7 +79,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		imageLoader = new ImageLoader(this);
 
 		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
-		meIcon = (ImageView) findViewById(R.id.meIcon);
+		partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(this);
@@ -153,8 +152,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			setSlidingDrawer(CLOSED);
 		}
 
-		if (!TextUtils.isEmpty(myProfileImg)) {
-			imageLoader.displayImage(this, myProfileImg, meIcon, true);
+		if (!TextUtils.isEmpty(chatImage)) {
+			imageLoader.displayImage(this, chatImage, partnerIcon, true);
+		} else {
+			// TODO
+//			imageLoader.setDefaultImage(R.drawable.default_user_image);
 		}
 
 		if (isResume) {
@@ -198,21 +200,21 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (intent != null && intent.getExtras() != null) {
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
-				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
-				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
+				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
+				// TODO
+				// chatImage =
+				// SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 
 				screenTitle.setText(chatName);
 
-				adapter.setGroupId(chatId);
 				adapter.clearItems();
 				getMessages(true, true, true, false, false, false);
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
-				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
-				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
+				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 
 				new ChatApi().startChat(intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
 
@@ -223,11 +225,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 							chatId = result.getResultData().getChat_id();
 							chatName = result.getResultData().getChat_name();
+							// TODO
+							// chatImage =
+							// SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
 							screenTitle.setText(chatName);
 
-							adapter.setGroupId(chatId);
 							adapter.clearItems();
+							totalItems = Integer.valueOf(result.getResultData().getTotal_count());
+							adapter.addItems(result.getResultData().getMessagesList(), true);
+							adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
 						} else {
 							AppDialog dialog = new AppDialog(ChatActivity.this, false);
 
@@ -354,16 +361,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					Chat chat = result.getResultData();
 
-					adapter.addItems(chat.getMsgList(), isNewMsg);
+					adapter.addItems(chat.getMessagesList(), isNewMsg);
 
-					totalItems = chat.getTotalItems();
-					adapter.setTotalItem(totalItems);
+					totalItems = Integer.valueOf(chat.getTotal_count());
+					adapter.setTotalCount(totalItems);
 
 					if (!isRefresh) {
 						if (isClear || isSend) {
 							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
 						} else if (isPagging) {
-							main_list_view.setSelection(chat.getMsgList().size());
+							main_list_view.setSelection(chat.getMessagesList().size());
 						}
 					} else {
 						int visibleItem = main_list_view.getFirstVisiblePosition();

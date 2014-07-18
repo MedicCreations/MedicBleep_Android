@@ -1,11 +1,13 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.Collections;
+import java.util.List;
+
 import android.content.Context;
-import android.content.Intent;
-import android.util.SparseIntArray;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -14,49 +16,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.PhotoActivity;
-import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSorting;
 
-import org.json.JSONObject;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
 public class MessagesAdapter extends BaseAdapter {
 
-	private Context cntx;
+	private Context ctx;
 	private List<Message> data;
-	private List<String> myIds = new ArrayList<String>();
-	private SparseIntArray dateSeparator = new SparseIntArray();
 
-	ImageLoader imageLoader;
-
-	int radius = 0;
-
-	private String groupId = "";
+	private ImageLoader imageLoader;
 
 	private boolean endOfSearch = false;
 	private boolean isScrolling = false;
-	private int totalItem = 0;
+	private int totalCount = 0;
 
 	public MessagesAdapter(Context context, List<Message> arrayList) {
-		this.cntx = context;
+		this.ctx = context;
 		this.data = arrayList;
 
 		imageLoader = new ImageLoader(context);
@@ -83,7 +61,7 @@ public class MessagesAdapter extends BaseAdapter {
 		final ViewHolderChatMsg holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(cntx).inflate(R.layout.item_chat_main, parent);
+			convertView = LayoutInflater.from(ctx).inflate(R.layout.item_chat_main, null);
 
 			holder = new ViewHolderChatMsg(convertView);
 			convertView.setTag(holder);
@@ -91,27 +69,16 @@ public class MessagesAdapter extends BaseAdapter {
 			holder = (ViewHolderChatMsg) convertView.getTag();
 		}
 
-		// set image to null
-		holder.meIcon.setImageDrawable(null);
-		holder.youIcon.setImageDrawable(null);
-		holder.imagePreviewYou.setImageDrawable(null);
-		holder.imagePreviewMe.setImageDrawable(null);
+		// set items to null
 		holder.loading_bar_img.setBackgroundDrawable(null);
-
-		holder.defaultMsgLayoutMe.setVisibility(View.GONE);
-		holder.imageMsgLayoutMe.setVisibility(View.GONE);
-		holder.imageMsgLayoutYou.setVisibility(View.GONE);
-		holder.settingsLayoutMe.setVisibility(View.GONE);
-		holder.meItemMsgLayout.setVisibility(View.GONE);
-		holder.youItemMsgLayout.setVisibility(View.GONE);
-
+		holder.meMsgLayout.setVisibility(View.GONE);
+		holder.youMsgLayout.setVisibility(View.GONE);
 		holder.loading_bar.setVisibility(View.GONE);
 
 		// Assign values
 		final Message msg = (Message) getItem(position);
 
-		// final boolean me = isMe(msg.getCharacter().getCharacterId());
-		final boolean me = true;
+		final boolean me = isMe(msg.getUser_id());
 
 		if (!isScrolling) {
 			// if (me) {
@@ -124,172 +91,79 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		if (me) {
+			// My chat messages
 
-			holder.meItemMsgLayout.setVisibility(View.VISIBLE);
+			holder.meMsgLayout.setVisibility(View.VISIBLE);
+
+			if (position % 2 == 0) {
+				holder.meMsgLayout.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
+			} else {
+				holder.meMsgLayout.setBackgroundColor(Color.WHITE);
+			}
+
+			holder.meMsgTime.setText(msg.getCreated());
+			holder.mePersonName.setText(msg.getFirstname() + " " + msg.getLastname());
 
 			if (msg.getType() == 0) {
-				holder.defaultMsgLayoutMe.setVisibility(View.VISIBLE);
-				// holder.mePersonName.setText(msg.getCharacter().getUsername());
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == 1) {
-				holder.imageMsgLayoutMe.setVisibility(View.VISIBLE);
-				// holder.mePersonNameImage.setText(msg.getCharacter().getUsername());
 
-				if (!isScrolling) {
-					imageLoader.displayImage(cntx, msg.getFile_id(), holder.imagePreviewMe, false);
-				}
+				// if (!isScrolling) {
+				// imageLoader.displayImage(cntx, msg.getFile_id(),
+				// holder.imagePreviewMe, false);
+				// }
+			}
+		} else {
+			// Chat member messages, not mine
 
-				holder.imagePreviewMe.setOnClickListener(new OnClickListener() {
+			holder.youMsgLayout.setVisibility(View.VISIBLE);
 
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getFile_id());
-						cntx.startActivity(intent);
-					}
-				});
+			if (position % 2 == 0) {
+				holder.youMsgLayout.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
+			} else {
+				holder.youMsgLayout.setBackgroundColor(Color.WHITE);
 			}
 
-			holder.settingsLayoutMe.setVisibility(View.VISIBLE);
-
-			holder.timeMe.setText(getTime(msg.getCreated()));
-
-			holder.meIcon.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(cntx, ProfileActivity.class);
-					// intent.putExtra(Const.USER_IMAGE_NAME,
-					// msg.getCharacter().getImage_name());
-					// intent.putExtra(Const.USER_NICKNAME,
-					// msg.getCharacter().getUsername());
-
-					cntx.startActivity(intent);
-				}
-			});
-		} else {
-
-			holder.youItemMsgLayout.setVisibility(View.VISIBLE);
+			holder.youMsgTime.setText(msg.getCreated());
+			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
 
 			if (msg.getType() == 0) {
-				holder.defaultMsgLayoutYou.setVisibility(View.VISIBLE);
-				holder.imageMsgLayoutYou.setVisibility(View.GONE);
 				holder.youMsgContent.setText(msg.getText());
-				// holder.youPersonName.setText(msg.getCharacter().getUsername());
 			} else if (msg.getType() == 1) {
-				holder.defaultMsgLayoutYou.setVisibility(View.GONE);
-				holder.imageMsgLayoutYou.setVisibility(View.VISIBLE);
-				// holder.youPersonNameImage.setText(msg.getCharacter().getUsername());
 
-				if (!isScrolling) {
-					imageLoader.displayImage(cntx, msg.getFile_id(), holder.imagePreviewYou, false);
-				}
-
-				holder.imagePreviewYou.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getFile_id());
-						cntx.startActivity(intent);
-					}
-				});
+				// if (!isScrolling) {
+				// imageLoader.displayImage(cntx, msg.getFile_id(),
+				// holder.imagePreviewYou, false);
+				// }
 			}
-
-			holder.timeYou.setText(getTime(msg.getCreated()));
-
-			holder.reportMsgYou.setVisibility(View.VISIBLE);
-
-			holder.youIcon.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(cntx, ProfileActivity.class);
-					// intent.putExtra(Const.USER_IMAGE_NAME,
-					// msg.getCharacter().getImage_name());
-					// intent.putExtra(Const.USER_NICKNAME,
-					// msg.getCharacter().getUsername());
-
-					cntx.startActivity(intent);
-				}
-			});
-		}
-
-		if (dateSeparator.get(getDayTimeStamp(msg.getCreated())) != position) {
-			holder.dateSeparator.setVisibility(View.GONE);
-		} else {
-			holder.dateSeparator.setVisibility(View.VISIBLE);
-			holder.dateSeparator.setBackgroundColor(cntx.getResources().getColor(R.color.transparent));
-			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
 		}
 
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
 
-			Helper.startPaggingAnimation(cntx, holder.loading_bar_img);
+			Helper.startPaggingAnimation(ctx, holder.loading_bar_img);
 
-			if (cntx instanceof ChatActivity) {
-				((ChatActivity) cntx).getMessages(false, false, true, false, false, false);
+			if (ctx instanceof ChatActivity) {
+				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
 			}
 		}
 
 		return convertView;
 	}
 
-	private String getTime(String createdString) {
+	private boolean isMe(String userId) {
 
-		long created = Long.parseLong(createdString) * 1000;
-
-		Date date = new Date(created);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.US);
-
-		String time = dateFormat.format(date);
-
-		return time;
-	}
-
-	private String getSectionDate(String createdString) {
-		long created = Long.parseLong(createdString) * 1000;
-
-		Date date = new Date(created);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd. - EEEE", Locale.US);
-
-		String rez = dateFormat.format(date);
-
-		return rez;
-	}
-
-	private void addSeparatorDate() {
-
-		dateSeparator.clear();
-
-		for (int i = 0; i < data.size(); i++) {
-
-			int key = getDayTimeStamp(data.get(i).getCreated());
-			int current = dateSeparator.get(key, -1);
-
-			if (current == -1) {
-				dateSeparator.put(key, i);
-			}
-		}
-	}
-
-	private Integer getDayTimeStamp(String created) {
-		try {
-			String sDate = getSectionDate(created);
-			SimpleDateFormat format = new SimpleDateFormat("MM.dd. - EEEE", Locale.US);
-			Date oDate = format.parse(sDate);
-			Integer iDate = (int) oDate.getTime();
-
-			return iDate;
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (Helper.getUserId(ctx).equals(userId)) {
+			return true;
 		}
 
-		return 0;
+		return false;
 	}
 
 	public void addItems(List<Message> newItems, boolean isNew) {
+		
+		Log.d("Vida", "newCount: " + newItems.size());
+		Log.d("Vida", "isNew: " + isNew);
 
 		if (isNew) {
 			for (int i = 0; i < newItems.size(); i++) {
@@ -312,7 +186,7 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		Collections.sort(data, new MessageSorting());
-		addSeparatorDate();
+
 		this.notifyDataSetChanged();
 	}
 
@@ -331,15 +205,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 		if (isFound) {
 			data.remove(position);
-			setTotalItem(--totalItem);
+			setTotalCount(--totalCount);
 			notifyDataSetChanged();
 		}
-	}
-
-	public void addTempMsg(Message msg) {
-		data.add(msg);
-		addSeparatorDate();
-		this.notifyDataSetChanged();
 	}
 
 	public void clearItems() {
@@ -355,34 +223,21 @@ public class MessagesAdapter extends BaseAdapter {
 		this.endOfSearch = value;
 	}
 
-	public int getTotalItem() {
-		return totalItem;
+	public int getTotalCount() {
+		return totalCount;
 	}
 
-	public void setTotalItem(int totalItem) {
-		this.totalItem = totalItem;
+	public void setTotalCount(int totalItem) {
+		this.totalCount = totalItem;
+		
+		Log.d("Vida", "Count1: " + getCount());
+		Log.d("Vida", "Count2: " + totalItem);
 
 		if (getCount() >= totalItem) {
 			setEndOfSearch(true);
 		} else {
 			setEndOfSearch(false);
 		}
-	}
-
-	public List<String> getMyIds() {
-		return myIds;
-	}
-
-	public void setMyIds(List<String> myIds) {
-		this.myIds = myIds;
-	}
-
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
 	}
 
 	public boolean isScrolling() {
@@ -395,52 +250,19 @@ public class MessagesAdapter extends BaseAdapter {
 
 	public class ViewHolderChatMsg {
 
-		public RelativeLayout dateSeparator;
-		public TextView sectionDate;
-
-		public LinearLayout defaultMsgLayoutMe;
-
 		// start: message item for my message
-		public RelativeLayout meIconLayout;
-		public ImageView meIcon;
-		public RelativeLayout meItemMsgLayout;
+		public LinearLayout meMsgLayout;
 		public TextView mePersonName;
 		public TextView meMsgContent;
-		public TextView timeMe;
-		public RelativeLayout settingsLayoutMe;
+		public TextView meMsgTime;
 		// end: me msg
 
-		// start: me image msg
-		public LinearLayout imageMsgLayoutMe;
-		public TextView mePersonNameImage;
-		public ImageView imagePreviewMe;
-		public TextView imgDescriptionMe;
-		// end: me image msg
-
 		// start: message item for you message
-		public RelativeLayout youIconLayout;
-		public ImageView youIcon;
-		public RelativeLayout youItemMsgLayout;
-		public RelativeLayout defaultMsgLayoutYou;
+		public LinearLayout youMsgLayout;
 		public TextView youPersonName;
 		public TextView youMsgContent;
-		public TextView timeYou;
+		public TextView youMsgTime;
 		// end: you msg
-
-		// start: you image msg
-		public RelativeLayout imageMsgLayoutYou;
-		public TextView youPersonNameImage;
-		public ImageView imagePreviewYou;
-		public TextView imgDescriptionYou;
-		// end: you image msg
-
-		// start: options layout
-		public TextView likeYou;
-		public TextView likeNbrYou;
-		public TextView reportMsgYou;
-		public TextView likeMe;
-		public TextView likeNbrMe;
-		// end: options layout
 
 		// start: loading bar
 		public RelativeLayout loading_bar;
@@ -450,52 +272,19 @@ public class MessagesAdapter extends BaseAdapter {
 
 		public ViewHolderChatMsg(View view) {
 
-			dateSeparator = (RelativeLayout) view.findViewById(R.id.dateSeparator);
-
+			meMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
 			// start: message item for my message
-			meIconLayout = (RelativeLayout) view.findViewById(R.id.meIconLayout);
-			meIcon = (ImageView) view.findViewById(R.id.meIcon);
-			meItemMsgLayout = (RelativeLayout) view.findViewById(R.id.meItemMsgLayout);
-			defaultMsgLayoutMe = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
+			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
 			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
-			timeMe = (TextView) view.findViewById(R.id.timeMe);
-			settingsLayoutMe = (RelativeLayout) view.findViewById(R.id.settingsLayoutMe);
 			// end: me msg
 
-			// start: me image msg
-			imageMsgLayoutMe = (LinearLayout) view.findViewById(R.id.imageMsgLayoutMe);
-			mePersonNameImage = (TextView) view.findViewById(R.id.mePersonNameImage);
-			imagePreviewMe = (ImageView) view.findViewById(R.id.imagePreviewMe);
-			imgDescriptionMe = (TextView) view.findViewById(R.id.imgDescriptionMe);
-			// end: me image msg
-
+			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message
-			youIconLayout = (RelativeLayout) view.findViewById(R.id.youIconLayout);
-			youIcon = (ImageView) view.findViewById(R.id.youIcon);
-			youItemMsgLayout = (RelativeLayout) view.findViewById(R.id.youItemMsgLayout);
-			defaultMsgLayoutYou = (RelativeLayout) view.findViewById(R.id.defaultMsgLayoutYou);
+			youMsgTime = (TextView) view.findViewById(R.id.timeYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
-			timeYou = (TextView) view.findViewById(R.id.timeYou);
 			// end: you msg
-
-			// start: you image msg
-			imageMsgLayoutYou = (RelativeLayout) view.findViewById(R.id.imageMsgLayoutYou);
-			youPersonNameImage = (TextView) view.findViewById(R.id.youPersonNameImage);
-			imagePreviewYou = (ImageView) view.findViewById(R.id.imagePreviewYou);
-			imgDescriptionYou = (TextView) view.findViewById(R.id.imgDescriptionYou);
-			// end: you image msg
-
-			// start: options layout
-			likeYou = (TextView) view.findViewById(R.id.likeYou);
-			likeNbrYou = (TextView) view.findViewById(R.id.likeNbrYou);
-			reportMsgYou = (TextView) view.findViewById(R.id.reportMsgYou);
-			likeMe = (TextView) view.findViewById(R.id.likeMe);
-			likeNbrMe = (TextView) view.findViewById(R.id.likeNbrMe);
-			// end: options layout
-
-			sectionDate = (TextView) view.findViewById(R.id.sectionDate);
 
 			// start: loading bar
 			loading_bar = (RelativeLayout) view.findViewById(R.id.loading_bar);

@@ -16,8 +16,11 @@ public class Message implements Parcelable {
 	@SerializedName("user_id")
 	private String user_id;
 
-	@SerializedName("name")
-	private String name;
+	@SerializedName("firstname")
+	private String firstname;
+
+	@SerializedName("lastname")
+	private String lastname;
 
 	@SerializedName("image")
 	private String image;
@@ -54,7 +57,6 @@ public class Message implements Parcelable {
 		id = source.readString();
 		chat_id = source.readString();
 		user_id = source.readString();
-		name = source.readString();
 		image = source.readString();
 		file_id = source.readString();
 		latitude = source.readString();
@@ -85,7 +87,6 @@ public class Message implements Parcelable {
 		parcel.writeString(id);
 		parcel.writeString(chat_id);
 		parcel.writeString(user_id);
-		parcel.writeString(name);
 		parcel.writeString(image);
 		parcel.writeString(file_id);
 		parcel.writeString(latitude);
@@ -114,14 +115,6 @@ public class Message implements Parcelable {
 
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getImage() {
@@ -186,6 +179,22 @@ public class Message implements Parcelable {
 
 	public void setModified(String modified) {
 		this.modified = modified;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 }

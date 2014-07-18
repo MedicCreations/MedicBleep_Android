@@ -19,30 +19,12 @@ public class Chat extends BaseModel {
 	@SerializedName("messages")
 	private List<Message> messages;
 
-	private List<Message> msgList = null;
-	private int totalItems = -1;
 	private boolean isNewMsg = false;
 	private boolean isRefresh = false;
 	private boolean isClear = false;
 	private boolean isSend = false;
 	private boolean isPagging = false;
 	private int adapterCount = -1;
-
-	public List<Message> getMsgList() {
-		return msgList;
-	}
-
-	public void setMsgList(List<Message> msgList) {
-		this.msgList = msgList;
-	}
-
-	public int getTotalItems() {
-		return totalItems;
-	}
-
-	public void setTotalItems(int totalItems) {
-		this.totalItems = totalItems;
-	}
 
 	public boolean isNewMsg() {
 		return isNewMsg;
@@ -116,11 +98,11 @@ public class Chat extends BaseModel {
 		this.total_count = total_count;
 	}
 
-	public List<Message> getMessages() {
+	public List<Message> getMessagesList() {
 		return messages;
 	}
 
-	public void setMessages(List<Message> messages) {
+	public void setMessagesList(List<Message> messages) {
 		this.messages = messages;
 	}
 

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toLeftOf="@+id/userImage"
+            android:layout_toLeftOf="@+id/partnerIcon"
             android:layout_toRightOf="@+id/sidebarBtn"
             android:ellipsize="end"
             android:gravity="center"
@@ -33,7 +33,7 @@
             android:textSize="20sp" />
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
-            android:id="@+id/userImage"
+            android:id="@+id/partnerIcon"
             android:layout_width="@dimen/menu_height"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
