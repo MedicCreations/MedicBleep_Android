@@ -672,13 +672,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
-					JSONObject reqData = new JSONObject();
-					reqData.put(Const.CHAT_ID, groupId);
-					reqData.put(Const.FILE_ID, imagePath);
+					getParams.put(Const.CHAT_ID, groupId);
+					getParams.put(Const.FILE_ID, imagePath);
 
-					reqData.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
+					getParams.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
 
-					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
+					JSONObject result = NetworkManagement.httpPostRequest(getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					if (result != null) {
 						return result.getInt(Const.CODE);

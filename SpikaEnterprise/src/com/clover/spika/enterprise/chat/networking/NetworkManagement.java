@@ -54,8 +54,8 @@ public class NetworkManagement {
 
 	public static final String TOKEN = "Token";
 
-	public static JSONObject httpPostRequest(HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
-		return httpPostRequest("", postParams, reqData);
+	public static JSONObject httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
+		return httpPostRequest("", postParams, token);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class NetworkManagement {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, JSONObject reqData) throws IOException, JSONException {
+	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException, JSONException {
 
 		HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
 		Logger.custom("RawRequest", httppost.getURI().toString());
@@ -76,6 +76,9 @@ public class NetworkManagement {
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
 		httppost.setHeader("Encoding", "utf-8");
+		if (!TextUtils.isEmpty(token)) {
+			httppost.setHeader("token", token);
+		}
 
 		// form parameters
 		if (postParams != null && !postParams.isEmpty()) {

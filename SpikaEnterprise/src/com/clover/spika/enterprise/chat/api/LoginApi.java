@@ -32,7 +32,7 @@ public class LoginApi {
 
 				JSONObject jsonObject = new JSONObject();
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGIN, requestParams, new JSONObject());
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGIN, requestParams, null);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
