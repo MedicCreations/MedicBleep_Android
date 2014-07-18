@@ -122,18 +122,14 @@ public class UserListActivity extends BaseActivity implements OnClickListener, O
 	}
 
     @Override
-    public void onClick(View view) {
-
-        switch (view.getId()) {
-            case R.id.headerEditBack:
-                finish();
-                break;
-        }
-    }
-
-    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
     }
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

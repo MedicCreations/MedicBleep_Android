@@ -90,8 +90,8 @@ public class GroupAdapter extends BaseAdapter {
 				String[] groupData = (String[]) view.getTag();
 
 				Intent intent = new Intent(cntx, ChatActivity.class);
-				intent.putExtra(Const.GROUP_ID, groupData[0]);
-				intent.putExtra(Const.GROUP_NAME, groupData[1]);
+				intent.putExtra(Const.CHAT_ID, groupData[0]);
+				intent.putExtra(Const.CHAT_NAME, groupData[1]);
 				((Activity) cntx).startActivity(intent);
 			}
 		});

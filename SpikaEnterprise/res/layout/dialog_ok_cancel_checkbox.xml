@@ -25,9 +25,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/alertText"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="10dp"
             android:layout_marginTop="15dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:paddingBottom="10dp" >
 
             <LinearLayout
                 android:id="@+id/btnOk"
@@ -94,8 +94,7 @@
                 android:id="@+id/checkNoMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@null"
-                android:src="@drawable/gb_checkbox_unchecked" />
+                android:contentDescription="@null" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -3,8 +3,21 @@ package com.clover.spika.enterprise.chat.models;
 import java.util.List;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.google.gson.annotations.SerializedName;
 
 public class Chat extends BaseModel {
+
+	@SerializedName("chat_id")
+	private String chat_id;
+
+	@SerializedName("chat_name")
+	private String chat_name;
+
+	@SerializedName("total_count")
+	private String total_count;
+
+	@SerializedName("messages")
+	private List<Message> messages;
 
 	private List<Message> msgList = null;
 	private int totalItems = -1;
@@ -77,6 +90,38 @@ public class Chat extends BaseModel {
 
 	public void setAdapterCount(int adapterCount) {
 		this.adapterCount = adapterCount;
+	}
+
+	public String getChat_id() {
+		return chat_id;
+	}
+
+	public void setChat_id(String chat_id) {
+		this.chat_id = chat_id;
+	}
+
+	public String getChat_name() {
+		return chat_name;
+	}
+
+	public void setChat_name(String chat_name) {
+		this.chat_name = chat_name;
+	}
+
+	public String getTotal_count() {
+		return total_count;
+	}
+
+	public void setTotal_count(String total_count) {
+		this.total_count = total_count;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
 	}
 
 }

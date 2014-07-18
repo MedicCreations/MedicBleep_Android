@@ -21,6 +21,11 @@ import com.google.gson.GsonBuilder;
 
 public class ChatApi {
 
+	public void startChat(Context ctx, boolean showProgressBar) {
+		new BaseAsyncTask<Void, Void, Result>(ctx, showProgressBar) {
+		}.execute();
+	}
+
 	public void sendMessage(final String text, final int type, final String groupId, Context ctx, final ApiCallback<Integer> listener) {
 		new BaseAsyncTask<Void, Void, Integer>(ctx, true) {
 
@@ -38,7 +43,7 @@ public class ChatApi {
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
-					reqData.put(Const.GROUP_ID, groupId);
+					reqData.put(Const.CHAT_ID, groupId);
 
 					if (type == Const.MSG_TYPE_DEFAULT) {
 						reqData.put(Const.FILE_ID, text);
@@ -96,7 +101,7 @@ public class ChatApi {
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
-					reqData.put(Const.GROUP_ID, groupId);
+					reqData.put(Const.CHAT_ID, groupId);
 
 					if (isPagging) {
 						getParams.put(Const.FUNCTION, Const.F_GET_MESSAGES);

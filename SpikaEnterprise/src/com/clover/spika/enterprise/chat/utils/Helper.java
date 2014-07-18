@@ -242,10 +242,15 @@ public class Helper {
 	 */
 	public static void startPaggingAnimation(final Context cntx, final ImageView loading) {
 		AnimationDrawable animation = new AnimationDrawable();
-		animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame1), 500);
-		animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame2), 500);
-		animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame3), 500);
-		animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame4), 500);
+		// TODO
+		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame1),
+		// 500);
+		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame2),
+		// 500);
+		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame3),
+		// 500);
+		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame4),
+		// 500);
 		animation.setOneShot(false);
 
 		loading.setBackgroundDrawable(animation);
@@ -372,41 +377,38 @@ public class Helper {
 		return inSampleSize;
 	}
 
-    public static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
+	public static Bitmap getRoundedBitmap(Bitmap bmp, int radius) {
 
-        Bitmap sbmp;
-        int smaller = bmp.getWidth() < bmp.getHeight() ? bmp.getWidth() : bmp.getHeight();
+		Bitmap sbmp;
+		int smaller = bmp.getWidth() < bmp.getHeight() ? bmp.getWidth() : bmp.getHeight();
 
-        if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
-            double coefficient = (double) radius / (double) smaller;
-            sbmp = Bitmap.createScaledBitmap(bmp,
-                    (int) (bmp.getWidth() * coefficient),
-                    (int) (bmp.getHeight() * coefficient),
-                    false);
-        } else {
-            sbmp = bmp;
-        }
+		if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
+			double coefficient = (double) radius / (double) smaller;
+			sbmp = Bitmap.createScaledBitmap(bmp, (int) (bmp.getWidth() * coefficient), (int) (bmp.getHeight() * coefficient), false);
+		} else {
+			sbmp = bmp;
+		}
 
-        Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
+		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(output);
 
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, radius, radius);
+		final Paint paint = new Paint();
+		final Rect rect = new Rect(0, 0, radius, radius);
 
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-        paint.setDither(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(Color.parseColor("#FFFFFF"));
-        canvas.drawCircle(radius / 2, radius / 2, radius / 2, paint);
-        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-        canvas.drawBitmap(sbmp, rect, rect, paint);
+		paint.setAntiAlias(true);
+		paint.setFilterBitmap(true);
+		paint.setDither(true);
+		canvas.drawARGB(0, 0, 0, 0);
+		paint.setColor(Color.parseColor("#FFFFFF"));
+		canvas.drawCircle(radius / 2, radius / 2, radius / 2, paint);
+		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+		canvas.drawBitmap(sbmp, rect, rect, paint);
 
-        sbmp = null;
-        bmp = null;
+		sbmp = null;
+		bmp = null;
 
-        return output;
-    }
+		return output;
+	}
 
 	public static int dpToPx(Context ctx, int dp) {
 

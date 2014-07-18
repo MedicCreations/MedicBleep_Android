@@ -89,14 +89,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.CreateGroupActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.AddMembers"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.clover.spika.enterprise.chat.CameraCropActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />

@@ -39,7 +39,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 
 		imageLoader = new ImageLoader(this);
 
-		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
+//		headerEditBack = (ImageView) findViewById(R.id.headerEditBack);
 		headerEditBack.setOnClickListener(this);
 
 //		profileImg = (ImageView) findViewById(R.id.profileImg);
@@ -62,11 +62,6 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 	@Override
 	public void onClick(View view) {
 
-		int id = view.getId();
-		if (id == R.id.headerEditBack || id == R.id.btnOk) {
-			finish();
-		} else {
-		}
 	}
 
 	@Override

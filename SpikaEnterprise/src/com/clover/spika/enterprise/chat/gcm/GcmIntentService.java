@@ -49,12 +49,12 @@ public class GcmIntentService extends IntentService {
 					type = extras.getString(Const.MSG_TYPE);
 				}
 
-				if (extras.containsKey(Const.GROUP_ID)) {
-					groupId = extras.getString(Const.GROUP_ID);
+				if (extras.containsKey(Const.CHAT_ID)) {
+					groupId = extras.getString(Const.CHAT_ID);
 				}
 
-				if (extras.containsKey(Const.GROUP_NAME)) {
-					groupName = extras.getString(Const.GROUP_NAME);
+				if (extras.containsKey(Const.CHAT_NAME)) {
+					groupName = extras.getString(Const.CHAT_NAME);
 				}
 
 				sendNotification(type, groupId, groupName);
@@ -64,12 +64,12 @@ public class GcmIntentService extends IntentService {
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
 	}
 
-	private void sendNotification(final String type, final String groupId, final String groupName) {
+	private void sendNotification(final String type, final String chatId, final String chatName) {
 
 		NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		if (Integer.parseInt(type) == Const.PT_MESSAGE) {
-			String msg = "You have received a message in group " + groupName;
+			String msg = "You have received a message in group " + chatName;
 
 			// TODO
 			// if (ChatActivity.instance != null) {
@@ -82,8 +82,8 @@ public class GcmIntentService extends IntentService {
 			PendingIntent contentIntent;
 
 			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.GROUP_ID, groupId);
-			intent.putExtra(Const.GROUP_NAME, groupName);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			intent.putExtra(Const.CHAT_NAME, chatName);
 			intent.putExtra(Const.FROM_NOTIFICATION, true);
 
 			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -96,7 +96,7 @@ public class GcmIntentService extends IntentService {
 			CharSequence message = msg;
 			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
 
-			mNotificationManager.notify(getIntId(groupId), notif);
+			mNotificationManager.notify(getIntId(chatId), notif);
 			//
 			// }
 		} else if (Integer.parseInt(type) == Const.PT_REPORT) {
@@ -125,11 +125,11 @@ public class GcmIntentService extends IntentService {
 			CharSequence message = msg;
 			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
 
-			mNotificationManager.notify(getIntId(groupId), notif);
+			mNotificationManager.notify(getIntId(chatId), notif);
 			//
 			// }
 		} else if (Integer.parseInt(type) == Const.PT_GROUP_CREATED) {
-			String msg = "New group named " + groupName + " has been created.";
+			String msg = "New group named " + chatName + " has been created.";
 
 			// if (BaseActivity.instance != null) {
 			// BaseActivity.instance.showPopUp(msg, groupId,
@@ -139,8 +139,8 @@ public class GcmIntentService extends IntentService {
 			PendingIntent contentIntent;
 
 			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.GROUP_ID, groupId);
-			intent.putExtra(Const.GROUP_NAME, groupName);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			intent.putExtra(Const.CHAT_NAME, chatName);
 			intent.putExtra(Const.FROM_NOTIFICATION, true);
 
 			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -153,7 +153,7 @@ public class GcmIntentService extends IntentService {
 			CharSequence message = msg;
 			notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message, contentIntent);
 
-			mNotificationManager.notify(getIntId(groupId), notif);
+			mNotificationManager.notify(getIntId(chatId), notif);
 			//
 			// }
 		}
