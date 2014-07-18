@@ -8,20 +8,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
 
 public class AppDialog extends Dialog {
 
@@ -172,10 +165,6 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomBoolean(String.valueOf(type), checked);
-
-				if (Const.T_DELETE_MSG == type) {
-					deleteMessage((String) var);
-				}
 			}
 		});
 
@@ -214,52 +203,6 @@ public class AppDialog extends Dialog {
 		}
 
 		super.onWindowFocusChanged(hasFocus);
-	}
-
-	public void deleteMessage(final String msgId) {
-		new BaseAsyncTask<Void, Void, Integer>(cntx, true) {
-
-			protected Integer doInBackground(Void... params) {
-
-				try {
-
-					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.FUNCTION, Const.F_DELETE_MESSAGE);
-					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-
-					JSONObject reqData = new JSONObject();
-					reqData.put(Const.MESSAGE_ID, msgId);
-
-					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
-
-					if (result != null) {
-						return result.getInt(Const.CODE);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				return Const.E_FAILED;
-			};
-
-			protected void onPostExecute(Integer result) {
-				super.onPostExecute(result);
-
-				if (result == Const.E_SUCCESS || result == Const.E_SOMETHING_WENT_WRONG) {
-					AppDialog dialog = new AppDialog(context, false);
-					dialog.setSucceed();
-					if (cntx instanceof ChatActivity) {
-						((ChatActivity) cntx).adapter.removeMessage(msgId);
-						((ChatActivity) cntx).getMessages(false, false, false, true, true, true);
-					}
-				} else {
-					AppDialog dialog = new AppDialog(cntx, false);
-					dialog.setFailed(result);
-				}
-			};
-
-		}.execute();
 	}
 
 }

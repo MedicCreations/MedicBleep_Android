@@ -600,7 +600,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				try {
 
 					HashMap<String, String> postParams = new HashMap<String, String>();
-					postParams.put(Const.FILE, filePath);
+					postParams.put(Const.IMAGE, filePath);
 
 					JSONObject result = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams);
 
@@ -620,7 +620,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
 
-				if (result.equals(Const.E_SUCCESS)) {
+				if (result.equals(Const.API_SUCCESS)) {
 					sendMessage(imageName);
 				} else {
 					AppDialog dialog = new AppDialog(context, false);
@@ -670,8 +670,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				try {
 
 					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.FUNCTION, Const.F_POST_MESSAGE);
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
@@ -695,7 +693,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
 
-				if (result == Const.E_SUCCESS) {
+				if (result == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(context, true);
 					dialog.setSucceed();
 				} else {

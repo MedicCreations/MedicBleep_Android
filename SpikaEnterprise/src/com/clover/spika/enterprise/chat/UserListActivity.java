@@ -13,6 +13,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UserModel;
 
 public class UserListActivity extends BaseActivity implements OnClickListener, OnItemClickListener, ApiCallback<UserModel> {
@@ -53,7 +54,6 @@ public class UserListActivity extends BaseActivity implements OnClickListener, O
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
     }
 
     @Override

@@ -54,7 +54,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImg, true);
+			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImg, true);
 			nickname.setText(intent.getExtras().getString(Const.USERNAME));
 		}
 	}

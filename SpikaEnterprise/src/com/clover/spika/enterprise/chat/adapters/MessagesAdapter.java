@@ -144,7 +144,7 @@ public class MessagesAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE_NAME, msg.getFile_id());
+						intent.putExtra(Const.IMAGE, msg.getFile_id());
 						cntx.startActivity(intent);
 					}
 				});
@@ -190,7 +190,7 @@ public class MessagesAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(cntx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE_NAME, msg.getFile_id());
+						intent.putExtra(Const.IMAGE, msg.getFile_id());
 						cntx.startActivity(intent);
 					}
 				});
@@ -393,8 +393,6 @@ public class MessagesAdapter extends BaseAdapter {
 				try {
 
 					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.FUNCTION, Const.F_RATE_MESSAGE);
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
@@ -415,7 +413,7 @@ public class MessagesAdapter extends BaseAdapter {
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
 
-				if (result.equals(Const.E_SUCCESS)) {
+				if (result.equals(Const.API_SUCCESS)) {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setSucceed();
 					if (cntx instanceof ChatActivity) {
@@ -438,8 +436,6 @@ public class MessagesAdapter extends BaseAdapter {
 				try {
 
 					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.FUNCTION, Const.F_REPORT_MESSAGE);
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
@@ -460,7 +456,7 @@ public class MessagesAdapter extends BaseAdapter {
 			protected void onPostExecute(Integer result) {
 				super.onPostExecute(result);
 
-				if (result.equals(Const.E_SUCCESS)) {
+				if (result.equals(Const.API_SUCCESS)) {
 					AppDialog dialog = new AppDialog(context, false);
 					dialog.setSucceed();
 					if (cntx instanceof ChatActivity) {

@@ -228,7 +228,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
-				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_IMAGE_NAME);
+				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
@@ -240,6 +240,29 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnTou
 				adapter.setGroupId(chatId);
 				adapter.clearItems();
 				getMessages(true, true, true, false, false, false);
+			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
+
+				fromProfileId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
+				myProfileImg = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
+
+				// getMessages(true, true, true, false, false, false);
+
+				new ChatApi().startChat(intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
+
+					@Override
+					public void onApiResponse(Result<Chat> result) {
+						chatId = result.getResultData().getChat_id();
+						chatName = result.getResultData().getChat_name();
+
+						SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).setCustomBoolean(chatId, false);
+
+						headerTitle.setText(chatName);
+
+						adapter.setGroupId(chatId);
+						adapter.clearItems();
+					}
+				});
+
 			}
 		}
 	}

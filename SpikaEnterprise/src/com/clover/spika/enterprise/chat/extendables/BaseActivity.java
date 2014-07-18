@@ -365,14 +365,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 				});
 
 				view.startAnimation(notAnimIn);
-
-				if (GroupListActivity.instance != null && GroupListActivity.instance.adapter != null) {
-					if (type == Const.PT_MESSAGE) {
-						GroupListActivity.instance.adapter.notifyDataSetChanged();
-					} else if (type == Const.PT_GROUP_CREATED) {
-						GroupListActivity.instance.getGroup(0, null, true);
-					}
-				}
 			};
 		}.execute();
 	}

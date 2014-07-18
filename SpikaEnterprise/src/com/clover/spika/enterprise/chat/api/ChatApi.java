@@ -1,14 +1,14 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -17,12 +17,50 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ChatApi {
 
-	public void startChat(Context ctx, boolean showProgressBar) {
-		new BaseAsyncTask<Void, Void, Result>(ctx, showProgressBar) {
+	public void startChat(final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx, final ApiCallback<Chat> listener) {
+		new BaseAsyncTask<Void, Void, Chat>(ctx, showProgressBar) {
+
+			protected Chat doInBackground(Void... params) {
+				HashMap<String, String> requestParams = new HashMap<String, String>();
+
+				requestParams.put(Const.USER_ID, userId);
+				requestParams.put(Const.FIRSTNAME, firstname);
+				requestParams.put(Const.LASTNAME, lastname);
+
+				JSONObject jsonObject = new JSONObject();
+				try {
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_START_NEW_CHAT, requestParams, new JSONObject());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+			};
+
+			protected void onPostExecute(Chat chat) {
+				if (listener != null) {
+					Result<Chat> apiResult;
+
+					if (chat != null) {
+						if (chat.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
+							apiResult.setResultData(chat);
+						} else {
+							apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+							apiResult.setResultData(chat);
+						}
+					} else {
+						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+			};
 		}.execute();
 	}
 
@@ -38,8 +76,6 @@ public class ChatApi {
 				try {
 
 					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.FUNCTION, Const.F_POST_MESSAGE);
 					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					JSONObject reqData = new JSONObject();
@@ -71,7 +107,7 @@ public class ChatApi {
 
 					Result<Integer> apiResult;
 
-					if (result.equals(Const.E_SUCCESS)) {
+					if (result.equals(Const.API_SUCCESS)) {
 						apiResult = new Result<Integer>(Result.ApiResponseState.SUCCESS);
 					} else {
 						apiResult = new Result<Integer>(Result.ApiResponseState.FAILURE);
@@ -85,89 +121,63 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh, final String groupId, final String msgId, final int adapterCount, Context ctx,
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh, final String chatId, final String msgId, final int adapterCount, Context ctx,
 			final ApiCallback<Chat> listener) {
-		new BaseAsyncTask<Void, Void, Integer>(ctx, processing) {
+		new BaseAsyncTask<Void, Void, Chat>(ctx, processing) {
 
 			List<Message> tempMessage = new ArrayList<Message>();
 			int totalItems = -1;
 
-			protected Integer doInBackground(Void... params) {
+			protected Chat doInBackground(Void... params) {
 
-				// start: Get messages
 				try {
-					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-					getParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
-					JSONObject reqData = new JSONObject();
-					reqData.put(Const.CHAT_ID, groupId);
+					HashMap<String, String> requestParams = new HashMap<String, String>();
+					requestParams.put(Const.TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					requestParams.put(Const.CHAT_ID, chatId);
 
 					if (isPagging) {
-						getParams.put(Const.FUNCTION, Const.F_GET_MESSAGES);
-
 						if (!isClear && adapterCount != -1 && adapterCount > 0) {
-							reqData.put(Const.LAST_MSG_ID, msgId);
+							requestParams.put(Const.LAST_MSG_ID, msgId);
 						}
 					} else if (isNewMsg) {
-						getParams.put(Const.FUNCTION, Const.F_GET_NEW_MESSAGES);
-
 						if ((adapterCount - 1) >= 0) {
-							reqData.put(Const.FIRST_MSG_ID, msgId);
+							requestParams.put(Const.FIRST_MSG_ID, msgId);
 						}
 					}
 
-					JSONObject result = NetworkManagement.httpPostRequest(getParams, reqData);
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_GET_MESSAGES, requestParams, new JSONObject());
 
-					if (result != null) {
-						totalItems = Integer.parseInt(result.getString(Const.TOTAL_ITEMS));
-
-						JSONArray items = result.getJSONArray(Const.ITEMS);
-
-						for (int i = 0; i < items.length(); i++) {
-							JSONObject obj = (JSONObject) items.get(i);
-
-							Gson sGsonExpose = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-							Message msg = sGsonExpose.fromJson(obj.toString(), Message.class);
-
-							if (msg != null) {
-								tempMessage.add(msg);
-							}
-						}
-
-						if (tempMessage.size() > 0) {
-							return Const.E_SUCCESS;
-						}
-					}
-				} catch (Exception e) {
+					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				// end: Get messages
 
-				return Const.E_FAILED;
+				return null;
 			};
 
-			protected void onPostExecute(Integer result) {
+			protected void onPostExecute(Chat result) {
 				super.onPostExecute(result);
 
 				if (listener != null) {
 
 					Result<Chat> apiResult;
 
-					if (result.equals(Const.E_SUCCESS)) {
+					if (result != null && result.equals(Const.API_SUCCESS)) {
 
-						Chat chatData = new Chat();
-						chatData.setMsgList(tempMessage);
-						chatData.setNewMsg(isNewMsg);
-						chatData.setRefresh(isRefresh);
-						chatData.setClear(isClear);
-						chatData.setSend(isSend);
-						chatData.setAdapterCount(adapterCount);
-						chatData.setPagging(isPagging);
-						chatData.setTotalItems(totalItems);
+						result.setMsgList(tempMessage);
+						result.setNewMsg(isNewMsg);
+						result.setRefresh(isRefresh);
+						result.setClear(isClear);
+						result.setSend(isSend);
+						result.setAdapterCount(adapterCount);
+						result.setPagging(isPagging);
+						result.setTotalItems(totalItems);
 
 						apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
-						apiResult.setResultData(chatData);
+						apiResult.setResultData(result);
 
 					} else {
 						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
