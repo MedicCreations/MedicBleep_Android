@@ -31,6 +31,7 @@
     <color name="default_green">#57D171</color>
     <color name="default_green_light">#61E680</color>
     <color name="trans">#00000000</color>
-    <color name="gray_in_adapter">#EEEEEE</color>
+    <color name="text_time_gray">#616161</color>
+    <color name="gray_in_adapter">#EFEFEF</color>
 
 </resources>

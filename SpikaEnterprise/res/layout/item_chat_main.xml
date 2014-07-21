@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/com.clover.spika.enterprise.chat.views"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
@@ -43,10 +44,43 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/dateSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loading_bar"
+        android:layout_margin="10dp" >
+
+        <View
+            android:id="@+id/whiteDivider1"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/sectionDate"
+            android:background="@color/text_time_gray" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/sectionDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/text_time_gray" />
+
+        <View
+            android:id="@+id/whiteDivider2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/sectionDate"
+            android:background="@color/text_time_gray" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/messagesWholeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/loading_bar" >
+        android:layout_below="@+id/dateSeparator" >
 
         <!-- start: Me message layout -->
 
@@ -67,30 +101,37 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    android:padding="5dp" >
 
-                    <TextView
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/timeMe"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
-                        android:textColor="@android:color/black" />
+                        android:textColor="@color/text_time_gray"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-                    <TextView
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/mePersonName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
-                        android:textColor="@android:color/black" />
+                        android:textColor="@color/default_blue"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/meMsgContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:padding="10dp"
-                    android:textColor="@android:color/black" />
+                <include layout="@layout/item_chat_text_me" />
+
+                <include layout="@layout/item_chat_sound_me" />
+
+                <include layout="@layout/item_chat_video_me" />
+
+                <include layout="@layout/item_chat_location_me" />
+
+                <include layout="@layout/item_chat_image_me" />
             </LinearLayout>
 
             <!-- end: MessageLayout -->
@@ -118,30 +159,37 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    android:padding="5dp" >
 
-                    <TextView
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/timeYou"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:textColor="@android:color/black" />
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/text_time_gray"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-                    <TextView
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/youPersonName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:textColor="@android:color/black" />
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@color/default_blue"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/youMsgContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:padding="10dp"
-                    android:textColor="@android:color/black" />
+                <include layout="@layout/item_chat_text_you" />
+
+                <include layout="@layout/item_chat_sound_you" />
+
+                <include layout="@layout/item_chat_video_you" />
+
+                <include layout="@layout/item_chat_location_you" />
+
+                <include layout="@layout/item_chat_image_you" />
             </LinearLayout>
 
             <!-- end: MessageLayout -->

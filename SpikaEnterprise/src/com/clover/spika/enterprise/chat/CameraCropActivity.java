@@ -39,6 +39,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileUploadApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -84,7 +85,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private static boolean return_flag;
 
 	private String mFilePath;
-	private String groupId = "";
+	private String chatId = "";
 
 	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
@@ -124,7 +125,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			}
 		}
 
-		groupId = getIntent().getStringExtra(Const.CHAT_ID);
+		if (getIntent().getExtras().containsKey(Const.CHAT_ID)) {
+			chatId = getIntent().getStringExtra(Const.CHAT_ID);
+		}
 	}
 
 	public void startCamera() {
@@ -634,55 +637,21 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		}
 	}
 
-	private void sendMessage(final String imagePath) {
-		// new BaseAsyncTask<Void, Void, Integer>(this, true) {
-		//
-		// protected void onPreExecute() {
-		// super.onPreExecute();
-		// };
-		//
-		// protected Integer doInBackground(Void... params) {
-		//
-		// try {
-		//
-		// HashMap<String, String> getParams = new HashMap<String, String>();
-		// getParams.put(Const.MODULE, String.valueOf(Const.M_CHAT));
-		// getParams.put(Const.FUNCTION, Const.F_POST_MESSAGE);
-		// getParams.put(Const.TOKEN,
-		// SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-		//
-		// JSONObject reqData = new JSONObject();
-		// reqData.put(Const.CHAT_ID, groupId);
-		// reqData.put(Const.FILE_ID, imagePath);
-		//
-		// reqData.put(Const.MSG_TYPE, String.valueOf(Const.MSG_TYPE_PHOTO));
-		//
-		// JSONObject result = NetworkManagement.httpPostRequest(getParams,
-		// reqData);
-		//
-		// if (result != null) {
-		// return result.getInt(Const.CODE);
-		// }
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
-		// return Const.E_FAILED;
-		// };
-		//
-		// protected void onPostExecute(Integer result) {
-		// super.onPostExecute(result);
-		//
-		// if (result == Const.E_SUCCESS) {
-		// AppDialog dialog = new AppDialog(context, true);
-		// dialog.setSucceed();
-		// } else {
-		// AppDialog dialog = new AppDialog(context, true);
-		// dialog.setFailed(result);
-		// }
-		// };
-		//
-		// }.execute();
+	private void sendMessage(final String fileId) {
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, "", "", this, new ApiCallback<Integer>() {
+
+			@Override
+			public void onApiResponse(Result<Integer> result) {
+
+				AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
+
+				if (result.isSuccess()) {
+					dialog.setSucceed();
+				} else {
+					dialog.setFailed(result.getResultData());
+				}
+			}
+		});
 	}
 
 	private void updateUser(final String fileId) {

@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/selector_toggle_tab"
-                android:textColor="@color/tab_toggle"
+                android:textColor="@drawable/selector_tab_toggle"
                 android:textOff="Users"
                 android:textOn="Users" />
 
@@ -58,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/selector_toggle_tab"
-                android:textColor="@color/tab_toggle"
+                android:textColor="@drawable/selector_tab_toggle"
                 android:textOff="Groups"
                 android:textOn="Groups" />
         </LinearLayout>

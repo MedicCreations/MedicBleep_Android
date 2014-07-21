@@ -2,11 +2,9 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,7 +13,6 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -154,10 +151,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 		if (!TextUtils.isEmpty(chatImage)) {
+			partnerIcon.setVisibility(View.VISIBLE);
 			imageLoader.displayImage(this, chatImage, partnerIcon, true);
 		} else {
-			// TODO
-			// imageLoader.setDefaultImage(R.drawable.default_user_image);
+			partnerIcon.setVisibility(View.INVISIBLE);
 		}
 
 		if (isResume) {
@@ -177,11 +174,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		switch (state) {
 		case OPENED:
+			footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 			hideKeyboard(etMessage);
 			mSlidingDrawer.open();
 			chatLayout.setLayoutParams(mParamsOpened);
 			break;
 		case CLOSED:
+			footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
 			mSlidingDrawer.close();
 			chatLayout.setLayoutParams(mParamsClosed);
 			break;
@@ -202,12 +201,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
-				// TODO
-				// chatImage =
-				// SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
+				chatImage = intent.getExtras().getString(Const.IMAGE);
 
 				screenTitle.setText(chatName);
 
@@ -216,6 +213,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
 				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
+				chatImage = intent.getExtras().getString(Const.IMAGE);
 
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
 
@@ -228,9 +226,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 							chatId = result.getResultData().getChat_id();
 							chatName = result.getResultData().getChat_name();
-							// TODO
-							// chatImage =
-							// SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.IMAGE);
 
 							screenTitle.setText(chatName);
 
@@ -288,7 +283,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			showKeyboard(etMessage);
 			setSlidingDrawer(CLOSED);
 		} else if (id == R.id.footerMore) {
-			setSlidingDrawer(OPENED);
+
+			if (mSlidingDrawer.isOpened()) {
+				setSlidingDrawer(CLOSED);
+			} else {
+				setSlidingDrawer(OPENED);
+			}
+
 		} else if (id == R.id.photo) {
 			Intent intent = new Intent(this, CameraCropActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
@@ -361,9 +362,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				isRunning = false;
 
 				if (result.isSuccess()) {
-					
+
 					Chat chat = result.getResultData();
-					
+
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 
 					totalItems = Integer.valueOf(chat.getTotal_count());

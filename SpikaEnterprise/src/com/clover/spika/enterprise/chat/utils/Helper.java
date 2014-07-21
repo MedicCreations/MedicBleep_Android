@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -186,20 +187,20 @@ public class Helper {
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
 	}
-	
-	public static String getUserFirstName(Context ctx){
+
+	public static String getUserFirstName(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.FIRSTNAME);
 	}
-	
-	public static String getUserLastName(Context ctx){
+
+	public static String getUserLastName(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.LASTNAME);
 	}
-	
-	public static String getUserImage(Context ctx){
+
+	public static String getUserImage(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_IMAGE_NAME);
 	}
-	
-	public static String getUserId(Context ctx){
+
+	public static String getUserId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
 	}
 
@@ -248,20 +249,21 @@ public class Helper {
 	/**
 	 * Set pagging animation
 	 */
-	public static void startPaggingAnimation(final Context cntx, final ImageView loading) {
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	public static void startPaggingAnimation(final Context cntx, final ImageView loading, final boolean isJellyBean) {
 		AnimationDrawable animation = new AnimationDrawable();
-		// TODO
-		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame1),
-		// 500);
-		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame2),
-		// 500);
-		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame3),
-		// 500);
-		// animation.addFrame(cntx.getResources().getDrawable(R.drawable.gb_process_frame4),
-		// 500);
+		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame1), 500);
+		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame2), 500);
+		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame3), 500);
+		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame4), 500);
 		animation.setOneShot(false);
 
-		loading.setBackgroundDrawable(animation);
+		if (isJellyBean) {
+			loading.setBackgroundDrawable(animation);
+		} else {
+			loading.setBackground(animation);
+		}
 
 		animation.start();
 	}

@@ -48,6 +48,8 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				((BaseActivity) getActivity()).openProfile(null);
+				// XXX
+				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -57,6 +59,8 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), LobbyActivity.class));
+				// XXX
+				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -65,6 +69,8 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
+				// XXX
+				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -74,6 +80,8 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), GroupListActivity.class));
+				// XXX
+				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -82,6 +90,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				// TODO
 				SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
 
 				Intent logoutIntent = new Intent(getActivity(), LoginActivity.class);

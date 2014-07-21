@@ -1,0 +1,8 @@
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/meWatchVideo"
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:layout_margin="10dp"
+    android:layout_gravity="right"
+    android:contentDescription="@null"
+    android:src="@drawable/icon_video" />

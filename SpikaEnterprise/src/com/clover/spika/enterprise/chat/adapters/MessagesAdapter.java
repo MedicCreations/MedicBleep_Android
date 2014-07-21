@@ -1,12 +1,20 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -18,6 +26,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSorting;
 
@@ -26,17 +35,27 @@ public class MessagesAdapter extends BaseAdapter {
 	private Context ctx;
 	private List<Message> data;
 
+	private SparseIntArray dateSeparator = new SparseIntArray();
+
 	private ImageLoader imageLoader;
 
 	private boolean endOfSearch = false;
 	private boolean isScrolling = false;
 	private int totalCount = 0;
+	private boolean isJellyBean = true;
 
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
 		this.data = arrayList;
 
 		imageLoader = new ImageLoader(context);
+
+		int sdk = android.os.Build.VERSION.SDK_INT;
+		if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+			isJellyBean = true;
+		} else {
+			isJellyBean = false;
+		}
 	}
 
 	@Override
@@ -54,6 +73,8 @@ public class MessagesAdapter extends BaseAdapter {
 		return 0;
 	}
 
+	@SuppressWarnings("deprecation")
+	@SuppressLint({ "InflateParams", "NewApi" })
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -69,25 +90,40 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// set items to null
-		holder.loading_bar_img.setBackgroundDrawable(null);
+		if (isJellyBean) {
+			holder.loading_bar_img.setBackgroundDrawable(null);
+			holder.meViewImage.setBackgroundDrawable(null);
+			holder.youViewImage.setBackgroundDrawable(null);
+		} else {
+			holder.loading_bar_img.setBackground(null);
+			holder.meViewImage.setBackground(null);
+			holder.youViewImage.setBackground(null);
+		}
+
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
+		
+		holder.meMsgContent.setVisibility(View.GONE);
+		holder.youMsgContent.setVisibility(View.GONE);
+
+		holder.meViewImage.setVisibility(View.GONE);
+		holder.youViewImage.setVisibility(View.GONE);
+
+		holder.meListenSound.setVisibility(View.GONE);
+		holder.youListenSound.setVisibility(View.GONE);
+
+		holder.meWatchVideo.setVisibility(View.GONE);
+		holder.youWatchVideo.setVisibility(View.GONE);
+
+		holder.meViewLocation.setVisibility(View.GONE);
+		holder.youViewLocation.setVisibility(View.GONE);
+
 		holder.loading_bar.setVisibility(View.GONE);
 
 		// Assign values
 		final Message msg = (Message) getItem(position);
 
 		final boolean me = isMe(msg.getUser_id());
-
-		if (!isScrolling) {
-			// if (me) {
-			// imageLoader.displayImage(cntx,
-			// msg.getCharacter().getImage_name(), holder.meIcon, true);
-			// } else {
-			// imageLoader.displayImage(cntx,
-			// msg.getCharacter().getImage_name(), holder.youIcon, true);
-			// }
-		}
 
 		if (me) {
 			// My chat messages
@@ -100,17 +136,51 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgLayout.setBackgroundColor(Color.WHITE);
 			}
 
-			holder.meMsgTime.setText(msg.getCreated());
+			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.mePersonName.setText(msg.getFirstname() + " " + msg.getLastname());
 
-			if (msg.getType() == 0) {
+			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
+				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setText(msg.getText());
-			} else if (msg.getType() == 1) {
+			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
-				// if (!isScrolling) {
-				// imageLoader.displayImage(cntx, msg.getFile_id(),
-				// holder.imagePreviewMe, false);
-				// }
+				imageLoader.displayImage(ctx, msg.getFile_id(), holder.meViewImage, false);
+
+				holder.meViewImage.setVisibility(View.VISIBLE);
+				holder.meViewImage.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+				holder.meWatchVideo.setVisibility(View.VISIBLE);
+				holder.meWatchVideo.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+			} else if (msg.getType() == Const.MSG_TYPE_LOCATION) {
+				holder.meViewLocation.setVisibility(View.VISIBLE);
+				holder.meViewLocation.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
+				holder.meListenSound.setVisibility(View.VISIBLE);
+				holder.meListenSound.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
 			}
 		} else {
 			// Chat member messages, not mine
@@ -123,24 +193,74 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youMsgLayout.setBackgroundColor(Color.WHITE);
 			}
 
-			holder.youMsgTime.setText(msg.getCreated());
+			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
 
-			if (msg.getType() == 0) {
+			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
+				holder.youMsgContent.setVisibility(View.VISIBLE);
 				holder.youMsgContent.setText(msg.getText());
-			} else if (msg.getType() == 1) {
+			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
 				// if (!isScrolling) {
 				// imageLoader.displayImage(cntx, msg.getFile_id(),
 				// holder.imagePreviewYou, false);
 				// }
+
+				holder.youViewImage.setVisibility(View.VISIBLE);
+				holder.youViewImage.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+
+				holder.youWatchVideo.setVisibility(View.VISIBLE);
+				holder.youWatchVideo.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+
+			} else if (msg.getType() == Const.MSG_TYPE_LOCATION) {
+
+				holder.youViewLocation.setVisibility(View.VISIBLE);
+				holder.youViewLocation.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+
+			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
+
+				holder.youListenSound.setVisibility(View.VISIBLE);
+				holder.youListenSound.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+					}
+				});
+
 			}
+		}
+
+		if (dateSeparator.get(getDayTimeStamp(msg.getCreated())) != position) {
+			holder.dateSeparator.setVisibility(View.GONE);
+		} else {
+			holder.dateSeparator.setVisibility(View.VISIBLE);
+			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
 		}
 
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
 
-			Helper.startPaggingAnimation(ctx, holder.loading_bar_img);
+			Helper.startPaggingAnimation(ctx, holder.loading_bar_img, isJellyBean);
 
 			if (ctx instanceof ChatActivity) {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
@@ -159,8 +279,50 @@ public class MessagesAdapter extends BaseAdapter {
 		return false;
 	}
 
+	private String getCreatedTime(String created) {
+
+		try {
+
+			Timestamp stamp = new Timestamp(Long.valueOf(created) * 1000);
+			Date date = new Date(stamp.getTime());
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+			return sdf.format(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+
+	private String getSectionDate(String createdString) {
+		long created = Long.parseLong(createdString) * 1000;
+
+		Date date = new Date(created);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(Const.DEFAULT_DATE_FORMAT, Locale.getDefault());
+
+		String rez = dateFormat.format(date);
+
+		return rez;
+	}
+
+	private int getDayTimeStamp(String created) {
+		try {
+			String sDate = getSectionDate(created);
+			SimpleDateFormat format = new SimpleDateFormat(Const.DEFAULT_DATE_FORMAT, Locale.getDefault());
+			Date oDate = format.parse(sDate);
+			int iDate = (int) oDate.getTime();
+
+			return iDate;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+
 	public void addItems(List<Message> newItems, boolean isNew) {
-		
+
 		if (isNew) {
 			for (int i = 0; i < newItems.size(); i++) {
 				boolean isFound = false;
@@ -182,8 +344,23 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		Collections.sort(data, new MessageSorting());
-
+		addSeparatorDate();
 		this.notifyDataSetChanged();
+	}
+
+	private void addSeparatorDate() {
+
+		dateSeparator.clear();
+
+		for (int i = 0; i < data.size(); i++) {
+
+			int key = getDayTimeStamp(data.get(i).getCreated());
+			int current = dateSeparator.get(key, -1);
+
+			if (current == -1) {
+				dateSeparator.put(key, i);
+			}
+		}
 	}
 
 	public void removeMessage(String msgId) {
@@ -225,7 +402,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 	public void setTotalCount(int totalItem) {
 		this.totalCount = totalItem;
-		
+
 		if (getCount() >= totalItem) {
 			setEndOfSearch(true);
 		} else {
@@ -250,6 +427,18 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView meMsgTime;
 		// end: me msg
 
+		public ImageView meListenSound;
+		public ImageView youListenSound;
+
+		public ImageView meWatchVideo;
+		public ImageView youWatchVideo;
+
+		public ImageView meViewLocation;
+		public ImageView youViewLocation;
+
+		public ImageView meViewImage;
+		public ImageView youViewImage;
+
 		// start: message item for you message
 		public LinearLayout youMsgLayout;
 		public TextView youPersonName;
@@ -263,6 +452,12 @@ public class MessagesAdapter extends BaseAdapter {
 
 		// end: loading bar
 
+		// start: date separator
+		public RelativeLayout dateSeparator;
+		public TextView sectionDate;
+
+		// end: date separator
+
 		public ViewHolderChatMsg(View view) {
 
 			meMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
@@ -271,6 +466,18 @@ public class MessagesAdapter extends BaseAdapter {
 			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			// end: me msg
+
+			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
+			youListenSound = (ImageView) view.findViewById(R.id.youListenSound);
+
+			meWatchVideo = (ImageView) view.findViewById(R.id.meWatchVideo);
+			youWatchVideo = (ImageView) view.findViewById(R.id.youWatchVideo);
+
+			meViewLocation = (ImageView) view.findViewById(R.id.meViewLocation);
+			youViewLocation = (ImageView) view.findViewById(R.id.youViewLocation);
+
+			meViewImage = (ImageView) view.findViewById(R.id.meViewImage);
+			youViewImage = (ImageView) view.findViewById(R.id.youViewImage);
 
 			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message
@@ -283,6 +490,11 @@ public class MessagesAdapter extends BaseAdapter {
 			loading_bar = (RelativeLayout) view.findViewById(R.id.loading_bar);
 			loading_bar_img = (ImageView) view.findViewById(R.id.loading_bar_img);
 			// end: loading bar
+
+			// start: date separator
+			dateSeparator = (RelativeLayout) view.findViewById(R.id.dateSeparator);
+			sectionDate = (TextView) view.findViewById(R.id.sectionDate);
+			// end: date separator
 		}
 	}
 }

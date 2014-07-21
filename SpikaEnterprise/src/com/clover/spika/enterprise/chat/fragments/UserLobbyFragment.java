@@ -91,8 +91,10 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
-				mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
-				setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+				if (result.isSuccess()) {
+					mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
+					setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+				}
 			}
 		});
 	}
@@ -123,6 +125,7 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
+			intent.putExtra(Const.IMAGE, user.getImage());
 			startActivity(intent);
 		}
 	}

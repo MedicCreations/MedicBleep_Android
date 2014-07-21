@@ -36,7 +36,6 @@
     <string name="succeed">Success</string>
     <string name="failed">Failed</string>
     <string name="take_photo">TAKE PHOTO</string>
-    <string name="choose_gallery">GALLERY</string>
     <string name="take_video">TAKE VIDEO</string>
     <string name="dont_show_info">Do not show info.</string>
     <string name="delete_group">You are about to delete selected group.</string>
@@ -47,7 +46,6 @@
     <string name="kick_members">Kick members</string>
     <string name="clear_group">Clear group</string>
     <string name="photo">PHOTO</string>
-    <string name="gallery">GALLERY</string>
     <string name="submit_changes">SUBMIT</string>
     <string name="go_back">Go back</string>
     <string name="no_item_in">There are no item in the list.</string>
@@ -93,7 +91,12 @@
     <string name="users">Users</string>
     <string name="groups">Groups</string>
     <string name="title_lobby">Lobby</string>
-    
+    <string name="camera">Camera</string>
+    <string name="video">Video</string>
+    <string name="location">Location</string>
+    <string name="record">Record</string>
+    <string name="gallery">Gallery</string>
+
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
     <string name="pull_to_refresh_release_label">Release to refresh…</string>
@@ -101,7 +104,6 @@
     <string name="pull_to_refresh_from_bottom_pull_label">@string/pull_to_refresh_pull_label</string>
     <string name="pull_to_refresh_from_bottom_release_label">@string/pull_to_refresh_release_label</string>
     <string name="pull_to_refresh_from_bottom_refreshing_label">@string/pull_to_refresh_refreshing_label</string>
-    
     <string name="login_remember_me">Remember me</string>
 
 </resources>

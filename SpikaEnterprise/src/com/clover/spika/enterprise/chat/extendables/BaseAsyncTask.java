@@ -9,8 +9,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 
-public class BaseAsyncTask<Params, Progress, Result> extends
-		AsyncTask<Params, Progress, Result> {
+public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
 	protected Context context;
 	protected AppProgressDialog progressDialog;
@@ -77,7 +76,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends
 		return null;
 	}
 
-    public Context getContext() {
-        return context;
-    }
+	public Context getContext() {
+		return context;
+	}
 }

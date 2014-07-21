@@ -17,6 +17,7 @@ public class Const {
 	public static final String GCM_CLIENT_API_KEY = "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
 
 	// Timestamp
+	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
 
@@ -73,8 +74,11 @@ public class Const {
 	public static final String LASTNAME = "lastname";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
-	public static final int MSG_TYPE_DEFAULT = 0;
-	public static final int MSG_TYPE_PHOTO = 1;
+	public static final int MSG_TYPE_DEFAULT = 1;
+	public static final int MSG_TYPE_PHOTO = 2;
+	public static final int MSG_TYPE_VIDEO = 3;
+	public static final int MSG_TYPE_LOCATION = 4;
+	public static final int MSG_TYPE_VOICE = 5;
 
 	// Lobby
 	public static final int ALL_TYPE = 0;

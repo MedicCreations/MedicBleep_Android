@@ -24,7 +24,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class UserListActivity extends BaseActivity implements OnClickListener, OnItemClickListener, OnSearchListener {
+public class UserListActivity extends BaseActivity implements OnItemClickListener, OnSearchListener {
 
 	private RelativeLayout noItemsLayout;
 
@@ -146,14 +146,9 @@ public class UserListActivity extends BaseActivity implements OnClickListener, O
 			intent.putExtra(Const.USER_ID, user.getId());
 			intent.putExtra(Const.FIRSTNAME, user.getFirstName());
 			intent.putExtra(Const.LASTNAME, user.getLastName());
+			intent.putExtra(Const.IMAGE, user.getImage());
 			startActivity(intent);
 		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

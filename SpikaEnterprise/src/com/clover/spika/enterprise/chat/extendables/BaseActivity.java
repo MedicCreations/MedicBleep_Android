@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,7 +60,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	public final static int slidingDuration = 160;
 
-	private SlidingMenu slidingMenu;
+	public SlidingMenu slidingMenu;
 	private ImageButton sidebarBtn;
 
 	private ImageButton searchBtn;
@@ -455,10 +456,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void startActivity(Intent intent) {
 		super.startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
-		if (slidingMenu.isActivated()) {
-			slidingMenu.toggle();
-		}
 	}
 
 	public void openProfile(String fileId) {

@@ -92,8 +92,10 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
-				mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
-				setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+				if (result.isSuccess()) {
+					mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
+					setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+				}
 			}
 		});
 	}

@@ -28,26 +28,26 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 	ViewPager viewPager;
 	ToggleButton groupsTab;
 	ToggleButton usersTab;
-	
+
 	private LobbyModel model;
 	private List<LobbyChangedListener> lobbyChangedListener;
-	
+
 	@Override
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		requestWindowFeature(Window.FEATURE_ACTION_BAR);
 		setContentView(R.layout.activity_lobby);
-		
+
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
-        viewPager.setAdapter(new SampleFragmentPagerAdapter());	
-        viewPager.setOnPageChangeListener(this);
-        
-        groupsTab = (ToggleButton) findViewById(R.id.groupsTab);
-        groupsTab.setOnClickListener(this);
-        usersTab = (ToggleButton) findViewById(R.id.usersTab);
-        usersTab.setOnClickListener(this);
+		viewPager.setAdapter(new SampleFragmentPagerAdapter());
+		viewPager.setOnPageChangeListener(this);
+
+		groupsTab = (ToggleButton) findViewById(R.id.groupsTab);
+		groupsTab.setOnClickListener(this);
+		usersTab = (ToggleButton) findViewById(R.id.usersTab);
+		usersTab.setOnClickListener(this);
 	}
-	
+
 	private void setLobbyChangedListener(LobbyChangedListener listener) {
 		if (lobbyChangedListener == null) {
 			lobbyChangedListener = new ArrayList<LobbyChangedListener>();
@@ -56,9 +56,9 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 			this.lobbyChangedListener.add(listener);
 		}
 	}
-	
+
 	public void getLobby(LobbyChangedListener listener) {
-		
+
 		if (listener == null)
 			return;
 
@@ -68,45 +68,47 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 		}
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		setTabsStates(viewPager.getCurrentItem());
 		getAllLobby(true, 0);
 	}
-	
-	private void getAllLobby(boolean showProgress, int page){
+
+	private void getAllLobby(boolean showProgress, int page) {
 		new LobbyApi().getLobbyByType(page, Const.ALL_TYPE, this, showProgress, new ApiCallback<LobbyModel>() {
-			
+
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
-				model = result.getResultData();
-				for (LobbyChangedListener listener : lobbyChangedListener) {
-					listener.onChangeAll(result.getResultData());
+				if (result.isSuccess()) {
+					model = result.getResultData();
+					for (LobbyChangedListener listener : lobbyChangedListener) {
+						listener.onChangeAll(result.getResultData());
+					}
 				}
 			}
 		});
 	}
 
 	public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
-		
-        final int PAGE_COUNT = 2;
-        
-        public SampleFragmentPagerAdapter() {
-            super(getSupportFragmentManager());
-        }
-        
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
-        
-        @Override
-        public Fragment getItem(int position) {
-            return position == 0 ? new UserLobbyFragment() : new GroupLobbyFragment();
-        }
-    }
+
+		final int PAGE_COUNT = 2;
+
+		public SampleFragmentPagerAdapter() {
+			super(getSupportFragmentManager());
+		}
+
+		@Override
+		public int getCount() {
+			return PAGE_COUNT;
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			return position == 0 ? new UserLobbyFragment() : new GroupLobbyFragment();
+		}
+	}
 
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
@@ -126,21 +128,19 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 		if (view == groupsTab) {
 			setTabsStates(0);
 			viewPager.setCurrentItem(0, true);
-		} 
-		else if (view == usersTab) {
+		} else if (view == usersTab) {
 			setTabsStates(1);
 			viewPager.setCurrentItem(1, true);
 		}
 	}
-	
-	void setTabsStates (int position) {
+
+	void setTabsStates(int position) {
 		if (position == 0) {
-    		groupsTab.setChecked(true);
-    		usersTab.setChecked(false);
-    	}
-    	else {
-    		groupsTab.setChecked(false);
-    		usersTab.setChecked(true);
-    	}
+			groupsTab.setChecked(true);
+			usersTab.setChecked(false);
+		} else {
+			groupsTab.setChecked(false);
+			usersTab.setChecked(true);
+		}
 	}
 }
