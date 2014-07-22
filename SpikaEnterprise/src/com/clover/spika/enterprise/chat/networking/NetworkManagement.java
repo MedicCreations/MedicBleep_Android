@@ -81,7 +81,7 @@ public class NetworkManagement {
 
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-		httppost.setHeader("Encoding", "utf-8");
+		httppost.setHeader("Encoding", "UTF-8");
 		if (!TextUtils.isEmpty(token)) {
 			httppost.setHeader("token", token);
 		}
@@ -92,7 +92,8 @@ public class NetworkManagement {
 			for (Map.Entry<String, String> entity : postParams.entrySet()) {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
 			}
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
 		}
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
@@ -116,13 +117,13 @@ public class NetworkManagement {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
 			}
 
-			params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
 		}
 
 		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
 		Logger.custom("RawRequest", httpGet.getURI().toString());
 
-		httpGet.setHeader("Encoding", "utf-8");
+		httpGet.setHeader("Encoding", "UTF-8");
 		if (!TextUtils.isEmpty(token)) {
 			httpGet.setHeader("token", token);
 		}
@@ -188,13 +189,13 @@ public class NetworkManagement {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
 			}
 
-			params += URLEncodedUtils.format(nameValuePairs, "utf-8");
+			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
 		}
 
 		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
 		Logger.custom("RawRequest", httpGet.getURI().toString());
 
-		httpGet.setHeader("Encoding", "utf-8");
+		httpGet.setHeader("Encoding", "UTF-8");
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();

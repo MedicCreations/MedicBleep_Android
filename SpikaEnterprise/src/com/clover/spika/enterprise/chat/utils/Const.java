@@ -91,7 +91,7 @@ public class Const {
 
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
-
+	
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";

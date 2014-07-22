@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -40,7 +42,6 @@ public class MessagesAdapter extends BaseAdapter {
 	private ImageLoader imageLoader;
 
 	private boolean endOfSearch = false;
-	private boolean isScrolling = false;
 	private int totalCount = 0;
 	private boolean isJellyBean = true;
 
@@ -92,17 +93,13 @@ public class MessagesAdapter extends BaseAdapter {
 		// set items to null
 		if (isJellyBean) {
 			holder.loading_bar_img.setBackgroundDrawable(null);
-			holder.meViewImage.setBackgroundDrawable(null);
-			holder.youViewImage.setBackgroundDrawable(null);
 		} else {
 			holder.loading_bar_img.setBackground(null);
-			holder.meViewImage.setBackground(null);
-			holder.youViewImage.setBackground(null);
 		}
 
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
-		
+
 		holder.meMsgContent.setVisibility(View.GONE);
 		holder.youMsgContent.setVisibility(View.GONE);
 
@@ -123,9 +120,7 @@ public class MessagesAdapter extends BaseAdapter {
 		// Assign values
 		final Message msg = (Message) getItem(position);
 
-		final boolean me = isMe(msg.getUser_id());
-
-		if (me) {
+		if (msg.isMe()) {
 			// My chat messages
 
 			holder.meMsgLayout.setVisibility(View.VISIBLE);
@@ -144,14 +139,20 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
-				imageLoader.displayImage(ctx, msg.getFile_id(), holder.meViewImage, false);
+				if (!msg.getFile_id().equals((String) holder.meViewImage.getTag())) {
+					holder.meViewImage.setTag(msg.getFile_id());
+					holder.meViewImage.setImageDrawable(null);
+					imageLoader.getBitmapAsync(ctx, msg.getFile_id(), holder.meViewImage);
+				}
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
 				holder.meViewImage.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
@@ -201,17 +202,20 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
-				// if (!isScrolling) {
-				// imageLoader.displayImage(cntx, msg.getFile_id(),
-				// holder.imagePreviewYou, false);
-				// }
+				if (!msg.getFile_id().equals((String) holder.youViewImage.getTag())) {
+					holder.youViewImage.setTag(msg.getFile_id());
+					holder.youViewImage.setImageDrawable(null);
+					imageLoader.getBitmapAsync(ctx, msg.getFile_id(), holder.youViewImage);
+				}
 
 				holder.youViewImage.setVisibility(View.VISIBLE);
 				holder.youViewImage.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
@@ -250,6 +254,7 @@ public class MessagesAdapter extends BaseAdapter {
 			}
 		}
 
+		// Date separator
 		if (dateSeparator.get(getDayTimeStamp(msg.getCreated())) != position) {
 			holder.dateSeparator.setVisibility(View.GONE);
 		} else {
@@ -257,6 +262,7 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
 		}
 
+		// Paging animation
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
 
@@ -330,16 +336,21 @@ public class MessagesAdapter extends BaseAdapter {
 					if (newItems.get(i).getId().equals(data.get(j).getId())) {
 						isFound = true;
 						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
+							newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
 							data.set(j, newItems.get(i));
 						}
 					}
 				}
 
 				if (!isFound) {
+					newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
 					data.add(newItems.get(i));
 				}
 			}
 		} else {
+			for (int i = 0; i < newItems.size(); i++) {
+				newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
+			}
 			data.addAll(newItems);
 		}
 
@@ -360,26 +371,6 @@ public class MessagesAdapter extends BaseAdapter {
 			if (current == -1) {
 				dateSeparator.put(key, i);
 			}
-		}
-	}
-
-	public void removeMessage(String msgId) {
-		boolean isFound = false;
-		int position = 0;
-
-		for (int i = 0; i < data.size(); i++) {
-			if (data.get(i).getId().equals(msgId)) {
-				isFound = true;
-				position = i;
-
-				break;
-			}
-		}
-
-		if (isFound) {
-			data.remove(position);
-			setTotalCount(--totalCount);
-			notifyDataSetChanged();
 		}
 	}
 
@@ -408,14 +399,6 @@ public class MessagesAdapter extends BaseAdapter {
 		} else {
 			setEndOfSearch(false);
 		}
-	}
-
-	public boolean isScrolling() {
-		return isScrolling;
-	}
-
-	public void setScrolling(boolean isScrolling) {
-		this.isScrolling = isScrolling;
 	}
 
 	public class ViewHolderChatMsg {

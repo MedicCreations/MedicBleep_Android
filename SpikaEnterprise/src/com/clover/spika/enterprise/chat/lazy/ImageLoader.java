@@ -21,9 +21,11 @@ import android.os.Handler;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.views.RoundedCornersImage;
 
 public class ImageLoader {
 
@@ -55,12 +57,14 @@ public class ImageLoader {
 		bitmapBorder = null;
 	}
 
-	public void setDefaultImage(int id){
+	public void setDefaultImage(int id) {
 		this.id = id;
 	}
+
 	public void displayImage(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
 		// Store image and url in Map
-		if(id != -1) imageView.setImageResource(id);
+		if (id != -1)
+			imageView.setImageResource(id);
 		imageViews.put(imageView, url);
 
 		// Check image is stored in MemoryCache Map or not (see
@@ -216,6 +220,58 @@ public class ImageLoader {
 				memoryCache.clear();
 			return null;
 		}
+	}
+
+	public void getBitmapAsync(Context context, final String url, final ImageView imageView) {
+		new BaseAsyncTask<Void, Void, Bitmap>(context, false) {
+
+			File file = fileCache.getFile(url);;
+
+			protected Bitmap doInBackground(Void... params) {
+
+				// Download image file from web
+				try {
+
+					// from cache
+					Bitmap localBitmap = decodeFile(file);
+					if (localBitmap != null) {
+						return localBitmap;
+					}
+
+					Bitmap bitmap = null;
+
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put(Const.FILE_ID, url);
+
+					InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
+					OutputStream os = new FileOutputStream(file);
+
+					Helper.copyStream(is, os);
+
+					is.close();
+					os.close();
+
+					bitmap = decodeFile(file);
+
+					return bitmap;
+
+				} catch (Throwable ex) {
+					ex.printStackTrace();
+					if (ex instanceof OutOfMemoryError) {
+						memoryCache.clear();
+					}
+				}
+
+				return null;
+			};
+
+			protected void onPostExecute(Bitmap result) {
+				if (result != null) {
+					RoundedCornersImage drawable = new RoundedCornersImage(result);
+					imageView.setImageDrawable(drawable);
+				}
+			};
+		}.execute();
 	}
 
 	// Decodes image and scales it to reduce memory consumption

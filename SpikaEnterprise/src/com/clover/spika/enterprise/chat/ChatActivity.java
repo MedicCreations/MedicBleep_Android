@@ -100,20 +100,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		main_list_view.setAdapter(adapter);
 
-		main_list_view.setOnScrollListener(new OnScrollListener() {
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			}
-
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
-					adapter.setScrolling(false);
-					adapter.notifyDataSetChanged();
-				} else if (scrollState == OnScrollListener.SCROLL_STATE_FLING) {
-					adapter.setScrolling(true);
-				}
-			}
-		});
-
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(this);
 
@@ -332,6 +318,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				adapter.clearItems();
 				totalItems = 0;
 			}
+		} else {
+			return;
 		}
 
 		String msgId = "";
@@ -389,8 +377,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
 						}
 					}
-
-					adapter.setScrolling(false);
 				}
 			}
 		});

@@ -23,25 +23,22 @@ public class RoundImageView extends ImageView {
 		super(context, attrs, defStyle);
 	}
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (isDrawValid()) {
-            Bitmap b = ((BitmapDrawable) getDrawable()).getBitmap();
-            Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
+	@Override
+	protected void onDraw(Canvas canvas) {
+		if (isDrawValid()) {
+			Bitmap b = ((BitmapDrawable) getDrawable()).getBitmap();
+			Bitmap bitmap = b.copy(Bitmap.Config.ARGB_8888, true);
 
-            int width = getWidth();
-            int height = getHeight();
+			int width = getWidth();
+			// int height = getHeight();
 
-            int paddingLeft = getPaddingLeft();
+			int paddingLeft = getPaddingLeft();
 
-            canvas.drawBitmap(Helper.getRoundedBitmap(bitmap, width - paddingLeft), paddingLeft/2, paddingLeft/2, null);
-        }
-    }
+			canvas.drawBitmap(Helper.getRoundedBitmap(bitmap, width - paddingLeft), paddingLeft / 2, paddingLeft / 2, null);
+		}
+	}
 
-    private boolean isDrawValid() {
-        return getDrawable() != null
-                && getDrawable() instanceof BitmapDrawable
-                && getWidth() > 0
-                && getHeight() > 0;
-    }
+	private boolean isDrawValid() {
+		return getDrawable() != null && getDrawable() instanceof BitmapDrawable && getWidth() > 0 && getHeight() > 0;
+	}
 }
