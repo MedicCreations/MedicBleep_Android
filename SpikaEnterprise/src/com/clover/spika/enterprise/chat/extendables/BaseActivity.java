@@ -84,8 +84,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		slidingMenu = getSlidingMenu();
 		slidingMenu.setMode(SlidingMenu.LEFT);
-		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
-		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);

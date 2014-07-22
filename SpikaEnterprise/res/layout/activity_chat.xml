@@ -164,7 +164,7 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/btnVideo"
+                        android:id="@+id/video"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -186,7 +186,7 @@
                     android:weightSum="3" >
 
                     <Button
-                        android:id="@+id/btnEmoji"
+                        android:id="@+id/emoji"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -198,7 +198,7 @@
                         android:visibility="invisible" />
 
                     <Button
-                        android:id="@+id/btnLocation"
+                        android:id="@+id/location"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -212,7 +212,7 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/btnRecord"
+                        android:id="@+id/record"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
