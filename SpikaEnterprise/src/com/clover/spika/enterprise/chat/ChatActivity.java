@@ -9,8 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -45,8 +44,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private RobotoThinTextView screenTitle;
 	private RoundImageView partnerIcon;
 
-	private TextView photo;
-	private TextView gallery;
+	private Button photo;
+	private Button gallery;
+	private Button video;
+	private Button location;
+	private Button record;
 
 	private ListView main_list_view;
 	public MessagesAdapter adapter;
@@ -82,10 +84,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(this);
 
-		photo = (TextView) findViewById(R.id.photo);
+		photo = (Button) findViewById(R.id.photo);
 		photo.setOnClickListener(this);
-		gallery = (TextView) findViewById(R.id.gallery);
+		gallery = (Button) findViewById(R.id.gallery);
 		gallery.setOnClickListener(this);
+		video = (Button) findViewById(R.id.video);
+		video.setOnClickListener(this);
+		location = (Button) findViewById(R.id.location);
+		location.setOnClickListener(this);
+		record = (Button) findViewById(R.id.record);
+		record.setOnClickListener(this);
 
 		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.slDrawer);
 		chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
@@ -288,6 +296,24 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			intent.putExtra(Const.FROM_WAll, true);
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
+		} else if (id == R.id.video) {
+			// TODO
+			// Intent intent = new Intent(this, CameraCropActivity.class);
+			// intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+			// intent.putExtra(Const.FROM_WAll, true);
+			// intent.putExtra(Const.CHAT_ID, chatId);
+			// startActivity(intent);
+		} else if (id == R.id.location) {
+			Intent intent = new Intent(this, LocationActivity.class);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivity(intent);
+		} else if (id == R.id.record) {
+			// TODO
+			// Intent intent = new Intent(this, CameraCropActivity.class);
+			// intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+			// intent.putExtra(Const.FROM_WAll, true);
+			// intent.putExtra(Const.CHAT_ID, chatId);
+			// startActivity(intent);
 		}
 	}
 

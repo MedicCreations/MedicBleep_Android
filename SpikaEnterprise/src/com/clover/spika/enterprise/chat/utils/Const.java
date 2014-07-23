@@ -14,7 +14,7 @@ public class Const {
 
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String GCM_SERVER_API_KEY = "AIzaSyDccNnfu5tpyQASDT4xNV8BfI-fOGkOOeI";
-	public static final String GCM_CLIENT_API_KEY = "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
+//	public static final String GCM_CLIENT_API_KEY = "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
 
 	// Timestamp
 	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";

@@ -24,7 +24,7 @@ public class PhotoActivity extends BaseActivity {
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_photo);
-
+		
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new OnClickListener() {
 
