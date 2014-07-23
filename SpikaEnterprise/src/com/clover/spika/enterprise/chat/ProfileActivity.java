@@ -18,12 +18,15 @@ import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 public class ProfileActivity extends BaseActivity implements OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private static final int REQUEST_NEW_PASSCODE = 9001;
+    private static final int REQUEST_REMOVE_PASSCODE = 9002;
 
 	private ImageView profileImage;
     private TextView profileName;
     private Switch mSwitchPasscodeEnabled;
 
     private ImageLoader imageLoader;
+    
+    private boolean isWrongPassChecked = false;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -68,6 +71,15 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
                 PasscodeUtility.getInstance().setSessionValid(false);
                 mSwitchPasscodeEnabled.setChecked(false);
             }
+        } else if(REQUEST_REMOVE_PASSCODE == requestCode){
+        	if(RESULT_OK == resultCode){
+        		PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
+        		PasscodeUtility.getInstance().setPasscode(this, "");
+        	}else{
+        		PasscodeUtility.getInstance().setSessionValid(true);
+        		isWrongPassChecked=true;
+        		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
+        	}
         }
     }
 
@@ -108,11 +120,15 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    	if(isWrongPassChecked){
+    		isWrongPassChecked = false;
+    		return;
+    	}
         if (isChecked) {
             startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
         } else {
-            PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
-            PasscodeUtility.getInstance().setPasscode(this, "");
+        	startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
         }
     }
+    
 }

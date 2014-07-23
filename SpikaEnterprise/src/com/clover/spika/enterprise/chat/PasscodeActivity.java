@@ -35,9 +35,10 @@ public class PasscodeActivity extends NewPasscodeActivity {
                 setResult(RESULT_OK);
                 finish();
             } else {
-                getEnteredValuesList().clear();
+            	errorValidateAnimation();
                 super.reDraw();
             }
         }
     }
+    
 }

@@ -1,14 +1,19 @@
 package com.clover.spika.enterprise.chat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 
@@ -53,6 +58,7 @@ public class NewPasscodeActivity extends Activity {
      * Triggered when Back ImageButton is clicked
      */
     public void exitActivity(View view) {
+    	PasscodeUtility.getInstance().setTemporaryPasscode(null);
         setResult(RESULT_CANCELED);
         finish();
     }
@@ -116,7 +122,24 @@ public class NewPasscodeActivity extends Activity {
                 PasscodeUtility.getInstance().setTemporaryPasscode(null);
 
                 finish();
+            } else{
+            	//error password
+            	errorValidateAnimation();
             }
         }
     }
+    
+    protected void errorValidateAnimation() {
+    	LinearLayout linearCodeHolder = (LinearLayout) findViewById(R.id.linear_layout_characters_in_passcode);
+    	AnimUtils.goToLeftThenToRightAndBackInPosition(linearCodeHolder, 50, 100, new AnimatorListenerAdapter() {
+    		@Override
+    		public void onAnimationEnd(Animator animation) {
+    			enteredValuesList.clear();
+    			reDraw();
+    		}
+		});
+    	Vibrator vibra = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    	long pattern[]={0,50,50,200};
+    	vibra.vibrate(pattern, -1);
+	}
 }

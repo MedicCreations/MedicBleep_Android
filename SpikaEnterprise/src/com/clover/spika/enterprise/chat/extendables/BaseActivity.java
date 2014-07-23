@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -40,10 +44,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -127,6 +127,7 @@ public class BaseActivity extends SlidingFragmentActivity {
                 finish();
             }
         }
+        
     }
 
     @Override
