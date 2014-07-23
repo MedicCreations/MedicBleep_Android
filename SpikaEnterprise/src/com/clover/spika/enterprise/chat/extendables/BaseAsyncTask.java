@@ -13,7 +13,6 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 
 	protected Context context;
 	protected AppProgressDialog progressDialog;
-	protected Exception exception;
 	protected boolean showProgressBar = false;
 
 	public BaseAsyncTask(Context context, boolean showProgressBar) {
@@ -55,8 +54,11 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
-				progressDialog.dismiss();
-			}
+                // because AsyncTask
+                try {
+                    progressDialog.dismiss();
+                } catch (IllegalArgumentException ignored) { }
+            }
 		}
 	}
 
@@ -66,7 +68,10 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
-				progressDialog.dismiss();
+                // because AsyncTask
+                try {
+                    progressDialog.dismiss();
+                } catch (IllegalArgumentException ignored) { }
 			}
 		}
 	}

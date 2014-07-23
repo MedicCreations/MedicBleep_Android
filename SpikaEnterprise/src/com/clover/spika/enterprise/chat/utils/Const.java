@@ -16,6 +16,8 @@ public class Const {
 	public static final String GCM_SERVER_API_KEY = "AIzaSyDccNnfu5tpyQASDT4xNV8BfI-fOGkOOeI";
 //	public static final String GCM_CLIENT_API_KEY = "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
 
+    public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
+
 	// Timestamp
 	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";
 	public static final long WEEK = 604800;
