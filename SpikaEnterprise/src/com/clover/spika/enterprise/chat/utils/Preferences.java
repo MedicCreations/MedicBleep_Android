@@ -12,9 +12,11 @@ import java.io.IOException;
 public class Preferences {
 
 	private SharedPreferences sharedPreferences;
+    private SharedPreferences passcodePreferences;
 
 	public Preferences(Context context) {
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        passcodePreferences = context.getSharedPreferences("passcode", Context.MODE_PRIVATE);
 	}
 
 	public String getCustomString(String key) {
@@ -72,9 +74,33 @@ public class Preferences {
 	}
 
     public void removePreference(String key) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(key);
+        SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
+        sharedEditor.remove(key);
+        sharedEditor.apply();
+
+        SharedPreferences.Editor passcodeEditor = sharedPreferences.edit();
+        passcodeEditor.remove(key);
+        passcodeEditor.apply();
+    }
+
+    public void setPasscodeEnabled(boolean enabled) {
+        SharedPreferences.Editor editor = passcodePreferences.edit();
+        editor.putBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, enabled);
         editor.apply();
+    }
+
+    public boolean isPasscodeEnabled() {
+        return passcodePreferences.getBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, false);
+    }
+
+    public void setPasscode(String passcode) {
+        SharedPreferences.Editor editor = passcodePreferences.edit();
+        editor.putString(Const.PREFERENCES_STORED_PASSCODE, passcode);
+        editor.apply();
+    }
+
+    public String getPasscode() {
+        return passcodePreferences.getString(Const.PREFERENCES_STORED_PASSCODE, "");
     }
 
     public void clear() {

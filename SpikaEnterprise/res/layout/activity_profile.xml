@@ -44,7 +44,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/circle_with_white_border"
 			android:layout_centerHorizontal="true"
-			android:layout_marginTop="50dp" />
+			android:layout_marginTop="50dp"
+            tools:src="@drawable/white_circle"/>
         
         <ImageView
             android:id="@+id/addPhoto"
@@ -65,7 +66,33 @@
             android:layout_margin="20dp"
             android:gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="50sp" />
+            android:textSize="50sp"
+            tools:text="John Doe"/>
+
+        <Switch
+            android:id="@+id/switchPasscode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="20dp"
+            android:layout_alignParentBottom="true"
+            android:checked="true"
+            android:textOff="Off"
+            android:textOn="On"/>
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/labelEnablePasscode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/switchPasscode"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:text="@string/enable_passcode_label"/>
+
     </RelativeLayout>
 
     <View

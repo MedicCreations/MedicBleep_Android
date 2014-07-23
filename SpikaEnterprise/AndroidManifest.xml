@@ -120,6 +120,9 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="Passcode" />
+        <activity
+            android:name=".NewPasscodeActivity"
+            android:label="NewPasscodeActivity" />
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.utils;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 
@@ -30,7 +31,7 @@ public class PasscodeUtility {
      * @return true if passcode has been enabled
      */
     public boolean isPasscodeEnabled(Context context) {
-        return SpikaEnterpriseApp.getSharedPreferences(context).getCustomBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED);
+        return SpikaEnterpriseApp.getSharedPreferences(context).isPasscodeEnabled();
     }
 
     /**
@@ -43,8 +44,7 @@ public class PasscodeUtility {
             throw new IllegalAccessError("You can only set new values on main thread!");
         }
 
-        SpikaEnterpriseApp.getSharedPreferences(context)
-                .setCustomBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, isPasscodeEnabled);
+        SpikaEnterpriseApp.getSharedPreferences(context).setPasscodeEnabled(isPasscodeEnabled);
     }
 
     /**
@@ -72,19 +72,40 @@ public class PasscodeUtility {
 
     public boolean validate(Context context, String requestedPasscode) {
         if (this.passcode == null) {
-            this.passcode = SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PREFERENCES_STORED_PASSCODE);
+            this.passcode = SpikaEnterpriseApp.getSharedPreferences(context).getPasscode();
 
             // if, by any chance, passcode length is wrong, react as if entered passcode is false and thus not validated
-            if (this.passcode.length() == 4) return false;
+            if (this.passcode.length() != 4) return false;
         }
 
         return this.passcode.equals(requestedPasscode);
     }
 
     public void setPasscode(Context context, String requestedPasscode) {
-        if (requestedPasscode.length() == 4) {
-            SpikaEnterpriseApp.getSharedPreferences(context).setCustomString(Const.PREFERENCES_STORED_PASSCODE, requestedPasscode);
+        if (TextUtils.isEmpty(requestedPasscode)) {
+            SpikaEnterpriseApp.getSharedPreferences(context).removePreference(Const.PREFERENCES_STORED_PASSCODE);
+            return;
         }
+
+        if (requestedPasscode.length() == 4) {
+            SpikaEnterpriseApp.getSharedPreferences(context).setPasscode(requestedPasscode);
+        }
+    }
+
+    /**
+     * @return temporary passcode or empty String if none is set.
+     * Temporary passcode should be stored for a short time only.
+     */
+    public String getTemporaryPasscode() {
+        return temporaryPasscode == null ? "" : temporaryPasscode;
+    }
+
+    public void setTemporaryPasscode(String tempPasscode) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new IllegalAccessError("You can only set new values on main thread!");
+        }
+
+        this.temporaryPasscode = tempPasscode;
     }
 
     /**
