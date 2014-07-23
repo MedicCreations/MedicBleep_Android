@@ -28,10 +28,14 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.DrawableRes;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
@@ -267,6 +271,19 @@ public class Helper {
 
 		animation.start();
 	}
+    
+    public static void setViewBackgroundDrawable(View view, Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.setBackground(drawable);
+        } else {
+            view.setBackgroundDrawable(drawable);
+        }
+    }
+
+    public static void setViewBackgroundResource(View view, @DrawableRes int drawableId) {
+        Drawable drawable = view.getResources().getDrawable(drawableId);
+        setViewBackgroundDrawable(view, drawable);
+    }
 
 	/**
 	 * method is used for checking valid email id format.

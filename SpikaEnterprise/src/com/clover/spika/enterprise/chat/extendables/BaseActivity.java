@@ -101,7 +101,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
         // passcode callback injected methods are important for tracking active session
         PasscodeUtility.getInstance().onResume();
-        PasscodeUtility.getInstance().setPasscodeEnabled(this, true);
         if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
             if (!PasscodeUtility.getInstance().isSessionValid()) {
                 startActivityForResult(new Intent(this, PasscodeActivity.class), PASSCODE_ENTRY_VALIDATION_REQUEST);

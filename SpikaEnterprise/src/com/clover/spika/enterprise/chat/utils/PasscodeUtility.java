@@ -21,6 +21,9 @@ public class PasscodeUtility {
     private int handlerTimeToLive = 3 * 1000;
     private Handler mValidationSessionHandler = new Handler();
 
+    private String passcode;
+    private String temporaryPasscode;
+
     /**
      * Checks if the passcode is enabled for the application.
      * @param context context of the activity (or application context)
@@ -65,6 +68,23 @@ public class PasscodeUtility {
 
         Logger.debug("setSessionValid: " + isSessionValid);
         this.isSessionValid = isSessionValid;
+    }
+
+    public boolean validate(Context context, String requestedPasscode) {
+        if (this.passcode == null) {
+            this.passcode = SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PREFERENCES_STORED_PASSCODE);
+
+            // if, by any chance, passcode length is wrong, react as if entered passcode is false and thus not validated
+            if (this.passcode.length() == 4) return false;
+        }
+
+        return this.passcode.equals(requestedPasscode);
+    }
+
+    public void setPasscode(Context context, String requestedPasscode) {
+        if (requestedPasscode.length() == 4) {
+            SpikaEnterpriseApp.getSharedPreferences(context).setCustomString(Const.PREFERENCES_STORED_PASSCODE, requestedPasscode);
+        }
     }
 
     /**
