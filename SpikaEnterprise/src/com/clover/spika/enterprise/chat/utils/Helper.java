@@ -204,6 +204,10 @@ public class Helper {
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
 	}
+	
+	public static void setUserImage(Context ctx, String image) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, image);
+	}
 
 	public static String getUserFirstName(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.FIRSTNAME);

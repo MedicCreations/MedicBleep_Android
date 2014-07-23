@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -75,6 +76,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
         	if(RESULT_OK == resultCode){
         		PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
         		PasscodeUtility.getInstance().setPasscode(this, "");
+        		PasscodeUtility.getInstance().setSessionValid(true);
         	}else{
         		PasscodeUtility.getInstance().setSessionValid(true);
         		isWrongPassChecked=true;
@@ -124,11 +126,11 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
     		isWrongPassChecked = false;
     		return;
     	}
-        if (isChecked) {
-            startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
-        } else {
-        	startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
-        }
+//        if (isChecked) {
+//            startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
+//        } else {
+//        	startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
+//        }
     }
     
 }

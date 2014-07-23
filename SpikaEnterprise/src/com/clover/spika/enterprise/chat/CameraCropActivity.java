@@ -44,6 +44,7 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UpdateUserModel;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -661,6 +662,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			public void onApiResponse(Result<UpdateUserModel> result) {
 				if (result.isSuccess()) {
 					openProfile(fileId);
+					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {
 					if (result.hasResultData()) {
