@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,8 +83,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		slidingMenu = getSlidingMenu();
 		slidingMenu.setMode(SlidingMenu.LEFT);
-		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
-		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);
@@ -108,6 +107,14 @@ public class BaseActivity extends SlidingFragmentActivity {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Call this to disable the side bar, it will still work on button click
+	 */
+	public void disableSidebar() {
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
 
 	public void setScreenTitle(String title) {

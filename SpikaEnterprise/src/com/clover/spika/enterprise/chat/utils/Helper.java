@@ -177,6 +177,18 @@ public class Helper {
 		}
 	}
 
+	public static JSONObject jObjectRawFromString(String string) {
+		try {
+			JSONObject result = new JSONObject(string);
+			Logger.custom("RawResponse", result.toString(2));
+
+			return result;
+		} catch (Exception e) {
+			Logger.custom("RawResponse", string);
+			return null;
+		}
+	}
+
 	/**
 	 * Set user settings
 	 */

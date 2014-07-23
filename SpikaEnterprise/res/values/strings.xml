@@ -61,6 +61,7 @@
     <string name="e_while_loading_image_from_gallery">Error while loading image from gallery.</string>
     <string name="e_failed_openning_camera">Error while openning camera.</string>
     <string name="e_no_camera_on_device">No camera on device.</string>
+    <string name="e_video_to_long">Video is to long.</string>
     <string name="e_something_went_wrong_again">Something went wrong.</string>
     <string name="e_something_went_wrong_while_taking_a_picture">Something went wrong while taking a picture.</string>
     <string name="e_video_too_long">Video is too long.</string>

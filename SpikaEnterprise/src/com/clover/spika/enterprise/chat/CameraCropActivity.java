@@ -36,11 +36,10 @@ import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.FileUploadApi;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -94,6 +93,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
+		disableSidebar();
 
 		return_flag = false;
 
@@ -589,7 +589,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void fileUploadAsync(final String filePath) {
-		new FileUploadApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
@@ -603,8 +603,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					}
 				} else {
 					if (result.hasResultData()) {
-						Toast.makeText(CameraCropActivity.this, result.getResultData().getMessage(), Toast.LENGTH_SHORT).show();
-						finish();
+						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
+						dialog.setFailed(result.getResultData().getMessage());
 					}
 				}
 			}
@@ -660,13 +660,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<UpdateUserModel> result) {
 				if (result.isSuccess()) {
-					Toast.makeText(CameraCropActivity.this, "UPDATED", Toast.LENGTH_SHORT).show();
 					openProfile(fileId);
 					finish();
 				} else {
 					if (result.hasResultData()) {
-						Toast.makeText(CameraCropActivity.this, result.getResultData().getMessage(), Toast.LENGTH_SHORT).show();
-						finish();
+						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
+						dialog.setFailed(result.getResultData().getMessage());
 					}
 				}
 			}

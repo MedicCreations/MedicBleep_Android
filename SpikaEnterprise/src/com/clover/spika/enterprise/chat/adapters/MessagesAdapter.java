@@ -24,8 +24,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -161,7 +163,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, VideoActivity.class);
+						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_LOCATION) {
@@ -170,7 +174,10 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, LocationActivity.class);
+						intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
+						intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
+						ctx.startActivity(intent);
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
@@ -225,7 +232,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, VideoActivity.class);
+						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 
@@ -236,7 +245,10 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, LocationActivity.class);
+						intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
+						intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
+						ctx.startActivity(intent);
 					}
 				});
 

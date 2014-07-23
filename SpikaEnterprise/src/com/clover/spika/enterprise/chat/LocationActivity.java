@@ -24,16 +24,22 @@
 
 package com.clover.spika.enterprise.chat;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
 import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.LocationApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -41,7 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -59,56 +65,133 @@ public class LocationActivity extends BaseActivity {
 	private GPSTracker mGpsTracker;
 
 	private Bitmap mMapPinBlue;
-	MarkerOptions markerOfUser;
+	private Marker mapMarker;
+	private MarkerOptions markerOfUser;
 
+	private String chatId;
 	private double latitude = 0;
 	private double longitude = 0;
+
+	private EditText locationAddress;
+	private ImageButton sendLocation;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_location);
+		disableSidebar();
 
 		if (checkGooglePlayServicesForUpdate()) {
 			return;
 		}
 
-		mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+		locationAddress = (EditText) findViewById(R.id.locationAddress);
+		locationAddress.setEnabled(false);
+		sendLocation = (ImageButton) findViewById(R.id.sendLocation);
+
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		mMapPinBlue = BitmapFactory.decodeResource(getResources(), R.drawable.location_more_icon_active);
 
 		mGpsTracker = new GPSTracker(this);
-		if (mGpsTracker.canGetLocation()) {
-			latitude = mGpsTracker.getLatitude();
-			longitude = mGpsTracker.getLongitude();
+
+		Bundle extras = getIntent().getExtras();
+
+		chatId = extras.getString(Const.CHAT_ID);
+
+		if (extras.containsKey(Const.LATITUDE)) {
+
+			latitude = extras.getDouble(Const.LATITUDE);
+			longitude = extras.getDouble(Const.LONGITUDE);
+
+			sendLocation.setVisibility(View.GONE);
 
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
-
-			final Marker myMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue)));
-
-			mMap.setOnMapClickListener(new OnMapClickListener() {
-
-				@Override
-				public void onMapClick(LatLng point) {
-					latitude = point.latitude;
-					longitude = point.longitude;
-					mMap.clear();
-					mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue)));
-				}
-			});
-
-			mGpsTracker.setOnLocationChangedListener(new OnLocationChangedListener() {
-
-				@Override
-				public void onLocationChanged(Location location) {
-					latitude = location.getLatitude();
-					longitude = location.getLongitude();
-					myMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-				}
-			});
-
+			markerOfUser = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue));
+			mapMarker = mMap.addMarker(markerOfUser);
 		} else {
-			mGpsTracker.showSettingsAlert();
+			sendLocation.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					sendMsg();
+				}
+			});
+
+			if (mGpsTracker.canGetLocation()) {
+
+				latitude = mGpsTracker.getLatitude();
+				longitude = mGpsTracker.getLongitude();
+
+				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
+
+				markerOfUser = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue));
+				mapMarker = mMap.addMarker(markerOfUser);
+
+				mMap.setOnMapClickListener(new OnMapClickListener() {
+
+					@Override
+					public void onMapClick(LatLng point) {
+						latitude = point.latitude;
+						longitude = point.longitude;
+						mMap.clear();
+						mapMarker = mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue)));
+
+						new LocationApi().getAddress(latitude, longitude, LocationActivity.this, new ApiCallback<String>() {
+
+							@Override
+							public void onApiResponse(Result<String> result) {
+								if (result.isSuccess()) {
+									locationAddress.setText(result.getResultData());
+								} else {
+
+								}
+							}
+						});
+					}
+				});
+
+				mGpsTracker.setOnLocationChangedListener(new OnLocationChangedListener() {
+
+					@Override
+					public void onLocationChanged(Location location) {
+						latitude = location.getLatitude();
+						longitude = location.getLongitude();
+						mapMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+					}
+				});
+			} else {
+				mGpsTracker.showSettingsAlert();
+			}
 		}
+
+		new LocationApi().getAddress(latitude, longitude, this, new ApiCallback<String>() {
+
+			@Override
+			public void onApiResponse(Result<String> result) {
+				if (result.isSuccess()) {
+					locationAddress.setText(result.getResultData());
+				} else {
+
+				}
+			}
+		});
+	}
+
+	private void sendMsg() {
+		new ChatApi().sendMessage(Const.MSG_TYPE_LOCATION, chatId, null, null, String.valueOf(longitude), String.valueOf(latitude), this, new ApiCallback<Integer>() {
+
+			@Override
+			public void onApiResponse(Result<Integer> result) {
+
+				AppDialog dialog = new AppDialog(LocationActivity.this, true);
+
+				if (result.isSuccess()) {
+					dialog.setSucceed();
+				} else {
+					dialog.setFailed(result.getResultData());
+				}
+			}
+		});
 	}
 
 	private boolean checkGooglePlayServicesForUpdate() {
@@ -120,33 +203,6 @@ public class LocationActivity extends BaseActivity {
 			d.setCancelable(false);
 			d.show();
 			return true;
-		}
-	}
-
-	private void setLocation(double lat, double lon) {
-
-		mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16));
-
-		markerOfUser = new MarkerOptions().position(new LatLng(lat, lon)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue));
-
-		mMap.addMarker(markerOfUser);
-
-		new LocationApi().getAddress(lat, lon, this, new ApiCallback<String>() {
-
-			@Override
-			public void onApiResponse(Result<String> result) {
-				// TODO Auto-generated method stub
-			}
-		});
-
-		mGpsTracker = new GPSTracker(this);
-
-		if (mGpsTracker.canGetLocation()) {
-			double myLat = mGpsTracker.getLatitude();
-			double myLon = mGpsTracker.getLongitude();
-
-			mMap.addMarker(new MarkerOptions().position(new LatLng(myLat, myLon)).icon(BitmapDescriptorFactory.fromResource(R.drawable.location_more_icon)));
-
 		}
 	}
 

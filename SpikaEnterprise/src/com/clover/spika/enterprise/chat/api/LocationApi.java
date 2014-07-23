@@ -1,14 +1,20 @@
 package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 
 public class LocationApi {
 
@@ -17,32 +23,56 @@ public class LocationApi {
 
 			protected String doInBackground(Void... params) {
 
-				Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-				List<Address> addresses = null;
 				String finalAddress = "";
 
-				try {
-					addresses = geocoder.getFromLocation(latitude, longitude, 1);
+				if (Geocoder.isPresent()) {
+					Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+					List<Address> addresses = null;
 
-					if (addresses != null && addresses.size() > 0) {
-						Address address = addresses.get(0);
+					try {
+						addresses = geocoder.getFromLocation(latitude, longitude, 1);
 
-						if (address.getMaxAddressLineIndex() > 0) {
-							finalAddress = finalAddress + address.getAddressLine(0);
+						if (addresses != null && addresses.size() > 0) {
+							Address address = addresses.get(0);
+
+							if (address.getMaxAddressLineIndex() > 0) {
+								finalAddress = finalAddress + address.getAddressLine(0);
+							}
+
+							if (address.getLocality() != null) {
+								finalAddress = finalAddress + ", " + address.getLocality();
+							}
+
+							if (address.getCountryName() != null) {
+								finalAddress = finalAddress + ", " + address.getCountryName();
+							}
+
+							return finalAddress;
 						}
 
-						if (address.getLocality() != null) {
-							finalAddress = finalAddress + ", " + address.getLocality();
-						}
-
-						if (address.getCountryName() != null) {
-							finalAddress = finalAddress + ", " + address.getCountryName();
-						}
-
-						return finalAddress;
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
+				}
 
-				} catch (IOException e) {
+				try {
+					String googleMapUrl = "http://maps.googleapis.com/maps/api/geocode/json";
+
+					HashMap<String, String> getParams = new HashMap<String, String>();
+					getParams.put("latlng", String.valueOf(latitude) + "," + String.valueOf(longitude));
+					getParams.put("sensor", "false");
+
+					JSONObject googleMapResponse = NetworkManagement.httpGetCustomUrlRequest(googleMapUrl, getParams);
+
+					JSONArray results = (JSONArray) googleMapResponse.get("results");
+					for (int i = 0; i < results.length(); i++) {
+						JSONObject result = results.getJSONObject(i);
+
+						if (result.has("formatted_address")) {
+							return result.getString("formatted_address");
+						}
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
