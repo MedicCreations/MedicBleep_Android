@@ -40,6 +40,7 @@ import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 
 public class Helper {
 
@@ -284,7 +285,8 @@ public class Helper {
 		animation.start();
 	}
     
-    public static void setViewBackgroundDrawable(View view, Drawable drawable) {
+    @SuppressLint("NewApi")
+	public static void setViewBackgroundDrawable(View view, Drawable drawable) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             view.setBackground(drawable);
         } else {
@@ -324,7 +326,19 @@ public class Helper {
 	 * @param os
 	 */
 	public static void copyStream(InputStream is, OutputStream os) {
+		copyStream(is, os, -1, null);
+	}
+	
+	/**
+	 * Copy input stream to output stream
+	 * 
+	 * @param is
+	 * @param os
+	 * @param length of content
+	 */
+	public static void copyStream(InputStream is, OutputStream os, long length, ProgressBarListeners listener) {
 		final int buffer_size = 1024;
+		int totalLen = 0;
 		try {
 
 			byte[] bytes = new byte[buffer_size];
@@ -332,10 +346,17 @@ public class Helper {
 				// Read byte from input stream
 
 				int count = is.read(bytes, 0, buffer_size);
-				if (count == -1)
+				if (count == -1){
+					listener.onFinish();
 					break;
+				}
 
 				// Write byte from output stream
+				if(length != -1 && listener != null){
+					totalLen = totalLen + count;
+					listener.onSetMax(length);
+					listener.onProgress(totalLen);
+				}
 				os.write(bytes, 0, count);
 			}
 		} catch (Exception ex) {

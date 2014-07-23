@@ -204,7 +204,7 @@ public class NetworkManagement {
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
 
-	public static InputStream httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
+	public static HttpEntity httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
 
 		// form parameters
@@ -225,7 +225,7 @@ public class NetworkManagement {
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();
 
-		return entity.getContent();
+		return entity;
 	}
 
 	/**
