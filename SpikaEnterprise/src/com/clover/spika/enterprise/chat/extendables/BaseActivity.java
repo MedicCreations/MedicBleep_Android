@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -28,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
@@ -37,15 +34,21 @@ import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaseActivity extends SlidingFragmentActivity {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
@@ -92,7 +95,41 @@ public class BaseActivity extends SlidingFragmentActivity {
 		slidingMenu.setBehindWidth(80);
 	}
 
-	@Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // passcode callback injected methods are important for tracking active session
+        PasscodeUtility.getInstance().onResume();
+        if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+            if (!PasscodeUtility.getInstance().isSessionValid()) {
+                startActivityForResult(new Intent(this, PasscodeActivity.class), PASSCODE_ENTRY_VALIDATION_REQUEST);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // passcode callback injected methods are important for tracking active session
+        PasscodeUtility.getInstance().onPause();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                PasscodeUtility.getInstance().setSessionValid(true);
+            } else {
+                PasscodeUtility.getInstance().setSessionValid(false);
+                finish();
+            }
+        }
+    }
+
+    @Override
 	public void setContentView(int id) {
 		super.setContentView(id);
 

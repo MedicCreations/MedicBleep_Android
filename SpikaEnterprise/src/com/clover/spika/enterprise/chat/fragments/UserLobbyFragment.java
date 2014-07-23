@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +23,9 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserLobbyFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
@@ -39,8 +39,6 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_lobby, container, false);
 
-		((LobbyActivity) getActivity()).getLobby(this);
-
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
@@ -48,6 +46,9 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
+
+		((LobbyActivity) getActivity()).getLobby(this);
+
 		return view;
 	}
 

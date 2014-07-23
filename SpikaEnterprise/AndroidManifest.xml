@@ -36,6 +36,7 @@
 
     <application
         android:name="com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp"
+        android:label="@string/app_name"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -51,7 +52,7 @@
             android:name="com.clover.spika.enterprise.chat.SplashActivity"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,17 +62,17 @@
         </activity>
         <activity
             android:name="com.clover.spika.enterprise.chat.LoginActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.LobbyActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ChatActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
@@ -101,24 +102,32 @@
         <activity
             android:name=".UserListActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.GroupListActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.CameraCropActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.PhotoActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ProfileActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".PasscodeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:label="Passcode" />
+        <activity
+            android:name=".NewPasscodeActivity"
+            android:label="NewPasscodeActivity" />
     </application>
 
 </manifest>
