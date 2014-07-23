@@ -297,12 +297,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
 		} else if (id == R.id.video) {
-			// TODO
-			// Intent intent = new Intent(this, CameraCropActivity.class);
-			// intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-			// intent.putExtra(Const.FROM_WAll, true);
-			// intent.putExtra(Const.CHAT_ID, chatId);
-			// startActivity(intent);
+			AppDialog dialog = new AppDialog(this, false);
+			dialog.choseCamGallery(chatId);
 		} else if (id == R.id.location) {
 			Intent intent = new Intent(this, LocationActivity.class);
 			intent.putExtra(Const.CHAT_ID, chatId);

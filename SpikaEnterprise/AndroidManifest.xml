@@ -90,7 +90,12 @@
 
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
-            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.RecordVideoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.VideoActivity"
             android:screenOrientation="portrait" />
 
         <!-- Old -->
