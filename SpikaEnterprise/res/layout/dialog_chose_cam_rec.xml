@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@color/white"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/camera"
+            android:contentDescription="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/more_square_bg"
+            android:padding="10dp"
+            android:src="@drawable/camera_more_icon_selector" />
+
+        <ImageButton
+            android:id="@+id/gallery"
+            android:contentDescription="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/more_square_bg"
+            android:padding="10dp"
+            android:src="@drawable/albums_more_icon_selector" />
+    </LinearLayout>
+
+</RelativeLayout>

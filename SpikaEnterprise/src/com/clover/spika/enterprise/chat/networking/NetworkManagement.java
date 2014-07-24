@@ -134,6 +134,31 @@ public class NetworkManagement {
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
 
+	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+
+		String params = "";
+
+		// form parameters
+		if (getParams != null && !getParams.isEmpty()) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			for (Map.Entry<String, String> entity : getParams.entrySet()) {
+				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+			}
+
+			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
+		}
+
+		HttpGet httpGet = new HttpGet(apiUrl + (TextUtils.isEmpty(params) ? "" : "?" + params));
+		Logger.custom("RawRequest", httpGet.getURI().toString());
+
+		httpGet.setHeader("Encoding", "UTF-8");
+
+		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
+		HttpEntity entity = response.getEntity();
+
+		return Helper.jObjectRawFromString(getString(entity.getContent()));
+	}
+
 	/**
 	 * Post/upload file
 	 * 
@@ -179,7 +204,7 @@ public class NetworkManagement {
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
 
-	public static InputStream httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
+	public static HttpEntity httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
 
 		// form parameters
@@ -200,7 +225,7 @@ public class NetworkManagement {
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();
 
-		return entity.getContent();
+		return entity;
 	}
 
 	/**

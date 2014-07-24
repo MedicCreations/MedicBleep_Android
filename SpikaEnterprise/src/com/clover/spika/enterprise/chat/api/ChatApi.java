@@ -158,6 +158,7 @@ public class ChatApi {
 
 					if (!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
 						requestParams.put(Const.LONGITUDE, longitude);
+						requestParams.put(Const.LATITUDE, latitude);
 					}
 
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_SEND_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());

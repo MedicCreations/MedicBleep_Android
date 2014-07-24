@@ -14,7 +14,8 @@ public class Const {
 
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String GCM_SERVER_API_KEY = "AIzaSyDccNnfu5tpyQASDT4xNV8BfI-fOGkOOeI";
-//	public static final String GCM_CLIENT_API_KEY = "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
+	// public static final String GCM_CLIENT_API_KEY =
+	// "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
 
     public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
     public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
@@ -42,9 +43,15 @@ public class Const {
 	public static final String PHOTO_INTENT = "PhotoIntent";
 	public static final String VIDEO_INTENT = "VideoIntent";
 	public static final String GALLERY_INTENT = "GalleryIntent";
+	public static final int VIDEO_INTENT_INT = 9000;
+	public static final int GALLERY_INTENT_INT = 9001;
 	public static final String ANONYMOUS_INTENT = "AnnonymousIntent";
 	public static final String FROM_WAll = "FromWall";
 	public static final String FROM_NOTIFICATION = "FromNotification";
+
+	// Recording constants
+	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds
+	public static final long MAX_RECORDING_TIME_VOICE = 180000; // milliseconds
 
 	// custom params key
 	public static final String TOKEN = "token";
@@ -94,7 +101,7 @@ public class Const {
 
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
-	
+
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";

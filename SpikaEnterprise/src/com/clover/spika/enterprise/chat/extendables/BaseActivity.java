@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -40,10 +44,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -86,8 +86,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		slidingMenu = getSlidingMenu();
 		slidingMenu.setMode(SlidingMenu.LEFT);
-		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
-		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);
@@ -127,6 +127,7 @@ public class BaseActivity extends SlidingFragmentActivity {
                 finish();
             }
         }
+        
     }
 
     @Override
@@ -144,6 +145,14 @@ public class BaseActivity extends SlidingFragmentActivity {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Call this to disable the side bar, it will still work on button click
+	 */
+	public void disableSidebar() {
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
 
 	public void setScreenTitle(String title) {

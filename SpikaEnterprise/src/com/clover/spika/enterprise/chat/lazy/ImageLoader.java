@@ -166,7 +166,7 @@ public class ImageLoader {
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.FILE_ID, url);
 
-			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
+			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
 
 			// TODO this needs to be fixed
 			// try {
@@ -243,7 +243,7 @@ public class ImageLoader {
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.FILE_ID, url);
 
-					InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
+					InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
 					OutputStream os = new FileOutputStream(file);
 
 					Helper.copyStream(is, os);

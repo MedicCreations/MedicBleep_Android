@@ -4,14 +4,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.RecordVideoActivity;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -139,52 +139,37 @@ public class AppDialog extends Dialog {
 	}
 
 	/**
-	 * Ok/Cancel/Forget dialog for editing MainActivity
-	 * 
-	 * @param type
-	 * @param alert
+	 * Go to recording screen from gallery or camera
 	 */
-	public void okCancelDialog(final int type, final String alert, final Object var) {
-		this.setContentView(R.layout.dialog_ok_cancel_checkbox);
+	public void choseCamGallery(final String chatId) {
+		this.setContentView(R.layout.dialog_chose_cam_rec);
 
-		TextView alertText = (TextView) findViewById(R.id.alertText);
-		alertText.setText(alert);
+		ImageButton camera = (ImageButton) findViewById(R.id.camera);
+		ImageButton gallery = (ImageButton) findViewById(R.id.gallery);
 
-		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
-		LinearLayout btnCancel = (LinearLayout) findViewById(R.id.btnCancel);
-		final ImageView checkNoMore = (ImageView) findViewById(R.id.checkNoMore);
-
-		btnOk.setOnClickListener(new View.OnClickListener() {
+		camera.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				dismiss();
 
-				SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomBoolean(String.valueOf(type), checked);
+				Intent recordVideoIntent = new Intent(cntx, RecordVideoActivity.class);
+				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
+				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+				cntx.startActivity(recordVideoIntent);
 			}
 		});
 
-		btnCancel.setOnClickListener(new View.OnClickListener() {
+		gallery.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				dismiss();
-			}
-		});
 
-		checkNoMore.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (checked) {
-					// TODO
-					// checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_unchecked));
-					checked = false;
-				} else {
-					// TODO
-					// checkNoMore.setImageDrawable(cntx.getResources().getDrawable(R.drawable.gb_checkbox_checked));
-					checked = true;
-				}
+				Intent recordVideoIntent = new Intent(cntx, RecordVideoActivity.class);
+				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT_INT);
+				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+				cntx.startActivity(recordVideoIntent);
 			}
 		});
 

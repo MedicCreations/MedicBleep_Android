@@ -173,5 +173,22 @@ public class AnimUtils {
         scaleX(view, from, to, duration, listener);
         scaleY(view, from, to, duration, listener);
     }
-
+    
+    public static AnimatorSet goToLeftThenToRightAndBackInPosition(final View view, final int offset,
+    								final int duration, AnimatorListenerAdapter listener){
+    	ObjectAnimator goLeft = ObjectAnimator.ofFloat(view, "translationX", 0, offset).setDuration(duration/2);
+    	ObjectAnimator goRight = ObjectAnimator.ofFloat(view, "translationX", offset, -offset).setDuration(duration);
+    	ObjectAnimator backInPlace = ObjectAnimator.ofFloat(view, "translationX", -offset, 0).setDuration(duration/2);
+    	backInPlace.setStartDelay(duration);
+    	
+    	AnimatorSet set = new AnimatorSet();
+    	
+    	set.play(goLeft).before(goRight).before(backInPlace);
+    	set.start();
+    	
+    	if (listener != null) set.addListener(listener);
+    	
+    	return set;
+    }
+    
 }

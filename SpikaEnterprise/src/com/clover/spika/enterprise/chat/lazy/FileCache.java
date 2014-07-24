@@ -1,6 +1,9 @@
 package com.clover.spika.enterprise.chat.lazy;
 
 import java.io.File;
+
+import com.clover.spika.enterprise.chat.utils.Const;
+
 import android.content.Context;
 
 public class FileCache {
@@ -13,7 +16,7 @@ public class FileCache {
 
 		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 			// if SDCARD is mounted (SDCARD is present on device and mounted)
-			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "LazyList");
+			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + "LazyList");
 		} else {
 			// if checking on simulator the create cache dir in your application
 			// context
@@ -31,8 +34,8 @@ public class FileCache {
 		String filename = String.valueOf(url.hashCode());
 
 		File f = new File(cacheDir, filename);
-		return f;
 
+		return f;
 	}
 
 	public void clear() {
