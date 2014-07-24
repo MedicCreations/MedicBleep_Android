@@ -1,30 +1,40 @@
 package com.clover.spika.enterprise.chat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.utils.Const;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends LoginBaseActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
+		
+		Log.e("LOG", SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)+"333");
+		
+		if(SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)){
+			pause(1000, false);
+		}else{
+			pause(2000, true);
+		}
 
-		pause();
 	}
 
 	// XXX do something smart
-	private void pause() {
+	private void pause(final int time, final boolean toLogin) {
 		new BaseAsyncTask<Void, Void, Void>(this, false) {
 
 			@Override
 			protected Void doInBackground(Void... params) {
 
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(time);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -34,13 +44,22 @@ public class SplashActivity extends Activity {
 
 			@Override
 			protected void onPostExecute(Void result) {
-				Intent intent = new Intent(context, LoginActivity.class);
-				startActivity(intent);
-				finish();
+				if(toLogin){
+					Intent intent = new Intent(context, LoginActivity.class);
+					startActivity(intent);
+					finish();
+					return;
+				}
+				login();
 			}
 		}.execute();
 	}
-
+	
+	private void login(){
+		executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
+				SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), false);
+	}
+	
 	@Override
 	public void startActivity(Intent intent) {
 		super.startActivity(intent);

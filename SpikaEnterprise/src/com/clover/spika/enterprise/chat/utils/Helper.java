@@ -1,6 +1,9 @@
 package com.clover.spika.enterprise.chat.utils;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -31,6 +34,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.DrawableRes;
 import android.util.DisplayMetrics;
@@ -74,15 +78,33 @@ public class Helper {
 	 * @param uri
 	 * @return
 	 */
-	public static String getImagePath(Context cntx, Uri uri) {
+	public static String getImagePath(Context cntx, Uri uri, boolean isOverJellyBeam) {
+		
+		if(isOverJellyBeam){
+			try {
+				ParcelFileDescriptor parcelFileDescriptor = cntx.getContentResolver().openFileDescriptor(uri, "r");
+			    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+//			    Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+			    copyStream(new FileInputStream(fileDescriptor), 
+			    		new FileOutputStream(new File(cntx.getExternalCacheDir() + "/" + "image_profile")));
+			    parcelFileDescriptor.close();
+//			    saveBitmapToFile(image, cntx.getExternalCacheDir() + "/" + "image_profile");
+			    return cntx.getExternalCacheDir() + "/" + "image_profile";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "";
+			}
+			
+		}else{
 
-		String[] projection = { MediaStore.Images.Media.DATA };
-		Cursor cursor = cntx.getContentResolver().query(uri, projection, null, null, null);
-
-		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-		cursor.moveToFirst();
-
-		return cursor.getString(column_index);
+			String[] projection = { MediaStore.Images.Media.DATA };
+			Cursor cursor = cntx.getContentResolver().query(uri, projection, null, null, null);
+	
+			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			cursor.moveToFirst();
+	
+			return cursor.getString(column_index);
+		}
 	}
 
 	/**

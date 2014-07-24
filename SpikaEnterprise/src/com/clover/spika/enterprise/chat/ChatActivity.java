@@ -144,7 +144,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		if (!TextUtils.isEmpty(chatImage)) {
 			partnerIcon.setVisibility(View.VISIBLE);
-			imageLoader.displayImage(this, chatImage, partnerIcon, true);
+			imageLoader.displayImage(this, chatImage, partnerIcon, false);
 		} else {
 			partnerIcon.setVisibility(View.INVISIBLE);
 		}

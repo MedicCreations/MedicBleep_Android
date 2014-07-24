@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +20,7 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
@@ -43,13 +50,6 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class CameraCropActivity extends Activity implements OnTouchListener, OnClickListener {
 
@@ -88,11 +88,17 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 
 	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
+	
+	private boolean mIsOverJellyBean = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
+		
+		if(Build.VERSION.SDK_INT>18){
+			mIsOverJellyBean=true;
+		}
 
 		return_flag = false;
 
@@ -107,12 +113,20 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		getImageIntents();
 	}
 
+	@SuppressLint("InlinedApi")
 	private void getImageIntents() {
 		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
-			Intent intent = new Intent();
-			intent.setType("image/*");
-			intent.setAction(Intent.ACTION_GET_CONTENT);
-			this.startActivityForResult(intent, GALLERY);
+			if(mIsOverJellyBean){
+			    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			    intent.addCategory(Intent.CATEGORY_OPENABLE);
+			    intent.setType("image/*");
+			    startActivityForResult(intent, GALLERY);
+			}else{
+				Intent intent = new Intent();
+				intent.setType("image/*");
+				intent.setAction(Intent.ACTION_GET_CONTENT);
+				this.startActivityForResult(intent, GALLERY);
+			}
 		} else {
 			try {
 				startCamera();
@@ -341,17 +355,28 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			switch (requestCode) {
 
 			case GALLERY:
-				try {
-					Uri selected_image = data.getData();
-					String selected_image_path = Helper.getImagePath(this, selected_image);
-					onPhotoTaken(selected_image_path);
-				} catch (Exception e) {
-					e.printStackTrace();
+				if(mIsOverJellyBean){
+					Uri uri = null;
+			        if (data != null) {
+			            uri = data.getData();
+			            String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
+						onPhotoTaken(selected_image_path);
+			        }else{
+			        	AppDialog dialog = new AppDialog(this, true);
+						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+			        }
+				}else{
+					try {
+						Uri selected_image = data.getData();
+						String selected_image_path = Helper.getImagePath(this, selected_image, mIsOverJellyBean);
+						onPhotoTaken(selected_image_path);
+					} catch (Exception e) {
+						e.printStackTrace();
 
-					AppDialog dialog = new AppDialog(this, true);
-					dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+						AppDialog dialog = new AppDialog(this, true);
+						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+					}
 				}
-
 				break;
 
 			case CAMERA:
@@ -382,7 +407,11 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
 
 		if (!path.equals(mFilePath)) {
-			copy(new File(path), new File(mFilePath));
+			try {
+				Helper.copyStream(new FileInputStream(new File(path)), new FileOutputStream(new File(mFilePath)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 
 		new BaseAsyncTask<String, Void, byte[]>(this, true) {
@@ -610,32 +639,6 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		});
 	}
 
-	public void copy(File src, File dst) {
-
-		InputStream in;
-		OutputStream out;
-
-		try {
-
-			in = new FileInputStream(src);
-			out = new FileOutputStream(dst);
-
-			// Transfer bytes from in to out
-			byte[] buf = new byte[1024];
-			int len;
-
-			while ((len = in.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-
-			in.close();
-			out.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void sendMessage(final String fileId) {
 		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, "", "", this, new ApiCallback<Integer>() {
 
@@ -671,5 +674,5 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			}
 		});
 	}
-
+	
 }

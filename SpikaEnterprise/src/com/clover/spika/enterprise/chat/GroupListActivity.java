@@ -3,6 +3,8 @@ package com.clover.spika.enterprise.chat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -30,6 +32,12 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
+	
+	public static void openGroups(Context context) {
+        Intent intent = new Intent(context, GroupListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override

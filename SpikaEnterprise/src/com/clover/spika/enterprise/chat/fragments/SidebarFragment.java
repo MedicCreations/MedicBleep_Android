@@ -17,6 +17,8 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -31,17 +33,26 @@ public class SidebarFragment extends Fragment {
 	RobotoThinButton users;
 	RobotoThinButton groups;
 	RobotoThinButton logout;
+	
+	String image;
+	ImageLoader imageLoader;
 
 	public SidebarFragment() {
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+		
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
 		userImage = (RoundImageView) view.findViewById(R.id.userImage);
+		imageLoader = new ImageLoader(getActivity());
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
+		image = Helper.getUserImage(getActivity());
+		imageLoader.displayImage(getActivity(), image, userImage, false);
+		
 		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
+		userName.setText(Helper.getUserFirstName(getActivity())+"\n"+Helper.getUserLastName(getActivity()));
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(new OnClickListener() {
@@ -49,8 +60,7 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				ProfileActivity.openProfile(getActivity(), null);
-				// XXX
-                        ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+                ((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -59,8 +69,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), LobbyActivity.class));
-				// XXX
+				LobbyActivity.openLobby(getActivity());
 				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
@@ -69,8 +78,7 @@ public class SidebarFragment extends Fragment {
 		users.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), UserListActivity.class));
-				// XXX
+				UserListActivity.openUsers(getActivity());
 				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
@@ -80,8 +88,7 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity) getActivity()).startActivity(new Intent(getActivity(), GroupListActivity.class));
-				// XXX
+				GroupListActivity.openGroups(getActivity());
 				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
@@ -102,6 +109,15 @@ public class SidebarFragment extends Fragment {
 		});
 
 		return view;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(!image.equals(Helper.getUserImage(getActivity()))){
+			image = Helper.getUserImage(getActivity());
+			imageLoader.displayImage(getActivity(), image, userImage, true);
+		}
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,17 +9,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.Login;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends LoginBaseActivity {
 
     private EditText username;
     private EditText password;
@@ -35,6 +29,7 @@ public class LoginActivity extends Activity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         rememberMeCheckBox = (CheckBox) findViewById(R.id.checkBoxRememberLogin);
+        rememberMeCheckBox.setChecked(SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS));
         rememberMeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -57,10 +52,6 @@ public class LoginActivity extends Activity {
         username.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME));
         password.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
 
-        if (!TextUtils.isEmpty(username.getText().toString())
-                && !TextUtils.isEmpty(password.getText().toString())) {
-            login();
-        }
     }
 
     @Override
@@ -93,7 +84,7 @@ public class LoginActivity extends Activity {
         }
 
         if (!errorLock) {
-            executeLoginApi();
+            executeLoginApi(username.getText().toString(), password.getText().toString(), true);
 
             if (rememberMeCheckBox.isChecked()) {
                 SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
@@ -102,32 +93,6 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private void executeLoginApi() {
-        new LoginApi().loginWithCredentials(
-                username.getText().toString(),
-                password.getText().toString(),
-                this, true, new ApiCallback<Login>() {
-                    @Override
-                    public void onApiResponse(Result<Login> result) {
-                        // TODO: srediti logiku za fail i success response
-                        if (result.isSuccess()) {
-                        	Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(),
-                        			result.getResultData().getImage(), 
-                        			result.getResultData().getFirstname(),
-                        			result.getResultData().getLastname());
-                            Intent intent = new Intent(LoginActivity.this, LobbyActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            if (result.hasResultData()) {
-                                Toast.makeText(LoginActivity.this,
-                                        result.getResultData().getMessage(),
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                }
-        );
-    }
+    
 
 }
