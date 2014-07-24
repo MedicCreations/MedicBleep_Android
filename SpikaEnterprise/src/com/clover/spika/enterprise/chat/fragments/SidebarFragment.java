@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
+import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -47,9 +48,9 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				((BaseActivity) getActivity()).openProfile(null);
+				ProfileActivity.openProfile(getActivity(), null);
 				// XXX
-				((BaseActivity) getActivity()).slidingMenu.toggle(true);
+                        ((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 

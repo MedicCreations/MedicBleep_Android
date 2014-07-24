@@ -3,11 +3,11 @@ package com.clover.spika.enterprise.chat;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -43,7 +43,6 @@ import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UpdateUserModel;
@@ -52,7 +51,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
-public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
+public class CameraCropActivity extends Activity implements OnTouchListener, OnClickListener {
 
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
@@ -96,7 +95,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
-		disableSidebar();
 		
 		if(Build.VERSION.SDK_INT>18){
 			mIsOverJellyBean=true;
@@ -409,7 +407,11 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
 
 		if (!path.equals(mFilePath)) {
-			copy(new File(path), new File(mFilePath));
+			try {
+				Helper.copyStream(new FileInputStream(new File(path)), new FileOutputStream(new File(mFilePath)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 
 		new BaseAsyncTask<String, Void, byte[]>(this, true) {
@@ -637,32 +639,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		});
 	}
 
-	public void copy(File src, File dst) {
-
-		InputStream in;
-		OutputStream out;
-
-		try {
-
-			in = new FileInputStream(src);
-			out = new FileOutputStream(dst);
-
-			// Transfer bytes from in to out
-			byte[] buf = new byte[1024];
-			int len;
-
-			while ((len = in.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-
-			in.close();
-			out.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void sendMessage(final String fileId) {
 		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, "", "", this, new ApiCallback<Integer>() {
 
@@ -686,7 +662,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<UpdateUserModel> result) {
 				if (result.isSuccess()) {
-					openProfile(fileId);
+					ProfileActivity.openProfile(CameraCropActivity.this, fileId);
 					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {

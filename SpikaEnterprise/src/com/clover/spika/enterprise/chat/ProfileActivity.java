@@ -1,7 +1,9 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -25,6 +27,17 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
     private Switch mSwitchPasscodeEnabled;
 
     private ImageLoader imageLoader;
+
+    public static void openProfile(Context context, String fileId) {
+        if (TextUtils.isEmpty(fileId)) {
+            fileId = Helper.getUserImage(context);
+        }
+        Intent intent = new Intent(context, ProfileActivity.class)
+                .putExtra(Const.FIRSTNAME, Helper.getUserFirstName(context))
+                .putExtra(Const.LASTNAME, Helper.getUserLastName(context))
+                .putExtra(Const.USER_IMAGE_NAME, fileId);
+        context.startActivity(intent);
+    }
     
 	@Override
 	public void onCreate(Bundle arg0) {

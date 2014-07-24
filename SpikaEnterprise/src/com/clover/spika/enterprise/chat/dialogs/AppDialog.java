@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,20 +13,18 @@ import com.clover.spika.enterprise.chat.CameraCropActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordVideoActivity;
 import com.clover.spika.enterprise.chat.UserListActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class AppDialog extends Dialog {
 
-	Context cntx;
 	boolean isFinish = false;
 	boolean checked = false;
 
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
+        setOwnerActivity((Activity) context);
 
-		this.cntx = context;
 		this.isFinish = isFinish;
 	}
 
@@ -45,7 +44,7 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				if (isFinish) {
-					((BaseActivity) cntx).finish();
+					getOwnerActivity().finish();
 				}
 			}
 		});
@@ -70,7 +69,7 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				if (isFinish) {
-					((BaseActivity) cntx).finish();
+					getOwnerActivity().finish();
 				}
 			}
 		});
@@ -80,13 +79,11 @@ public class AppDialog extends Dialog {
 
 	/**
 	 * show failed dialog with description from int result
-	 * 
-	 * @param failedText
 	 */
 	public void setFailed(final int errorCode) {
 		this.setContentView(R.layout.dialog_failed);
 
-		String failedText = Helper.errorDescriptions(cntx, errorCode);
+		String failedText = Helper.errorDescriptions(getContext(), errorCode);
 
 		TextView failedDesc = (TextView) findViewById(R.id.failedDescription);
 		failedDesc.setText(failedText);
@@ -99,12 +96,12 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
-					Intent intent = new Intent(cntx, UserListActivity.class);
-					((BaseActivity) cntx).startActivity(intent);
-					((BaseActivity) cntx).finish();
+					Intent intent = new Intent(getContext(), UserListActivity.class);
+					getOwnerActivity().startActivity(intent);
+					getOwnerActivity().finish();
 
 				} else if (isFinish) {
-					((BaseActivity) cntx).finish();
+					getOwnerActivity().finish();
 				}
 			}
 		});
@@ -131,7 +128,7 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				if (isFinish) {
-					((BaseActivity) cntx).finish();
+					getOwnerActivity().finish();
 				}
 			}
 		});
@@ -146,7 +143,7 @@ public class AppDialog extends Dialog {
 		this.setContentView(R.layout.dialog_chose_cam_rec);
 
 		ImageButton camera = (ImageButton) findViewById(R.id.camera);
-		ImageButton gallery = (ImageButton) findViewById(R.id.gallery);
+		ImageButton gallery = (ImageButton) findViewById(R.id.galleryImageButton);
 
 		camera.setOnClickListener(new View.OnClickListener() {
 
@@ -154,10 +151,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent recordVideoIntent = new Intent(cntx, RecordVideoActivity.class);
+				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
-				cntx.startActivity(recordVideoIntent);
+				getContext().startActivity(recordVideoIntent);
 			}
 		});
 
@@ -167,10 +164,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent recordVideoIntent = new Intent(cntx, RecordVideoActivity.class);
+				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
-				cntx.startActivity(recordVideoIntent);
+				getContext().startActivity(recordVideoIntent);
 			}
 		});
 
@@ -184,7 +181,7 @@ public class AppDialog extends Dialog {
 		this.setContentView(R.layout.dialog_chose_cam_rec);
 
 		ImageButton camera = (ImageButton) findViewById(R.id.camera);
-		ImageButton gallery = (ImageButton) findViewById(R.id.gallery);
+		ImageButton gallery = (ImageButton) findViewById(R.id.galleryImageButton);
 
 		camera.setOnClickListener(new View.OnClickListener() {
 
@@ -192,10 +189,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
-				cntx.startActivity(intent);
+				getContext().startActivity(intent);
 			}
 		});
 
@@ -205,10 +202,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
-				cntx.startActivity(intent);
+				getContext().startActivity(intent);
 			}
 		});
 
