@@ -181,7 +181,7 @@ public class AppDialog extends Dialog {
 		this.setContentView(R.layout.dialog_chose_cam_rec);
 
 		ImageButton camera = (ImageButton) findViewById(R.id.camera);
-		ImageButton gallery = (ImageButton) findViewById(R.id.gallery);
+		ImageButton gallery = (ImageButton) findViewById(R.id.galleryImageButton);
 
 		camera.setOnClickListener(new View.OnClickListener() {
 
