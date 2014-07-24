@@ -3,21 +3,21 @@ package com.clover.spika.enterprise.chat.views;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.widget.Chronometer;
 
-public class RobotoThinTextView extends TextView {
+public class RobotoThinChronometer extends Chronometer {
 
-	public RobotoThinTextView(Context context) {
+	public RobotoThinChronometer(Context context) {
 		super(context);
 		setFont();
 	}
 
-	public RobotoThinTextView(Context context, AttributeSet attrs) {
+	public RobotoThinChronometer(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setFont();
 	}
 
-	public RobotoThinTextView(Context context, AttributeSet attrs, int defStyle) {
+	public RobotoThinChronometer(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		setFont();
 	}
@@ -26,5 +26,4 @@ public class RobotoThinTextView extends TextView {
 		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Thin.ttf");
 		setTypeface(typeface);
 	}
-
 }

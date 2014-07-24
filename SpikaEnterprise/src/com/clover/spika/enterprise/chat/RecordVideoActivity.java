@@ -169,7 +169,7 @@ public class RecordVideoActivity extends BaseActivity {
 
 					videoFolder.mkdirs(); // <----
 					File video = new File(videoFolder, "video.mp4");
-					Uri uriSavedVideo = Uri.fromFile(video);
+					// Uri uriSavedVideo = Uri.fromFile(video);
 
 					sFileName = video.getPath();
 
@@ -334,19 +334,6 @@ public class RecordVideoActivity extends BaseActivity {
 		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
-	}
-
-	private String getVideoPathNew(Uri uri) {
-		String path = null;
-		Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, new String[] { Media.DATA, Media.DATE_ADDED, MediaStore.Images.ImageColumns.ORIENTATION }, Media.DATE_ADDED, null, null);
-		if (cursor != null && cursor.moveToFirst()) {
-			do {
-				uri = Uri.parse(cursor.getString(cursor.getColumnIndex(Media.DATA)));
-				path = uri.toString();
-			} while (cursor.moveToNext());
-			cursor.close();
-		}
-		return path;
 	}
 
 	private int getVideoDuration(Uri uri) {

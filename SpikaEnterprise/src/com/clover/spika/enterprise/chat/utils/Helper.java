@@ -157,6 +157,7 @@ public class Helper {
 
 			try {
 				if (result != null) {
+					@SuppressWarnings("unused")
 					int code = result.getInt(Const.CODE);
 					// This was used when your account has been blocked, it can
 					// be refactored to show something else depending on the
@@ -204,7 +205,7 @@ public class Helper {
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
 	}
-	
+
 	public static void setUserImage(Context ctx, String image) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, image);
 	}
@@ -288,20 +289,21 @@ public class Helper {
 
 		animation.start();
 	}
-    
-    @SuppressLint("NewApi")
-	public static void setViewBackgroundDrawable(View view, Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(drawable);
-        } else {
-            view.setBackgroundDrawable(drawable);
-        }
-    }
 
-    public static void setViewBackgroundResource(View view, @DrawableRes int drawableId) {
-        Drawable drawable = view.getResources().getDrawable(drawableId);
-        setViewBackgroundDrawable(view, drawable);
-    }
+	@SuppressWarnings("deprecation")
+	@SuppressLint("NewApi")
+	public static void setViewBackgroundDrawable(View view, Drawable drawable) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			view.setBackground(drawable);
+		} else {
+			view.setBackgroundDrawable(drawable);
+		}
+	}
+
+	public static void setViewBackgroundResource(View view, @DrawableRes int drawableId) {
+		Drawable drawable = view.getResources().getDrawable(drawableId);
+		setViewBackgroundDrawable(view, drawable);
+	}
 
 	/**
 	 * method is used for checking valid email id format.
@@ -332,13 +334,14 @@ public class Helper {
 	public static void copyStream(InputStream is, OutputStream os) {
 		copyStream(is, os, -1, null);
 	}
-	
+
 	/**
 	 * Copy input stream to output stream
 	 * 
 	 * @param is
 	 * @param os
-	 * @param length of content
+	 * @param length
+	 *            of content
 	 */
 	public static void copyStream(InputStream is, OutputStream os, long length, ProgressBarListeners listener) {
 		final int buffer_size = 1024;
@@ -350,13 +353,13 @@ public class Helper {
 				// Read byte from input stream
 
 				int count = is.read(bytes, 0, buffer_size);
-				if (count == -1){
+				if (count == -1) {
 					listener.onFinish();
 					break;
 				}
 
 				// Write byte from output stream
-				if(length != -1 && listener != null){
+				if (length != -1 && listener != null) {
 					totalLen = totalLen + count;
 					listener.onSetMax(length);
 					listener.onProgress(totalLen);

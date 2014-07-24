@@ -63,7 +63,8 @@ public class Result<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Result result = (Result) o;
+        @SuppressWarnings("rawtypes")
+		Result result = (Result) o;
 
         if (resultData != null ? !resultData.equals(result.resultData) : result.resultData != null)
             return false;
