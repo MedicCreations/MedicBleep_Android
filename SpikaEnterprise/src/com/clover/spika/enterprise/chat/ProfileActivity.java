@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -97,22 +98,28 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		startActivity(intent);
 	}
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.addPhoto:
-                choosePhoto();
-                break;
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+		case R.id.addPhoto:
+//			choosePhoto();
+			showDialog();
+			break;
+			
+		case R.id.switchPasscode:
+            /* checked state is changed before click is even performed, thus forwarding current state is enough */
+            onCheckedChanged(mSwitchPasscodeEnabled.isChecked());
+            break;
 
-            case R.id.switchPasscode:
-                /* checked state is changed before click is even performed, thus forwarding current state is enough */
-                onCheckedChanged(mSwitchPasscodeEnabled.isChecked());
-                break;
-
-            default:
-                break;
-        }
-    }
+		default:
+			break;
+		}
+	}
+	
+	private void showDialog(){
+		AppDialog dialog = new AppDialog(this, false);
+		dialog.choseCamGalleryProfile();
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {

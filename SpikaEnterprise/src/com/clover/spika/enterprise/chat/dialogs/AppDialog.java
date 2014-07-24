@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.CameraCropActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordVideoActivity;
 import com.clover.spika.enterprise.chat.UserListActivity;
@@ -170,6 +171,44 @@ public class AppDialog extends Dialog {
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
 				cntx.startActivity(recordVideoIntent);
+			}
+		});
+
+		show();
+	}
+	
+	/**
+	 * Go to recording screen from gallery or camera
+	 */
+	public void choseCamGalleryProfile() {
+		this.setContentView(R.layout.dialog_chose_cam_rec);
+
+		ImageButton camera = (ImageButton) findViewById(R.id.camera);
+		ImageButton gallery = (ImageButton) findViewById(R.id.gallery);
+
+		camera.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+				intent.putExtra(Const.PROFILE_INTENT, true);
+				cntx.startActivity(intent);
+			}
+		});
+
+		gallery.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+				intent.putExtra(Const.PROFILE_INTENT, true);
+				cntx.startActivity(intent);
 			}
 		});
 
