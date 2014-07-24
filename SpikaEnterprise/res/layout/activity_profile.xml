@@ -78,7 +78,9 @@
             android:layout_alignParentBottom="true"
             android:checked="true"
             android:textOff="Off"
-            android:textOn="On"/>
+            android:textOn="On"
+            android:track="@drawable/spikaenterpriseswitch_switch_track_holo_light"
+            android:thumb="@drawable/spikaenterpriseswitch_switch_inner_holo_light"/>
 
         <com.clover.spika.enterprise.chat.views.RobotoThinTextView
             android:id="@+id/labelEnablePasscode"
