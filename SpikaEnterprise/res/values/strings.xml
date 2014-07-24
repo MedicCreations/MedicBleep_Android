@@ -67,6 +67,7 @@
     <string name="e_video_too_long">Video is too long.</string>
     <string name="e_failed_while_sending">Failed while sending.</string>
     <string name="e_error_downloading_file">Error while downloading a file.</string>
+    <string name="e_error_uploading_file">Error while uploading a file.</string>
     <string name="block_email">Email is empty or not valid.</string>
     <string name="block_content">Message body is empty.</string>
     <string name="e_your_acc_has_been_blocked">Your account has been blocked.</string>

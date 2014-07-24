@@ -14,8 +14,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,9 +21,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
 
@@ -81,7 +84,18 @@ public class RecordAudioActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				new FileManageApi().uploadFile(sFileName, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
+
+					@Override
+					public void onApiResponse(Result<UploadFileModel> result) {
+						if (result.isSuccess()) {
+							sendMsg(result.getResultData().getFileId());
+						} else {
+							AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
+							dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
+						}
+					}
+				});
 			}
 		});
 
@@ -127,12 +141,10 @@ public class RecordAudioActivity extends BaseActivity {
 
 			startRecordingAsync();
 
+			startRec.setImageResource(R.drawable.icon_audio_rec);
 			recCircle.setVisibility(View.VISIBLE);
-			// AnimUtils.rotationInfinite(recCircle, false, 3000);
-
-			Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate);
-			rotation.setRepeatCount(Animation.INFINITE);
-			recCircle.startAnimation(rotation);
+			recCircle.setDrawingCacheEnabled(true);
+			AnimUtils.rotationInfinite(recCircle, false, 3000);
 		} else {
 
 			if (!mIsRecording) {
@@ -141,7 +153,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 			stopRecording();
 
-			recCircle.setAnimation(null);
+			startRec.setImageResource(R.drawable.icon_audio_start);
 			recCircle.setVisibility(View.INVISIBLE);
 		}
 	}
@@ -345,7 +357,6 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	public void onFinish() {
-		super.onDestroy();
 		if (mExtAudioRecorder != null) {
 			mExtAudioRecorder.release();
 			mExtAudioRecorder.stop();
@@ -359,6 +370,8 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayPause.setImageResource(R.drawable.play_btn);
 		}
 		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
+
+		super.onDestroy();
 	}
 
 	private void applyAlphaAnimationToView(View view, boolean toDisapear) {
@@ -377,6 +390,22 @@ public class RecordAudioActivity extends BaseActivity {
 		mRecordingTimer.cancel();
 		mRecordingTimer = null;
 		super.onDestroy();
+	}
+
+	private void sendMsg(String fileId) {
+		new ChatApi().sendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), null, fileId, null, null, this, new ApiCallback<Integer>() {
+
+			@Override
+			public void onApiResponse(Result<Integer> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(RecordAudioActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
+					dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
+				}
+			}
+		});
 	}
 
 }

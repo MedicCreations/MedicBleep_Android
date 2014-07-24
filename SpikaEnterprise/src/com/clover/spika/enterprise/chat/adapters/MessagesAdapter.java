@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
+import com.clover.spika.enterprise.chat.VoiceActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -186,7 +187,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, VoiceActivity.class);
+						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 			}
@@ -259,7 +262,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						Intent intent = new Intent(ctx, VoiceActivity.class);
+						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						ctx.startActivity(intent);
 					}
 				});
 
