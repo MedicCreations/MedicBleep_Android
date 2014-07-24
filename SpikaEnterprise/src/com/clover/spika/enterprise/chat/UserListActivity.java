@@ -3,11 +3,11 @@ package com.clover.spika.enterprise.chat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout;
@@ -34,6 +34,12 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
+	
+	public static void openUsers(Context context) {
+        Intent intent = new Intent(context, UserListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override

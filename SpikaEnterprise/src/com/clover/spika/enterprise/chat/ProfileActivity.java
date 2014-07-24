@@ -36,6 +36,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
                 .putExtra(Const.FIRSTNAME, Helper.getUserFirstName(context))
                 .putExtra(Const.LASTNAME, Helper.getUserLastName(context))
                 .putExtra(Const.USER_IMAGE_NAME, fileId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
     }
     
@@ -96,7 +97,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 
     private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImage, true);
+			imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), profileImage, false);
 			profileName.setText(intent.getExtras().getString(Const.FIRSTNAME) + " "
 					+ intent.getExtras().getString(Const.LASTNAME));
 

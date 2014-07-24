@@ -1,5 +1,10 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,9 +25,6 @@ import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LobbyActivity extends BaseActivity implements OnPageChangeListener, OnClickListener {
 
 	ViewPager viewPager;
@@ -31,6 +33,12 @@ public class LobbyActivity extends BaseActivity implements OnPageChangeListener,
 
 	private LobbyModel model;
 	private List<LobbyChangedListener> lobbyChangedListener = new ArrayList<LobbyChangedListener>();
+	
+	public static void openLobby(Context context) {
+        Intent intent = new Intent(context, LobbyActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
 	@Override
 	public void onCreate(Bundle arg0) {

@@ -45,7 +45,7 @@
             android:background="@drawable/circle_with_white_border"
 			android:layout_centerHorizontal="true"
 			android:layout_marginTop="30dp"
-            tools:src="@drawable/white_circle"/>
+            tools:src="@drawable/white_circle"/> 
         
         <ImageView
             android:id="@+id/addPhoto"
