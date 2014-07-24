@@ -189,10 +189,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
-				cntx.startActivity(intent);
+				getContext().startActivity(intent);
 			}
 		});
 
@@ -202,10 +202,10 @@ public class AppDialog extends Dialog {
 			public void onClick(View v) {
 				dismiss();
 
-				Intent intent = new Intent(cntx, CameraCropActivity.class);
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
-				cntx.startActivity(intent);
+				getContext().startActivity(intent);
 			}
 		});
 
