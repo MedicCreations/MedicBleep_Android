@@ -20,6 +20,7 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
@@ -44,7 +45,6 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UpdateUserModel;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -89,12 +89,18 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
+	
+	private boolean mIsOverJellyBean = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
 		disableSidebar();
+		
+		if(Build.VERSION.SDK_INT>18){
+			mIsOverJellyBean=true;
+		}
 
 		return_flag = false;
 
@@ -109,12 +115,20 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		getImageIntents();
 	}
 
+	@SuppressLint("InlinedApi")
 	private void getImageIntents() {
 		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
-			Intent intent = new Intent();
-			intent.setType("image/*");
-			intent.setAction(Intent.ACTION_GET_CONTENT);
-			this.startActivityForResult(intent, GALLERY);
+			if(mIsOverJellyBean){
+			    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			    intent.addCategory(Intent.CATEGORY_OPENABLE);
+			    intent.setType("image/*");
+			    startActivityForResult(intent, GALLERY);
+			}else{
+				Intent intent = new Intent();
+				intent.setType("image/*");
+				intent.setAction(Intent.ACTION_GET_CONTENT);
+				this.startActivityForResult(intent, GALLERY);
+			}
 		} else {
 			try {
 				startCamera();
@@ -343,17 +357,28 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			switch (requestCode) {
 
 			case GALLERY:
-				try {
-					Uri selected_image = data.getData();
-					String selected_image_path = Helper.getImagePath(this, selected_image);
-					onPhotoTaken(selected_image_path);
-				} catch (Exception e) {
-					e.printStackTrace();
+				if(mIsOverJellyBean){
+					Uri uri = null;
+			        if (data != null) {
+			            uri = data.getData();
+			            String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
+						onPhotoTaken(selected_image_path);
+			        }else{
+			        	AppDialog dialog = new AppDialog(this, true);
+						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+			        }
+				}else{
+					try {
+						Uri selected_image = data.getData();
+						String selected_image_path = Helper.getImagePath(this, selected_image, mIsOverJellyBean);
+						onPhotoTaken(selected_image_path);
+					} catch (Exception e) {
+						e.printStackTrace();
 
-					AppDialog dialog = new AppDialog(this, true);
-					dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+						AppDialog dialog = new AppDialog(this, true);
+						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+					}
 				}
-
 				break;
 
 			case CAMERA:
@@ -673,5 +698,5 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			}
 		});
 	}
-
+	
 }
