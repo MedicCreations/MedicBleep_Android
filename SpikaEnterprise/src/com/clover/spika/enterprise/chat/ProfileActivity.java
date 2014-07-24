@@ -36,7 +36,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		profileImage = (ImageView) findViewById(R.id.profileImage);
 
 		int width = getResources().getDisplayMetrics().widthPixels;
-		int padding = (int) (width / 10);
+		int padding = (int) (width / 9);
 
 		profileImage.getLayoutParams().width = width - Helper.dpToPx(this, padding);
 		profileImage.getLayoutParams().height = width - Helper.dpToPx(this, padding);
@@ -91,18 +91,10 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	private void choosePhoto() {
-		Intent intent = new Intent(this, CameraCropActivity.class);
-		intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-		intent.putExtra(Const.PROFILE_INTENT, true);
-		startActivity(intent);
-	}
-
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.addPhoto:
-//			choosePhoto();
 			showDialog();
 			break;
 			
