@@ -503,14 +503,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
-	public void openProfile(String fileId) {
-		if (TextUtils.isEmpty(fileId)) {
-			fileId = Helper.getUserImage(this);
-		}
-		Intent intent = new Intent(this, ProfileActivity.class).putExtra(Const.FIRSTNAME, Helper.getUserFirstName(this)).putExtra(Const.LASTNAME, Helper.getUserLastName(this)).putExtra(Const.USER_IMAGE_NAME, fileId);
-		startActivity(intent);
-	}
-
 	public void hideKeyboard(View et) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(et.getWindowToken(), 0);

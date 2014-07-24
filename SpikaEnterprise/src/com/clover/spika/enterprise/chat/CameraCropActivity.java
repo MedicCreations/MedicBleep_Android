@@ -1,13 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -42,9 +36,7 @@ import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UpdateUserModel;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -52,7 +44,14 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
-public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class CameraCropActivity extends Activity implements OnTouchListener, OnClickListener {
 
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
@@ -94,7 +93,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
-		disableSidebar();
 
 		return_flag = false;
 
@@ -661,7 +659,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<UpdateUserModel> result) {
 				if (result.isSuccess()) {
-					openProfile(fileId);
+					ProfileActivity.openProfile(CameraCropActivity.this, fileId);
 					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {
