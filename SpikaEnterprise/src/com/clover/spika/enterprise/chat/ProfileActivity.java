@@ -2,10 +2,8 @@ package com.clover.spika.enterprise.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -16,7 +14,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 
-public class ProfileActivity extends BaseActivity implements OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class ProfileActivity extends BaseActivity implements OnClickListener {
 
     private static final int REQUEST_NEW_PASSCODE = 9001;
     private static final int REQUEST_REMOVE_PASSCODE = 9002;
@@ -27,8 +25,6 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
 
     private ImageLoader imageLoader;
     
-    private boolean isWrongPassChecked = false;
-
 	@Override
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
@@ -50,7 +46,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
 		addPhoto.setOnClickListener(this);
 
         mSwitchPasscodeEnabled = (Switch) findViewById(R.id.switchPasscode);
-        mSwitchPasscodeEnabled.setOnCheckedChangeListener(this);
+        mSwitchPasscodeEnabled.setOnClickListener(this);
         mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
 
 		getIntentData(getIntent());
@@ -77,9 +73,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
         		PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
         		PasscodeUtility.getInstance().setPasscode(this, "");
         		PasscodeUtility.getInstance().setSessionValid(true);
-        	}else{
+        	} else {
         		PasscodeUtility.getInstance().setSessionValid(true);
-        		isWrongPassChecked=true;
         		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
         	}
         }
@@ -102,17 +97,22 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
 		startActivity(intent);
 	}
 
-	@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-		case R.id.addPhoto:
-			choosePhoto();
-			break;
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.addPhoto:
+                choosePhoto();
+                break;
 
-		default:
-			break;
-		}
-	}
+            case R.id.switchPasscode:
+                /* checked state is changed before click is even performed, thus forwarding current state is enough */
+                onCheckedChanged(mSwitchPasscodeEnabled.isChecked());
+                break;
+
+            default:
+                break;
+        }
+    }
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -120,17 +120,13 @@ public class ProfileActivity extends BaseActivity implements OnClickListener, Co
 		getIntentData(intent);
 	}
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-    	if(isWrongPassChecked){
-    		isWrongPassChecked = false;
-    		return;
-    	}
-//        if (isChecked) {
-//            startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
-//        } else {
-//        	startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
-//        }
+    private void onCheckedChanged(boolean isChecked) {
+        if (isChecked) {
+            startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
+        } else {
+            /* Current passcode has to be checked before it can be removed */
+        	startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
+        }
     }
     
 }

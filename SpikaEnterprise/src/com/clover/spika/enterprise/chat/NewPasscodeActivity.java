@@ -142,4 +142,9 @@ public class NewPasscodeActivity extends Activity {
     	long pattern[]={0,50,50,200};
     	vibra.vibrate(pattern, -1);
 	}
+
+    @Override
+    public void onBackPressed() {
+        exitActivity(null);
+    }
 }
