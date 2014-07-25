@@ -19,16 +19,16 @@ import java.util.HashMap;
 
 public class LoginApi {
 
-	public void loginWithCredentials(final String username, final String password, Context ctx, boolean showProgressBar, final ApiCallback<Login> listener) {
+	public void loginWithCredentials(final String username, final String password, final String token, Context ctx, boolean showProgressBar, final ApiCallback<Login> listener) {
 
 		new BaseAsyncTask<Void, Void, Login>(ctx, showProgressBar) {
 
 			protected Login doInBackground(Void... params) {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
 
-				// TODO: postaviti keyeve parametara negdje u konstante
-				requestParams.put("username", username);
-				requestParams.put("password", password);
+				requestParams.put(Const.USERNAME, username);
+				requestParams.put(Const.PASSWORD, password);
+				requestParams.put(Const.ANDROID_PUSH_TOKEN, token);
 
 				JSONObject jsonObject = new JSONObject();
 				try {

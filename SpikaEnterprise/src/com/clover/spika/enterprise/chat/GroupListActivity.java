@@ -17,7 +17,7 @@ import com.clover.spika.enterprise.chat.api.GroupsApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.GroupModel;
+import com.clover.spika.enterprise.chat.models.GroupsList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -101,19 +101,19 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	public void getGroup(int page, String search, final boolean toClear) {
 		GroupsApi groupApi=new GroupsApi();
 		if(search == null){
-			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<GroupModel>() {
+			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<GroupsList>() {
 				
 				@Override
-				public void onApiResponse(Result<GroupModel> result) {
+				public void onApiResponse(Result<GroupsList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getGroupList(), toClear);
 				}
 			});
 		}else{
-			groupApi.getGroupsByName(mCurrentIndex, search, this, true, new ApiCallback<GroupModel>() {
+			groupApi.getGroupsByName(mCurrentIndex, search, this, true, new ApiCallback<GroupsList>() {
 				
 				@Override
-				public void onApiResponse(Result<GroupModel> result) {
+				public void onApiResponse(Result<GroupsList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getGroupList(), toClear);
 				}

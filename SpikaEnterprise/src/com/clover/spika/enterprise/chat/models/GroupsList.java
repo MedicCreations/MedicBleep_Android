@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel extends BaseModel {
+// TODO: renameati u nešto smisleno
+public class GroupsList extends BaseModel {
 
     @SerializedName("page")
     @Expose
@@ -17,9 +18,9 @@ public class UserModel extends BaseModel {
     @Expose
     private int totalCount;
 
-    @SerializedName("users")
+    @SerializedName("groups")
     @Expose
-    private List<User> userList;
+    private List<Group> groupList;
 
     public int getPage() {
         return page;
@@ -37,12 +38,12 @@ public class UserModel extends BaseModel {
         this.totalCount = totalCount;
     }
 
-    public List<User> getUserList() {
-        return userList == null ? new ArrayList<User>() : userList;
+    public List<Group> getGroupList() {
+        return groupList == null ? new ArrayList<Group>() : groupList;
     }
 
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
+    public void setGroupList(List<Group> groupList) {
+        this.groupList = groupList;
     }
 
     @Override
@@ -51,11 +52,11 @@ public class UserModel extends BaseModel {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        UserModel userModel = (UserModel) o;
+        GroupsList groupModel = (GroupsList) o;
 
-        if (page != userModel.page) return false;
-        if (totalCount != userModel.totalCount) return false;
-        if (userList != null ? !userList.equals(userModel.userList) : userModel.userList != null)
+        if (page != groupModel.page) return false;
+        if (totalCount != groupModel.totalCount) return false;
+        if (groupList != null ? !groupList.equals(groupModel.groupList) : groupModel.groupList != null)
             return false;
 
         return true;
@@ -66,16 +67,16 @@ public class UserModel extends BaseModel {
         int result = super.hashCode();
         result = 31 * result + page;
         result = 31 * result + totalCount;
-        result = 31 * result + (userList != null ? userList.hashCode() : 0);
+        result = 31 * result + (groupList != null ? groupList.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "UserModel{" +
+        return "GroupModel{" +
                 "page=" + page +
                 ", totalCount=" + totalCount +
-                ", userList=" + userList +
+                ", groupList=" + groupList +
                 "} " + super.toString();
     }
 }

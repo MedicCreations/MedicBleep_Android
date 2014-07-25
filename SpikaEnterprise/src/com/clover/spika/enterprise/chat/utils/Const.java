@@ -10,15 +10,12 @@ public class Const {
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
-	public static final String REGISTRATION_ID = "RegistrationId";
+	public static final String PUSH_TOKEN_LOCAL = "PushTokenLocal";
 
 	public static final String GCM_SENDER_ID = "772714193583";
-	public static final String GCM_SERVER_API_KEY = "AIzaSyDccNnfu5tpyQASDT4xNV8BfI-fOGkOOeI";
-	// public static final String GCM_CLIENT_API_KEY =
-	// "AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8";
 
-    public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
-    public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
+	public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
+	public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
 
 	// Timestamp
 	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";
@@ -95,9 +92,6 @@ public class Const {
 	public static final int USERS_TYPE = 1;
 	public static final int GROUPS_TYPE = 2;
 	public static final String TYPE = "type";
-
-	// push type
-	public static final int PT_MESSAGE = 1;
 
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";

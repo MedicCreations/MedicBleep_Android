@@ -10,7 +10,7 @@ import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.GroupModel;
+import com.clover.spika.enterprise.chat.models.GroupsList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -19,11 +19,11 @@ import com.google.gson.Gson;
 public class GroupsApi {
 
 	public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar,
-			final ApiCallback<GroupModel> listener) {
-		new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
+			final ApiCallback<GroupsList> listener) {
+		new BaseAsyncTask<Void, Void, GroupsList>(ctx, showProgressBar) {
 
 			@Override
-			protected GroupModel doInBackground(Void... params) {
+			protected GroupsList doInBackground(Void... params) {
 
 				JSONObject jsonObject = new JSONObject();
 
@@ -39,26 +39,26 @@ public class GroupsApi {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
+				return new Gson().fromJson(jsonObject.toString(), GroupsList.class);
 			}
 
 			@Override
-			protected void onPostExecute(GroupModel groupModel) {
+			protected void onPostExecute(GroupsList groupModel) {
 				super.onPostExecute(groupModel);
 
 				if (listener != null) {
-					Result<GroupModel> result;
+					Result<GroupsList> result;
 
 					if (groupModel != null) {
 						if (groupModel.getCode() == Const.API_SUCCESS) {
-							result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
+							result = new Result<GroupsList>(Result.ApiResponseState.SUCCESS);
 							result.setResultData(groupModel);
 						} else {
-							result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+							result = new Result<GroupsList>(Result.ApiResponseState.FAILURE);
 							result.setResultData(groupModel);
 						}
 					} else {
-						result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+						result = new Result<GroupsList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);
@@ -68,11 +68,11 @@ public class GroupsApi {
 	}
 
 	public void getGroupsByName(final int page, final String data, Context ctx, boolean showProgressBar,
-			final ApiCallback<GroupModel> listener) {
-		new BaseAsyncTask<Void, Void, GroupModel>(ctx, showProgressBar) {
+			final ApiCallback<GroupsList> listener) {
+		new BaseAsyncTask<Void, Void, GroupsList>(ctx, showProgressBar) {
 
 			@Override
-			protected GroupModel doInBackground(Void... params) {
+			protected GroupsList doInBackground(Void... params) {
 
 				JSONObject jsonObject = new JSONObject();
 
@@ -89,27 +89,27 @@ public class GroupsApi {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), GroupModel.class);
+				return new Gson().fromJson(jsonObject.toString(), GroupsList.class);
 			}
 
 			@Override
-			protected void onPostExecute(GroupModel groups) {
+			protected void onPostExecute(GroupsList groups) {
 				super.onPostExecute(groups);
 
 				if (listener != null) {
-					Result<GroupModel> result;
+					Result<GroupsList> result;
 
 					if (groups != null) {
 						if (groups.getCode() == Const.API_SUCCESS) {
-							result = new Result<GroupModel>(Result.ApiResponseState.SUCCESS);
+							result = new Result<GroupsList>(Result.ApiResponseState.SUCCESS);
 							result.setResultData(groups);
 						} else {
-							result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+							result = new Result<GroupsList>(Result.ApiResponseState.FAILURE);
 							result.setResultData(groups);
 						}
 
 					} else {
-						result = new Result<GroupModel>(Result.ApiResponseState.FAILURE);
+						result = new Result<GroupsList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);

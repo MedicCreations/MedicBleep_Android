@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.gcm;
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,8 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.SplashActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -39,66 +40,65 @@ public class GcmIntentService extends IntentService {
 
 			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
-				String type = "";
-				String groupId = "";
-				String groupName = "";
-
-				if (extras.containsKey(Const.MSG_TYPE)) {
-					type = extras.getString(Const.MSG_TYPE);
-				}
+				String chatId = "";
+				String firstName = "";
+				String chatName = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
-					groupId = extras.getString(Const.CHAT_ID);
+					chatId = extras.getString(Const.CHAT_ID);
+				}
+
+				if (extras.containsKey(Const.FIRSTNAME)) {
+					firstName = extras.getString(Const.FIRSTNAME);
 				}
 
 				if (extras.containsKey(Const.CHAT_NAME)) {
-					groupName = extras.getString(Const.CHAT_NAME);
+					chatName = extras.getString(Const.CHAT_NAME);
 				}
 
-				sendNotification(type, groupId, groupName);
+				sendNotification(chatId, firstName, chatName);
 			}
 		}
 
 		GcmBroadcastReceiver.completeWakefulIntent(intent);
 	}
 
-	private void sendNotification(final String type, final String chatId, final String chatName) {
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
+	private void sendNotification(final String chatId, final String firstName, final String chatName) {
+
+		String message = getResources().getString(R.string.msg_from) + " " + firstName;
+
+		// TODO
+		// if (ChatActivity.instance != null) {
+		// ChatActivity.instance.callAfterPush(groupId, msg, Const.PT_MESSAGE);
+		// } else if (BaseActivity.instance != null) {
+		// BaseActivity.instance.showPopUp(msg, groupId, Const.PT_MESSAGE);
+		// } else {
 
 		NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-		if (Integer.parseInt(type) == Const.PT_MESSAGE) {
-			String msg = "You have received a message in group " + chatName;
+		Intent intent = new Intent(this, SplashActivity.class);
+		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.CHAT_NAME, chatName);
+		intent.putExtra(Const.FROM_NOTIFICATION, true);
 
-			// TODO
-			// if (ChatActivity.instance != null) {
-			// ChatActivity.instance.callAfterPush(groupId, msg,
-			// Const.PT_MESSAGE);
-			// } else if (BaseActivity.instance != null) {
-			// BaseActivity.instance.showPopUp(msg, groupId, Const.PT_MESSAGE);
-			// } else {
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-			PendingIntent contentIntent;
+		Notification notification = null;
 
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, chatId);
-			intent.putExtra(Const.CHAT_NAME, chatName);
-			intent.putExtra(Const.FROM_NOTIFICATION, true);
-
-			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-			// Push with display
-			Notification notif = new Notification(R.drawable.ic_launcher, msg, System.currentTimeMillis());
-			notif.defaults = Notification.DEFAULT_ALL;
-			notif.flags = Notification.FLAG_AUTO_CANCEL;
-
-			CharSequence message = msg;
-			// notif.setLatestEventInfo(this, Const.VECTOR_CHAT, message,
-			// contentIntent);
-
-			mNotificationManager.notify(getIntId(chatId), notif);
-			//
-			// }
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+			notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
+					.setSmallIcon(R.drawable.ic_launcher).build();
+		} else {
+			notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
+			notification.defaults = Notification.DEFAULT_ALL;
+			notification.flags = Notification.FLAG_AUTO_CANCEL;
+			notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
 		}
+
+		mNotificationManager.notify(getIntId(chatId), notification);
+		// }
 	}
 
 	private int getIntId(String groupId) {

@@ -19,7 +19,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UserModel;
+import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -109,19 +109,19 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	public void getUsers(int page, String search, final boolean toClear) {
 		UsersApi api = new UsersApi();
 		if (search == null) {
-			api.getUsersWithPage(this, mCurrentIndex, true, new ApiCallback<UserModel>() {
+			api.getUsersWithPage(this, mCurrentIndex, true, new ApiCallback<UsersList>() {
 
 				@Override
-				public void onApiResponse(Result<UserModel> result) {
+				public void onApiResponse(Result<UsersList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getUserList(), toClear);
 				}
 			});
 		} else {
-			api.getUsersByName(mCurrentIndex, search, this, true, new ApiCallback<UserModel>() {
+			api.getUsersByName(mCurrentIndex, search, this, true, new ApiCallback<UsersList>() {
 
 				@Override
-				public void onApiResponse(Result<UserModel> result) {
+				public void onApiResponse(Result<UsersList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getUserList(), toClear);
 				}

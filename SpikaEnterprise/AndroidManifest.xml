@@ -104,7 +104,7 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.VoiceActivity"
             android:screenOrientation="portrait" />
-        
+
         <!-- Old -->
         <activity
             android:name=".UserListActivity"

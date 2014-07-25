@@ -13,8 +13,9 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
-	
+
 	private static int INVALID_TOKEN_CODE = 1000;
+	private static int EXPIRED_TOKEN_CODE = 1001;
 
 	protected Context context;
 	protected AppProgressDialog progressDialog;
@@ -56,40 +57,42 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	@Override
 	protected void onPostExecute(Result result) {
 		super.onPostExecute(result);
-		
-		if(result instanceof BaseModel && ((BaseModel) result).getCode() == INVALID_TOKEN_CODE){
+
+		if (result instanceof BaseModel && ((BaseModel) result).getCode() == INVALID_TOKEN_CODE && ((BaseModel) result).getCode() == EXPIRED_TOKEN_CODE) {
 			AppDialog dialog = new AppDialog(context, false);
 			dialog.setFailed(context.getString(R.string.invalid_token_message));
 			dialog.setOnDismissListener(new OnDismissListener() {
-				
+
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					dialog.dismiss();
-					Helper.logout((Activity)context);
+					Helper.logout((Activity) context);
 				}
 			});
 		}
 
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
-                // because AsyncTask
-                try {
-                    progressDialog.dismiss();
-                } catch (IllegalArgumentException ignored) { }
-            }
+				// because AsyncTask
+				try {
+					progressDialog.dismiss();
+				} catch (IllegalArgumentException ignored) {
+				}
+			}
 		}
 	}
 
 	@Override
 	protected void onCancelled(Result result) {
 		super.onCancelled(result);
-		
+
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
-                // because AsyncTask
-                try {
-                    progressDialog.dismiss();
-                } catch (IllegalArgumentException ignored) { }
+				// because AsyncTask
+				try {
+					progressDialog.dismiss();
+				} catch (IllegalArgumentException ignored) {
+				}
 			}
 		}
 	}

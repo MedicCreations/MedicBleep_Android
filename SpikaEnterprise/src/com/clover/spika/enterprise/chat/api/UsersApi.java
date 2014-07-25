@@ -11,7 +11,7 @@ import android.content.Context;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserModel;
+import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
@@ -19,11 +19,11 @@ import com.google.gson.Gson;
 public class UsersApi {
 
 	public void getUsersWithPage(Context ctx, final int page, boolean showProgressBar,
-			final ApiCallback<UserModel> listener) {
-		new BaseAsyncTask<Void, Void, UserModel>(ctx, showProgressBar) {
+			final ApiCallback<UsersList> listener) {
+		new BaseAsyncTask<Void, Void, UsersList>(ctx, showProgressBar) {
 
 			@Override
-			protected UserModel doInBackground(Void... params) {
+			protected UsersList doInBackground(Void... params) {
 
 				JSONObject jsonObject = new JSONObject();
 
@@ -38,26 +38,26 @@ public class UsersApi {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), UserModel.class);
+				return new Gson().fromJson(jsonObject.toString(), UsersList.class);
 			}
 
 			@Override
-			protected void onPostExecute(UserModel userModel) {
+			protected void onPostExecute(UsersList userModel) {
 				super.onPostExecute(userModel);
 
 				if (listener != null) {
-					Result<UserModel> result;
+					Result<UsersList> result;
 
 					if (userModel != null) {
 						if (userModel.getCode() == Const.API_SUCCESS) {
-							result = new Result<UserModel>(Result.ApiResponseState.SUCCESS);
+							result = new Result<UsersList>(Result.ApiResponseState.SUCCESS);
 							result.setResultData(userModel);
 						} else {
-							result = new Result<UserModel>(Result.ApiResponseState.FAILURE);
+							result = new Result<UsersList>(Result.ApiResponseState.FAILURE);
 							result.setResultData(userModel);
 						}
 					} else {
-						result = new Result<UserModel>(Result.ApiResponseState.FAILURE);
+						result = new Result<UsersList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);
@@ -67,11 +67,11 @@ public class UsersApi {
 	}
 
 	public void getUsersByName(final int page, final String data, Context ctx, boolean showProgressBar,
-			final ApiCallback<UserModel> listener) {
-		new BaseAsyncTask<Void, Void, UserModel>(ctx, showProgressBar) {
+			final ApiCallback<UsersList> listener) {
+		new BaseAsyncTask<Void, Void, UsersList>(ctx, showProgressBar) {
 
 			@Override
-			protected UserModel doInBackground(Void... params) {
+			protected UsersList doInBackground(Void... params) {
 
 				JSONObject jsonObject = new JSONObject();
 
@@ -88,27 +88,27 @@ public class UsersApi {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), UserModel.class);
+				return new Gson().fromJson(jsonObject.toString(), UsersList.class);
 			}
 
 			@Override
-			protected void onPostExecute(UserModel userModel) {
+			protected void onPostExecute(UsersList userModel) {
 				super.onPostExecute(userModel);
 
 				if (listener != null) {
 					
-					Result<UserModel> result;
+					Result<UsersList> result;
 
 					if (userModel != null) {
 						if (userModel.getCode() == Const.API_SUCCESS) {
-							result = new Result<UserModel>(Result.ApiResponseState.SUCCESS);
+							result = new Result<UsersList>(Result.ApiResponseState.SUCCESS);
 							result.setResultData(userModel);
 						} else {
-							result = new Result<UserModel>(Result.ApiResponseState.FAILURE);
+							result = new Result<UsersList>(Result.ApiResponseState.FAILURE);
 							result.setResultData(userModel);
 						}
 					} else {
-						result = new Result<UserModel>(Result.ApiResponseState.FAILURE);
+						result = new Result<UsersList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);

@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
@@ -34,24 +34,16 @@ import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
-	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
+	private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
-
-	public GoogleCloudMessaging gcm;
 
 	public ImageView tabGames;
 	public ImageView tabTalk;
@@ -91,44 +83,52 @@ public class BaseActivity extends SlidingFragmentActivity {
 		slidingMenu.setFadeDegree(0.35f);
 		// Value 950 is not used, library method has been changed
 		slidingMenu.setBehindWidth(80);
+
+		if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
+			Intent intent = new Intent(this, ChatActivity.class);
+			intent.putExtras(getIntent().getExtras());
+			startActivity(intent);
+		}
 	}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+	@Override
+	protected void onResume() {
+		super.onResume();
 
-        // passcode callback injected methods are important for tracking active session
-        PasscodeUtility.getInstance().onResume();
-        if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
-            if (!PasscodeUtility.getInstance().isSessionValid()) {
-                startActivityForResult(new Intent(this, PasscodeActivity.class), PASSCODE_ENTRY_VALIDATION_REQUEST);
-            }
-        }
-    }
+		// passcode callback injected methods are important for tracking active
+		// session
+		PasscodeUtility.getInstance().onResume();
+		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+			if (!PasscodeUtility.getInstance().isSessionValid()) {
+				startActivityForResult(new Intent(this, PasscodeActivity.class), PASSCODE_ENTRY_VALIDATION_REQUEST);
+			}
+		}
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // passcode callback injected methods are important for tracking active session
-        PasscodeUtility.getInstance().onPause();
-    }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		// passcode callback injected methods are important for tracking active
+		// session
+		PasscodeUtility.getInstance().onPause();
+	}
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                PasscodeUtility.getInstance().setSessionValid(true);
-            } else {
-                PasscodeUtility.getInstance().setSessionValid(false);
-                finish();
-            }
-        }
-        
-    }
+		if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				PasscodeUtility.getInstance().setSessionValid(true);
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(false);
+				finish();
+			}
+		}
 
-    @Override
+	}
+
+	@Override
 	public void setContentView(int id) {
 		super.setContentView(id);
 
@@ -244,76 +244,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	}
 
-	/**
-	 * Check the device to make sure it has the Google Play Services APK. If it
-	 * doesn't, display a dialog that allows users to download the APK from the
-	 * Google Play Store or enable it in the device's system settings.
-	 */
-	public boolean checkPlayServices() {
-		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-		if (resultCode != ConnectionResult.SUCCESS) {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-			} else {
-				finish();
-			}
-			return false;
-		}
-		return true;
-	}
-
-	public String getPushToken() {
-
-		String regId = "";
-
-		if (checkPlayServices()) {
-			gcm = GoogleCloudMessaging.getInstance(this);
-			regId = getRegistrationId(this);
-
-			Logger.info("PUSH_TOKEN: " + regId);
-
-			if (regId.isEmpty()) {
-				registerInBackground();
-			}
-
-			return regId;
-		} else {
-			Logger.info("Google Play Services are missing");
-
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the current registration ID for application on GCM service.
-	 * <p>
-	 * If result is empty, the app needs to register.
-	 * 
-	 * @return registration ID, or empty string if there is no existing
-	 *         registration ID.
-	 */
-	public String getRegistrationId(Context context) {
-		String registrationId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.REGISTRATION_ID);
-		if (registrationId == null || registrationId.isEmpty()) {
-			Logger.info("GCM registration ID not found");
-			return "";
-		}
-		// Check if app was updated; if so, it must clear the registration ID
-		// since the existing regID is not guaranteed to work with the new
-		// app version.
-		if (Helper.isUpdated(context)) {
-			Logger.info("App has been updated, we need to register GCM again.");
-			return "";
-		}
-
-		return registrationId;
-	}
-
 	public void showPopUp(final String msg, final String groupId, final int type) {
-
-		if (type == Const.PT_MESSAGE) {
-			SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(groupId, true);
-		}
 
 		if (isPushShowing) {
 			Push push = new Push();
@@ -414,84 +345,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}.execute();
 	}
 
-	/**
-	 * Registers the application with GCM servers asynchronously.
-	 * <p>
-	 * Stores the registration ID and app versionCode in the application's
-	 * shared preferences.
-	 */
-	// TODO
-	public void registerInBackground() {
-		new BaseAsyncTask<Void, Void, String>(this, false) {
-
-			protected String doInBackground(Void... params) {
-				String msg = "";
-				try {
-					if (gcm == null) {
-						gcm = GoogleCloudMessaging.getInstance(context);
-					}
-					String regId = gcm.register(Const.GCM_SENDER_ID);
-					msg = "Device registered, registration ID=" + regId;
-
-					// You should send the registration ID to your server over
-					// HTTP,
-					// so it can use GCM/HTTP or CCS to send messages to your
-					// app.
-					// The request to your server should be authenticated if
-					// your app
-					// is using accounts.
-					// sendRegistrationIdToBackend();
-					// TODO
-					// try {
-					// HashMap<String, String> postParams = new HashMap<String,
-					// String>();
-					// postParams.put(Const.PUSH_TOKEN, regId);
-					//
-					// JSONObject result =
-					// Helper.jObjectFromString(NetworkManagement.httpPostRequest(Api.SET_PUSH_ID,
-					// postParams));
-					//
-					// if (result != null) {
-					// } else {
-					// }
-					//
-					// } catch (Exception e) {
-					// e.printStackTrace();
-					// }
-
-					storeRegistrationId(context, regId);
-				} catch (IOException ex) {
-					msg = "Error :" + ex.getMessage();
-					// If there is an error, don't just keep trying to register.
-					// Require the user to click a button again, or perform
-					// exponential back-off.
-				}
-
-				return msg;
-			};
-		}.execute();
-	}
-
-	/**
-	 * Stores the registration ID and app versionCode in the application's
-	 * {@code SharedPreferences}.
-	 * 
-	 * @param context
-	 *            application's context.
-	 * @param regId
-	 *            registration ID
-	 */
-	private void storeRegistrationId(Context context, String regId) {
-		Helper.updateAppVersion(context);
-		SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.REGISTRATION_ID, regId);
-	}
-
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
 			closeSearchAnimation();
 			return;
 		}
+
 		finish();
 	}
 

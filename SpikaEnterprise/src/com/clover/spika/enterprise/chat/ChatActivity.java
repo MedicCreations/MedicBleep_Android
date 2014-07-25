@@ -64,7 +64,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private ImageButton footerMore;
 	private RelativeLayout chatLayout;
-	
+
 	private RelativeLayout rlDrawer;
 	private int drawerDuration = 300;
 	private int drawerHeight = 200;
@@ -128,16 +128,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		getIntentData(getIntent());
 	}
-	
-	private void forceClose(){
-		if(rlDrawer.isSelected()){
+
+	private void forceClose() {
+		if (rlDrawer.isSelected()) {
 			rlDrawerManage();
 			hideKeyboard(etMessage);
 		}
 	}
-	
-	private void rlDrawerManage(){
-		if(!rlDrawer.isSelected()){
+
+	private void rlDrawerManage() {
+		if (!rlDrawer.isSelected()) {
 			rlDrawer.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawer, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
 				@Override
@@ -146,25 +146,25 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
 					params.bottomMargin = Helper.dpToPx(ChatActivity.this, drawerHeight);
 					main_list_view.setLayoutParams(params);
-					main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
-					
+					// main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
+
 					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 					hideKeyboard(etMessage);
-				} 
+				}
 			});
 			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
-		}else{
+		} else {
 			AnimUtils.translationY(rlDrawer, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawer.setVisibility(View.GONE);
 					rlDrawer.setSelected(false);
-					
+
 					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
-			main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
+			// main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
 			LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
 			params.bottomMargin = 0;
 			main_list_view.setLayoutParams(params);
@@ -274,6 +274,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
+	// TODO
 	public void callAfterPush(String disId, String msg, int type) {
 		if (disId.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
@@ -289,7 +290,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			showKeyboard(etMessage);
 			forceClose();
 		} else if (id == R.id.footerMore) {
-			
+
 			rlDrawerManage();
 
 		} else if (id == R.id.btnPhoto) {

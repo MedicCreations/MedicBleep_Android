@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
@@ -16,16 +17,19 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class LoginBaseActivity extends Activity {
 
-	protected void executeLoginApi(String user, String pass, boolean showProgress) {
-		new LoginApi().loginWithCredentials(user, pass, this, showProgress, new ApiCallback<Login>() {
+	protected void executeLoginApi(String user, String pass, String token, final Bundle extras, boolean showProgress) {
+		new LoginApi().loginWithCredentials(user, pass, token, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				// TODO: srediti logiku za fail i success response
 				if (result.isSuccess()) {
-					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result
-							.getResultData().getImage(), result.getResultData().getFirstname(), result.getResultData()
-							.getLastname());
+					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(), result.getResultData().getLastname());
 					Intent intent = new Intent(LoginBaseActivity.this, LobbyActivity.class);
+
+					if (extras != null) {
+						intent.putExtras(extras);
+					}
+
 					startActivity(intent);
 					finish();
 				} else {
@@ -42,7 +46,6 @@ public class LoginBaseActivity extends Activity {
 								startActivity(intent);
 							}
 						});
-
 					}
 				}
 			}

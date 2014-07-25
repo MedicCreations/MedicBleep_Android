@@ -54,8 +54,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 		imageLoader = new ImageLoader(context);
 
-		int sdk = android.os.Build.VERSION.SDK_INT;
-		if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
 			isJellyBean = true;
 		} else {
 			isJellyBean = false;

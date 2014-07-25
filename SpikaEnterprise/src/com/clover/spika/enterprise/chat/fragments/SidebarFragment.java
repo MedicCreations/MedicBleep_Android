@@ -31,7 +31,7 @@ public class SidebarFragment extends Fragment {
 	RobotoThinButton users;
 	RobotoThinButton groups;
 	RobotoThinButton logout;
-	
+
 	String image;
 	ImageLoader imageLoader;
 
@@ -40,7 +40,7 @@ public class SidebarFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
+
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
 		userImage = (RoundImageView) view.findViewById(R.id.userImage);
@@ -48,9 +48,9 @@ public class SidebarFragment extends Fragment {
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 		image = Helper.getUserImage(getActivity());
 		imageLoader.displayImage(getActivity(), image, userImage, false);
-		
+
 		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
-		userName.setText(Helper.getUserFirstName(getActivity())+"\n"+Helper.getUserLastName(getActivity()));
+		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(new OnClickListener() {
@@ -58,7 +58,7 @@ public class SidebarFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				ProfileActivity.openProfile(getActivity(), null);
-                ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				((BaseActivity) getActivity()).slidingMenu.toggle(true);
 			}
 		});
 
@@ -98,19 +98,17 @@ public class SidebarFragment extends Fragment {
 			public void onClick(View v) {
 				// TODO
 				SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
-				
 				Helper.logout(getActivity());
-
 			}
 		});
 
 		return view;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(!image.equals(Helper.getUserImage(getActivity()))){
+		if (!image.equals(Helper.getUserImage(getActivity()))) {
 			image = Helper.getUserImage(getActivity());
 			imageLoader.displayImage(getActivity(), image, userImage, true);
 		}
