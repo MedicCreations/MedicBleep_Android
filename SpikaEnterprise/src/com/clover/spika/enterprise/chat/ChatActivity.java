@@ -2,6 +2,8 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,11 +17,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
+import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -35,9 +37,6 @@ import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
-
-	private static final int OPENED = 1003;
-	private static final int CLOSED = 1004;
 
 	private ImageLoader imageLoader;
 
@@ -67,9 +66,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private ImageButton footerMore;
 	private RelativeLayout chatLayout;
-	private SlidingDrawer mSlidingDrawer;
-	private RelativeLayout.LayoutParams mParamsOpened;
-	private RelativeLayout.LayoutParams mParamsClosed;
+	
+	private RelativeLayout rlDrawer;
+	private int drawerDuration = 300;
+	private int drawerHeight = 200;
 
 	@Override
 	public void onCreate(Bundle bundle) {
@@ -84,25 +84,20 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(this);
 
-		photo = (Button) findViewById(R.id.photo);
+		photo = (Button) findViewById(R.id.btnPhoto);
 		photo.setOnClickListener(this);
-		gallery = (Button) findViewById(R.id.gallery);
+		gallery = (Button) findViewById(R.id.btnGallery);
 		gallery.setOnClickListener(this);
-		video = (Button) findViewById(R.id.video);
+		video = (Button) findViewById(R.id.btnVideo);
 		video.setOnClickListener(this);
-		location = (Button) findViewById(R.id.location);
+		location = (Button) findViewById(R.id.btnLocation);
 		location.setOnClickListener(this);
-		record = (Button) findViewById(R.id.record);
+		record = (Button) findViewById(R.id.btnRecord);
 		record.setOnClickListener(this);
 
-		mSlidingDrawer = (SlidingDrawer) findViewById(R.id.slDrawer);
 		chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
-
-		mParamsClosed = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
-		mParamsClosed.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-
-		mParamsOpened = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.menu_height));
-		mParamsOpened.addRule(RelativeLayout.ABOVE, mSlidingDrawer.getId());
+		rlDrawer = (RelativeLayout) findViewById(R.id.rlDrawer);
+		rlDrawer.setSelected(false);
 
 		main_list_view = (ListView) findViewById(R.id.main_list_view);
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
@@ -135,14 +130,55 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		getIntentData(getIntent());
 	}
+	
+	private void forceClose(){
+		if(rlDrawer.isSelected()){
+			rlDrawerManage();
+			hideKeyboard(etMessage);
+		}
+	}
+	
+	private void rlDrawerManage(){
+		if(!rlDrawer.isSelected()){
+			rlDrawer.setVisibility(View.VISIBLE);
+			AnimUtils.translationY(rlDrawer, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawer.setSelected(true);
+					LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
+					params.bottomMargin = Helper.dpToPx(ChatActivity.this, drawerHeight);
+					main_list_view.setLayoutParams(params);
+					main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
+					
+					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
+					hideKeyboard(etMessage);
+				} 
+			});
+			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
+		}else{
+			AnimUtils.translationY(rlDrawer, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawer.setVisibility(View.GONE);
+					rlDrawer.setSelected(false);
+					
+					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
+				}
+			});
+			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+			main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
+			LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
+			params.bottomMargin = 0;
+			main_list_view.setLayoutParams(params);
+			AnimUtils.translationY(main_list_view, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+		}
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		if (mSlidingDrawer.isOpened()) {
-			setSlidingDrawer(CLOSED);
-		}
+		forceClose();
 
 		if (!TextUtils.isEmpty(chatImage)) {
 			partnerIcon.setVisibility(View.VISIBLE);
@@ -162,25 +198,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 
 		adapter.notifyDataSetChanged();
-	}
-
-	private void setSlidingDrawer(int state) {
-
-		switch (state) {
-		case OPENED:
-			footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
-			hideKeyboard(etMessage);
-			mSlidingDrawer.open();
-			chatLayout.setLayoutParams(mParamsOpened);
-			break;
-		case CLOSED:
-			footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
-			mSlidingDrawer.close();
-			chatLayout.setLayoutParams(mParamsClosed);
-			break;
-		default:
-			break;
-		}
 	}
 
 	@Override
@@ -253,8 +270,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	@Override
 	public void onBackPressed() {
 
-		if (mSlidingDrawer.isOpened()) {
-			setSlidingDrawer(CLOSED);
+		if (rlDrawer.isSelected()) {
+			forceClose();
 
 			return;
 		} else {
@@ -275,35 +292,31 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		int id = view.getId();
 		if (id == R.id.etMessage) {
 			showKeyboard(etMessage);
-			setSlidingDrawer(CLOSED);
+			forceClose();
 		} else if (id == R.id.footerMore) {
+			
+			rlDrawerManage();
 
-			if (mSlidingDrawer.isOpened()) {
-				setSlidingDrawer(CLOSED);
-			} else {
-				setSlidingDrawer(OPENED);
-			}
-
-		} else if (id == R.id.photo) {
+		} else if (id == R.id.btnPhoto) {
 			Intent intent = new Intent(this, CameraCropActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 			intent.putExtra(Const.FROM_WAll, true);
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
-		} else if (id == R.id.gallery) {
+		} else if (id == R.id.btnGallery) {
 			Intent intent = new Intent(this, CameraCropActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 			intent.putExtra(Const.FROM_WAll, true);
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
-		} else if (id == R.id.video) {
+		} else if (id == R.id.btnVideo) {
 			AppDialog dialog = new AppDialog(this, false);
 			dialog.choseCamGallery(chatId);
-		} else if (id == R.id.location) {
+		} else if (id == R.id.btnLocation) {
 			Intent intent = new Intent(this, LocationActivity.class);
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
-		} else if (id == R.id.record) {
+		} else if (id == R.id.btnRecord) {
 			// TODO
 			// Intent intent = new Intent(this, CameraCropActivity.class);
 			// intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);

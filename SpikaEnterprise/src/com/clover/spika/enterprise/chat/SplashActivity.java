@@ -23,7 +23,7 @@ public class SplashActivity extends LoginBaseActivity {
 		}else{
 			pause(2000, true);
 		}
-
+		
 	}
 
 	// XXX do something smart

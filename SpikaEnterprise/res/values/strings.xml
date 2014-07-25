@@ -97,6 +97,7 @@
     <string name="location">Location</string>
     <string name="record">Record</string>
     <string name="gallery">Gallery</string>
+    <string name="invalid_token_message">INVALID TOKEN</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>

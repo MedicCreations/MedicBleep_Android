@@ -2,14 +2,19 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.utils.Helper;
 
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+	
+	private static int INVALID_TOKEN_CODE = 1000;
 
 	protected Context context;
 	protected AppProgressDialog progressDialog;
@@ -51,6 +56,19 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	@Override
 	protected void onPostExecute(Result result) {
 		super.onPostExecute(result);
+		
+		if(((BaseModel) result).getCode() == INVALID_TOKEN_CODE){
+			AppDialog dialog = new AppDialog(context, false);
+			dialog.setFailed(context.getString(R.string.invalid_token_message));
+			dialog.setOnDismissListener(new OnDismissListener() {
+				
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					dialog.dismiss();
+					Helper.logout((Activity)context);
+				}
+			});
+		}
 
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
@@ -65,7 +83,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	@Override
 	protected void onCancelled(Result result) {
 		super.onCancelled(result);
-
+		
 		if (showProgressBar) {
 			if (progressDialog != null && progressDialog.isShowing()) {
                 // because AsyncTask

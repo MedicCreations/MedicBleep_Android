@@ -19,17 +19,21 @@
             android:paddingRight="30dp"
             android:src="@drawable/gb_alert_failed" />
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/rlDataMessAndButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="vertical" >
+            android:layout_alignBottom="@id/bgImageFailed"
+            android:layout_alignLeft="@id/bgImageFailed"
+            android:layout_alignRight="@id/bgImageFailed"
+            android:layout_alignTop="@id/bgImageFailed"
+            android:gravity="center" >
 
             <TextView
                 android:id="@+id/alertText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:text="@string/failed"
                 android:textColor="@color/red"
                 android:textSize="20sp" />
@@ -38,33 +42,35 @@
                 android:id="@+id/failedDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_below="@id/alertText"
+                android:layout_centerHorizontal="true"
                 android:textColor="@color/text_blue"
                 android:textSize="12sp" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/btnOk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/bgImageFailed"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="15dp"
-            android:orientation="vertical" >
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/btnOk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:text="@string/ok"
-                android:textColor="@color/text_blue"
-                android:textSize="18sp" />
+                android:layout_below="@id/failedDescription"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical" >
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/text_blue" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/ok"
+                    android:textColor="@color/text_blue"
+                    android:textSize="18sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/text_blue" />
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

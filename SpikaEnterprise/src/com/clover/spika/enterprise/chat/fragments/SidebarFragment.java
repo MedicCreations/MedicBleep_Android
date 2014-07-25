@@ -1,7 +1,6 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.Button;
 
 import com.clover.spika.enterprise.chat.GroupListActivity;
 import com.clover.spika.enterprise.chat.LobbyActivity;
-import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
@@ -100,11 +98,9 @@ public class SidebarFragment extends Fragment {
 			public void onClick(View v) {
 				// TODO
 				SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
+				
+				Helper.logout(getActivity());
 
-				Intent logoutIntent = new Intent(getActivity(), LoginActivity.class);
-				logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(logoutIntent);
-				getActivity().finish();
 			}
 		});
 

@@ -98,30 +98,15 @@
                 android:padding="5dp"
                 android:singleLine="true" />
         </RelativeLayout>
-
-        <SlidingDrawer
-            android:id="@+id/slDrawer"
+        
+        <RelativeLayout
+            android:id="@+id/rlDrawer"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_alignParentBottom="true"
-            android:content="@+id/addContent"
-            android:handle="@+id/handle"
-            android:orientation="vertical" >
-
-            <RelativeLayout
-                android:id="@+id/handle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" >
-                </Button>
-            </RelativeLayout>
+            android:visibility="gone"
+            android:layout_alignParentBottom="true" >
 
             <LinearLayout
-                android:id="@+id/addContent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/chat_menu_gray"
@@ -134,7 +119,7 @@
                     android:weightSum="3" >
 
                     <Button
-                        android:id="@+id/photo"
+                        android:id="@+id/btnPhoto"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -149,7 +134,7 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/gallery"
+                        android:id="@+id/btnGallery"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -164,7 +149,7 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/video"
+                        android:id="@+id/btnVideo"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -186,7 +171,7 @@
                     android:weightSum="3" >
 
                     <Button
-                        android:id="@+id/emoji"
+                        android:id="@+id/bntEmoji"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -198,7 +183,7 @@
                         android:visibility="invisible" />
 
                     <Button
-                        android:id="@+id/location"
+                        android:id="@+id/btnLocation"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -212,7 +197,7 @@
                         android:textColor="@android:color/black" />
 
                     <Button
-                        android:id="@+id/record"
+                        android:id="@+id/btnRecord"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="5dp"
@@ -226,7 +211,7 @@
                         android:textColor="@android:color/black" />
                 </LinearLayout>
             </LinearLayout>
-        </SlidingDrawer>
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

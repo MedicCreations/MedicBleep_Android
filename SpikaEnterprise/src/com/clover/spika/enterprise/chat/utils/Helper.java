@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
@@ -42,6 +43,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
@@ -500,6 +502,13 @@ public class Helper {
 		float logicalDensity = metrics.density;
 
 		return (int) Math.ceil(dp * logicalDensity);
+	}
+	
+	public static void logout(Context ac){
+		Intent logoutIntent = new Intent(ac, LoginActivity.class);
+		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		ac.startActivity(logoutIntent);
+		((Activity) ac).finish();
 	}
 
 }
