@@ -19,6 +19,14 @@ public class PasscodeActivity extends NewPasscodeActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (PasscodeUtility.getInstance().isSessionValid()) {
+            finish();
+        }
+    }
+
     /**
      * Calls for validation logic.
      * Either closes this activity if passcode is correct or throws an exception.
@@ -33,6 +41,7 @@ public class PasscodeActivity extends NewPasscodeActivity {
 
             if (PasscodeUtility.getInstance().validate(this, builder.toString())) {
                 setResult(RESULT_OK);
+                PasscodeUtility.getInstance().setSessionValid(true);
                 finish();
             } else {
             	errorValidateAnimation();

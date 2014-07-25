@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -37,6 +34,9 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -119,7 +119,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
 			if (resultCode == RESULT_OK) {
-				PasscodeUtility.getInstance().setSessionValid(true);
+                // if by some chance session is not set to valid, set it now
+                if (!PasscodeUtility.getInstance().isSessionValid()) {
+				    PasscodeUtility.getInstance().setSessionValid(true);
+                }
 			} else {
 				PasscodeUtility.getInstance().setSessionValid(false);
 				finish();
