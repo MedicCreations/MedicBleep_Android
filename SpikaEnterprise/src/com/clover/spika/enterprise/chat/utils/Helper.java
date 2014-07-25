@@ -81,30 +81,31 @@ public class Helper {
 	 * @return
 	 */
 	public static String getImagePath(Context cntx, Uri uri, boolean isOverJellyBeam) {
-		
-		if(isOverJellyBeam){
+
+		if (isOverJellyBeam) {
 			try {
 				ParcelFileDescriptor parcelFileDescriptor = cntx.getContentResolver().openFileDescriptor(uri, "r");
-			    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-//			    Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-			    copyStream(new FileInputStream(fileDescriptor), 
-			    		new FileOutputStream(new File(cntx.getExternalCacheDir() + "/" + "image_profile")));
-			    parcelFileDescriptor.close();
-//			    saveBitmapToFile(image, cntx.getExternalCacheDir() + "/" + "image_profile");
-			    return cntx.getExternalCacheDir() + "/" + "image_profile";
+				FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+				// Bitmap image =
+				// BitmapFactory.decodeFileDescriptor(fileDescriptor);
+				copyStream(new FileInputStream(fileDescriptor), new FileOutputStream(new File(cntx.getExternalCacheDir() + "/" + "image_profile")));
+				parcelFileDescriptor.close();
+				// saveBitmapToFile(image, cntx.getExternalCacheDir() + "/" +
+				// "image_profile");
+				return cntx.getExternalCacheDir() + "/" + "image_profile";
 			} catch (Exception e) {
 				e.printStackTrace();
 				return "";
 			}
-			
-		}else{
+
+		} else {
 
 			String[] projection = { MediaStore.Images.Media.DATA };
 			Cursor cursor = cntx.getContentResolver().query(uri, projection, null, null, null);
-	
+
 			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 			cursor.moveToFirst();
-	
+
 			return cursor.getString(column_index);
 		}
 	}
@@ -506,8 +507,8 @@ public class Helper {
 
 		return (int) Math.ceil(dp * logicalDensity);
 	}
-	
-	public static void logout(Context ac){
+
+	public static void logout(Context ac) {
 		Intent logoutIntent = new Intent(ac, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 		ac.startActivity(logoutIntent);

@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SplashActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -69,36 +71,36 @@ public class GcmIntentService extends IntentService {
 
 		String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
-		// TODO
-		// if (ChatActivity.instance != null) {
-		// ChatActivity.instance.callAfterPush(groupId, msg, Const.PT_MESSAGE);
-		// } else if (BaseActivity.instance != null) {
-		// BaseActivity.instance.showPopUp(msg, groupId, Const.PT_MESSAGE);
-		// } else {
-
-		NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		Intent intent = new Intent(this, SplashActivity.class);
-		intent.putExtra(Const.CHAT_ID, chatId);
-		intent.putExtra(Const.CHAT_NAME, chatName);
-		intent.putExtra(Const.FROM_NOTIFICATION, true);
-
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		Notification notification = null;
-
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-			notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
-					.setSmallIcon(R.drawable.ic_launcher).build();
+		// XXX Monday work
+		if (ChatActivity.instance != null) {
+			((ChatActivity) ChatActivity.instance).getFromPush(message, chatId);
+		} else if (BaseActivity.instance != null) {
+			((BaseActivity) BaseActivity.instance).showPopUp(message, chatId);
 		} else {
-			notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
-			notification.defaults = Notification.DEFAULT_ALL;
-			notification.flags = Notification.FLAG_AUTO_CANCEL;
-			notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
-		}
 
-		mNotificationManager.notify(getIntId(chatId), notification);
-		// }
+			NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+			Intent intent = new Intent(this, SplashActivity.class);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			intent.putExtra(Const.CHAT_NAME, chatName);
+			intent.putExtra(Const.FROM_NOTIFICATION, true);
+
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+			Notification notification = null;
+
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
+						.setSmallIcon(R.drawable.ic_launcher).build();
+			} else {
+				notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
+				notification.defaults = Notification.DEFAULT_ALL;
+				notification.flags = Notification.FLAG_AUTO_CANCEL;
+				notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
+			}
+
+			mNotificationManager.notify(getIntId(chatId), notification);
+		}
 	}
 
 	private int getIntId(String groupId) {
@@ -113,4 +115,5 @@ public class GcmIntentService extends IntentService {
 
 		return sum;
 	}
+
 }

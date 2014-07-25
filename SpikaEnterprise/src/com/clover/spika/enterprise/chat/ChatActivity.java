@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -36,6 +37,9 @@ import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
+	
+	//XXX Monday work
+	public static Activity instance;
 
 	private ImageLoader imageLoader;
 
@@ -175,6 +179,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		instance = this;
 
 		forceClose();
 
@@ -274,15 +280,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	// TODO
-	public void callAfterPush(String disId, String msg, int type) {
-		if (disId.equals(chatId)) {
-			getMessages(false, false, false, true, false, true);
-		} else {
-			showPopUp(msg, disId, type);
-		}
-	}
-
 	@Override
 	public void onClick(View view) {
 		int id = view.getId();
@@ -335,6 +332,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 			}
 		});
+	}
+
+	public void getFromPush(String msg, String chatIdPush) {
+		if (chatIdPush.equals(chatId)) {
+			getMessages(false, false, false, true, false, true);
+		} else {
+			showPopUp(msg, chatId);
+		}
 	}
 
 	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
@@ -408,6 +413,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 			}
 		});
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		instance = null;
 	}
 
 }

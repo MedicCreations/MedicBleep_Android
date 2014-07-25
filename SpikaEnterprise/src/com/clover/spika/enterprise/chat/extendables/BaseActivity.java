@@ -2,6 +2,8 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,6 +41,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
+
+	// XXX Monday work
+	public static Activity instance;
 
 	private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 
@@ -95,6 +100,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onResume() {
 		super.onResume();
 
+		// XXX
+		instance = this;
+
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onResume();
@@ -108,6 +116,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+
+		// XXX
+		instance = null;
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();
@@ -119,10 +130,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
 			if (resultCode == RESULT_OK) {
-                // if by some chance session is not set to valid, set it now
-                if (!PasscodeUtility.getInstance().isSessionValid()) {
-				    PasscodeUtility.getInstance().setSessionValid(true);
-                }
+				// if by some chance session is not set to valid, set it now
+				if (!PasscodeUtility.getInstance().isSessionValid()) {
+					PasscodeUtility.getInstance().setSessionValid(true);
+				}
 			} else {
 				PasscodeUtility.getInstance().setSessionValid(false);
 				finish();
@@ -247,11 +258,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	}
 
-	public void showPopUp(final String msg, final String groupId, final int type) {
+	public void showPopUp(final String msg, final String chatId) {
 
 		if (isPushShowing) {
 			Push push = new Push();
-			push.setId(groupId);
+			push.setId(chatId);
 			push.setMessage(msg);
 
 			qPush.add(push);
@@ -266,13 +277,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 			};
 
 			protected Integer doInBackground(Void... paramss) {
-
-				return Const.E_FAILED;
+				return Const.API_SUCCESS;
 			};
 
+			@SuppressLint("InflateParams")
 			protected void onPostExecute(Integer result) {
 				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content).getRootView());
-				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, contentRoot);
+				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, null);
 				TextView text = (TextView) view.findViewById(R.id.msgPop);
 				text.setText(msg);
 
@@ -337,7 +348,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), type);
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId());
 							qPush.remove(0);
 						}
 					}
