@@ -26,7 +26,6 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -54,7 +53,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private EditText etMessage;
 
-	private String myUserId = null;
 	private String chatImage = null;
 	private String chatId = null;
 	private String chatName = null;
@@ -211,8 +209,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		if (intent != null && intent.getExtras() != null) {
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
-				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
-
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
@@ -223,7 +219,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				getMessages(true, true, true, false, false, false);
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
-				myUserId = SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USER_ID);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
@@ -317,12 +312,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
 		} else if (id == R.id.btnRecord) {
-			// TODO
-			// Intent intent = new Intent(this, CameraCropActivity.class);
-			// intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-			// intent.putExtra(Const.FROM_WAll, true);
-			// intent.putExtra(Const.CHAT_ID, chatId);
-			// startActivity(intent);
+			Intent intent = new Intent(this, RecordAudioActivity.class);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivity(intent);
 		}
 	}
 

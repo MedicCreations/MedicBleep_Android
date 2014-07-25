@@ -57,7 +57,7 @@ public class FileManageApi {
 
 						@Override
 						public void onFinish() {
-							
+
 						}
 					});
 				} catch (IOException e) {
@@ -98,8 +98,8 @@ public class FileManageApi {
 		new BaseAsyncTask<Void, Void, String>(ctx, true) {
 
 			protected void onPreExecute() {
-				 progressBar = new AppProgressDialogWithBar(ctx);
-				 progressBar.show();
+				progressBar = new AppProgressDialogWithBar(ctx);
+				progressBar.show();
 			};
 
 			protected String doInBackground(Void... params) {
@@ -108,7 +108,7 @@ public class FileManageApi {
 
 				try {
 					HttpEntity en = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
-					InputStream is =en.getContent();
+					InputStream is = en.getContent();
 
 					File file;
 
@@ -120,13 +120,13 @@ public class FileManageApi {
 
 					OutputStream os = new FileOutputStream(file);
 					Helper.copyStream(is, os, en.getContentLength(), new ProgressBarListeners() {
-						
+
 						@Override
 						public void onSetMax(long total) {
 							if (progressBar.getMaxBar() == 1)
 								progressBar.setMaxBar((int) total);
 						}
-						
+
 						@Override
 						public void onProgress(long current) {
 							progressBar.updateBar((int) current);
@@ -142,22 +142,6 @@ public class FileManageApi {
 					os.close();
 
 					return file.getAbsolutePath();
-
-					// JSONObject jsonObject =
-					// NetworkManagement.httpGetFileRequest(SpikaEnterpriseApp.getSharedPreferences(context),
-					// postParams, new ProgressBarListeners() {
-					//
-					// @Override
-					// public void onSetMax(long total) {
-					// if (progressBar.getMaxBar() == 1)
-					// progressBar.setMaxBar((int) total);
-					// }
-					//
-					// @Override
-					// public void onProgress(long current) {
-					// progressBar.updateBar((int) current);
-					// }
-					// });
 
 				} catch (Exception e) {
 					e.printStackTrace();

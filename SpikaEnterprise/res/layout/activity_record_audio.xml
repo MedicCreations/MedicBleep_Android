@@ -24,12 +24,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/video"
+            android:text="@string/audio"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
         <ImageButton
-            android:id="@+id/sendVideo"
+            android:id="@+id/sendAudio"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_alignParentRight="true"
@@ -40,14 +40,42 @@
             android:src="@android:drawable/ic_menu_send" />
     </RelativeLayout>
 
-    <VideoView
-        android:id="@+id/videoView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/soundControler"
-        android:layout_below="@+id/topLayout"
-        android:layout_centerInParent="true"
-        android:layout_margin="20dp" />
+        android:layout_below="@+id/topLayout" >
+
+        <ImageButton
+            android:id="@+id/startRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/selector_record_audio"
+            android:contentDescription="@null"
+            android:src="@drawable/icon_audio_start" />
+
+        <ImageView
+            android:id="@+id/recCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            android:contentDescription="@null"
+            android:src="@drawable/icon_audio_rec_on"
+            android:visibility="invisible" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinChronometer
+            android:id="@+id/recordTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/startRec"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="gone" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/soundControler"

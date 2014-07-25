@@ -8,10 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
