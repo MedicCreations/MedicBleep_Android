@@ -148,7 +148,7 @@
                 android:contentDescription="@null"
                 android:src="@drawable/icon_location" />
 
-            <ImageView
+            <com.clover.spika.enterprise.chat.views.RoundCornersImageView
                 android:id="@+id/meViewImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -227,7 +227,7 @@
                 android:contentDescription="@null"
                 android:src="@drawable/icon_location" />
 
-            <ImageView
+            <com.clover.spika.enterprise.chat.views.RoundCornersImageView
                 android:id="@+id/youViewImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"

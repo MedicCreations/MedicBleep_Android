@@ -25,7 +25,6 @@ import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.views.RoundedCornersImage;
 
 public class ImageLoader {
 
@@ -267,8 +266,9 @@ public class ImageLoader {
 
 			protected void onPostExecute(Bitmap result) {
 				if (result != null) {
-					RoundedCornersImage drawable = new RoundedCornersImage(result);
-					imageView.setImageDrawable(drawable);
+//					RoundedCornersImage drawable = new RoundedCornersImage(result);
+//					imageView.setImageDrawable(drawable);
+					imageView.setImageBitmap(result);
 				}
 			};
 		}.execute();

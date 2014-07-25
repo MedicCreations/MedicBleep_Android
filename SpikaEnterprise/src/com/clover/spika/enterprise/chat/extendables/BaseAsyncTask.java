@@ -57,7 +57,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	protected void onPostExecute(Result result) {
 		super.onPostExecute(result);
 		
-		if(((BaseModel) result).getCode() == INVALID_TOKEN_CODE){
+		if(result instanceof BaseModel && ((BaseModel) result).getCode() == INVALID_TOKEN_CODE){
 			AppDialog dialog = new AppDialog(context, false);
 			dialog.setFailed(context.getString(R.string.invalid_token_message));
 			dialog.setOnDismissListener(new OnDismissListener() {
