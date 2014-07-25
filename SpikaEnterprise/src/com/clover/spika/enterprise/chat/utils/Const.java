@@ -63,6 +63,7 @@ public class Const {
 	public static final String MESSAGES = "messages";
 	public static final String MESSAGE_ID = "message_id";
 	public static final String FILE_ID = "file_id";
+	public static final String THUMB_ID = "thumb_id";
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
 	public static final String FILE = "file";
@@ -76,6 +77,7 @@ public class Const {
 	public static final String SEARCH = "search";
 
 	public static final String IMAGE = "image";
+	public static final String IMAGE_THUMB = "image_thumb";
 	public static final String USER_ID = "user_id";
 	public static final String FIRSTNAME = "firstname";
 	public static final String LASTNAME = "lastname";

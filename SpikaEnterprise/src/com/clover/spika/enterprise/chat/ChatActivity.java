@@ -320,7 +320,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	}
 
 	public void sendMessage(final String text, final int type) {
-		new ChatApi().sendMessage(type, chatId, text, null, null, null, this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(type, chatId, text, null, null, null, null, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
