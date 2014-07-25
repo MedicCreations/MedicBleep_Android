@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 
 public class UserApi {
 
-	public void updateUserImage(final String image, final Context ctx, boolean showProgressBar,
+	public void updateUserImage(final String image, final String thumb, final Context ctx, boolean showProgressBar,
 			final ApiCallback<UpdateUserModel> listener) {
 		new BaseAsyncTask<Void, Void, UpdateUserModel>(ctx, showProgressBar) {
 
@@ -29,6 +29,7 @@ public class UserApi {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.IMAGE, image);
+				getParams.put(Const.IMAGE_THUMB, thumb);
 
 				try {
 					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, getParams, 

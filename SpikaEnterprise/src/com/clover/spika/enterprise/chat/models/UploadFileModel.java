@@ -9,7 +9,7 @@ public class UploadFileModel extends BaseModel{
     @SerializedName("file_id")
     @Expose
     private String fileId;
-
+    
 	public String getFileId() {
 		return fileId;
 	}
@@ -17,5 +17,5 @@ public class UploadFileModel extends BaseModel{
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
-    
+
 }

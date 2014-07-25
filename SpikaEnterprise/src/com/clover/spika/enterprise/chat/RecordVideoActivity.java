@@ -138,7 +138,7 @@ public class RecordVideoActivity extends BaseActivity {
 	}
 
 	private void sendMsg(String fileId) {
-		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, null, fileId, null, null, this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, null, fileId, null, null, null, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

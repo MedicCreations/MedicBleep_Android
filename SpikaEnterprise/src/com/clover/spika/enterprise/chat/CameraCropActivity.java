@@ -84,6 +84,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 	private static boolean return_flag;
 
 	private String mFilePath;
+	private String mFileThumbPath;
 	private String chatId = "";
 
 	private LinearLayout btnSend;
@@ -405,6 +406,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 
 		String fileName = Uri.parse(path).getLastPathSegment();
 		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
+		mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName+"_thumb";
 
 		if (!path.equals(mFilePath)) {
 			try {
@@ -586,6 +588,13 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		return false;
 
 	}
+	
+	private void createThumb(String path, Bitmap b){
+		int width = 200, height = 200;
+		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
+		
+		saveBitmapToFile(sb, path);
+	}
 
 	@Override
 	protected void onResume() {
@@ -605,7 +614,8 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			ByteArrayOutputStream bs = new ByteArrayOutputStream();
 			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
 			if (saveBitmapToFile(resizedBitmap, mFilePath) == true) {
-				fileUploadAsync(mFilePath);
+				createThumb(mFileThumbPath, resizedBitmap);
+				fileUploadAsync(mFilePath, mFileThumbPath);
 			} else {
 				AppDialog dialog = new AppDialog(this, true);
 				dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
@@ -616,18 +626,35 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		}
 	}
 
-	private void fileUploadAsync(final String filePath) {
+	private void fileUploadAsync(final String filePath, final String thumbPath) {
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+
+			@Override
+			public void onApiResponse(Result<UploadFileModel> result) {
+				if (result.isSuccess()) {
+					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
+				} else {
+					if (result.hasResultData()) {
+						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
+						dialog.setFailed(result.getResultData().getMessage());
+					}
+				}
+			}
+		});
+	}
+	
+	private void thumbUploadAsync(final String thumbPath, final String fileId) {
+		new FileManageApi().uploadFile(thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
 					if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// send message
-						sendMessage(result.getResultData().getFileId());
+						sendMessage(fileId, result.getResultData().getFileId());
 					} else {
 						// update user
-						updateUser(result.getResultData().getFileId());
+						updateUser(fileId, result.getResultData().getFileId());
 					}
 				} else {
 					if (result.hasResultData()) {
@@ -639,8 +666,8 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		});
 	}
 
-	private void sendMessage(final String fileId) {
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, "", "", this, new ApiCallback<Integer>() {
+	private void sendMessage(final String fileId, final String thumbId) {
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, thumbId, "", "", this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
@@ -656,8 +683,8 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		});
 	}
 
-	private void updateUser(final String fileId) {
-		new UserApi().updateUserImage(fileId, this, true, new ApiCallback<UpdateUserModel>() {
+	private void updateUser(final String fileId, final String thumbId) {
+		new UserApi().updateUserImage(fileId, thumbId, this, true, new ApiCallback<UpdateUserModel>() {
 
 			@Override
 			public void onApiResponse(Result<UpdateUserModel> result) {

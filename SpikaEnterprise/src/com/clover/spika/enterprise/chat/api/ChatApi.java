@@ -133,7 +133,7 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String longitude, final String latitude, Context ctx, final ApiCallback<Integer> listener) {
+	public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String thumbId, final String longitude, final String latitude, Context ctx, final ApiCallback<Integer> listener) {
 		new BaseAsyncTask<Void, Void, Integer>(ctx, true) {
 
 			protected void onPreExecute() {
@@ -154,6 +154,10 @@ public class ChatApi {
 
 					if (!TextUtils.isEmpty(fileId)) {
 						requestParams.put(Const.FILE_ID, fileId);
+					}
+					
+					if (!TextUtils.isEmpty(thumbId)) {
+						requestParams.put(Const.THUMB_ID, thumbId);
 					}
 
 					if (!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
