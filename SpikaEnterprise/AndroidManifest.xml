@@ -104,8 +104,6 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.VoiceActivity"
             android:screenOrientation="portrait" />
-
-        <!-- Old -->
         <activity
             android:name=".UserListActivity"
             android:label="@string/app_name"
@@ -134,7 +132,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".NewPasscodeActivity"
-            android:label="NewPasscodeActivity" />
+            android:label="NewPasscodeActivity"
+            android:launchMode="singleTop" />
     </application>
 
 </manifest>

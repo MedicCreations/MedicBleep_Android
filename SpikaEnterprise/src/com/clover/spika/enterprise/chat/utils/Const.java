@@ -72,6 +72,7 @@ public class Const {
 	public static final String TOTAL_COUNT = "total_count";
 	public static final String USER_IMAGE_NAME = "user_image_name";
 	public static final String IS_GROUP = "isGroup";
+	public static final String PUSH_TOKEN = "push_token";
 
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
@@ -109,6 +110,7 @@ public class Const {
 	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
+	public static final String F_UPDATE_PUSH_TOKEN = "/user/pushtoken/android/update";
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
 
 	public static final int API_SUCCESS = 2000;

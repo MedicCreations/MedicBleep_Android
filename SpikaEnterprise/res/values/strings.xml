@@ -80,6 +80,7 @@
     <string name="e_exceed_voice_duration">Exceeded record time.</string>
     <string name="no_network_connection">You do not have a connection to the internet.</string>
     <string name="e_google_play_error">Google Play Services error.</string>
+    <string name="e_error_while_logout">Unable to logout, please try again.</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>

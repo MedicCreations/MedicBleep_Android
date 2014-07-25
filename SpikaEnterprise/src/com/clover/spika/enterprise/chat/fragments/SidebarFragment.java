@@ -13,9 +13,14 @@ import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.UserListActivity;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -96,9 +101,18 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// TODO
-				SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
-				Helper.logout(getActivity());
+				new UserApi().updateUserToken(getActivity(), new ApiCallback<BaseModel>() {
+
+					@Override
+					public void onApiResponse(Result<BaseModel> result) {
+						if (result.isSuccess()) {
+							SpikaEnterpriseApp.getSharedPreferences(getActivity()).clear();
+							Helper.logout(getActivity());
+						} else {
+							new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
+						}
+					}
+				});
 			}
 		});
 

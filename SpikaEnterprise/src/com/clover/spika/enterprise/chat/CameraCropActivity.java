@@ -44,8 +44,8 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UpdateUserModel;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -89,16 +89,16 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 
 	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
-	
+
 	private boolean mIsOverJellyBean = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
-		
-		if(Build.VERSION.SDK_INT>18){
-			mIsOverJellyBean=true;
+
+		if (Build.VERSION.SDK_INT > 18) {
+			mIsOverJellyBean = true;
 		}
 
 		return_flag = false;
@@ -117,12 +117,12 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 	@SuppressLint("InlinedApi")
 	private void getImageIntents() {
 		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
-			if(mIsOverJellyBean){
-			    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-			    intent.addCategory(Intent.CATEGORY_OPENABLE);
-			    intent.setType("image/*");
-			    startActivityForResult(intent, GALLERY);
-			}else{
+			if (mIsOverJellyBean) {
+				Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+				intent.addCategory(Intent.CATEGORY_OPENABLE);
+				intent.setType("image/*");
+				startActivityForResult(intent, GALLERY);
+			} else {
 				Intent intent = new Intent();
 				intent.setType("image/*");
 				intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -356,17 +356,17 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			switch (requestCode) {
 
 			case GALLERY:
-				if(mIsOverJellyBean){
+				if (mIsOverJellyBean) {
 					Uri uri = null;
-			        if (data != null) {
-			            uri = data.getData();
-			            String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
+					if (data != null) {
+						uri = data.getData();
+						String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
 						onPhotoTaken(selected_image_path);
-			        }else{
-			        	AppDialog dialog = new AppDialog(this, true);
+					} else {
+						AppDialog dialog = new AppDialog(this, true);
 						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
-			        }
-				}else{
+					}
+				} else {
 					try {
 						Uri selected_image = data.getData();
 						String selected_image_path = Helper.getImagePath(this, selected_image, mIsOverJellyBean);
@@ -406,7 +406,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 
 		String fileName = Uri.parse(path).getLastPathSegment();
 		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
-		mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName+"_thumb";
+		mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
 
 		if (!path.equals(mFilePath)) {
 			try {
@@ -588,11 +588,11 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		return false;
 
 	}
-	
-	private void createThumb(String path, Bitmap b){
+
+	private void createThumb(String path, Bitmap b) {
 		int width = 200, height = 200;
 		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
-		
+
 		saveBitmapToFile(sb, path);
 	}
 
@@ -642,7 +642,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			}
 		});
 	}
-	
+
 	private void thumbUploadAsync(final String thumbPath, final String fileId) {
 		new FileManageApi().uploadFile(thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
@@ -684,10 +684,10 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 	}
 
 	private void updateUser(final String fileId, final String thumbId) {
-		new UserApi().updateUserImage(fileId, thumbId, this, true, new ApiCallback<UpdateUserModel>() {
+		new UserApi().updateUserImage(fileId, thumbId, this, true, new ApiCallback<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<UpdateUserModel> result) {
+			public void onApiResponse(Result<BaseModel> result) {
 				if (result.isSuccess()) {
 					ProfileActivity.openProfile(CameraCropActivity.this, fileId);
 					Helper.setUserImage(getApplicationContext(), fileId);
@@ -701,5 +701,5 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			}
 		});
 	}
-	
+
 }
