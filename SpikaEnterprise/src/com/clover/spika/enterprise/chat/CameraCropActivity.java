@@ -258,6 +258,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 		mImageView.setMaxZoom(4f);
 	}
 
+	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 

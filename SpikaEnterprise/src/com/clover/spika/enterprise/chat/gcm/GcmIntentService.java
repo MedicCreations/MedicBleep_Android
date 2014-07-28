@@ -1,10 +1,15 @@
 package com.clover.spika.enterprise.chat.gcm;
 
+import java.util.List;
+
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,38 +70,44 @@ public class GcmIntentService extends IntentService {
 
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
-				// TODO
-				Intent inBroadcast = new Intent();
-				inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
-				inBroadcast.putExtra(Const.CHAT_ID, chatId);
-				inBroadcast.putExtra(Const.CHAT_NAME, chatName);
-				inBroadcast.putExtra(Const.IMAGE, chatImage);
-				inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
-				sendBroadcast(inBroadcast);
+				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+				List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+				ComponentName componentInfo = taskInfo.get(0).topActivity;
+				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
+					Intent inBroadcast = new Intent();
+					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
+					inBroadcast.putExtra(Const.CHAT_ID, chatId);
+					inBroadcast.putExtra(Const.CHAT_NAME, chatName);
+					inBroadcast.putExtra(Const.IMAGE, chatImage);
+					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
 
-				NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-				Intent pushIntent = new Intent(this, SplashActivity.class);
-				pushIntent.putExtra(Const.CHAT_ID, chatId);
-				pushIntent.putExtra(Const.CHAT_NAME, chatName);
-				pushIntent.putExtra(Const.IMAGE, chatImage);
-				pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
-
-				PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-				Notification notification = null;
-
-				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-					notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
-							.setSmallIcon(R.drawable.ic_launcher).build();
+					sendBroadcast(inBroadcast);
 				} else {
-					notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
-					notification.defaults = Notification.DEFAULT_ALL;
-					notification.flags = Notification.FLAG_AUTO_CANCEL;
-					notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
-				}
 
-				mNotificationManager.notify(getIntId(chatId), notification);
+					NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+					Intent pushIntent = new Intent(this, SplashActivity.class);
+					pushIntent.putExtra(Const.CHAT_ID, chatId);
+					pushIntent.putExtra(Const.CHAT_NAME, chatName);
+					pushIntent.putExtra(Const.IMAGE, chatImage);
+					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
+
+					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+					Notification notification = null;
+
+					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+						notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
+								.setContentText(message).setSmallIcon(R.drawable.ic_launcher).build();
+					} else {
+						notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
+						notification.defaults = Notification.DEFAULT_ALL;
+						notification.flags = Notification.FLAG_AUTO_CANCEL;
+						notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
+					}
+
+					mNotificationManager.notify(getIntId(chatId), notification);
+				}
 			}
 		}
 
