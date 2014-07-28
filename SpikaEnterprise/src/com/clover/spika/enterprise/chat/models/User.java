@@ -20,6 +20,10 @@ public class User {
     @SerializedName("image")
     @Expose
     private String image;
+    
+    @SerializedName("image_thumb")
+    @Expose
+	private String image_thumb;
 
     public String getId() {
         return id == null ? "" : id;
@@ -88,4 +92,12 @@ public class User {
                 ", image='" + image + '\'' +
                 '}';
     }
+
+	public String getImage_thumb() {
+		return image_thumb;
+	}
+
+	public void setImage_thumb(String image_thumb) {
+		this.image_thumb = image_thumb;
+	}
 }

@@ -24,10 +24,6 @@ public class ChatApi {
 			protected Chat doInBackground(Void... params) {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
 
-				requestParams.put(Const.USER_ID, userId);
-				requestParams.put(Const.FIRSTNAME, firstname);
-				requestParams.put(Const.LASTNAME, lastname);
-
 				JSONObject jsonObject = new JSONObject();
 				try {
 
@@ -35,6 +31,13 @@ public class ChatApi {
 
 					if (isGroup) {
 						url = Const.F_START_NEW_GROUP;
+
+						requestParams.put(Const.GROUP_ID, userId);
+						requestParams.put(Const.GROUP_NAME, firstname);
+					} else {
+						requestParams.put(Const.USER_ID, userId);
+						requestParams.put(Const.FIRSTNAME, firstname);
+						requestParams.put(Const.LASTNAME, lastname);
 					}
 
 					jsonObject = NetworkManagement.httpPostRequest(url, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
@@ -155,7 +158,7 @@ public class ChatApi {
 					if (!TextUtils.isEmpty(fileId)) {
 						requestParams.put(Const.FILE_ID, fileId);
 					}
-					
+
 					if (!TextUtils.isEmpty(thumbId)) {
 						requestParams.put(Const.THUMB_ID, thumbId);
 					}

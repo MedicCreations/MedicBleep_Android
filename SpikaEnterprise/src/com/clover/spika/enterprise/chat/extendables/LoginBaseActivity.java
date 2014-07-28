@@ -21,7 +21,6 @@ public class LoginBaseActivity extends Activity {
 		new LoginApi().loginWithCredentials(user, pass, token, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
-				// TODO: srediti logiku za fail i success response
 				if (result.isSuccess()) {
 					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(), result.getResultData().getLastname());
 					Intent intent = new Intent(LoginBaseActivity.this, LobbyActivity.class);
@@ -35,7 +34,7 @@ public class LoginBaseActivity extends Activity {
 				} else {
 					if (result.hasResultData()) {
 
-						AppDialog dialog = new AppDialog(LoginBaseActivity.this, true);
+						AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
 						dialog.setFailed(result.getResultData().getMessage());
 						dialog.setOnDismissListener(new OnDismissListener() {
 

@@ -45,7 +45,7 @@
     <string name="add_members">Add members</string>
     <string name="kick_members">Kick members</string>
     <string name="clear_group">Clear group</string>
-    <string name="photo">PHOTO</string>
+    <string name="photo">Photo</string>
     <string name="submit_changes">SUBMIT</string>
     <string name="go_back">Go back</string>
     <string name="no_item_in">There are no item in the list.</string>
@@ -95,6 +95,7 @@
     <string name="gallery">Gallery</string>
     <string name="invalid_token_message">INVALID TOKEN</string>
     <string name="msg_from">You have received a message from</string>
+    <string name="no_items">No Items</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>

@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.LobbyActivity;
@@ -23,13 +27,11 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GroupLobbyFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
+	private TextView noItems;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
@@ -39,6 +41,7 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_lobby, container, false);
 
+		noItems = (TextView) view.findViewById(R.id.noItems);
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
@@ -85,6 +88,14 @@ public class GroupLobbyFragment extends Fragment implements LobbyChangedListener
 			mainListView.getRefreshableView().setSelection(0);
 
 		mainListView.onRefreshComplete();
+
+		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+			mainListView.setVisibility(View.INVISIBLE);
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			mainListView.setVisibility(View.VISIBLE);
+			noItems.setVisibility(View.GONE);
+		}
 	}
 
 	public void getLobby(int page, final boolean toClear) {

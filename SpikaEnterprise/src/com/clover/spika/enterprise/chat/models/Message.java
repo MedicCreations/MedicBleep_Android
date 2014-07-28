@@ -33,6 +33,9 @@ public class Message implements Parcelable {
 	@SerializedName("file_id")
 	private String file_id;
 
+	@SerializedName("thumb_id")
+	private String thumb_id;
+
 	@SerializedName("longitude")
 	private String longitude;
 
@@ -205,6 +208,14 @@ public class Message implements Parcelable {
 
 	public void setMe(boolean isMe) {
 		this.isMe = isMe;
+	}
+
+	public String getThumb_id() {
+		return thumb_id;
+	}
+
+	public void setThumb_id(String thumb_id) {
+		this.thumb_id = thumb_id;
 	}
 
 }

@@ -9,9 +9,11 @@ import android.os.AsyncTask;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
+@SuppressWarnings("hiding")
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
 	private static int INVALID_TOKEN_CODE = 1000;
@@ -58,15 +60,14 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	protected void onPostExecute(Result result) {
 		super.onPostExecute(result);
 
-		if (result instanceof BaseModel && ((BaseModel) result).getCode() == INVALID_TOKEN_CODE && ((BaseModel) result).getCode() == EXPIRED_TOKEN_CODE) {
+		if (result instanceof BaseModel && (((BaseModel) result).getCode() == INVALID_TOKEN_CODE || ((BaseModel) result).getCode() == EXPIRED_TOKEN_CODE)) {
 			AppDialog dialog = new AppDialog(context, false);
 			dialog.setFailed(context.getString(R.string.invalid_token_message));
 			dialog.setOnDismissListener(new OnDismissListener() {
 
 				@Override
 				public void onDismiss(DialogInterface dialog) {
-					dialog.dismiss();
-					Helper.logout((Activity) context);
+					Helper.logout(context);
 				}
 			});
 		}

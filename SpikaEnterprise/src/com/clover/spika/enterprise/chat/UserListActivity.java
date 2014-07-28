@@ -7,10 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -26,7 +27,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class UserListActivity extends BaseActivity implements OnItemClickListener, OnSearchListener {
 
-	private RelativeLayout noItemsLayout;
+	private TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public UserAdapter adapter;
@@ -45,9 +46,9 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	@Override
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		setContentView(R.layout.activity_character_list);
+		setContentView(R.layout.activity_users_list);
 
-		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
+		noItems = (TextView) findViewById(R.id.noItems);
 
 		mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
@@ -59,10 +60,7 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 
 		setSearch(this);
 
-		setScreenTitle("Users");
-
 		getUsers(mCurrentIndex, null, false);
-
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -80,7 +78,6 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	};
 
 	private void setData(List<User> data, boolean toClearPrevious) {
-		noItemsLayout.setVisibility(View.GONE);
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size(); // -2
 																										// is
 																										// because
@@ -90,6 +87,8 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 																										// footer
 																										// view
 
+		Log.d("Vida", "currentCount: " + currentCount);
+		Log.d("Vida", "mTotalCount: " + mTotalCount);
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -104,6 +103,12 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 			mainListView.getRefreshableView().setSelection(0);
 
 		mainListView.onRefreshComplete();
+
+		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			noItems.setVisibility(View.GONE);
+		}
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {

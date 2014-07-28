@@ -62,7 +62,7 @@ public class GroupAdapter extends BaseAdapter {
 		// Assign values
 		final Group group = (Group) getItem(position);
 
-		imageLoader.displayImage(cntx, group.getImage(), holder.talkImg, false);
+		imageLoader.displayImage(cntx, group.getImage_thumb(), holder.talkImg, false);
 		// holder.talkImg.setImageResource(R.drawable.skiper);
 
 		holder.talkName.setText(group.getGroupName());
@@ -90,8 +90,8 @@ public class GroupAdapter extends BaseAdapter {
 				String[] groupData = (String[]) view.getTag();
 
 				Intent intent = new Intent(cntx, ChatActivity.class);
-				intent.putExtra(Const.CHAT_ID, groupData[0]);
-				intent.putExtra(Const.CHAT_NAME, groupData[1]);
+				intent.putExtra(Const.USER_ID, groupData[0]);
+				intent.putExtra(Const.FIRSTNAME, groupData[1]);
 				intent.putExtra(Const.IS_GROUP, true);
 				((Activity) cntx).startActivity(intent);
 			}

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -46,7 +47,8 @@ public class LocationActivity extends BaseActivity {
 	private double latitude = 0;
 	private double longitude = 0;
 
-	private EditText locationAddress;
+	private ImageButton goBack;
+	private TextView locationAddress;
 	private ImageButton sendLocation;
 
 	@Override
@@ -59,8 +61,16 @@ public class LocationActivity extends BaseActivity {
 			return;
 		}
 
-		locationAddress = (EditText) findViewById(R.id.locationAddress);
-		locationAddress.setEnabled(false);
+		goBack = (ImageButton) findViewById(R.id.goBack);
+		goBack.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+
+		locationAddress = (TextView) findViewById(R.id.locationAddress);
 		sendLocation = (ImageButton) findViewById(R.id.sendLocation);
 
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -77,7 +87,7 @@ public class LocationActivity extends BaseActivity {
 			latitude = extras.getDouble(Const.LATITUDE);
 			longitude = extras.getDouble(Const.LONGITUDE);
 
-			sendLocation.setVisibility(View.GONE);
+			sendLocation.setVisibility(View.INVISIBLE);
 
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
 			markerOfUser = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue));

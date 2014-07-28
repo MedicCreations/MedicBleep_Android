@@ -41,6 +41,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private RobotoThinTextView screenTitle;
 	private RoundImageView partnerIcon;
+	private TextView noItems;
 
 	private Button photo;
 	private Button gallery;
@@ -78,6 +79,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
+		noItems = (TextView) findViewById(R.id.noItems);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(this);
@@ -257,6 +259,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 								dialog.setFailed("");
 							}
 						}
+
+						setNoItemsVisibility();
 					}
 				});
 			}
@@ -384,7 +388,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 
-				// res
 				isRunning = false;
 
 				if (result.isSuccess()) {
@@ -416,8 +419,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 						}
 					}
 				}
+
+				setNoItemsVisibility();
 			}
 		});
+	}
+
+	private void setNoItemsVisibility() {
+		if (adapter.getCount() == 0) {
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			noItems.setVisibility(View.GONE);
+		}
 	}
 
 }

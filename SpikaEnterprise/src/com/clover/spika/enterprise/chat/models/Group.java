@@ -5,71 +5,83 @@ import com.google.gson.annotations.SerializedName;
 
 public class Group {
 
-    @SerializedName("id")
-    @Expose
-    private int id;
+	@SerializedName("id")
+	@Expose
+	private int id;
 
-    @SerializedName("groupname")
-    @Expose
-    private String groupName;
+	@SerializedName("groupname")
+	@Expose
+	private String groupName;
 
-    @SerializedName("image")
-    @Expose
-    private String image;
+	@SerializedName("image")
+	@Expose
+	private String image;
 
-    public int getId() {
-        return id;
-    }
+	@SerializedName("image_thumb")
+	@Expose
+	private String image_thumb;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public String getGroupName() {
-        return groupName == null ? "" : groupName;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
+	public String getGroupName() {
+		return groupName == null ? "" : groupName;
+	}
 
-    public String getImage() {
-        return image == null ? "" : image;
-    }
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
 
-    public void setImage(String image) {
-        this.image = image;
-    }
+	public String getImage() {
+		return image == null ? "" : image;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public void setImage(String image) {
+		this.image = image;
+	}
 
-        Group group = (Group) o;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
-        if (id != group.id) return false;
-        if (groupName != null ? !groupName.equals(group.groupName) : group.groupName != null)
-            return false;
-        if (image != null ? !image.equals(group.image) : group.image != null) return false;
+		Group group = (Group) o;
 
-        return true;
-    }
+		if (id != group.id)
+			return false;
+		if (groupName != null ? !groupName.equals(group.groupName) : group.groupName != null)
+			return false;
+		if (image != null ? !image.equals(group.image) : group.image != null)
+			return false;
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
-        result = 31 * result + (image != null ? image.hashCode() : 0);
-        return result;
-    }
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", groupName='" + groupName + '\'' +
-                ", image='" + image + '\'' +
-                '}';
-    }
+	@Override
+	public int hashCode() {
+		int result = id;
+		result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
+		result = 31 * result + (image != null ? image.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "Group{" + "id=" + id + ", groupName='" + groupName + '\'' + ", image='" + image + '\'' + '}';
+	}
+
+	public String getImage_thumb() {
+		return image_thumb;
+	}
+
+	public void setImage_thumb(String image_thumb) {
+		this.image_thumb = image_thumb;
+	}
 }

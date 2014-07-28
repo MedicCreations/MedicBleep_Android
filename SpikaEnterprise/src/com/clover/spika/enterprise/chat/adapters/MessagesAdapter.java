@@ -141,10 +141,10 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
-				if (!msg.getFile_id().equals((String) holder.meViewImage.getTag())) {
-					holder.meViewImage.setTag(msg.getFile_id());
+				if (!msg.getThumb_id().equals((String) holder.meViewImage.getTag())) {
+					holder.meViewImage.setTag(msg.getThumb_id());
 					holder.meViewImage.setImageDrawable(null);
-					imageLoader.getBitmapAsync(ctx, msg.getFile_id(), holder.meViewImage);
+					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.meViewImage);
 				}
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
@@ -211,10 +211,10 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
-				if (!msg.getFile_id().equals((String) holder.youViewImage.getTag())) {
-					holder.youViewImage.setTag(msg.getFile_id());
+				if (!msg.getThumb_id().equals((String) holder.youViewImage.getTag())) {
+					holder.youViewImage.setTag(msg.getThumb_id());
 					holder.youViewImage.setImageDrawable(null);
-					imageLoader.getBitmapAsync(ctx, msg.getFile_id(), holder.youViewImage);
+					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.youViewImage);
 				}
 
 				holder.youViewImage.setVisibility(View.VISIBLE);

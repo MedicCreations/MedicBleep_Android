@@ -5,18 +5,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 public class PhotoActivity extends BaseActivity {
 
 	ImageButton goBack;
 	RelativeLayout imageLayout;
-	ImageView mImageView;
+	CroppedImageView mImageView;
 
 	String imageUrl;
 
@@ -25,7 +25,7 @@ public class PhotoActivity extends BaseActivity {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_photo);
 		disableSidebar();
-		
+
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new OnClickListener() {
 
@@ -36,7 +36,8 @@ public class PhotoActivity extends BaseActivity {
 		});
 
 		imageLayout = (RelativeLayout) findViewById(R.id.imageLayout);
-		mImageView = (ImageView) findViewById(R.id.mImageView);
+		mImageView = (CroppedImageView) findViewById(R.id.mImageView);
+		mImageView.setDrawingCacheEnabled(true);
 
 		onNewIntent(getIntent());
 	}
@@ -52,4 +53,5 @@ public class PhotoActivity extends BaseActivity {
 			imageLoader.displayImage(this, imageUrl, mImageView, false);
 		}
 	}
+
 }

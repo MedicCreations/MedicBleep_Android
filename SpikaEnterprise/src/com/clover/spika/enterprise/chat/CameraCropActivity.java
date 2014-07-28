@@ -506,36 +506,8 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 					canvas.drawBitmap(tempBitmap, middleX - tempBitmap.getWidth() / 2, middleY - tempBitmap.getHeight() / 2, null);
 
 					mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), mat, true);
-					// } else {
-					// Bitmap tempBitmap = BitmapFactory.decodeStream(new
-					// FileInputStream(f), null, optionsMeta);
-					// mBitmap = Bitmap.createBitmap(actualWidth, actualHeight,
-					// Bitmap.Config.ARGB_4444);
-					//
-					// float ratioX = actualWidth / (float)
-					// optionsMeta.outWidth;
-					// float ratioY = actualHeight / (float)
-					// optionsMeta.outHeight;
-					// float middleX = actualWidth / 2.0f;
-					// float middleY = actualHeight / 2.0f;
-					//
-					// Matrix scaleMatrix = new Matrix();
-					// scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-					//
-					// Canvas canvas = new Canvas(mBitmap);
-					// canvas.setMatrix(scaleMatrix);
-					// canvas.drawBitmap(tempBitmap, middleX -
-					// tempBitmap.getWidth() / 2, middleY -
-					// tempBitmap.getHeight() / 2, new
-					// Paint(Paint.FILTER_BITMAP_FLAG));
-					//
-					// mBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
-					// mBitmap.getWidth(), mBitmap.getHeight(), mat, true);
-					// }
 
 					return null;
-					// } catch (OutOfMemoryError error) {
-					// mBitmap = null;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 					mBitmap = null;

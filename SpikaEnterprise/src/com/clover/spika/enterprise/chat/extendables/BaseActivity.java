@@ -186,13 +186,6 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
 
-	public void setScreenTitle(String title) {
-		if (screenTitle == null)
-			screenTitle = (TextView) findViewById(R.id.screenTitle);
-		if (screenTitle != null)
-			screenTitle.setText(title);
-	}
-
 	public void setSearch(OnSearchListener listener) {
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
@@ -278,8 +271,6 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage) {
-
-		// TODO onClick to chat
 
 		if (isPushShowing) {
 			Push push = new Push();

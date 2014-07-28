@@ -8,8 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -22,22 +21,22 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class GroupListActivity extends BaseActivity implements OnClickListener, OnSearchListener {
+public class GroupListActivity extends BaseActivity implements OnSearchListener {
 
-	RelativeLayout noItemsLayout;
+	TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public GroupAdapter adapter;
-	
+
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
-	
+
 	public static void openGroups(Context context) {
-        Intent intent = new Intent(context, GroupListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.startActivity(intent);
-    }
+		Intent intent = new Intent(context, GroupListActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intent);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -45,7 +44,7 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_group_list);
 
-		noItemsLayout = (RelativeLayout) findViewById(R.id.noItemsLayout);
+		noItems = (TextView) findViewById(R.id.noItems);
 
 		mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
@@ -53,20 +52,17 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		setSearch(this);
-		
-		setScreenTitle("Groups");
-		
+
 		getGroup(mCurrentIndex, null, false);
-		
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
 		@Override
 		public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-//			mCurrentIndex--; don't need this for now
+			// mCurrentIndex--; don't need this for now
 		}
 
 		@Override
@@ -75,43 +71,57 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 			getGroup(mCurrentIndex, mSearchData, false);
 		}
 	};
-	
-	private void setData(List<Group> data, boolean toClearPrevious){
-		noItemsLayout.setVisibility(View.GONE);
-		int currentCount = mainListView.getRefreshableView().getAdapter().getCount()-2+data.size(); // -2 is because of header and footer view
-		
-		if(currentCount >= mTotalCount){
+
+	private void setData(List<Group> data, boolean toClearPrevious) {
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size(); // -2
+																										// is
+																										// because
+																										// of
+																										// header
+																										// and
+																										// footer
+																										// view
+
+		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		}else if(currentCount < mTotalCount){
+		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
-		
-		if(toClearPrevious) adapter.clearItems();
+
+		if (toClearPrevious)
+			adapter.clearItems();
 		adapter.addItems(data);
-		if(toClearPrevious) mainListView.getRefreshableView().setSelection(0);
-		
+		if (toClearPrevious)
+			mainListView.getRefreshableView().setSelection(0);
+
 		mainListView.onRefreshComplete();
+
+		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			noItems.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 	}
-	
+
 	public void getGroup(int page, String search, final boolean toClear) {
-		GroupsApi groupApi=new GroupsApi();
-		if(search == null){
+		GroupsApi groupApi = new GroupsApi();
+		if (search == null) {
 			groupApi.getGroupsWithPage(mCurrentIndex, this, true, new ApiCallback<GroupsList>() {
-				
+
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
 					setData(result.getResultData().getGroupList(), toClear);
 				}
 			});
-		}else{
+		} else {
 			groupApi.getGroupsByName(mCurrentIndex, search, this, true, new ApiCallback<GroupsList>() {
-				
+
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
 					mTotalCount = result.getResultData().getTotalCount();
@@ -122,15 +132,11 @@ public class GroupListActivity extends BaseActivity implements OnClickListener, 
 	}
 
 	@Override
-	public void onClick(View view) {
-	}
-
-	@Override
 	public void onSearch(String data) {
 		mCurrentIndex = 0;
-		if(TextUtils.isEmpty(data)){
+		if (TextUtils.isEmpty(data)) {
 			mSearchData = null;
-		}else{
+		} else {
 			mSearchData = data;
 		}
 		getGroup(mCurrentIndex, mSearchData, true);

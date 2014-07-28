@@ -508,11 +508,12 @@ public class Helper {
 		return (int) Math.ceil(dp * logicalDensity);
 	}
 
-	public static void logout(Context ac) {
-		Intent logoutIntent = new Intent(ac, LoginActivity.class);
+	public static void logout(Context ctx) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
+		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-		ac.startActivity(logoutIntent);
-		((Activity) ac).finish();
+		ctx.startActivity(logoutIntent);
+		((Activity) ctx).finish();
 	}
 
 }

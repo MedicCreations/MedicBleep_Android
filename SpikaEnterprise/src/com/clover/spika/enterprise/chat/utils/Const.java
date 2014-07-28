@@ -83,6 +83,8 @@ public class Const {
 	public static final String IMAGE = "image";
 	public static final String IMAGE_THUMB = "image_thumb";
 	public static final String USER_ID = "user_id";
+	public static final String GROUP_ID = "group_id";
+	public static final String GROUP_NAME = "groupname";
 	public static final String FIRSTNAME = "firstname";
 	public static final String LASTNAME = "lastname";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";

@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/title_lobby"
+            android:text="@string/groups"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 
@@ -68,39 +68,14 @@
         android:listSelector="@color/transparent"
         android:scrollbars="none" />
 
-    <RelativeLayout
-        android:id="@+id/noItemsLayout"
-        android:layout_width="match_parent"
+    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        android:id="@+id/noItems"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/actionBarLayout"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp" >
-
-        <TextView
-            android:id="@+id/noItemsTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_items_1"
-            android:textColor="@color/white"
-            android:textSize="25sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/noItemsTop"
-            android:text="@string/no_items_2"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="5dp"
-            android:contentDescription="@null" />
-    </RelativeLayout>
+        android:layout_centerInParent="true"
+        android:text="@string/no_items"
+        android:textColor="@color/default_blue"
+        android:textSize="30sp"
+        android:visibility="gone" />
 
 </RelativeLayout>
