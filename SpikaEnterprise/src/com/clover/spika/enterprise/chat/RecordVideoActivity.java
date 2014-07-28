@@ -237,7 +237,7 @@ public class RecordVideoActivity extends BaseActivity {
 				if (videoDuration != 0 && videoDuration > Const.MAX_RECORDING_TIME_VIDEO * 1000) {
 
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
-					dialog.setFailed(getResources().getString(R.string.e_video_to_long));
+					dialog.setFailed(getResources().getString(R.string.e_record_time_to_long));
 				}
 			}
 		}, 100);

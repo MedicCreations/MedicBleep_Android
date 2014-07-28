@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -37,9 +36,6 @@ import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
-	
-	//XXX Monday work
-	public static Activity instance;
 
 	private ImageLoader imageLoader;
 
@@ -133,6 +129,41 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		getIntentData(getIntent());
 	}
 
+	@Override
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
+		getFromPush(msg, chatIdPush, chatName, chatImage);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		forceClose();
+
+		loadImage();
+
+		if (isResume) {
+			if (adapter.getCount() > 0) {
+				getMessages(false, false, false, true, false, true);
+			} else {
+				getMessages(true, true, true, false, false, true);
+			}
+		} else {
+			isResume = true;
+		}
+
+		adapter.notifyDataSetChanged();
+	}
+
+	private void loadImage() {
+		if (!TextUtils.isEmpty(chatImage)) {
+			partnerIcon.setVisibility(View.VISIBLE);
+			imageLoader.displayImage(this, chatImage, partnerIcon, false);
+		} else {
+			partnerIcon.setVisibility(View.INVISIBLE);
+		}
+	}
+
 	private void forceClose() {
 		if (rlDrawer.isSelected()) {
 			rlDrawerManage();
@@ -174,34 +205,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			main_list_view.setLayoutParams(params);
 			AnimUtils.translationY(main_list_view, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		
-		instance = this;
-
-		forceClose();
-
-		if (!TextUtils.isEmpty(chatImage)) {
-			partnerIcon.setVisibility(View.VISIBLE);
-			imageLoader.displayImage(this, chatImage, partnerIcon, false);
-		} else {
-			partnerIcon.setVisibility(View.INVISIBLE);
-		}
-
-		if (isResume) {
-			if (adapter.getCount() > 0) {
-				getMessages(false, false, false, true, false, true);
-			} else {
-				getMessages(true, true, true, false, false, true);
-			}
-		} else {
-			isResume = true;
-		}
-
-		adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -257,6 +260,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					}
 				});
 			}
+
+			loadImage();
 		}
 	}
 
@@ -334,11 +339,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		});
 	}
 
-	public void getFromPush(String msg, String chatIdPush) {
+	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage) {
 		if (chatIdPush.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
 		} else {
-			showPopUp(msg, chatId);
+			showPopUp(msg, chatIdPush, chatName, chatImage);
 		}
 	}
 
@@ -413,13 +418,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				}
 			}
 		});
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		instance = null;
 	}
 
 }

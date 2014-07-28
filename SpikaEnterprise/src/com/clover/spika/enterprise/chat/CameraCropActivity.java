@@ -205,7 +205,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			} else {
 
 				AppDialog dialog = new AppDialog(this, true);
-				dialog.setFailed(getResources().getString(R.string.e_something_went_wrong_again));
+				dialog.setFailed(getResources().getString(R.string.e_something_went_wrong));
 			}
 		}
 	}

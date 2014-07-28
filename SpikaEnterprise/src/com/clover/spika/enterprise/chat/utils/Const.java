@@ -45,6 +45,7 @@ public class Const {
 	public static final String ANONYMOUS_INTENT = "AnnonymousIntent";
 	public static final String FROM_WAll = "FromWall";
 	public static final String FROM_NOTIFICATION = "FromNotification";
+	public static final String PUSH_INTENT_ACTION = "PushIntentAction";
 
 	// Recording constants
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds
@@ -62,8 +63,10 @@ public class Const {
 	public static final String FIRST_MSG_ID = "first_msg_id";
 	public static final String MESSAGES = "messages";
 	public static final String MESSAGE_ID = "message_id";
+	public static final String PUSH_MESSAGE = "PushMessage";
 	public static final String FILE_ID = "file_id";
 	public static final String THUMB_ID = "thumb_id";
+	public static final String PUSH_CHAT_THUMB = "chat_thumb";
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
 	public static final String FILE = "file";

@@ -1,11 +1,14 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -30,6 +33,7 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
+import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -37,13 +41,7 @@ import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BaseActivity extends SlidingFragmentActivity {
-
-	// XXX Monday work
-	public static Activity instance;
+public abstract class BaseActivity extends SlidingFragmentActivity {
 
 	private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 
@@ -67,6 +65,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private int screenWidth;
 	private int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	private OnSearchListener mSearchListener;
+
+	public PushBroadcastReceiver myPushRecevier;
+	public IntentFilter intentFilter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -94,14 +95,32 @@ public class BaseActivity extends SlidingFragmentActivity {
 			intent.putExtras(getIntent().getExtras());
 			startActivity(intent);
 		}
+
+		myPushRecevier = new PushBroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+
+				String message = intent.getExtras().getString(Const.PUSH_MESSAGE);
+				String chatId = intent.getExtras().getString(Const.CHAT_ID);
+				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
+				String chatImage = intent.getExtras().getString(Const.IMAGE);
+
+				pushCall(message, chatId, chatName, chatImage);
+			}
+		};
+		intentFilter = new IntentFilter(Const.PUSH_INTENT_ACTION);
+	}
+
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
+		showPopUp(msg, chatIdPush, chatName, chatImage);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		// XXX
-		instance = this;
+		registerReceiver(myPushRecevier, intentFilter);
 
 		// passcode callback injected methods are important for tracking active
 		// session
@@ -117,8 +136,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onPause() {
 		super.onPause();
 
-		// XXX
-		instance = null;
+		unregisterReceiver(myPushRecevier);
+
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();
@@ -258,12 +277,16 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	}
 
-	public void showPopUp(final String msg, final String chatId) {
+	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage) {
+
+		// TODO onClick to chat
 
 		if (isPushShowing) {
 			Push push = new Push();
 			push.setId(chatId);
 			push.setMessage(msg);
+			push.setChatName(chatName);
+			push.setChatImage(chatImage);
 
 			qPush.add(push);
 
@@ -284,6 +307,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 			protected void onPostExecute(Integer result) {
 				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content).getRootView());
 				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, null);
+
+				view.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(context, ChatActivity.class);
+						intent.putExtra(Const.CHAT_ID, chatId);
+						intent.putExtra(Const.CHAT_NAME, chatName);
+						intent.putExtra(Const.IMAGE, chatImage);
+						startActivity(intent);
+					}
+				});
+
 				TextView text = (TextView) view.findViewById(R.id.msgPop);
 				text.setText(msg);
 
@@ -348,7 +384,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage());
 							qPush.remove(0);
 						}
 					}

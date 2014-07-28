@@ -34,12 +34,12 @@ public class UserListActivity extends BaseActivity implements OnItemClickListene
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
-	
+
 	public static void openUsers(Context context) {
-        Intent intent = new Intent(context, UserListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        context.startActivity(intent);
-    }
+		Intent intent = new Intent(context, UserListActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intent);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

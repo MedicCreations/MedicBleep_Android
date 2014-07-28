@@ -105,7 +105,7 @@ public class RecordAudioActivity extends BaseActivity {
 			}
 
 			public void onFinish() {
-				new AppDialog(RecordAudioActivity.this, false).setInfo(getResources().getString(R.string.e_exceed_voice_duration));
+				new AppDialog(RecordAudioActivity.this, false).setInfo(getResources().getString(R.string.e_record_time_to_long));
 				onRecord(false);
 			}
 
