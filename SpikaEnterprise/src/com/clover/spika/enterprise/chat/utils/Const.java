@@ -46,6 +46,7 @@ public class Const {
 	public static final String FROM_WAll = "FromWall";
 	public static final String FROM_NOTIFICATION = "FromNotification";
 	public static final String PUSH_INTENT_ACTION = "PushIntentAction";
+	public static final String CHANGE_PASSCODE_INTENT = "ChangePasscodeIntent";
 
 	// Recording constants
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds

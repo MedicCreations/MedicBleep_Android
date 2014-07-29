@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 
 public class PasscodeActivity extends NewPasscodeActivity {
@@ -22,7 +23,14 @@ public class PasscodeActivity extends NewPasscodeActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (PasscodeUtility.getInstance().isSessionValid()) {
+
+		Bundle extras = getIntent().getExtras();
+		boolean isToOff = false;
+		if (extras != null) {
+			isToOff = extras.getBoolean(Const.CHANGE_PASSCODE_INTENT, false);
+		}
+
+		if (PasscodeUtility.getInstance().isSessionValid() && !isToOff) {
 			finish();
 		}
 	}

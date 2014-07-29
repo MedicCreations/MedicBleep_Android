@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -70,6 +71,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
+		Log.d("Vida", "onActivityResult");
+
 		if (REQUEST_NEW_PASSCODE == requestCode) {
 			if (RESULT_OK == resultCode) {
 				PasscodeUtility.getInstance().setSessionValid(true);
@@ -88,6 +91,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 				PasscodeUtility.getInstance().setPasscode(this, "");
 				PasscodeUtility.getInstance().setSessionValid(true);
 			} else {
+				Log.d("Vida", "HERE");
 				PasscodeUtility.getInstance().setSessionValid(true);
 				mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
 			}
@@ -137,12 +141,14 @@ public class ProfileActivity extends BaseActivity implements OnClickListener {
 	}
 
 	private void onCheckedChanged(boolean isChecked) {
+		Log.d("Vida", "isChecked: " + isChecked);
 		if (isChecked) {
 			startActivityForResult(new Intent(this, NewPasscodeActivity.class), REQUEST_NEW_PASSCODE);
 		} else {
 			/* Current passcode has to be checked before it can be removed */
-			startActivityForResult(new Intent(this, PasscodeActivity.class), REQUEST_REMOVE_PASSCODE);
+			Intent intent = new Intent(this, PasscodeActivity.class);
+			intent.putExtra(Const.CHANGE_PASSCODE_INTENT, true);
+			startActivityForResult(intent, REQUEST_REMOVE_PASSCODE);
 		}
 	}
-
 }
