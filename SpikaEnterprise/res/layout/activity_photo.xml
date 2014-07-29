@@ -56,8 +56,6 @@
             android:id="@+id/mImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_vertical|center_horizontal"
             android:scaleType="matrix" />
     </RelativeLayout>
 

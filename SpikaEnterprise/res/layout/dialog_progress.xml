@@ -15,7 +15,7 @@
         android:paddingRight="30dp"
         android:paddingTop="20dp" >
 
-        <TextView
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/procTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <TextView
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/dot1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <TextView
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/dot2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <TextView
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/dot3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

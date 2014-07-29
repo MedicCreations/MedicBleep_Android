@@ -10,15 +10,15 @@
         android:layout_centerInParent="true"
         android:background="@color/white" >
 
-        <TextView
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/infoText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/controlLayout"
             android:layout_alignParentTop="true"
-            android:gravity="center"
             android:layout_centerInParent="true"
             android:layout_margin="20dp"
+            android:gravity="center"
             android:textColor="@color/green"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -32,7 +32,7 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical" >
 
-            <TextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

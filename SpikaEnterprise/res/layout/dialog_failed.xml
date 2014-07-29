@@ -10,43 +10,32 @@
         android:layout_centerInParent="true"
         android:background="@color/white" >
 
-        <ImageView
-            android:id="@+id/bgImageFailed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@null"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:src="@drawable/gb_alert_failed" />
-
         <RelativeLayout
             android:id="@+id/rlDataMessAndButton"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/bgImageFailed"
-            android:layout_alignLeft="@id/bgImageFailed"
-            android:layout_alignRight="@id/bgImageFailed"
-            android:layout_alignTop="@id/bgImageFailed"
             android:gravity="center" >
 
-            <TextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/alertText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:padding="5dp"
                 android:text="@string/failed"
                 android:textColor="@color/red"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
-            <TextView
+            <com.clover.spika.enterprise.chat.views.RobotoThinTextView
                 android:id="@+id/failedDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:layout_below="@id/alertText"
                 android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:padding="5dp"
                 android:textColor="@color/text_blue"
-                android:textSize="12sp" />
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:id="@+id/btnOk"
@@ -54,9 +43,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/failedDescription"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical" >
 
-                <TextView
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"

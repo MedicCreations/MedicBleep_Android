@@ -402,6 +402,12 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
+	@Override
+	public void finish() {
+		super.finish();
+		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	}
+
 	public void hideKeyboard(View et) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
