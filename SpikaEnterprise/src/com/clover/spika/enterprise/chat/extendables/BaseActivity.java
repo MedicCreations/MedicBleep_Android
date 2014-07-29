@@ -74,21 +74,8 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		setBehindContentView(R.layout.sidebar_layout_empty);
-
 		// set the Behind View Fragment
 		getFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
-
-		screenWidth = getResources().getDisplayMetrics().widthPixels;
-
-		slidingMenu = getSlidingMenu();
-		slidingMenu.setMode(SlidingMenu.LEFT);
-		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
-		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-		slidingMenu.setBehindScrollScale(0.35f);
-		slidingMenu.setShadowDrawable(null);
-		slidingMenu.setFadeDegree(0.35f);
-		// Value 950 is not used, library method has been changed
-		slidingMenu.setBehindWidth(80);
 
 		if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 			Intent intent = new Intent(this, ChatActivity.class);
@@ -96,6 +83,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 			startActivity(intent);
 		}
 
+		intentFilter = new IntentFilter(Const.PUSH_INTENT_ACTION);
 		myPushRecevier = new PushBroadcastReceiver() {
 
 			@Override
@@ -109,7 +97,18 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 				pushCall(message, chatId, chatName, chatImage);
 			}
 		};
-		intentFilter = new IntentFilter(Const.PUSH_INTENT_ACTION);
+
+		screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+		slidingMenu = getSlidingMenu();
+		slidingMenu.setMode(SlidingMenu.LEFT);
+		slidingMenu.setTouchModeBehind(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingMenu.setBehindScrollScale(0.35f);
+		slidingMenu.setShadowDrawable(null);
+		slidingMenu.setFadeDegree(0.35f);
+		// Value 950 is not used, library method has been changed
+		slidingMenu.setBehindWidth(80);
 	}
 
 	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {

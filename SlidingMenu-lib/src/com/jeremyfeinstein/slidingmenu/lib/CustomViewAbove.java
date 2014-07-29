@@ -34,11 +34,11 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenedListener;
 public class CustomViewAbove extends ViewGroup {
 
 	private static final String TAG = "CustomViewAbove";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
-	private static final boolean USE_CACHE = false;
+	private static final boolean USE_CACHE = true;
 
-	private static final int MAX_SETTLE_DURATION = 600; // ms
+	private static final int MAX_SETTLE_DURATION = 500; // ms
 	private static final int MIN_DISTANCE_FOR_FLING = 25; // dips
 
 	private static final Interpolator sInterpolator = new Interpolator() {

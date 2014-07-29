@@ -167,30 +167,6 @@ public class ImageLoader {
 
 			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
 
-			// TODO this needs to be fixed
-			// try {
-			// InputStream isCheck = is;
-			//
-			// String resString = NetworkManagement.getString(isCheck);
-			//
-			// Logger.info("Image not downloaded : " + resString);
-			//
-			// JSONObject res = Helper.jObjectFromString(resString);
-			//
-			// isCheck = null;
-			//
-			// int code = res.getInt(Const.CODE);
-			//
-			// if (code != Const.E_SUCCESS) {
-			// Logger.info("Image not downloaded : " + res.toString(2));
-			// } else {
-			// Logger.info("Image not downloaded : " + res.toString(2));
-			// }
-			// } catch (Exception ex) {
-			// ex.printStackTrace();
-			// // do nothing - image downloaded
-			// }
-
 			// Constructs a new FileOutputStream that writes to file
 			// if file not exist then it will create file
 			OutputStream os = new FileOutputStream(f);
@@ -266,8 +242,6 @@ public class ImageLoader {
 
 			protected void onPostExecute(Bitmap result) {
 				if (result != null) {
-//					RoundedCornersImage drawable = new RoundedCornersImage(result);
-//					imageView.setImageDrawable(drawable);
 					imageView.setImageBitmap(result);
 				}
 			};

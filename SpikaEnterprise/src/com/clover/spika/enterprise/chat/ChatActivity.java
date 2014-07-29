@@ -398,7 +398,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					totalItems = Integer.valueOf(chat.getTotal_count());
 					adapter.setTotalCount(totalItems);
-
+					
 					if (!isRefresh) {
 						if (isClear || isSend) {
 							main_list_view.setSelectionFromTop(adapter.getCount(), 0);

@@ -330,7 +330,7 @@ public class RecordVideoActivity extends BaseActivity {
 
 	private String getVideoPath(Uri uri) {
 		String[] projection = { MediaStore.Video.Media.DATA };
-		Cursor cursor = managedQuery(uri, projection, null, null, null);
+		Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
 		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
