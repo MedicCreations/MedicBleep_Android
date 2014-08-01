@@ -72,6 +72,7 @@
     <string name="no_network_connection">You do not have a connection to the internet.</string>
     <string name="e_google_play_error">Google Play Services error.</string>
     <string name="e_error_while_logout">Unable to logout, please try again.</string>
+    <string name="e_error_not_decrypted">Message has not been decrypted!</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>
@@ -96,6 +97,12 @@
     <string name="invalid_token_message">INVALID TOKEN</string>
     <string name="msg_from">You have received a message from</string>
     <string name="no_items">No Items</string>
+    <string name="file_download">File</string>
+    <string name="file_download_started">File download started&#8230;</string>
+    <string name="download_in_progress">Download in progress&#8230;</string>
+    <string name="download_complete">Download complete</string>
+    <string name="download_failed">Download failed&#8230;</string>
+    <string name="open">OPEN</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>

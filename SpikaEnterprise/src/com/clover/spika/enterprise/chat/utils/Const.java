@@ -33,6 +33,8 @@ public class Const {
 
 	// App directiry
 	public static final String APP_FILES_DIRECTORY = "SpikaEnterprise/";
+	public static final String APP_LAZY_LIST = "LazyList";
+	public static final String APP_FILED_DOWNLOADS = "Downloads";
 
 	// Intent const
 	public static final String PROFILE_INTENT = "profileIntent";
@@ -95,6 +97,7 @@ public class Const {
 	public static final int MSG_TYPE_VIDEO = 3;
 	public static final int MSG_TYPE_LOCATION = 4;
 	public static final int MSG_TYPE_VOICE = 5;
+	public static final int MSG_TYPE_FILE = 6;
 
 	// Lobby
 	public static final int ALL_TYPE = 0;

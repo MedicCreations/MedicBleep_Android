@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.lazy;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,6 +15,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.http.util.ByteArrayBuffer;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,8 +26,10 @@ import android.widget.ImageView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ImageLoader {
 
@@ -204,29 +209,49 @@ public class ImageLoader {
 
 			protected Bitmap doInBackground(Void... params) {
 
+				// TODO encryption must be done
 				// Download image file from web
+				// from cache
+				// Bitmap localBitmap = decodeFile(file);
 				try {
 
-					// from cache
-					Bitmap localBitmap = decodeFile(file);
+					String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
+					Bitmap localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
 					if (localBitmap != null) {
 						return localBitmap;
 					}
 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				try {
 					Bitmap bitmap = null;
 
 					HashMap<String, String> getParams = new HashMap<String, String>();
 					getParams.put(Const.FILE_ID, url);
 
 					InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
-					OutputStream os = new FileOutputStream(file);
 
-					Helper.copyStream(is, os);
+					BufferedInputStream bis = new BufferedInputStream(is);
 
+					ByteArrayBuffer baf = new ByteArrayBuffer(20000);
+					int current = 0;
+					while ((current = bis.read()) != -1) {
+						baf.append((byte) current);
+					}
+
+					/* Convert the Bytes read to a String. */
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(baf.toByteArray());
+					fos.flush();
+					fos.close();
 					is.close();
-					os.close();
 
-					bitmap = decodeFile(file);
+					// TODO
+					String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
+					bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
+					// bitmap = decodeFile(file);
 
 					return bitmap;
 

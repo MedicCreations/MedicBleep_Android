@@ -29,8 +29,10 @@ import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.VoiceActivity;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSorting;
@@ -117,6 +119,9 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meViewLocation.setVisibility(View.GONE);
 		holder.youViewLocation.setVisibility(View.GONE);
 
+		holder.meFileLayout.setVisibility(View.GONE);
+		holder.youFileLayout.setVisibility(View.GONE);
+
 		holder.loading_bar.setVisibility(View.GONE);
 
 		// Assign values
@@ -191,6 +196,18 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
+			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
+
+				holder.meFileLayout.setVisibility(View.VISIBLE);
+				holder.meFileName.setText(msg.getText());
+				holder.meDownloadFile.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+					}
+				});
+
 			}
 		} else {
 			// Chat member messages, not mine
@@ -264,6 +281,18 @@ public class MessagesAdapter extends BaseAdapter {
 						Intent intent = new Intent(ctx, VoiceActivity.class);
 						intent.putExtra(Const.FILE_ID, msg.getFile_id());
 						ctx.startActivity(intent);
+					}
+				});
+
+			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
+
+				holder.youFileLayout.setVisibility(View.VISIBLE);
+				holder.youFileName.setText(msg.getText());
+				holder.youDownloadFile.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
 					}
 				});
 
@@ -346,26 +375,35 @@ public class MessagesAdapter extends BaseAdapter {
 	public void addItems(List<Message> newItems, boolean isNew) {
 
 		if (isNew) {
+			Message msg;
 			for (int i = 0; i < newItems.size(); i++) {
 				boolean isFound = false;
 				for (int j = 0; j < data.size(); j++) {
 					if (newItems.get(i).getId().equals(data.get(j).getId())) {
 						isFound = true;
 						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
-							newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
+							msg = newItems.get(i);
+							msg.setMe(isMe(newItems.get(i).getUser_id()));
+							msg = decryptContent(newItems.get(i));
 							data.set(j, newItems.get(i));
 						}
 					}
 				}
 
 				if (!isFound) {
-					newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
-					data.add(newItems.get(i));
+					msg = newItems.get(i);
+					msg.setMe(isMe(newItems.get(i).getUser_id()));
+					msg = decryptContent(newItems.get(i));
+					data.add(msg);
 				}
 			}
 		} else {
+			Message msg;
 			for (int i = 0; i < newItems.size(); i++) {
-				newItems.get(i).setMe(isMe(newItems.get(i).getUser_id()));
+				msg = newItems.get(i);
+				msg.setMe(isMe(newItems.get(i).getUser_id()));
+				msg = decryptContent(newItems.get(i));
+				newItems.set(i, msg);
 			}
 			data.addAll(newItems);
 		}
@@ -373,6 +411,44 @@ public class MessagesAdapter extends BaseAdapter {
 		Collections.sort(data, new MessageSorting());
 		addSeparatorDate();
 		this.notifyDataSetChanged();
+	}
+
+	private Message decryptContent(Message msg) {
+
+		if (msg.getType() != Const.MSG_TYPE_DEFAULT && msg.getType() != Const.MSG_TYPE_LOCATION) {
+			return msg;
+		}
+
+		switch (msg.getType()) {
+
+		case Const.MSG_TYPE_DEFAULT:
+
+			try {
+				msg.setText(JNAesCrypto.decryptJN(msg.getText()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+			}
+
+			break;
+
+		case Const.MSG_TYPE_LOCATION:
+
+			try {
+				msg.setLongitude(JNAesCrypto.decryptJN(msg.getLongitude()));
+				msg.setLatitude(JNAesCrypto.decryptJN(msg.getLatitude()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+			}
+
+			break;
+
+		default:
+			break;
+		}
+
+		return msg;
 	}
 
 	private void addSeparatorDate() {
@@ -438,6 +514,14 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView meViewImage;
 		public ImageView youViewImage;
 
+		public RelativeLayout meFileLayout;
+		public TextView meFileName;
+		public ImageView meDownloadFile;
+
+		public RelativeLayout youFileLayout;
+		public TextView youFileName;
+		public ImageView youDownloadFile;
+
 		// start: message item for you message
 		public LinearLayout youMsgLayout;
 		public TextView youPersonName;
@@ -477,6 +561,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 			meViewImage = (ImageView) view.findViewById(R.id.meViewImage);
 			youViewImage = (ImageView) view.findViewById(R.id.youViewImage);
+
+			meFileLayout = (RelativeLayout) view.findViewById(R.id.meFileLayout);
+			meFileName = (TextView) view.findViewById(R.id.meFileName);
+			meDownloadFile = (ImageView) view.findViewById(R.id.meDownloadFile);
+
+			youFileLayout = (RelativeLayout) view.findViewById(R.id.youFileLayout);
+			youFileName = (TextView) view.findViewById(R.id.youFileName);
+			youDownloadFile = (ImageView) view.findViewById(R.id.youDownloadFile);
 
 			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message

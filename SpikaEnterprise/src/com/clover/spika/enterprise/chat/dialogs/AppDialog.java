@@ -23,7 +23,7 @@ public class AppDialog extends Dialog {
 
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
-        setOwnerActivity((Activity) context);
+		setOwnerActivity((Activity) context);
 
 		this.isFinish = isFinish;
 	}
@@ -173,7 +173,7 @@ public class AppDialog extends Dialog {
 
 		show();
 	}
-	
+
 	/**
 	 * Go to recording screen from gallery or camera
 	 */
@@ -206,6 +206,39 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
 				getContext().startActivity(intent);
+			}
+		});
+
+		show();
+	}
+
+	/**
+	 * Open file or confirm the download
+	 */
+	public void fileDownloaded(String message, final Intent intent) {
+		this.setContentView(R.layout.dialog_open_file);
+
+		TextView infoText = (TextView) findViewById(R.id.infoText);
+		infoText.setText(message);
+
+		LinearLayout btnOpen = (LinearLayout) findViewById(R.id.btnOpen);
+		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
+
+		btnOpen.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				getContext().startActivity(intent);
+			}
+		});
+
+		btnOk.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
 			}
 		});
 

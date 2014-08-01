@@ -640,7 +640,7 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 	}
 
 	private void sendMessage(final String fileId, final String thumbId) {
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, "", fileId, thumbId, "", "", this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

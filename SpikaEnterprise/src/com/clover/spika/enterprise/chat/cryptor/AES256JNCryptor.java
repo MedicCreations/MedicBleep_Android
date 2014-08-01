@@ -451,7 +451,7 @@ public class AES256JNCryptor implements JNCryptor {
 		}
 	}
 
-	private static void copy(InputStream is, OutputStream os) throws IOException {
+private static void copy(InputStream is, OutputStream os) throws IOException {
 		int i;
 		byte[] b = new byte[1024];
 		while ((i = is.read(b)) != -1) {

@@ -4,38 +4,60 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.clover.spika.enterprise.chat.cryptor.AES256JNCryptor;
 import com.clover.spika.enterprise.chat.cryptor.JNCryptor;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class JNAesCrypto {
 
+	private static final boolean isEncrypted = false;
 	private static JNCryptor cryptor = new AES256JNCryptor(SecureConst.ITERATIONS);
 
 	// *******encrypt string and return string
 	public static String encryptJN(String textToEncrypt) throws Exception {
 
+		if (!isEncrypted) {
+			return textToEncrypt;
+		}
+
 		byte[] text = textToEncrypt.getBytes();
 
-		byte[] cypterText = cryptor.encryptData(text, SecureConst.PASSWORD.toCharArray());
+		byte[] cypterText = cryptor.encryptData(text, SecureConst.getPassword());
 
 		String cypherString = toHex(cypterText);
 
 		return cypherString;
 	}
 
-	// *******encrypt bitmap and return string
+	/**
+	 * encrypt bitmap and return string
+	 * 
+	 * If result is null, encryption is disabled and you should use the original
+	 * bitmap.
+	 * 
+	 * @param bitmap
+	 * @return
+	 * @throws Exception
+	 */
 	public static String encryptJN(Bitmap bitmap) throws Exception {
+
+		if (!isEncrypted) {
+			return null;
+		}
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
 		byte[] image = stream.toByteArray();
 
-		byte[] cypterText = cryptor.encryptData(image, SecureConst.PASSWORD.toCharArray());
+		byte[] cypterText = cryptor.encryptData(image, SecureConst.getPassword());
 
 		String cypherString = toHex(cypterText);
 
@@ -45,15 +67,40 @@ public class JNAesCrypto {
 	// *******encrypt byte array and return byte array
 	public static byte[] encryptJN(byte[] clearData) throws Exception {
 
-		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.PASSWORD.toCharArray());
+		if (!isEncrypted) {
+			return clearData;
+		}
+
+		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.getPassword());
 
 		String hexText = toHex(cypterText);
 
 		return hexText.getBytes();
 	}
 
+	/**
+	 * Encrypt a file
+	 * 
+	 * @param in
+	 * @param tempOut
+	 * @param out
+	 * @throws Exception
+	 */
 	public static void encryptWithFiles(File in, File tempOut, File out) throws Exception {
-		cryptor.encryptData(SecureConst.PASSWORD.toCharArray(), in, tempOut);
+
+		if (!isEncrypted) {
+			InputStream is = new FileInputStream(in);
+			OutputStream os = new FileOutputStream(out);
+
+			Helper.copyStream(is, os);
+
+			is.close();
+			os.close();
+		} else {
+			cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
+		}
+
+		cryptor.encryptData(SecureConst.getPassword(), in, tempOut);
 
 		FileInputStream inputHex = new FileInputStream(tempOut);
 		FileOutputStream ouputHex = new FileOutputStream(out);
@@ -76,10 +123,22 @@ public class JNAesCrypto {
 		tempOut.delete();
 	}
 
-	// *******encrypt byte array and return String
+	/**
+	 * encrypt byte array and return String
+	 * 
+	 * If null has been returned you should use the original byte[]
+	 * 
+	 * @param clearData
+	 * @return
+	 * @throws Exception
+	 */
 	public static String encryptJNSTR(byte[] clearData) throws Exception {
 
-		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.PASSWORD.toCharArray());
+		if (!isEncrypted) {
+			return null;
+		}
+
+		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.getPassword());
 
 		String cypherString = toHex(cypterText);
 
@@ -89,9 +148,13 @@ public class JNAesCrypto {
 	// *******decrypt string and return string
 	public static String decryptJN(String encrypted) throws Exception {
 
+		if (!isEncrypted) {
+			return encrypted;
+		}
+
 		byte[] textText = toByte(encrypted);
 
-		byte[] decipherText = cryptor.decryptData(textText, SecureConst.PASSWORD.toCharArray());
+		byte[] decipherText = cryptor.decryptData(textText, SecureConst.getPassword());
 
 		String decypher = new String(decipherText);
 
@@ -99,11 +162,16 @@ public class JNAesCrypto {
 	}
 
 	// *******decrypt string and return bitmap
-	public static Bitmap decryptBitmapJN(String encrypted) throws Exception {
+	// TODO encryption must be done 
+	public static Bitmap decryptBitmapJN(String encrypted, String filePath) throws Exception {
 
-		byte[] textText = toByte(encrypted);
+		byte[] textText = Utils.getByteArrayFromFile(filePath);
 
-		byte[] decipherImage = cryptor.decryptData(textText, SecureConst.PASSWORD.toCharArray());
+		if (!isEncrypted) {
+			return BitmapFactory.decodeByteArray(textText, 0, textText.length);
+		}
+
+		byte[] decipherImage = cryptor.decryptData(textText, SecureConst.getPassword());
 
 		return BitmapFactory.decodeByteArray(decipherImage, 0, decipherImage.length);
 	}
@@ -111,14 +179,26 @@ public class JNAesCrypto {
 	// *******decrypt byte array and return byte array
 	public static byte[] decryptJN(byte[] encrypted) throws Exception {
 
+		if (!isEncrypted) {
+			return encrypted;
+		}
+
 		byte[] deHex = toByte(new String(encrypted));
 
-		byte[] decipher = cryptor.decryptData(deHex, SecureConst.PASSWORD.toCharArray());
+		byte[] decipher = cryptor.decryptData(deHex, SecureConst.getPassword());
 
 		return decipher;
 	}
 
-	// *******decrypt byte array and return byte array
+	/**
+	 * decrypt byte array and return byte array
+	 * 
+	 * @param in
+	 * @param tempOut
+	 * @param out
+	 * @return
+	 * @throws Exception
+	 */
 	public static void decryptJNFiles(File in, File tempOut, File out) throws Exception {
 
 		FileInputStream inputHex = new FileInputStream(in);
@@ -141,12 +221,20 @@ public class JNAesCrypto {
 		ouputHex.close();
 		in.delete();
 
-		cryptor.decryptData(SecureConst.PASSWORD.toCharArray(), tempOut, out);
+		if (!isEncrypted) {
+			InputStream is = new FileInputStream(in);
+			OutputStream os = new FileOutputStream(out);
 
+			Helper.copyStream(is, os);
+
+			is.close();
+			os.close();
+		} else {
+			cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
+		}
 	}
 
 	// to hex methods
-
 	public static String toHex(String txt) {
 		return toHex(txt.getBytes());
 	}
@@ -176,7 +264,7 @@ public class JNAesCrypto {
 		int len = hexString.length() / 2;
 		byte[] result = new byte[len];
 		for (int i = 0; i < len; i++)
-			result[i] = Integer.valueOf(hexString.substring(2 * i, 2 * i + 2), 16).byteValue();
+			result[i] = Integer.valueOf(hexString.substring(2 * i, 2 * i + 2).trim(), 16).byteValue();
 		return result;
 	}
 }

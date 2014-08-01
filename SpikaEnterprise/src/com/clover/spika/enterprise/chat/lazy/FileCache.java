@@ -16,7 +16,7 @@ public class FileCache {
 
 		if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 			// if SDCARD is mounted (SDCARD is present on device and mounted)
-			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + "LazyList");
+			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_LAZY_LIST);
 		} else {
 			// if checking on simulator the create cache dir in your application
 			// context

@@ -13,6 +13,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 
@@ -152,7 +153,7 @@ public class ChatApi {
 					requestParams.put(Const.MSG_TYPE, String.valueOf(type));
 
 					if (!TextUtils.isEmpty(text)) {
-						requestParams.put(Const.TEXT, text);
+						requestParams.put(Const.TEXT, JNAesCrypto.encryptJN(text));
 					}
 
 					if (!TextUtils.isEmpty(fileId)) {
@@ -164,8 +165,8 @@ public class ChatApi {
 					}
 
 					if (!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
-						requestParams.put(Const.LONGITUDE, longitude);
-						requestParams.put(Const.LATITUDE, latitude);
+						requestParams.put(Const.LONGITUDE, JNAesCrypto.encryptJN(longitude));
+						requestParams.put(Const.LATITUDE, JNAesCrypto.encryptJN(latitude));
 					}
 
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_SEND_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());

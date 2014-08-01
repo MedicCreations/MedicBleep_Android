@@ -1,11 +1,19 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,12 +32,14 @@ import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -37,12 +47,17 @@ import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
 
+	private static final int PICKFILE_RESULT_CODE = 987;
+	private String fileName = "";
+	String filePath = "";
+
 	private ImageLoader imageLoader;
 
 	private RobotoThinTextView screenTitle;
 	private RoundImageView partnerIcon;
 	private TextView noItems;
 
+	private Button file;
 	private Button photo;
 	private Button gallery;
 	private Button video;
@@ -84,6 +99,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(this);
 
+		file = (Button) findViewById(R.id.bntFile);
+		file.setOnClickListener(this);
 		photo = (Button) findViewById(R.id.btnPhoto);
 		photo.setOnClickListener(this);
 		gallery = (Button) findViewById(R.id.btnGallery);
@@ -122,7 +139,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 						return false;
 					}
 
-					sendMessage(text, Const.MSG_TYPE_DEFAULT);
+					sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
 				}
 				return true;
 			}
@@ -299,6 +316,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 			rlDrawerManage();
 
+		} else if (id == R.id.bntFile) {
+			Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("*/*");
+			startActivityForResult(intent, PICKFILE_RESULT_CODE);
 		} else if (id == R.id.btnPhoto) {
 			Intent intent = new Intent(this, CameraCropActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
@@ -325,8 +346,57 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	public void sendMessage(final String text, final int type) {
-		new ChatApi().sendMessage(type, chatId, text, null, null, null, null, this, new ApiCallback<Integer>() {
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == PICKFILE_RESULT_CODE) {
+			if (resultCode == RESULT_OK) {
+				// TODO
+				Uri fileUri = (Uri) data.getData();
+
+				if (fileUri.getScheme().equals("content")) {
+					// can post image
+					String[] proj = { MediaStore.Images.Media.DATA };
+					Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
+					int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+					cursor.moveToFirst();
+
+					filePath = cursor.getString(column_index);
+
+				} else if (fileUri.getScheme().equals("file")) {
+					File file = new File(URI.create(fileUri.toString()));
+					fileName = file.getName();
+					filePath = file.getAbsolutePath();
+				}
+
+				new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+
+					@Override
+					public void onApiResponse(Result<UploadFileModel> result) {
+						if (result.isSuccess()) {
+							sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
+						} else {
+							if (result.hasResultData()) {
+								AppDialog dialog = new AppDialog(ChatActivity.this, false);
+								dialog.setFailed(result.getResultData().getMessage());
+							}
+						}
+					}
+				});
+			} else {
+				// TODO
+				// AppDialog dialog = new AppDialog(this, false);
+				// dialog.setFailed(getResources().getString(R.string.failed));
+			}
+		}
+
+		fileName = "";
+		filePath = "";
+	}
+
+	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
+		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
@@ -398,7 +468,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 					totalItems = Integer.valueOf(chat.getTotal_count());
 					adapter.setTotalCount(totalItems);
-					
+
 					if (!isRefresh) {
 						if (isClear || isSend) {
 							main_list_view.setSelectionFromTop(adapter.getCount(), 0);

@@ -302,41 +302,6 @@ public class Utils {
 
 	}
 
-	public static String normalizePhoneNumber(String phone) {
-		if (phone == null || phone.length() < 2)
-			return "";
-		phone = phone.replaceAll("[ \\-\\)\\(]", "");
-		if (phone.length() > 2 && phone.substring(0, 2).equals("00")) {
-			phone = "+" + phone.substring(2);
-		} else {
-			phone = "%" + phone.substring(1);
-		}
-		return phone;
-	}
-
-	public static String normalizePhoneNumberWithoutPercentage(String phone) {
-		if (phone == null)
-			return "";
-		if (phone.length() < 2)
-			return phone;
-		phone = phone.replaceAll("[ \\-\\)\\(]", "");
-		if (phone.length() > 2 && phone.substring(0, 2).equals("00")) {
-			phone = "+" + phone.substring(2);
-			return phone;
-		}
-		return phone.substring(1);
-	}
-
-	public static String normalizePhoneNumberSetPlusOnly(String phone) {
-		if (phone == null)
-			return "";
-		phone = phone.replaceAll("[ \\-\\)\\(]", "");
-		if (phone.length() > 2 && phone.substring(0, 2).equals("00")) {
-			phone = "+" + phone.substring(2);
-		}
-		return phone;
-	}
-
 	public static boolean isSmallHeap() {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);

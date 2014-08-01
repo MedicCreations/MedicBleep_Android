@@ -11,8 +11,16 @@ import org.apache.http.HttpEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialogWithBar;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -166,6 +174,146 @@ public class FileManageApi {
 					listener.onApiResponse(result);
 				}
 			}
+
+		}.execute();
+	}
+
+	public void startFileDownload(final String fileName, final String fileId, final int id, Context ctx) {
+		new BaseAsyncTask<Void, Void, Void>(ctx, false) {
+
+			private NotificationManager mNotifyManager;
+			private Builder mBuilder;
+			private File downloadedFile;
+			private AppDialog dialog;
+
+			protected void onPreExecute() {
+
+				dialog = new AppDialog(context, false);
+				dialog.setInfo(context.getResources().getString(R.string.download_in_progress));
+
+				mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+				mBuilder = new NotificationCompat.Builder(context);
+				mBuilder.setAutoCancel(true);
+				mBuilder.setContentTitle(context.getResources().getString(R.string.file_download) + ":" + fileName).setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.ic_launcher);
+
+				mBuilder.setProgress(0, 0, true);
+				mNotifyManager.notify(id, mBuilder.build());
+
+				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY, Const.APP_FILED_DOWNLOADS);
+
+				if (!downloadedFile.exists()) {
+					downloadedFile.mkdir();
+				}
+
+				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS, fileName);
+			};
+
+			protected Void doInBackground(Void... params) {
+
+				HashMap<String, String> getParams = new HashMap<String, String>();
+				getParams.put(Const.FILE_ID, fileId);
+
+				InputStream is;
+				try {
+					is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
+					OutputStream os = new FileOutputStream(downloadedFile.getAbsolutePath());
+
+					Helper.copyStream(is, os);
+
+					is.close();
+					os.close();
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			};
+
+			protected void onPostExecute(Void result) {
+
+				if (dialog.isShowing()) {
+					dialog.dismiss();
+				}
+
+				if (downloadedFile.exists()) {
+
+					Uri uri = Uri.fromFile(downloadedFile);
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+
+					if (uri.toString().contains(".doc") || uri.toString().contains(".docx")) {
+						// Word document
+						intent.setDataAndType(uri, "application/msword");
+					} else if (uri.toString().contains(".pdf")) {
+						// PDF file
+						intent.setDataAndType(uri, "application/pdf");
+					} else if (uri.toString().contains(".ppt") || uri.toString().contains(".pptx")) {
+						// Powerpoint file
+						intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+					} else if (uri.toString().contains(".xls") || uri.toString().contains(".xlsx")) {
+						// Excel file
+						intent.setDataAndType(uri, "application/vnd.ms-excel");
+					} else if (uri.toString().contains(".zip")) {
+						// ZIP audio file
+						intent.setDataAndType(uri, "application/zip");
+					} else if (uri.toString().contains(".rar")) {
+						// ZIP audio file
+						intent.setDataAndType(uri, "application/x-rar-compressed");
+					} else if (uri.toString().contains(".gz")) {
+						// ZIP audio file
+						intent.setDataAndType(uri, "application/gzip");
+					} else if (uri.toString().contains(".rtf")) {
+						// RTF file
+						intent.setDataAndType(uri, "application/rtf");
+					} else if (uri.toString().contains(".wav") || uri.toString().contains(".mp3")) {
+						// WAV audio file
+						intent.setDataAndType(uri, "audio/x-wav");
+					} else if (uri.toString().contains(".gif")) {
+						// GIF file
+						intent.setDataAndType(uri, "image/gif");
+					} else if (uri.toString().contains(".jpg") || uri.toString().contains(".jpeg") || uri.toString().contains(".png")) {
+						// JPG file
+						intent.setDataAndType(uri, "image/jpeg");
+					} else if (uri.toString().contains(".txt")) {
+						// Text file
+						intent.setDataAndType(uri, "text/plain");
+					} else if (uri.toString().contains(".3gp") || uri.toString().contains(".mpg") || uri.toString().contains(".mpeg") || uri.toString().contains(".mpe") || uri.toString().contains(".mp4") || uri.toString().contains(".avi")) {
+						// Video files
+						intent.setDataAndType(uri, "video/*");
+					} else {
+						// if you want you can also define the intent type for
+						// any
+						// other file
+
+						// additionally use else clause below, to manage other
+						// unknown extensions
+						// in this case, Android will show all applications
+						// installed on the device
+						// so you can choose which application to use
+						intent.setDataAndType(uri, "*/*");
+					}
+
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+					mBuilder.setContentIntent(contentIntent);
+					mBuilder.setContentText(context.getResources().getString(R.string.download_complete));
+					mBuilder.setProgress(0, 0, false);
+					mNotifyManager.notify(id, mBuilder.build());
+
+					dialog.fileDownloaded(context.getResources().getString(R.string.download_complete) + "\n" + fileName, intent);
+				} else {
+					mBuilder.setContentText(context.getResources().getString(R.string.download_failed));
+					mBuilder.setProgress(0, 0, false);
+					mNotifyManager.notify(id, mBuilder.build());
+
+					dialog.setFailed(context.getResources().getString(R.string.download_failed));
+				}
+			};
 
 		}.execute();
 	}
