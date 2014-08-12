@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -8,6 +9,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -52,7 +54,7 @@ public class VoiceActivity extends BaseActivity {
 			@Override
 			public void onApiResponse(Result<String> result) {
 				if (result.isSuccess()) {
-					sFileName = result.getResultData();
+					sFileName = Utils.handleFileDecryption(result.getResultData(), VoiceActivity.this);
 				} else {
 					AppDialog dialog = new AppDialog(VoiceActivity.this, true);
 					dialog.setFailed(getResources().getString(R.string.e_error_downloading_file));
@@ -171,6 +173,12 @@ public class VoiceActivity extends BaseActivity {
 			mPlayPause.setImageResource(R.drawable.play_btn);
 		}
 		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		new File(sFileName).delete();
 	}
 
 }

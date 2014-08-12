@@ -121,7 +121,7 @@ public class FileManageApi {
 					File file;
 
 					if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-						file = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + "Video");
+						file = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_SPEN_FILE);
 					} else {
 						return null;
 					}

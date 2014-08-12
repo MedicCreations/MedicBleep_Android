@@ -180,7 +180,7 @@ public class NetworkManagement {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-			final File file = new File(postParams.get(Const.FILE));
+			File file = new File(postParams.get(Const.FILE));
 			FileBody fb = new FileBody(file);
 
 			builder.addPart(Const.FILE, fb);
@@ -194,8 +194,8 @@ public class NetworkManagement {
 					listener.onProgress(num);
 				}
 			}, entity);
-			httppost.setEntity(progEntity);
 
+			httppost.setEntity(progEntity);
 		}
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);

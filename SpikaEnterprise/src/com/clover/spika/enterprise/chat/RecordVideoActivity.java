@@ -2,7 +2,6 @@ package com.clover.spika.enterprise.chat;
 
 import java.io.File;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,7 +9,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Media;
@@ -29,6 +27,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class RecordVideoActivity extends BaseActivity {
 
@@ -85,7 +84,16 @@ public class RecordVideoActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				new FileManageApi().uploadFile(sFileName, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
+
+				final String filePath = Utils.handleFileEncryption(sFileName, RecordVideoActivity.this);
+
+				if (filePath == null) {
+					AppDialog dialog = new AppDialog(RecordVideoActivity.this, false);
+					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_video));
+					return;
+				}
+
+				new FileManageApi().uploadFile(filePath, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -96,6 +104,8 @@ public class RecordVideoActivity extends BaseActivity {
 							AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
 							dialog.setFailed("");
 						}
+
+						new File(filePath).delete();
 					}
 				});
 			}
@@ -165,7 +175,7 @@ public class RecordVideoActivity extends BaseActivity {
 				try {
 					Intent cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 					cameraIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, Const.MAX_RECORDING_TIME_VIDEO);
-					File videoFolder = getFileDir(this);
+					File videoFolder = Utils.getFileDir(this);
 
 					videoFolder.mkdirs(); // <----
 					File video = new File(videoFolder, "video.mp4");
@@ -243,19 +253,6 @@ public class RecordVideoActivity extends BaseActivity {
 		}, 100);
 
 		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	private File getFileDir(Context context) {
-		File cacheDir = null;
-
-		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), "HookUp");
-		else
-			cacheDir = context.getCacheDir();
-		if (!cacheDir.exists())
-			cacheDir.mkdirs();
-
-		return cacheDir;
 	}
 
 	private void onPlay(int playPauseStop) {
@@ -348,6 +345,12 @@ public class RecordVideoActivity extends BaseActivity {
 			cursor.close();
 		}
 		return Integer.parseInt(duration);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		new File(sFileName).delete();
 	}
 
 }

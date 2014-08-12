@@ -73,6 +73,10 @@
     <string name="e_google_play_error">Google Play Services error.</string>
     <string name="e_error_while_logout">Unable to logout, please try again.</string>
     <string name="e_error_not_decrypted">Message has not been decrypted!</string>
+    <string name="e_while_encrypting_image">Error while encrypting image.</string>
+    <string name="e_while_encrypting_audio">Error while encrypting audio.</string>
+    <string name="e_while_encrypting_video">Error while encrypting video.</string>
+    <string name="e_while_encrypting_file">Error while encrypting video.</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>

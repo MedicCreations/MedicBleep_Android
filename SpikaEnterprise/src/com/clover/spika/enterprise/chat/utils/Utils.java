@@ -41,8 +41,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.util.Log;
+
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 /**
@@ -53,6 +56,63 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 @SuppressLint("SimpleDateFormat")
 public class Utils {
+
+	/**
+	 * Returns encoded file or null if exception is raised
+	 * 
+	 * @param filePath
+	 * @param ctx
+	 * @return
+	 */
+	public static String handleFileEncryption(String filePath, Context ctx) {
+		try {
+			if (JNAesCrypto.isEncrypted) {
+				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+				tempOut.createNewFile();
+
+				File out = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+				out.createNewFile();
+
+				JNAesCrypto.encryptWithFiles(new File(filePath), tempOut, out);
+
+				return out.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return filePath;
+	}
+
+	/**
+	 * Handle file decryption
+	 * 
+	 * @param filePath
+	 * @param ctx
+	 * @return
+	 */
+	public static String handleFileDecryption(String filePath, Context ctx) {
+		try {
+			if (JNAesCrypto.isEncrypted) {
+				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+				tempOut.createNewFile();
+
+				File out = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+				out.createNewFile();
+
+				JNAesCrypto.decryptJNFiles(new File(filePath), tempOut, out);
+
+				return out.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return filePath;
+	}
+
 	public static void copyStream(InputStream is, OutputStream os) {
 		final int buffer_size = 1024;
 		try {
@@ -311,6 +371,22 @@ public class Utils {
 		} else {
 			return false;
 		}
+	}
+
+	public static File getFileDir(Context context) {
+		File cacheDir = null;
+
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY);
+		} else {
+			cacheDir = context.getCacheDir();
+		}
+
+		if (!cacheDir.exists()) {
+			cacheDir.mkdirs();
+		}
+
+		return cacheDir;
 	}
 
 	public static void logHeap(String step) {

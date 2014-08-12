@@ -49,6 +49,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 public class CameraCropActivity extends Activity implements OnTouchListener, OnClickListener {
@@ -583,6 +584,8 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 
 		int id = view.getId();
 		if (id == R.id.btnSend) {
+			btnSend.setClickable(false);
+
 			Bitmap resizedBitmap = getBitmapFromView(mImageView);
 			ByteArrayOutputStream bs = new ByteArrayOutputStream();
 			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
@@ -595,21 +598,42 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			}
 		} else if (id == R.id.btnCancel) {
 			finish();
-		} else {
 		}
 	}
 
-	private void fileUploadAsync(final String filePath, final String thumbPath) {
+	private void fileUploadAsync(String filePath, final String thumbPath) {
+
+		filePath = Utils.handleFileEncryption(filePath, this);
+
+		if (filePath == null) {
+			AppDialog dialog = new AppDialog(this, false);
+			dialog.setFailed(getResources().getString(R.string.e_while_encrypting_image));
+			btnSend.setClickable(true);
+			return;
+		}
+
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
-					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
+
+					String thumbFilePath = Utils.handleFileEncryption(thumbPath, CameraCropActivity.this);
+
+					if (thumbFilePath == null) {
+						AppDialog dialog = new AppDialog(CameraCropActivity.this, false);
+						dialog.setFailed(getResources().getString(R.string.e_while_encrypting_image));
+						btnSend.setClickable(true);
+						return;
+					}
+
+					thumbUploadAsync(thumbFilePath, result.getResultData().getFileId());
+
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
 						dialog.setFailed(result.getResultData().getMessage());
+						btnSend.setClickable(true);
 					}
 				}
 			}
@@ -673,6 +697,12 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 				}
 			}
 		});
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		new File(mFilePath).delete();
 	}
 
 }

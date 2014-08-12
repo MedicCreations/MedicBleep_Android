@@ -1,11 +1,14 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -52,7 +55,7 @@ public class VideoActivity extends BaseActivity {
 			@Override
 			public void onApiResponse(Result<String> result) {
 				if (result.isSuccess()) {
-					sFileName = result.getResultData();
+					sFileName = Utils.handleFileDecryption(result.getResultData(), VideoActivity.this);
 
 					// Play video
 					mPlayPause.setImageResource(R.drawable.pause_btn);
@@ -182,34 +185,10 @@ public class VideoActivity extends BaseActivity {
 		mIsPlaying = VIDEO_IS_PAUSED;
 	}
 
-	// private void fileDownloadAsync(String fileId, File file) {
-	// CouchDB.downloadFileAsync(fileId, file, new FileDownloadFinish(),
-	// VideoActivity.this, true);
-	// }
-	//
-	// private class FileDownloadFinish implements ResultListener<File> {
-	// @Override
-	// public void onResultsSucceded(File result) {
-	// sFileName = getHookUpPath().getAbsolutePath() + "/video_download.mp4";
-	//
-	// }
-	//
-	// @Override
-	// public void onResultsFail() {
-	// Toast.makeText(VideoActivity.this, "Error in downloading video...",
-	// Toast.LENGTH_LONG).show();
-	// mPlayPause.setClickable(false);
-	// mStopVideo.setClickable(false);
-	// }
-	// }
-	//
-	// private File getHookUpPath() {
-	// File root = android.os.Environment.getExternalStorageDirectory();
-	// File dir = new File(root.getAbsolutePath() + Const.APP_FILES_DIRECTORY);
-	// if (dir.exists() == false) {
-	// dir.mkdirs();
-	// }
-	// return dir;
-	// }
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		new File(sFileName).delete();
+	}
 
 }

@@ -209,14 +209,12 @@ public class ImageLoader {
 
 			protected Bitmap doInBackground(Void... params) {
 
-				// TODO encryption must be done
-				// Download image file from web
-				// from cache
-				// Bitmap localBitmap = decodeFile(file);
+				// start: Get image from cache
 				try {
 
 					String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
 					Bitmap localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
+					
 					if (localBitmap != null) {
 						return localBitmap;
 					}
@@ -224,7 +222,9 @@ public class ImageLoader {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				// end: Get image from cache
 
+				// start: Download image
 				try {
 					Bitmap bitmap = null;
 
@@ -248,11 +248,9 @@ public class ImageLoader {
 					fos.close();
 					is.close();
 
-					// TODO
 					String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
 					bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
-					// bitmap = decodeFile(file);
-
+					
 					return bitmap;
 
 				} catch (Throwable ex) {
@@ -261,6 +259,7 @@ public class ImageLoader {
 						memoryCache.clear();
 					}
 				}
+				// end: Download image
 
 				return null;
 			};
@@ -268,6 +267,8 @@ public class ImageLoader {
 			protected void onPostExecute(Bitmap result) {
 				if (result != null) {
 					imageView.setImageBitmap(result);
+				} else {
+					imageView.setImageDrawable(null);
 				}
 			};
 		}.execute();

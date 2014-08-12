@@ -3,12 +3,10 @@ package com.clover.spika.enterprise.chat;
 import java.io.File;
 import java.io.IOException;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
@@ -31,6 +29,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class RecordAudioActivity extends BaseActivity {
 
@@ -84,7 +83,16 @@ public class RecordAudioActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				new FileManageApi().uploadFile(sFileName, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
+
+				String filePath = Utils.handleFileEncryption(sFileName, RecordAudioActivity.this);
+
+				if (filePath == null) {
+					AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
+					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_audio));
+					return;
+				}
+
+				new FileManageApi().uploadFile(filePath, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -94,6 +102,8 @@ public class RecordAudioActivity extends BaseActivity {
 							AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
 							dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
 						}
+
+						new File(sFileName).delete();
 					}
 				});
 			}
@@ -319,23 +329,7 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	private void setRecordingFile() {
-
-		File audio = getFileDir(getApplicationContext());
-		audio.mkdirs();
-		sFileName = audio.getAbsolutePath() + "/voice.wav";
-	}
-
-	private File getFileDir(Context context) {
-		File cacheDir = null;
-
-		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-			cacheDir = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY);
-		else
-			cacheDir = context.getCacheDir();
-		if (!cacheDir.exists())
-			cacheDir.mkdirs();
-
-		return cacheDir;
+		sFileName = new File(Utils.getFileDir(this), "voice.wav").getAbsolutePath();
 	}
 
 	public void onPause() {

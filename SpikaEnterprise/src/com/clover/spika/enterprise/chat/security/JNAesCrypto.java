@@ -4,20 +4,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.clover.spika.enterprise.chat.cryptor.AES256JNCryptor;
 import com.clover.spika.enterprise.chat.cryptor.JNCryptor;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class JNAesCrypto {
 
-	private static final boolean isEncrypted = false;
+	public static final boolean isEncrypted = !true;
 	private static JNCryptor cryptor = new AES256JNCryptor(SecureConst.ITERATIONS);
 
 	// *******encrypt string and return string
@@ -28,7 +24,6 @@ public class JNAesCrypto {
 		}
 
 		byte[] text = textToEncrypt.getBytes();
-
 		byte[] cypterText = cryptor.encryptData(text, SecureConst.getPassword());
 
 		String cypherString = toHex(cypterText);
@@ -87,18 +82,6 @@ public class JNAesCrypto {
 	 * @throws Exception
 	 */
 	public static void encryptWithFiles(File in, File tempOut, File out) throws Exception {
-
-		if (!isEncrypted) {
-			InputStream is = new FileInputStream(in);
-			OutputStream os = new FileOutputStream(out);
-
-			Helper.copyStream(is, os);
-
-			is.close();
-			os.close();
-		} else {
-			cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
-		}
 
 		cryptor.encryptData(SecureConst.getPassword(), in, tempOut);
 
@@ -162,15 +145,14 @@ public class JNAesCrypto {
 	}
 
 	// *******decrypt string and return bitmap
-	// TODO encryption must be done 
 	public static Bitmap decryptBitmapJN(String encrypted, String filePath) throws Exception {
 
-		byte[] textText = Utils.getByteArrayFromFile(filePath);
-
 		if (!isEncrypted) {
+			byte[] textText = Utils.getByteArrayFromFile(filePath);
 			return BitmapFactory.decodeByteArray(textText, 0, textText.length);
 		}
 
+		byte[] textText = toByte(encrypted);
 		byte[] decipherImage = cryptor.decryptData(textText, SecureConst.getPassword());
 
 		return BitmapFactory.decodeByteArray(decipherImage, 0, decipherImage.length);
@@ -221,17 +203,9 @@ public class JNAesCrypto {
 		ouputHex.close();
 		in.delete();
 
-		if (!isEncrypted) {
-			InputStream is = new FileInputStream(in);
-			OutputStream os = new FileOutputStream(out);
+		cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
 
-			Helper.copyStream(is, os);
-
-			is.close();
-			os.close();
-		} else {
-			cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
-		}
+		tempOut.delete();
 	}
 
 	// to hex methods

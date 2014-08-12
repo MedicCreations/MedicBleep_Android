@@ -35,6 +35,8 @@ public class Const {
 	public static final String APP_FILES_DIRECTORY = "SpikaEnterprise/";
 	public static final String APP_LAZY_LIST = "LazyList";
 	public static final String APP_FILED_DOWNLOADS = "Downloads";
+	public static final String APP_SPEN_FILE = "spen.txt";
+	public static final String APP_SPEN_TEMP_FILE = "spentemp.txt";
 
 	// Intent const
 	public static final String PROFILE_INTENT = "profileIntent";

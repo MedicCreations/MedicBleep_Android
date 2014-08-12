@@ -1,14 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,12 +39,13 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ChatActivity extends BaseActivity implements OnClickListener {
 
-	private static final int PICKFILE_RESULT_CODE = 987;
+	private static final int PICK_FILE_RESULT_CODE = 987;
 	private String fileName = "";
 	String filePath = "";
 
@@ -319,7 +317,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		} else if (id == R.id.bntFile) {
 			Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 			intent.setType("*/*");
-			startActivityForResult(intent, PICKFILE_RESULT_CODE);
+			startActivityForResult(intent, PICK_FILE_RESULT_CODE);
 		} else if (id == R.id.btnPhoto) {
 			Intent intent = new Intent(this, CameraCropActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
@@ -350,44 +348,54 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == PICKFILE_RESULT_CODE) {
+		if (requestCode == PICK_FILE_RESULT_CODE) {
 			if (resultCode == RESULT_OK) {
-				// TODO
 				Uri fileUri = (Uri) data.getData();
 
 				if (fileUri.getScheme().equals("content")) {
-					// can post image
-					String[] proj = { MediaStore.Images.Media.DATA };
+
+					String[] proj = { MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME };
 					Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
-					int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+					int column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
+					int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
 					cursor.moveToFirst();
 
-					filePath = cursor.getString(column_index);
+					fileName = cursor.getString(column_index_name);
+					filePath = cursor.getString(column_index_path);
 
 				} else if (fileUri.getScheme().equals("file")) {
+
 					File file = new File(URI.create(fileUri.toString()));
 					fileName = file.getName();
 					filePath = file.getAbsolutePath();
 				}
 
-				new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+				final String filePathTemp = Utils.handleFileEncryption(filePath, ChatActivity.this);
+
+				if (filePathTemp == null) {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
+					return;
+				}
+
+				new FileManageApi().uploadFile(filePathTemp, this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
 						if (result.isSuccess()) {
+							// TODO
 							sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
 						} else {
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
 							if (result.hasResultData()) {
-								AppDialog dialog = new AppDialog(ChatActivity.this, false);
 								dialog.setFailed(result.getResultData().getMessage());
+							} else {
+								dialog.setFailed("");
 							}
 						}
 					}
 				});
-			} else {
-				// TODO
-				// AppDialog dialog = new AppDialog(this, false);
-				// dialog.setFailed(getResources().getString(R.string.failed));
 			}
 		}
 

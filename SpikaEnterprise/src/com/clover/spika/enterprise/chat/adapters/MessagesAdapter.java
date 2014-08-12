@@ -132,11 +132,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.meMsgLayout.setVisibility(View.VISIBLE);
 
-			if (position % 2 == 0) {
-				holder.meMsgLayout.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
-			} else {
-				holder.meMsgLayout.setBackgroundColor(Color.WHITE);
-			}
+			setItemBackground(position, holder.meMsgLayout);
 
 			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.mePersonName.setText(msg.getFirstname() + " " + msg.getLastname());
@@ -147,9 +143,9 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
 				if (!msg.getThumb_id().equals((String) holder.meViewImage.getTag())) {
-					holder.meViewImage.setTag(msg.getThumb_id());
 					holder.meViewImage.setImageDrawable(null);
 					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.meViewImage);
+					holder.meViewImage.setTag(msg.getThumb_id());
 				}
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
@@ -204,6 +200,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
+						// TODO decryption
 						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
 					}
 				});
@@ -214,11 +211,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.youMsgLayout.setVisibility(View.VISIBLE);
 
-			if (position % 2 == 0) {
-				holder.youMsgLayout.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
-			} else {
-				holder.youMsgLayout.setBackgroundColor(Color.WHITE);
-			}
+			setItemBackground(position, holder.youMsgLayout);
 
 			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
@@ -229,9 +222,9 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
 				if (!msg.getThumb_id().equals((String) holder.youViewImage.getTag())) {
-					holder.youViewImage.setTag(msg.getThumb_id());
 					holder.youViewImage.setImageDrawable(null);
 					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.youViewImage);
+					holder.youViewImage.setTag(msg.getThumb_id());
 				}
 
 				holder.youViewImage.setVisibility(View.VISIBLE);
@@ -292,6 +285,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
+						// TODO decryption
 						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
 					}
 				});
@@ -422,6 +416,7 @@ public class MessagesAdapter extends BaseAdapter {
 		switch (msg.getType()) {
 
 		case Const.MSG_TYPE_DEFAULT:
+		case Const.MSG_TYPE_FILE:
 
 			try {
 				msg.setText(JNAesCrypto.decryptJN(msg.getText()));
@@ -490,6 +485,14 @@ public class MessagesAdapter extends BaseAdapter {
 			setEndOfSearch(true);
 		} else {
 			setEndOfSearch(false);
+		}
+	}
+
+	private void setItemBackground(int position, View view) {
+		if (position % 2 == 0) {
+			view.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
+		} else {
+			view.setBackgroundColor(Color.WHITE);
 		}
 	}
 
