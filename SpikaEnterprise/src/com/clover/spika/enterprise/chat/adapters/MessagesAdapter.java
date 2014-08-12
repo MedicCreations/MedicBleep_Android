@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -412,11 +413,16 @@ public class MessagesAdapter extends BaseAdapter {
 		if (msg.getType() != Const.MSG_TYPE_DEFAULT && msg.getType() != Const.MSG_TYPE_LOCATION) {
 			return msg;
 		}
+		
+		Log.d("Vida", "Type1: " + msg.getType());
 
 		switch (msg.getType()) {
 
 		case Const.MSG_TYPE_DEFAULT:
 		case Const.MSG_TYPE_FILE:
+			
+			Log.d("Vida", "Type: " + msg.getType());
+			Log.d("Vida", "Type: " + msg.getText());
 
 			try {
 				msg.setText(JNAesCrypto.decryptJN(msg.getText()));

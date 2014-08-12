@@ -46,8 +46,6 @@ import com.clover.spika.enterprise.chat.views.RoundImageView;
 public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private static final int PICK_FILE_RESULT_CODE = 987;
-	private String fileName = "";
-	String filePath = "";
 
 	private ImageLoader imageLoader;
 
@@ -352,6 +350,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			if (resultCode == RESULT_OK) {
 				Uri fileUri = (Uri) data.getData();
 
+				String fileName = null;
+				String filePath = null;
+
 				if (fileUri.getScheme().equals("content")) {
 
 					String[] proj = { MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME };
@@ -371,6 +372,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					filePath = file.getAbsolutePath();
 				}
 
+				final String finalFileName = fileName;
+
 				final String filePathTemp = Utils.handleFileEncryption(filePath, ChatActivity.this);
 
 				if (filePathTemp == null) {
@@ -384,8 +387,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
 						if (result.isSuccess()) {
-							// TODO
-							sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
+							sendMessage(Const.MSG_TYPE_FILE, chatId, finalFileName, result.getResultData().getFileId(), null, null, null);
 						} else {
 							AppDialog dialog = new AppDialog(ChatActivity.this, false);
 							if (result.hasResultData()) {
@@ -398,9 +400,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 				});
 			}
 		}
-
-		fileName = "";
-		filePath = "";
 	}
 
 	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {

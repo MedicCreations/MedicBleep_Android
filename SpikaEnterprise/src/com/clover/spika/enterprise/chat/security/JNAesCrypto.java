@@ -13,7 +13,7 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class JNAesCrypto {
 
-	public static final boolean isEncrypted = !true;
+	public static final boolean isEncrypted = true;
 	private static JNCryptor cryptor = new AES256JNCryptor(SecureConst.ITERATIONS);
 
 	// *******encrypt string and return string

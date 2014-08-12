@@ -1,7 +1,6 @@
 package com.clover.spika.enterprise.chat;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
@@ -14,7 +13,6 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -138,8 +136,9 @@ public class VoiceActivity extends BaseActivity {
 				mHandlerForProgressBar.post(mRunnForProgressBar);
 				mIsPlaying = 2;
 
-			} catch (IOException e) {
-				Log.e("LOG", "prepare() failed");
+			} catch (Exception e) {
+				AppDialog dialog = new AppDialog(this, true);
+				dialog.setFailed(getResources().getString(R.string.e_something_went_wrong));
 			}
 		} else if (mIsPlaying == 1) {
 			mPlayer.start();
