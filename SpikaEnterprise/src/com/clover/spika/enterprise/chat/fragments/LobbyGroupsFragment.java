@@ -27,7 +27,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class UserLobbyFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
+public class LobbyGroupsFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
@@ -45,7 +45,7 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), true);
+		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
@@ -99,7 +99,7 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.USERS_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
+		new LobbyApi().getLobbyByType(page, Const.GROUPS_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
@@ -113,8 +113,8 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 
 	@Override
 	public void onChangeAll(LobbyModel model) {
-		mTotalCount = model.getUsersLoby().getTotalCount();
-		setData(model.getUsersLoby().getChatsList(), true);
+		mTotalCount = model.getGroupsLobby().getTotalCount();
+		setData(model.getGroupsLobby().getChatsList(), true);
 	}
 
 	@Override
@@ -137,7 +137,6 @@ public class UserLobbyFragment extends Fragment implements LobbyChangedListener,
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
-			intent.putExtra(Const.IMAGE, user.getImage());
 			startActivity(intent);
 		}
 	}

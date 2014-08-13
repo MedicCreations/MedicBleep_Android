@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
@@ -25,7 +24,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class UserListActivity extends BaseActivity implements OnItemClickListener, OnSearchListener {
+public class UserListActivity extends MainActivity implements OnItemClickListener, OnSearchListener {
 
 	private TextView noItems;
 

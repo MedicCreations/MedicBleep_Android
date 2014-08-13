@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GroupsApi;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.GroupsList;
@@ -21,7 +20,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class GroupListActivity extends BaseActivity implements OnSearchListener {
+public class GroupListActivity extends MainActivity implements OnSearchListener {
 
 	TextView noItems;
 

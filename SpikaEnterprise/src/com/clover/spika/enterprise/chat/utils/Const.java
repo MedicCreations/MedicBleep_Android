@@ -7,6 +7,11 @@ import java.util.UUID;
 
 public class Const {
 
+	// Activity for result constants
+	public static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
+	public static final int REQUEST_NEW_PASSCODE = 9001;
+	public static final int REQUEST_REMOVE_PASSCODE = 9002;
+
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
@@ -106,12 +111,6 @@ public class Const {
 	public static final int USERS_TYPE = 1;
 	public static final int GROUPS_TYPE = 2;
 	public static final String TYPE = "type";
-
-	// Sedebar items
-	public static final int ITEM_PROFILE = 1;
-	public static final int ITEM_LOBBY = 2;
-	public static final int ITEM_USERS = 3;
-	public static final int ITEM_GROUPS = 4;
 
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";

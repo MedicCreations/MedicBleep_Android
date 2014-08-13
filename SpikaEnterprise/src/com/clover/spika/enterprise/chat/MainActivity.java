@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.extendables;
+package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,12 +6,12 @@ import java.util.List;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,14 +29,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.GroupListActivity;
-import com.clover.spika.enterprise.chat.LobbyActivity;
-import com.clover.spika.enterprise.chat.PasscodeActivity;
-import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
+import com.clover.spika.enterprise.chat.fragments.ProfileFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -44,12 +41,9 @@ import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public abstract class BaseActivity extends SlidingFragmentActivity {
-
-	private static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
+public class MainActivity extends SlidingFragmentActivity {
 
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
@@ -74,6 +68,8 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 
 	public PushBroadcastReceiver myPushRecevier;
 	public IntentFilter intentFilter;
+
+	private Fragment mFragment;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +111,24 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		slidingMenu.setFadeDegree(0.35f);
 		// Value 950 is not used, library method has been changed
 		slidingMenu.setBehindWidth(80);
+
+		// set the Above View
+		if (savedInstanceState != null)
+			mFragment = getFragmentManager().getFragment(savedInstanceState, "mainContent");
+		if (mFragment == null)
+			mFragment = new LobbyFragment();
+
+		// set the Above View
+		setContentView(R.layout.activity_base);
+		getFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
+
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
+	}
+
+	public void switchContent(Fragment fragment) {
+		mFragment = fragment;
+		getFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
+		getSlidingMenu().showContent();
 	}
 
 	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
@@ -132,9 +146,11 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onResume();
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			if (!PasscodeUtility.getInstance().isSessionValid()) {
-				startActivityForResult(new Intent(this, PasscodeActivity.class), PASSCODE_ENTRY_VALIDATION_REQUEST);
+				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
 			}
 		}
+
+		getIntentData(getIntent());
 	}
 
 	@Override
@@ -149,10 +165,31 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		// TODO
+		// getIntentData(intent);
+	}
+
+	private void getIntentData(Intent intent) {
+		// TODO
+		if (intent != null && intent.getExtras() != null) {
+			if (mFragment != null && mFragment instanceof ProfileFragment) {
+				((ProfileFragment) mFragment).imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), ((ProfileFragment) mFragment).profileImage, false);
+				((ProfileFragment) mFragment).profileName.setText(intent.getExtras().getString(Const.FIRSTNAME) + " " + intent.getExtras().getString(Const.LASTNAME));
+
+				if (intent.getExtras() != null && intent.getExtras().containsKey(Const.FIRSTNAME)) {
+					screenTitle.setText(intent.getExtras().getString(Const.FIRSTNAME, getResources().getString(R.string.profile)));
+				}
+			}
+		}
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == PASSCODE_ENTRY_VALIDATION_REQUEST) {
+		if (requestCode == Const.PASSCODE_ENTRY_VALIDATION_REQUEST) {
 			if (resultCode == RESULT_OK) {
 				// if by some chance session is not set to valid, set it now
 				if (!PasscodeUtility.getInstance().isSessionValid()) {
@@ -161,6 +198,33 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 			} else {
 				PasscodeUtility.getInstance().setSessionValid(false);
 				finish();
+			}
+		} else if (Const.REQUEST_NEW_PASSCODE == requestCode) {
+			if (RESULT_OK == resultCode) {
+				PasscodeUtility.getInstance().setSessionValid(true);
+
+				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
+					PasscodeUtility.getInstance().setPasscode(this, data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
+					PasscodeUtility.getInstance().setPasscodeEnabled(this, true);
+				}
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(false);
+
+				if (mFragment != null && mFragment instanceof ProfileFragment) {
+					((ProfileFragment) mFragment).mSwitchPasscodeEnabled.setChecked(false);
+				}
+			}
+		} else if (Const.REQUEST_REMOVE_PASSCODE == requestCode) {
+			if (RESULT_OK == resultCode) {
+				PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
+				PasscodeUtility.getInstance().setPasscode(this, "");
+				PasscodeUtility.getInstance().setSessionValid(true);
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(true);
+
+				if (mFragment != null && mFragment instanceof ProfileFragment) {
+					((ProfileFragment) mFragment).mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
+				}
 			}
 		}
 
@@ -194,7 +258,6 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	public void setSearch(OnSearchListener listener) {
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
-		screenTitle = (TextView) findViewById(R.id.screenTitle);
 		if (searchBtn == null || searchEt == null)
 			return;
 
@@ -273,76 +336,6 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		AnimUtils.fadeAnim(sidebarBtn, 0, 1, speedSearchAnimation);
 		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
 
-	}
-
-	// TODO
-	public void menuItemClick(int menuItem) {
-
-		switch (menuItem) {
-
-		case Const.ITEM_PROFILE:
-
-			slidingMenu.setOnClosedListener(new OnClosedListener() {
-
-				@Override
-				public void onClosed() {
-					Log.d("VidaCl", "Closed");
-					ProfileActivity.openProfile(BaseActivity.this, null);
-					slidingMenu.setOnClosedListener(null);
-				}
-			});
-			slidingMenu.toggle(true);
-
-			break;
-
-		case Const.ITEM_LOBBY:
-
-			slidingMenu.setOnClosedListener(new OnClosedListener() {
-
-				@Override
-				public void onClosed() {
-					Log.d("VidaCl", "Closed");
-					LobbyActivity.openLobby(BaseActivity.this);
-					slidingMenu.setOnClosedListener(null);
-				}
-			});
-			slidingMenu.toggle(true);
-
-			break;
-
-		case Const.ITEM_USERS:
-
-			slidingMenu.setOnClosedListener(new OnClosedListener() {
-
-				@Override
-				public void onClosed() {
-					Log.d("VidaCl", "Closed");
-					UserListActivity.openUsers(BaseActivity.this);
-					slidingMenu.setOnClosedListener(null);
-				}
-			});
-			slidingMenu.toggle(true);
-
-			break;
-
-		case Const.ITEM_GROUPS:
-
-			slidingMenu.setOnClosedListener(new OnClosedListener() {
-
-				@Override
-				public void onClosed() {
-					Log.d("VidaCl", "Closed");
-					GroupListActivity.openGroups(BaseActivity.this);
-					slidingMenu.setOnClosedListener(null);
-				}
-			});
-			slidingMenu.toggle(true);
-
-			break;
-
-		default:
-			break;
-		}
 	}
 
 	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage) {

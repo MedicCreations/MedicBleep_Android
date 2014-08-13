@@ -58,8 +58,8 @@ public class PasscodeUtility {
 
     /**
      * Sets the internal field which is checked for valid session. This method should only be
-     * called from {@link com.clover.spika.enterprise.chat.extendables.BaseActivity}!
-     * @param isSessionValid set by {@link com.clover.spika.enterprise.chat.extendables.BaseActivity}
+     * called from {@link com.clover.spika.enterprise.chat.MainActivity}!
+     * @param isSessionValid set by {@link com.clover.spika.enterprise.chat.MainActivity}
      */
     public void setSessionValid(boolean isSessionValid) {
         if (Looper.myLooper() != Looper.getMainLooper()) {

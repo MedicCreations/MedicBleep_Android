@@ -67,7 +67,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.LobbyActivity"
+            android:name="com.clover.spika.enterprise.chat.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
@@ -105,24 +105,11 @@
             android:name="com.clover.spika.enterprise.chat.VoiceActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.UserListActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.GroupListActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.clover.spika.enterprise.chat.CameraCropActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.PhotoActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.ProfileActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity

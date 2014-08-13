@@ -10,12 +10,11 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
-public class PhotoActivity extends BaseActivity {
+public class PhotoActivity extends MainActivity {
 
 	ImageButton goBack;
 	RelativeLayout imageLayout;
