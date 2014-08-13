@@ -8,11 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.clover.spika.enterprise.chat.GroupListActivity;
-import com.clover.spika.enterprise.chat.LobbyActivity;
-import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -20,6 +16,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -61,8 +58,9 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				ProfileActivity.openProfile(getActivity(), null);
-				((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				// ProfileActivity.openProfile(getActivity(), null);
+				// ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				((BaseActivity) getActivity()).menuItemClick(Const.ITEM_PROFILE);
 			}
 		});
 
@@ -71,8 +69,9 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				LobbyActivity.openLobby(getActivity());
-				((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				// LobbyActivity.openLobby(getActivity());
+				// ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				((BaseActivity) getActivity()).menuItemClick(Const.ITEM_LOBBY);
 			}
 		});
 
@@ -80,8 +79,9 @@ public class SidebarFragment extends Fragment {
 		users.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				UserListActivity.openUsers(getActivity());
-				((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				// UserListActivity.openUsers(getActivity());
+				// ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				((BaseActivity) getActivity()).menuItemClick(Const.ITEM_USERS);
 			}
 		});
 
@@ -90,8 +90,9 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				GroupListActivity.openGroups(getActivity());
-				((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				// GroupListActivity.openGroups(getActivity());
+				// ((BaseActivity) getActivity()).slidingMenu.toggle(true);
+				((BaseActivity) getActivity()).menuItemClick(Const.ITEM_GROUPS);
 			}
 		});
 

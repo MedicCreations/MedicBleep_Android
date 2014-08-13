@@ -500,10 +500,10 @@ public class SlidingMenu extends RelativeLayout {
 		if (b) {
 			setSlidingEnabled(false);
 			mViewAbove.setCustomViewBehind(null);
-			mViewAbove.setCurrentItem(1);
+			mViewAbove.setCurrentItem(1, false);
 			// mViewBehind.setCurrentItem(0);
 		} else {
-			mViewAbove.setCurrentItem(1);
+			mViewAbove.setCurrentItem(1, false);
 			// mViewBehind.setCurrentItem(1);
 			mViewAbove.setCustomViewBehind(mViewBehind);
 			setSlidingEnabled(true);
@@ -1065,7 +1065,7 @@ public class SlidingMenu extends RelativeLayout {
 	protected void onRestoreInstanceState(Parcelable state) {
 		SavedState ss = (SavedState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
-		mViewAbove.setCurrentItem(ss.getItem());
+		mViewAbove.setCurrentItem(ss.getItem(), false);
 	}
 
 	/*

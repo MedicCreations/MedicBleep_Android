@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
@@ -216,17 +217,18 @@ public class FileManageApi {
 				InputStream is;
 				try {
 					is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
-					OutputStream os = new FileOutputStream(downloadedFile.getAbsolutePath());
 
-					Helper.copyStream(is, os);
+					if (JNAesCrypto.isEncrypted) {
+						JNAesCrypto.decryptIs(is, downloadedFile, context);
+					} else {
+						OutputStream os = new FileOutputStream(downloadedFile.getAbsolutePath());
+						Helper.copyStream(is, os);
+						os.close();
+					}
 
 					is.close();
-					os.close();
-				} catch (IllegalStateException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 

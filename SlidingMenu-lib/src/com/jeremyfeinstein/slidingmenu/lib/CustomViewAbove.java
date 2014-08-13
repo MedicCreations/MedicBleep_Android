@@ -414,6 +414,7 @@ public class CustomViewAbove extends ViewGroup {
 		int sy = getScrollY();
 		int dx = x - sx;
 		int dy = y - sy;
+
 		if (dx == 0 && dy == 0) {
 			completeScroll();
 			if (isMenuOpen()) {
@@ -768,7 +769,7 @@ public class CustomViewAbove extends ViewGroup {
 				endDrag();
 			} else if (mQuickReturn && mViewBehind.menuTouchInQuickReturn(mContent, mCurItem, ev.getX() + mScrollX)) {
 				// close the menu
-				setCurrentItem(1);
+				setCurrentItem(1, false);
 				endDrag();
 			}
 			break;

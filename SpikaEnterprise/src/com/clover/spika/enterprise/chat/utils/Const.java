@@ -107,6 +107,12 @@ public class Const {
 	public static final int GROUPS_TYPE = 2;
 	public static final String TYPE = "type";
 
+	// Sedebar items
+	public static final int ITEM_PROFILE = 1;
+	public static final int ITEM_LOBBY = 2;
+	public static final int ITEM_USERS = 3;
+	public static final int ITEM_GROUPS = 4;
+
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
 

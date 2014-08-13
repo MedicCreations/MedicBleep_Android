@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +30,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.GroupListActivity;
+import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
+import com.clover.spika.enterprise.chat.ProfileActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
@@ -39,6 +44,7 @@ import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public abstract class BaseActivity extends SlidingFragmentActivity {
@@ -267,6 +273,76 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		AnimUtils.fadeAnim(sidebarBtn, 0, 1, speedSearchAnimation);
 		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
 
+	}
+
+	// TODO
+	public void menuItemClick(int menuItem) {
+
+		switch (menuItem) {
+
+		case Const.ITEM_PROFILE:
+
+			slidingMenu.setOnClosedListener(new OnClosedListener() {
+
+				@Override
+				public void onClosed() {
+					Log.d("VidaCl", "Closed");
+					ProfileActivity.openProfile(BaseActivity.this, null);
+					slidingMenu.setOnClosedListener(null);
+				}
+			});
+			slidingMenu.toggle(true);
+
+			break;
+
+		case Const.ITEM_LOBBY:
+
+			slidingMenu.setOnClosedListener(new OnClosedListener() {
+
+				@Override
+				public void onClosed() {
+					Log.d("VidaCl", "Closed");
+					LobbyActivity.openLobby(BaseActivity.this);
+					slidingMenu.setOnClosedListener(null);
+				}
+			});
+			slidingMenu.toggle(true);
+
+			break;
+
+		case Const.ITEM_USERS:
+
+			slidingMenu.setOnClosedListener(new OnClosedListener() {
+
+				@Override
+				public void onClosed() {
+					Log.d("VidaCl", "Closed");
+					UserListActivity.openUsers(BaseActivity.this);
+					slidingMenu.setOnClosedListener(null);
+				}
+			});
+			slidingMenu.toggle(true);
+
+			break;
+
+		case Const.ITEM_GROUPS:
+
+			slidingMenu.setOnClosedListener(new OnClosedListener() {
+
+				@Override
+				public void onClosed() {
+					Log.d("VidaCl", "Closed");
+					GroupListActivity.openGroups(BaseActivity.this);
+					slidingMenu.setOnClosedListener(null);
+				}
+			});
+			slidingMenu.toggle(true);
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage) {

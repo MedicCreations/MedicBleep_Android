@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 public class Message implements Parcelable {
 
 	private boolean isMe = false;
+	private boolean isFailed = false;
 
 	@SerializedName("id")
 	private String id;
@@ -216,6 +217,14 @@ public class Message implements Parcelable {
 
 	public void setThumb_id(String thumb_id) {
 		this.thumb_id = thumb_id;
+	}
+
+	public boolean isFailed() {
+		return isFailed;
+	}
+
+	public void setFailed(boolean isFailed) {
+		this.isFailed = isFailed;
 	}
 
 }

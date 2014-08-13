@@ -12,7 +12,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +30,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.VoiceActivity;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
@@ -176,10 +176,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						Intent intent = new Intent(ctx, LocationActivity.class);
-						intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
-						intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
-						ctx.startActivity(intent);
+						if (msg.isFailed()) {
+							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
+						} else {
+							Intent intent = new Intent(ctx, LocationActivity.class);
+							intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
+							intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
+							ctx.startActivity(intent);
+						}
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
@@ -202,7 +206,11 @@ public class MessagesAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						// TODO decryption
-						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+						if (msg.isFailed()) {
+							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
+						} else {
+							new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+						}
 					}
 				});
 
@@ -258,10 +266,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						Intent intent = new Intent(ctx, LocationActivity.class);
-						intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
-						intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
-						ctx.startActivity(intent);
+						if (msg.isFailed()) {
+							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
+						} else {
+							Intent intent = new Intent(ctx, LocationActivity.class);
+							intent.putExtra(Const.LATITUDE, Double.valueOf(msg.getLatitude()));
+							intent.putExtra(Const.LONGITUDE, Double.valueOf(msg.getLongitude()));
+							ctx.startActivity(intent);
+						}
 					}
 				});
 
@@ -286,8 +298,11 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO decryption
-						new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+						if (msg.isFailed()) {
+							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
+						} else {
+							new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+						}
 					}
 				});
 
@@ -410,25 +425,17 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private Message decryptContent(Message msg) {
 
-		if (msg.getType() != Const.MSG_TYPE_DEFAULT && msg.getType() != Const.MSG_TYPE_LOCATION) {
-			return msg;
-		}
-		
-		Log.d("Vida", "Type1: " + msg.getType());
-
 		switch (msg.getType()) {
 
 		case Const.MSG_TYPE_DEFAULT:
 		case Const.MSG_TYPE_FILE:
-			
-			Log.d("Vida", "Type: " + msg.getType());
-			Log.d("Vida", "Type: " + msg.getText());
 
 			try {
 				msg.setText(JNAesCrypto.decryptJN(msg.getText()));
 			} catch (Exception e) {
 				e.printStackTrace();
 				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+				msg.setFailed(true);
 			}
 
 			break;
@@ -441,6 +448,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} catch (Exception e) {
 				e.printStackTrace();
 				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+				msg.setFailed(true);
 			}
 
 			break;

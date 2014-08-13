@@ -105,7 +105,7 @@
             android:name="com.clover.spika.enterprise.chat.VoiceActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".UserListActivity"
+            android:name="com.clover.spika.enterprise.chat.UserListActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
@@ -126,14 +126,18 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".PasscodeActivity"
+            android:name="com.clover.spika.enterprise.chat.PasscodeActivity"
             android:label="Passcode"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".NewPasscodeActivity"
+            android:name="com.clover.spika.enterprise.chat.NewPasscodeActivity"
             android:label="NewPasscodeActivity"
             android:launchMode="singleTop" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ProfileOtherActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

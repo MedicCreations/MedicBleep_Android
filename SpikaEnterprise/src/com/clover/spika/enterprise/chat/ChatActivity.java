@@ -90,6 +90,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
+		partnerIcon.setOnClickListener(this);
 		noItems = (TextView) findViewById(R.id.noItems);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
@@ -339,6 +340,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			Intent intent = new Intent(this, RecordAudioActivity.class);
 			intent.putExtra(Const.CHAT_ID, chatId);
 			startActivity(intent);
+		} else if (id == R.id.partnerIcon) {
+			ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
 		}
 	}
 

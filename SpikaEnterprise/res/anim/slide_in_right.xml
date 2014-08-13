@@ -21,7 +21,7 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <translate
-        android:duration="50"
+        android:duration="160"
         android:fillAfter="true"
         android:fillEnabled="true"
         android:fromXDelta="100%p"
