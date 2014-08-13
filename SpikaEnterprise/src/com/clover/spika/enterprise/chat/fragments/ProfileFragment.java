@@ -11,7 +11,6 @@ import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,25 +23,23 @@ import android.widget.TextView;
 
 public class ProfileFragment extends Fragment implements OnClickListener {
 
-	public ImageView profileImage;
-	public TextView profileName;
-	public TextView screenTitle;
 	public Switch mSwitchPasscodeEnabled;
-
 	public ImageLoader imageLoader;
 
-	// TODO fix opening
-	public static void openProfile(Context context, String fileId) {
-		// if (TextUtils.isEmpty(fileId)) {
-		// fileId = Helper.getUserImage(context);
-		// }
-		// Intent intent = new Intent(context,
-		// ProfileActivity.class).putExtra(Const.FIRSTNAME,
-		// Helper.getUserFirstName(context)).putExtra(Const.LASTNAME,
-		// Helper.getUserLastName(context)).putExtra(Const.USER_IMAGE_NAME,
-		// fileId);
-		// intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		// context.startActivity(intent);
+	String imageId;
+	String firstname;
+	String lastname;
+
+	public ProfileFragment(Intent intent) {
+		setData(intent);
+	}
+
+	public void setData(Intent intent) {
+		if (intent != null && intent.getExtras() != null) {
+			imageId = intent.getExtras().getString(Const.USER_IMAGE_NAME);
+			firstname = intent.getExtras().getString(Const.FIRSTNAME);
+			lastname = intent.getExtras().getString(Const.LASTNAME);
+		}
 	}
 
 	@SuppressLint("InflateParams")
@@ -52,21 +49,19 @@ public class ProfileFragment extends Fragment implements OnClickListener {
 		View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_profile, null);
 
 		imageLoader = new ImageLoader(getActivity());
-
-		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
+		rootView.findViewById(R.id.addPhoto).setOnClickListener(this);
 
 		int width = getResources().getDisplayMetrics().widthPixels;
 		int padding = (int) (width / 9);
 
+		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
 		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
 
-		profileName = (TextView) rootView.findViewById(R.id.profileName);
-		screenTitle = (TextView) rootView.findViewById(R.id.screenTitle);
+		imageLoader.displayImage(getActivity(), imageId, profileImage, false);
 
-		ImageView addPhoto = (ImageView) rootView.findViewById(R.id.addPhoto);
-		addPhoto.setOnClickListener(this);
-
+		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
+		
 		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));

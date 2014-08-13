@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -35,6 +37,8 @@ public class SidebarFragment extends Fragment {
 
 	String image;
 	ImageLoader imageLoader;
+
+	ProfileFragment pFragment;
 
 	public SidebarFragment() {
 	}
@@ -58,7 +62,19 @@ public class SidebarFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				switchFragment(new ProfileFragment());
+
+				Intent intent = new Intent();
+				intent.putExtra(Const.USER_IMAGE_NAME, Helper.getUserImage(getActivity()));
+				intent.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(getActivity()));
+				intent.putExtra(Const.LASTNAME, Helper.getUserLastName(getActivity()));
+
+				if (pFragment == null) {
+					pFragment = new ProfileFragment(intent);
+				}
+
+				((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
+
+				switchFragment(pFragment);
 			}
 		});
 

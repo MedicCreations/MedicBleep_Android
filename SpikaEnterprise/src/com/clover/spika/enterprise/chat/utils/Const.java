@@ -97,6 +97,7 @@ public class Const {
 	public static final String GROUP_NAME = "groupname";
 	public static final String FIRSTNAME = "firstname";
 	public static final String LASTNAME = "lastname";
+	public static final String SCREEN_TITLE = "ScreenTitle";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
 	public static final int MSG_TYPE_DEFAULT = 1;

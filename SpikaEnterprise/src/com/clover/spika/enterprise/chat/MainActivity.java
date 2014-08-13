@@ -125,6 +125,10 @@ public class MainActivity extends SlidingFragmentActivity {
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 	}
 
+	public void setScreenTitle(String title) {
+		screenTitle.setText(title);
+	}
+
 	public void switchContent(Fragment fragment) {
 		mFragment = fragment;
 		getFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
@@ -175,12 +179,7 @@ public class MainActivity extends SlidingFragmentActivity {
 		// TODO
 		if (intent != null && intent.getExtras() != null) {
 			if (mFragment != null && mFragment instanceof ProfileFragment) {
-				((ProfileFragment) mFragment).imageLoader.displayImage(this, intent.getExtras().getString(Const.USER_IMAGE_NAME), ((ProfileFragment) mFragment).profileImage, false);
-				((ProfileFragment) mFragment).profileName.setText(intent.getExtras().getString(Const.FIRSTNAME) + " " + intent.getExtras().getString(Const.LASTNAME));
-
-				if (intent.getExtras() != null && intent.getExtras().containsKey(Const.FIRSTNAME)) {
-					screenTitle.setText(intent.getExtras().getString(Const.FIRSTNAME, getResources().getString(R.string.profile)));
-				}
+				((ProfileFragment) mFragment).setData(intent);
 			}
 		}
 	}

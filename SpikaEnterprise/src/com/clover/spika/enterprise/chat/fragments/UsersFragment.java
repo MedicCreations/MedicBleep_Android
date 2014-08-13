@@ -15,7 +15,7 @@ public class UsersFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		int color = getResources().getColor(R.color.default_green_light);
+		int color = getResources().getColor(R.color.chat_menu_gray);
 		// construct the RelativeLayout
 		RelativeLayout v = new RelativeLayout(getActivity());
 		v.setBackgroundColor(color);
