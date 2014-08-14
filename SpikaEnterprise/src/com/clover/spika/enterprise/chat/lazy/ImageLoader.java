@@ -4,10 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +15,6 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
 
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -28,8 +24,6 @@ public class ImageLoader {
 
 	private MemoryCache memoryCache = new MemoryCache();
 	private FileCache fileCache;
-
-	private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
 	private ExecutorService executorService;
 	private Handler handler = new Handler();
@@ -54,9 +48,6 @@ public class ImageLoader {
 		// Check image is stored in MemoryCache Map or not (see
 		// MemoryCache.java)
 		Bitmap bitmap = memoryCache.get(url);
-
-		// Store image and url in Map
-		imageViews.put(imageView, url);
 
 		if (bitmap != null) {
 			// if image is stored in MemoryCache Map then
@@ -102,6 +93,7 @@ public class ImageLoader {
 		@Override
 		public void run() {
 			try {
+
 				// download image from web url
 				Bitmap bmp = getBitmap(context, photoToLoad.url);
 
@@ -124,17 +116,6 @@ public class ImageLoader {
 		}
 	}
 
-	private boolean imageViewReused(PhotoToLoad photoToLoad) {
-
-		String url = imageViews.get(photoToLoad.imageView);
-		// Check url is already exist in imageViews MAP
-		if (url == null || !url.equals(photoToLoad.url)) {
-			return true;
-		}
-
-		return false;
-	}
-
 	// Used to display bitmap in the UI thread
 	private class BitmapDisplayer implements Runnable {
 		Bitmap bitmap;
@@ -146,40 +127,12 @@ public class ImageLoader {
 		}
 
 		public void run() {
-			
-			if (imageViewReused(photoToLoad)) {
-				return;
-			}
 
 			// Show bitmap on UI
 			if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
 			}
 		}
-	}
-
-	/**
-	 * XXX
-	 * 
-	 * @param context
-	 * @param url
-	 * @param imageView
-	 */
-	public void getBitmapAsync(Context context, final String url, final ImageView imageView) {
-		new BaseAsyncTask<Void, Void, Bitmap>(context, false) {
-
-			protected Bitmap doInBackground(Void... params) {
-				return getBitmap(context, url);
-			};
-
-			protected void onPostExecute(Bitmap result) {
-				if (result != null) {
-					imageView.setImageBitmap(result);
-				} else {
-					imageView.setImageDrawable(null);
-				}
-			};
-		}.execute();
 	}
 
 	private Bitmap getBitmap(Context context, String url) {
@@ -245,7 +198,6 @@ public class ImageLoader {
 		// Clear cache directory downloaded images and stored data in maps
 		memoryCache.clear();
 		fileCache.clear();
-		imageViews.clear();
 	}
 
 	public void setDefaultImage(int id) {

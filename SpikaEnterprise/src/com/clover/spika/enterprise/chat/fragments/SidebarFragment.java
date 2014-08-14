@@ -90,7 +90,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 	private void setUserImage() {
 		if (getActivity() instanceof MainActivity) {
-			((MainActivity) getActivity()).getIMageLoader().displayImage(getActivity(), image, userImage);
+			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), image, userImage);
 		}
 	}
 

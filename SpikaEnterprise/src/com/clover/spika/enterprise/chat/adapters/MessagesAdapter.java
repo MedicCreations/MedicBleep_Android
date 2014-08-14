@@ -145,7 +145,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 				if (!msg.getThumb_id().equals((String) holder.meViewImage.getTag())) {
 					holder.meViewImage.setImageDrawable(null);
-					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.meViewImage);
+					imageLoader.displayImage(ctx, msg.getThumb_id(), holder.meViewImage);
 					holder.meViewImage.setTag(msg.getThumb_id());
 				}
 
@@ -232,7 +232,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 				if (!msg.getThumb_id().equals((String) holder.youViewImage.getTag())) {
 					holder.youViewImage.setImageDrawable(null);
-					imageLoader.getBitmapAsync(ctx, msg.getThumb_id(), holder.youViewImage);
+					imageLoader.displayImage(ctx, msg.getThumb_id(), holder.youViewImage);
 					holder.youViewImage.setTag(msg.getThumb_id());
 				}
 

@@ -173,7 +173,7 @@ public class ChatActivity extends MainActivity implements OnClickListener {
 	private void loadImage() {
 		if (!TextUtils.isEmpty(chatImage)) {
 			partnerIcon.setVisibility(View.VISIBLE);
-			imageLoader.getBitmapAsync(this, chatImage, partnerIcon);
+			imageLoader.displayImage(this, chatImage, partnerIcon);
 		} else {
 			partnerIcon.setVisibility(View.INVISIBLE);
 		}

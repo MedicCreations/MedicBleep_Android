@@ -53,7 +53,7 @@ public class PhotoActivity extends MainActivity {
 			imageUrl = intent.getExtras().getString(Const.IMAGE, "");
 
 			ImageLoader imageLoader = new ImageLoader(this);
-			imageLoader.getBitmapAsync(this, imageUrl, mImageView);
+			imageLoader.displayImage(this, imageUrl, mImageView);
 		}
 	}
 

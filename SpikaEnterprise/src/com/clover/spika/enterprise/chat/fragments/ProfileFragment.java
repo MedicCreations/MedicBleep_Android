@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,7 +69,12 @@ public class ProfileFragment extends Fragment implements OnClickListener {
 		super.onResume();
 
 		if (getActivity() instanceof MainActivity) {
-			((MainActivity) getActivity()).getIMageLoader().displayImage(getActivity(), imageId, profileImage);
+
+			if (!Helper.getUserImage(getActivity()).equals(imageId)) {
+				imageId = Helper.getUserImage(getActivity());
+			}
+
+			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), imageId, profileImage);
 		}
 	}
 
@@ -116,4 +122,41 @@ public class ProfileFragment extends Fragment implements OnClickListener {
 		}
 	}
 
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == Const.PASSCODE_ENTRY_VALIDATION_REQUEST) {
+			if (resultCode == Activity.RESULT_OK) {
+				// if by some chance session is not set to valid, set it now
+				if (!PasscodeUtility.getInstance().isSessionValid()) {
+					PasscodeUtility.getInstance().setSessionValid(true);
+				}
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(false);
+				getActivity().finish();
+			}
+		} else if (Const.REQUEST_NEW_PASSCODE == requestCode) {
+			if (resultCode == Activity.RESULT_OK) {
+				PasscodeUtility.getInstance().setSessionValid(true);
+
+				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
+					PasscodeUtility.getInstance().setPasscode(getActivity(), data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
+					PasscodeUtility.getInstance().setPasscodeEnabled(getActivity(), true);
+				}
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(false);
+				mSwitchPasscodeEnabled.setChecked(false);
+			}
+		} else if (Const.REQUEST_REMOVE_PASSCODE == requestCode) {
+			if (resultCode == Activity.RESULT_OK) {
+				PasscodeUtility.getInstance().setPasscodeEnabled(getActivity(), false);
+				PasscodeUtility.getInstance().setPasscode(getActivity(), "");
+				PasscodeUtility.getInstance().setSessionValid(true);
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(true);
+				mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
+			}
+		}
+	}
 }

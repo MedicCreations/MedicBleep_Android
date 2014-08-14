@@ -29,7 +29,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
@@ -134,7 +133,7 @@ public class MainActivity extends SlidingFragmentActivity {
 		screenTitle.setText(title);
 	}
 
-	public ImageLoader getIMageLoader() {
+	public ImageLoader getImageLoader() {
 		return imageLoader;
 	}
 
@@ -189,51 +188,6 @@ public class MainActivity extends SlidingFragmentActivity {
 				((ProfileFragment) mFragment).setData(intent);
 			}
 		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == Const.PASSCODE_ENTRY_VALIDATION_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				// if by some chance session is not set to valid, set it now
-				if (!PasscodeUtility.getInstance().isSessionValid()) {
-					PasscodeUtility.getInstance().setSessionValid(true);
-				}
-			} else {
-				PasscodeUtility.getInstance().setSessionValid(false);
-				finish();
-			}
-		} else if (Const.REQUEST_NEW_PASSCODE == requestCode) {
-			if (RESULT_OK == resultCode) {
-				PasscodeUtility.getInstance().setSessionValid(true);
-
-				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
-					PasscodeUtility.getInstance().setPasscode(this, data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
-					PasscodeUtility.getInstance().setPasscodeEnabled(this, true);
-				}
-			} else {
-				PasscodeUtility.getInstance().setSessionValid(false);
-
-				if (mFragment != null && mFragment instanceof ProfileFragment) {
-					((ProfileFragment) mFragment).mSwitchPasscodeEnabled.setChecked(false);
-				}
-			}
-		} else if (Const.REQUEST_REMOVE_PASSCODE == requestCode) {
-			if (RESULT_OK == resultCode) {
-				PasscodeUtility.getInstance().setPasscodeEnabled(this, false);
-				PasscodeUtility.getInstance().setPasscode(this, "");
-				PasscodeUtility.getInstance().setSessionValid(true);
-			} else {
-				PasscodeUtility.getInstance().setSessionValid(true);
-
-				if (mFragment != null && mFragment instanceof ProfileFragment) {
-					((ProfileFragment) mFragment).mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(this));
-				}
-			}
-		}
-
 	}
 
 	@Override

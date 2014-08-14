@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -86,8 +85,6 @@ public class UserListActivity extends MainActivity implements OnItemClickListene
 																										// footer
 																										// view
 
-		Log.d("Vida", "currentCount: " + currentCount);
-		Log.d("Vida", "mTotalCount: " + mTotalCount);
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
