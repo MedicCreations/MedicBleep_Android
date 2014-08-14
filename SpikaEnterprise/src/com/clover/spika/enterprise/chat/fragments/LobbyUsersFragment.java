@@ -14,7 +14,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.LobbyActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -36,21 +35,28 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_lobby, container, false);
+		View view = inflater.inflate(R.layout.fragment_lobby_child, container, false);
 
 		noItems = (TextView) view.findViewById(R.id.noItems);
+		
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
+		
 		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), true);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-
-		((LobbyActivity) getActivity()).getLobby(this);
+		
+		((LobbyFragment) getParentFragment()).getLobby(this);
 
 		return view;
 	}

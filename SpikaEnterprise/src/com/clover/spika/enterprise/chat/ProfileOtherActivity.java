@@ -7,11 +7,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
-public class ProfileOtherActivity extends MainActivity {
+public class ProfileOtherActivity extends BaseActivity {
 
 	ImageLoader imageLoader;
 	ImageView profileImage;

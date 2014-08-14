@@ -7,14 +7,15 @@ import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
-public class PhotoActivity extends MainActivity {
+public class PhotoActivity extends BaseActivity {
 
 	ImageButton goBack;
 	RelativeLayout imageLayout;
@@ -26,7 +27,8 @@ public class PhotoActivity extends MainActivity {
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_photo);
-		disableSidebar();
+		// TODO
+		// disableSidebar();
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new OnClickListener() {

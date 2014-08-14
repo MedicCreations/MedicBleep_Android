@@ -31,6 +31,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -42,7 +43,7 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
-public class ChatActivity extends MainActivity implements OnClickListener {
+public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private static final int PICK_FILE_RESULT_CODE = 987;
 
@@ -63,6 +64,8 @@ public class ChatActivity extends MainActivity implements OnClickListener {
 	public MessagesAdapter adapter;
 
 	private EditText etMessage;
+
+	private ImageButton goBack;
 
 	private String chatImage = null;
 	private String chatId = null;
@@ -118,6 +121,9 @@ public class ChatActivity extends MainActivity implements OnClickListener {
 
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(this);
+
+		goBack = (ImageButton) findViewById(R.id.goBack);
+		goBack.setOnClickListener(this);
 
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -341,6 +347,8 @@ public class ChatActivity extends MainActivity implements OnClickListener {
 			startActivity(intent);
 		} else if (id == R.id.partnerIcon) {
 			ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
+		} else if (id == R.id.goBack) {
+			finish();
 		}
 	}
 

@@ -2,9 +2,9 @@ package com.clover.spika.enterprise.chat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,17 +51,17 @@ public class MainActivity extends BaseActivity {
 
 		// start: set behind view (menu)
 		setBehindContentView(R.layout.sidebar_layout_empty);
-		getFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
 		// end: set behind view (menu)
 
 		// start: set the above view (content)
 		if (savedInstanceState != null)
-			mFragment = getFragmentManager().getFragment(savedInstanceState, "mainContent");
+			mFragment = getSupportFragmentManager().getFragment(savedInstanceState, "mainContent");
 		if (mFragment == null)
 			mFragment = new LobbyFragment();
 
 		setContentView(R.layout.activity_base);
-		getFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
 		// end: set the above view (content)
 
 		// start: set sliding menu options
@@ -102,7 +102,7 @@ public class MainActivity extends BaseActivity {
 
 	public void switchContent(Fragment fragment) {
 		mFragment = fragment;
-		getFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
 		getSlidingMenu().showContent();
 	}
 

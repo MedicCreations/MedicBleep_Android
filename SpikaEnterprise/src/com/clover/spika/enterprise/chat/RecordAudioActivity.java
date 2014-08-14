@@ -23,6 +23,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -30,7 +31,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
-public class RecordAudioActivity extends MainActivity {
+public class RecordAudioActivity extends BaseActivity {
 
 	private static int START_PLAYING = 0;
 	private static int PAUSE_PLAYING = 1;
@@ -67,7 +68,8 @@ public class RecordAudioActivity extends MainActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_audio);
-		disableSidebar();
+		// TODO
+		// disableSidebar();
 
 		findViewById(R.id.goBack).setOnClickListener(new OnClickListener() {
 

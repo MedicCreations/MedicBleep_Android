@@ -23,12 +23,13 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
-public class RecordVideoActivity extends MainActivity {
+public class RecordVideoActivity extends BaseActivity {
 
 	private static final int RESULT_FROM_GALLERY = 55;
 	private static final int RESULT_FROM_CAMERA = 56;
@@ -58,7 +59,8 @@ public class RecordVideoActivity extends MainActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_video);
-		disableSidebar();
+		// TODO
+		// disableSidebar();
 
 		setRecordingVideoActivity();
 

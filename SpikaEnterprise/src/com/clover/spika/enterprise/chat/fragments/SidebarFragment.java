@@ -1,8 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,7 +118,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.lobby:
 
-			// TODO
 			if (lobbyFragment == null) {
 				lobbyFragment = new LobbyFragment();
 			}
@@ -130,7 +129,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.users:
 
-			// TODO
 			if (usersFragment == null) {
 				usersFragment = new UsersFragment();
 			}
@@ -142,7 +140,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.groups:
 
-			// TODO
 			if (groupsFragment == null) {
 				groupsFragment = new GroupsFragment();
 			}

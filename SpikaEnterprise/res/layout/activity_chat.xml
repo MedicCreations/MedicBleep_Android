@@ -10,14 +10,14 @@
         android:background="@color/default_blue" >
 
         <ImageButton
-            android:id="@+id/sidebarBtn"
+            android:id="@+id/goBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
             android:background="@drawable/selector_transp_blue"
             android:contentDescription="@null"
             android:padding="10dp"
-            android:src="@drawable/icon_sidebar" />
+            android:src="@drawable/btn_back" />
 
         <com.clover.spika.enterprise.chat.views.RobotoThinTextView
             android:id="@+id/screenTitle"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_toLeftOf="@+id/partnerIcon"
-            android:layout_toRightOf="@+id/sidebarBtn"
+            android:layout_toRightOf="@+id/goBack"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"

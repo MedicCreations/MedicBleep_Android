@@ -12,6 +12,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.LocationApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
@@ -32,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Shows user current location or other user's previous sent location.
  */
 
-public class LocationActivity extends MainActivity {
+public class LocationActivity extends BaseActivity {
 
 	private GoogleMap mMap;
 	private GPSTracker mGpsTracker;
@@ -53,7 +54,6 @@ public class LocationActivity extends MainActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_location);
-		disableSidebar();
 
 		if (new GoogleUtils().checkGooglePlayServicesForUpdate(this)) {
 			return;

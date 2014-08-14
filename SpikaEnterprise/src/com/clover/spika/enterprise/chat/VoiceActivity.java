@@ -5,6 +5,7 @@ import java.io.File;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -17,7 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-public class VoiceActivity extends MainActivity {
+public class VoiceActivity extends BaseActivity {
 
 	private static String sFileName = null;
 
@@ -35,7 +36,8 @@ public class VoiceActivity extends MainActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_audio);
-		disableSidebar();
+		// TODO
+		// disableSidebar();
 
 		findViewById(R.id.sendAudio).setVisibility(View.INVISIBLE);
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
