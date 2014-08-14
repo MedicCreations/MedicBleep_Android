@@ -27,6 +27,7 @@
             <com.clover.spika.enterprise.chat.views.RoundImageView
                 android:id="@+id/userImage"
                 android:layout_width="match_parent"
+                android:src="@drawable/default_user_image"
                 android:layout_height="match_parent"
                 android:contentDescription="@null" />
         </RelativeLayout>

@@ -16,6 +16,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
@@ -23,6 +24,7 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
 
 public class MainActivity extends BaseActivity {
 
@@ -43,7 +45,7 @@ public class MainActivity extends BaseActivity {
 	ImageLoader imageLoader;
 
 	/* Fragment currently in use */
-	Fragment mFragment;
+	CustomFragment mFragment;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,7 @@ public class MainActivity extends BaseActivity {
 
 		// start: set the above view (content)
 		if (savedInstanceState != null)
-			mFragment = getSupportFragmentManager().getFragment(savedInstanceState, "mainContent");
+			mFragment = (CustomFragment) getSupportFragmentManager().getFragment(savedInstanceState, "mainContent");
 		if (mFragment == null)
 			mFragment = new LobbyFragment();
 
@@ -82,10 +84,17 @@ public class MainActivity extends BaseActivity {
 				slidingMenu.toggle(true);
 			}
 		});
+		
+		slidingMenu.setOnClosedListener(new OnClosedListener() {
+			
+			@Override
+			public void onClosed() {
+				mFragment.onClosed();
+			}
+		});
 		// end: set sliding menu options
 
 		imageLoader = new ImageLoader(this);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
@@ -101,7 +110,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	public void switchContent(Fragment fragment) {
-		mFragment = fragment;
+		mFragment = (CustomFragment) fragment;
 		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
 		getSlidingMenu().showContent();
 	}

@@ -64,7 +64,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		};
 		// end: handle notifications
 	}
-
+	
 	@Override
 	protected void onResume() {
 		super.onResume();

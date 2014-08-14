@@ -17,12 +17,13 @@ import android.widget.ToggleButton;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.LobbyChangedListener;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class LobbyFragment extends Fragment implements OnPageChangeListener, OnClickListener {
+public class LobbyFragment extends CustomFragment implements OnPageChangeListener, OnClickListener {
 
 	ViewPager viewPager;
 	ToggleButton groupsTab;

@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 // TODO implement groups
-public class GroupsFragment extends Fragment {
+public class GroupsFragment extends CustomFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

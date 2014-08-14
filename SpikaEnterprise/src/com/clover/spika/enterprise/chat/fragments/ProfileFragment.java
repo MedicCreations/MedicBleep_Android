@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,11 +16,12 @@ import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 
-public class ProfileFragment extends Fragment implements OnClickListener {
+public class ProfileFragment extends CustomFragment implements OnClickListener {
 
 	public Switch mSwitchPasscodeEnabled;
 	public ImageView profileImage;
@@ -65,9 +65,7 @@ public class ProfileFragment extends Fragment implements OnClickListener {
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-
+	public void onClosed() {
 		if (getActivity() instanceof MainActivity) {
 
 			if (!Helper.getUserImage(getActivity()).equals(imageId)) {
