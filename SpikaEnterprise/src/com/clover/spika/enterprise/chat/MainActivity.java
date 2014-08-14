@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -68,6 +69,8 @@ public class MainActivity extends SlidingFragmentActivity {
 
 	public PushBroadcastReceiver myPushRecevier;
 	public IntentFilter intentFilter;
+
+	private ImageLoader imageLoader;
 
 	private Fragment mFragment;
 
@@ -122,11 +125,17 @@ public class MainActivity extends SlidingFragmentActivity {
 		setContentView(R.layout.activity_base);
 		getFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
 
+		imageLoader = new ImageLoader(this);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 	}
 
 	public void setScreenTitle(String title) {
 		screenTitle.setText(title);
+	}
+
+	public ImageLoader getIMageLoader() {
+		return imageLoader;
 	}
 
 	public void switchContent(Fragment fragment) {
@@ -171,12 +180,10 @@ public class MainActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		// TODO
-		// getIntentData(intent);
+		getIntentData(intent);
 	}
 
 	private void getIntentData(Intent intent) {
-		// TODO
 		if (intent != null && intent.getExtras() != null) {
 			if (mFragment != null && mFragment instanceof ProfileFragment) {
 				((ProfileFragment) mFragment).setData(intent);

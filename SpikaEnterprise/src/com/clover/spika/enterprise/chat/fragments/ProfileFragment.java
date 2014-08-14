@@ -1,15 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import com.clover.spika.enterprise.chat.NewPasscodeActivity;
-import com.clover.spika.enterprise.chat.PasscodeActivity;
-import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-
-import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,10 +11,22 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.MainActivity;
+import com.clover.spika.enterprise.chat.NewPasscodeActivity;
+import com.clover.spika.enterprise.chat.PasscodeActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+
 public class ProfileFragment extends Fragment implements OnClickListener {
 
 	public Switch mSwitchPasscodeEnabled;
-	public ImageLoader imageLoader;
+	public ImageView profileImage;
+
+	int width = 0;
+	int padding = 0;
 
 	String imageId;
 	String firstname;
@@ -34,39 +36,48 @@ public class ProfileFragment extends Fragment implements OnClickListener {
 		setData(intent);
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		width = getResources().getDisplayMetrics().widthPixels;
+		padding = (int) (width / 9);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+		View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+		rootView.findViewById(R.id.addPhoto).setOnClickListener(this);
+		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
+
+		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
+		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
+		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
+
+		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
+		mSwitchPasscodeEnabled.setOnClickListener(this);
+		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
+
+		return rootView;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).getIMageLoader().displayImage(getActivity(), imageId, profileImage);
+		}
+	}
+
 	public void setData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 			imageId = intent.getExtras().getString(Const.USER_IMAGE_NAME);
 			firstname = intent.getExtras().getString(Const.FIRSTNAME);
 			lastname = intent.getExtras().getString(Const.LASTNAME);
 		}
-	}
-
-	@SuppressLint("InflateParams")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-		View rootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_profile, null);
-
-		imageLoader = new ImageLoader(getActivity());
-		rootView.findViewById(R.id.addPhoto).setOnClickListener(this);
-
-		int width = getResources().getDisplayMetrics().widthPixels;
-		int padding = (int) (width / 9);
-
-		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
-		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
-
-		imageLoader.displayImage(getActivity(), imageId, profileImage, false);
-
-		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
-		
-		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
-		mSwitchPasscodeEnabled.setOnClickListener(this);
-		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
-
-		return rootView;
 	}
 
 	@Override

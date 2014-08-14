@@ -2,12 +2,8 @@ package com.clover.spika.enterprise.chat.lazy;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,34 +15,26 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.widget.ImageView;
 
-import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ImageLoader {
 
-	// Initialize MemoryCache
-	MemoryCache memoryCache = new MemoryCache();
+	private MemoryCache memoryCache = new MemoryCache();
+	private FileCache fileCache;
 
-	FileCache fileCache;
-
-	// Create Map (collection) to store image and image url in key value pair
 	private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-	ExecutorService executorService;
 
-	// handler to display images in UI thread
-	Handler handler = new Handler();
+	private ExecutorService executorService;
+	private Handler handler = new Handler();
 
-	int radius = 0;
-	int id = -1;
+	private int defaultImageId = -1;
 
 	public ImageLoader(Context context) {
 
@@ -55,25 +43,20 @@ public class ImageLoader {
 		// Creates a thread pool that reuses a fixed number of
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
-
-		Bitmap bitmapBorder = BitmapFactory.decodeResource(context.getResources(), R.drawable.circle);
-		radius = bitmapBorder.getWidth();
-		bitmapBorder = null;
 	}
 
-	public void setDefaultImage(int id) {
-		this.id = id;
-	}
+	public void displayImage(Context ctx, String url, ImageView imageView) {
 
-	public void displayImage(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
-		// Store image and url in Map
-		if (id != -1)
-			imageView.setImageResource(id);
-		imageViews.put(imageView, url);
+		if (defaultImageId != -1) {
+			imageView.setImageResource(defaultImageId);
+		}
 
 		// Check image is stored in MemoryCache Map or not (see
 		// MemoryCache.java)
 		Bitmap bitmap = memoryCache.get(url);
+
+		// Store image and url in Map
+		imageViews.put(imageView, url);
 
 		if (bitmap != null) {
 			// if image is stored in MemoryCache Map then
@@ -81,13 +64,13 @@ public class ImageLoader {
 			imageView.setImageBitmap(bitmap);
 		} else {
 			// queue Photo to download from url
-			queuePhoto(ctx, url, imageView, isRoundedLive);
+			queuePhoto(ctx, url, imageView);
 		}
 	}
 
-	private void queuePhoto(Context ctx, String url, ImageView imageView, boolean isRoundedLive) {
+	private void queuePhoto(Context ctx, String url, ImageView imageView) {
 		// Store image and url in PhotoToLoad object
-		PhotoToLoad p = new PhotoToLoad(url, imageView, isRoundedLive);
+		PhotoToLoad p = new PhotoToLoad(url, imageView);
 
 		// pass PhotoToLoad object to PhotosLoader runnable class
 		// and submit PhotosLoader runnable to executers to run runnable
@@ -100,16 +83,14 @@ public class ImageLoader {
 	private class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
-		public boolean isRoundedLive;
 
-		public PhotoToLoad(String u, ImageView i, boolean r) {
-			url = u;
-			imageView = i;
-			isRoundedLive = r;
+		public PhotoToLoad(String url, ImageView imageView) {
+			this.url = url;
+			this.imageView = imageView;
 		}
 	}
 
-	class PhotosLoader implements Runnable {
+	private class PhotosLoader implements Runnable {
 		PhotoToLoad photoToLoad;
 		Context context;
 
@@ -121,17 +102,11 @@ public class ImageLoader {
 		@Override
 		public void run() {
 			try {
-				// Check if image already downloaded
-				if (imageViewReused(photoToLoad))
-					return;
 				// download image from web url
-				Bitmap bmp = getBitmap(context, photoToLoad.url, photoToLoad.isRoundedLive);
+				Bitmap bmp = getBitmap(context, photoToLoad.url);
 
 				// set image data in Memory Cache
 				memoryCache.put(photoToLoad.url, bmp);
-
-				if (imageViewReused(photoToLoad))
-					return;
 
 				// Get bitmap to display
 				BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad);
@@ -149,119 +124,52 @@ public class ImageLoader {
 		}
 	}
 
-	private Bitmap getBitmap(Context context, String url, boolean isRoundedLive) {
-		File f = fileCache.getFile(url);
+	private boolean imageViewReused(PhotoToLoad photoToLoad) {
 
-		// from SD cache
-		// CHECK : if trying to decode file which not exist in cache return null
-		Bitmap b = decodeFile(f);
-		if (b != null) {
-			if (isRoundedLive) {
-				return Helper.getCroppedBitmap(b, null, radius);
-			} else {
-				return b;
-			}
+		String url = imageViews.get(photoToLoad.imageView);
+		// Check url is already exist in imageViews MAP
+		if (url == null || !url.equals(photoToLoad.url)) {
+			return true;
 		}
-		// Download image file from web
-		try {
 
-			Bitmap bitmap = null;
+		return false;
+	}
 
-			HashMap<String, String> getParams = new HashMap<String, String>();
-			getParams.put(Const.FILE_ID, url);
+	// Used to display bitmap in the UI thread
+	private class BitmapDisplayer implements Runnable {
+		Bitmap bitmap;
+		PhotoToLoad photoToLoad;
 
-			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
+		public BitmapDisplayer(Bitmap bitmap, PhotoToLoad photoLoad) {
+			this.bitmap = bitmap;
+			this.photoToLoad = photoLoad;
+		}
 
-			// Constructs a new FileOutputStream that writes to file
-			// if file not exist then it will create file
-			OutputStream os = new FileOutputStream(f);
-
-			// See Utils class CopyStream method
-			// It will each pixel from input stream and
-			// write pixels to output stream (file)
-			Helper.copyStream(is, os);
-
-			is.close();
-			os.close();
-			// conn.disconnect();
-
-			// Now file created and going to resize file with defined height
-			// Decodes image and scales it to reduce memory consumption
-			bitmap = decodeFile(f);
-
-			if (isRoundedLive) {
-				return Helper.getCroppedBitmap(bitmap, null, radius);
-			} else {
-				return bitmap;
+		public void run() {
+			
+			if (imageViewReused(photoToLoad)) {
+				return;
 			}
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-			if (ex instanceof OutOfMemoryError)
-				memoryCache.clear();
-			return null;
+
+			// Show bitmap on UI
+			if (bitmap != null) {
+				photoToLoad.imageView.setImageBitmap(bitmap);
+			}
 		}
 	}
 
+	/**
+	 * XXX
+	 * 
+	 * @param context
+	 * @param url
+	 * @param imageView
+	 */
 	public void getBitmapAsync(Context context, final String url, final ImageView imageView) {
 		new BaseAsyncTask<Void, Void, Bitmap>(context, false) {
 
-			File file = fileCache.getFile(url);;
-
 			protected Bitmap doInBackground(Void... params) {
-
-				// start: Get image from cache
-				try {
-
-					String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
-					Bitmap localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
-					
-					if (localBitmap != null) {
-						return localBitmap;
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				// end: Get image from cache
-
-				// start: Download image
-				try {
-					Bitmap bitmap = null;
-
-					HashMap<String, String> getParams = new HashMap<String, String>();
-					getParams.put(Const.FILE_ID, url);
-
-					InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
-
-					BufferedInputStream bis = new BufferedInputStream(is);
-
-					ByteArrayBuffer baf = new ByteArrayBuffer(20000);
-					int current = 0;
-					while ((current = bis.read()) != -1) {
-						baf.append((byte) current);
-					}
-
-					/* Convert the Bytes read to a String. */
-					FileOutputStream fos = new FileOutputStream(file);
-					fos.write(baf.toByteArray());
-					fos.flush();
-					fos.close();
-					is.close();
-
-					String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
-					bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
-					
-					return bitmap;
-
-				} catch (Throwable ex) {
-					ex.printStackTrace();
-					if (ex instanceof OutOfMemoryError) {
-						memoryCache.clear();
-					}
-				}
-				// end: Download image
-
-				return null;
+				return getBitmap(context, url);
 			};
 
 			protected void onPostExecute(Bitmap result) {
@@ -274,59 +182,74 @@ public class ImageLoader {
 		}.execute();
 	}
 
-	// Decodes image and scales it to reduce memory consumption
-	private Bitmap decodeFile(File f) {
+	private Bitmap getBitmap(Context context, String url) {
 
+		File file = fileCache.getFile(url);
+
+		// start: Get image from cache
 		try {
-			BitmapFactory.Options o2 = new BitmapFactory.Options();
 
-			FileInputStream stream2 = new FileInputStream(f);
-			Bitmap bitmap = BitmapFactory.decodeStream(stream2, null, o2);
-			stream2.close();
+			String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
+			Bitmap localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
+
+			if (localBitmap != null) {
+				return localBitmap;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// end: Get image from cache
+
+		// start: Download image
+		try {
+			Bitmap bitmap = null;
+
+			HashMap<String, String> getParams = new HashMap<String, String>();
+			getParams.put(Const.FILE_ID, url);
+
+			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
+
+			BufferedInputStream bis = new BufferedInputStream(is);
+
+			ByteArrayBuffer baf = new ByteArrayBuffer(20000);
+			int current = 0;
+			while ((current = bis.read()) != -1) {
+				baf.append((byte) current);
+			}
+
+			/* Convert the Bytes read to a String. */
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(baf.toByteArray());
+			fos.flush();
+			fos.close();
+			is.close();
+
+			String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
+			bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
 
 			return bitmap;
 
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+			if (ex instanceof OutOfMemoryError) {
+				clearCache();
+			}
 		}
+		// end: Download image
+
 		return null;
 	}
 
-	boolean imageViewReused(PhotoToLoad photoToLoad) {
-
-		String tag = imageViews.get(photoToLoad.imageView);
-		// Check url is already exist in imageViews MAP
-		if (tag == null || !tag.equals(photoToLoad.url))
-			return true;
-		return false;
-	}
-
-	// Used to display bitmap in the UI thread
-	class BitmapDisplayer implements Runnable {
-		Bitmap bitmap;
-		PhotoToLoad photoToLoad;
-
-		public BitmapDisplayer(Bitmap b, PhotoToLoad p) {
-			bitmap = b;
-			photoToLoad = p;
-		}
-
-		public void run() {
-			if (imageViewReused(photoToLoad))
-				return;
-
-			// Show bitmap on UI
-			if (bitmap != null) {
-				photoToLoad.imageView.setImageBitmap(bitmap);
-			}
-		}
-	}
-
-	public void clearCache() {
+	private void clearCache() {
 		// Clear cache directory downloaded images and stored data in maps
 		memoryCache.clear();
 		fileCache.clear();
+		imageViews.clear();
+	}
+
+	public void setDefaultImage(int id) {
+		this.defaultImageId = id;
 	}
 
 }

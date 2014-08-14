@@ -62,7 +62,7 @@ public class GroupAdapter extends BaseAdapter {
 		// Assign values
 		final Group group = (Group) getItem(position);
 
-		imageLoader.displayImage(cntx, group.getImage_thumb(), holder.talkImg, false);
+		imageLoader.displayImage(cntx, group.getImage_thumb(), holder.talkImg);
 		// holder.talkImg.setImageResource(R.drawable.skiper);
 
 		holder.talkName.setText(group.getGroupName());

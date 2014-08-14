@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,7 @@ import com.jeremyfeinstein.slidingmenu.lib.CustomViewAbove.OnPageChangeListener;
 
 public class SlidingMenu extends RelativeLayout {
 
-	// private static final String TAG = SlidingMenu.class.getSimpleName();
+	private static final String TAG = SlidingMenu.class.getSimpleName();
 
 	public static final int SLIDING_WINDOW = 0;
 	public static final int SLIDING_CONTENT = 1;
@@ -500,10 +501,10 @@ public class SlidingMenu extends RelativeLayout {
 		if (b) {
 			setSlidingEnabled(false);
 			mViewAbove.setCustomViewBehind(null);
-			mViewAbove.setCurrentItem(1, false);
+			mViewAbove.setCurrentItem(1);
 			// mViewBehind.setCurrentItem(0);
 		} else {
-			mViewAbove.setCurrentItem(1, false);
+			mViewAbove.setCurrentItem(1);
 			// mViewBehind.setCurrentItem(1);
 			mViewAbove.setCustomViewBehind(mViewBehind);
 			setSlidingEnabled(true);
@@ -683,6 +684,7 @@ public class SlidingMenu extends RelativeLayout {
 		} catch (Exception e) {
 			width = display.getWidth();
 		}
+		// setBehindOffset(width-i);
 
 		int percent = (int) (width * 0.80f);
 
@@ -1065,7 +1067,7 @@ public class SlidingMenu extends RelativeLayout {
 	protected void onRestoreInstanceState(Parcelable state) {
 		SavedState ss = (SavedState) state;
 		super.onRestoreInstanceState(ss.getSuperState());
-		mViewAbove.setCurrentItem(ss.getItem(), false);
+		mViewAbove.setCurrentItem(ss.getItem());
 	}
 
 	/*
@@ -1081,7 +1083,7 @@ public class SlidingMenu extends RelativeLayout {
 		int topPadding = insets.top;
 		int bottomPadding = insets.bottom;
 		if (!mActionbarOverlay) {
-			// Log.v(TAG, "setting padding!");
+			Log.v(TAG, "setting padding!");
 			setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
 		}
 		return true;
@@ -1098,8 +1100,7 @@ public class SlidingMenu extends RelativeLayout {
 		if (layerType != getContent().getLayerType()) {
 			getHandler().post(new Runnable() {
 				public void run() {
-					// Log.v(TAG, "changing layerType. hardware? " + (layerType
-					// == View.LAYER_TYPE_HARDWARE));
+					Log.v(TAG, "changing layerType. hardware? " + (layerType == View.LAYER_TYPE_HARDWARE));
 					getContent().setLayerType(layerType, null);
 					getMenu().setLayerType(layerType, null);
 					if (getSecondaryMenu() != null) {

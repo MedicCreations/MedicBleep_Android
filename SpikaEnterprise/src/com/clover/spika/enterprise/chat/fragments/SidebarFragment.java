@@ -15,7 +15,6 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -23,8 +22,7 @@ import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
-// TODO implement reuse fragments
-public class SidebarFragment extends Fragment {
+public class SidebarFragment extends Fragment implements OnClickListener {
 
 	RoundImageView userImage;
 	RobotoThinTextView userName;
@@ -36,11 +34,19 @@ public class SidebarFragment extends Fragment {
 	RobotoThinButton logout;
 
 	String image;
-	ImageLoader imageLoader;
 
-	ProfileFragment pFragment;
+	ProfileFragment profileFragment;
+	LobbyFragment lobbyFragment;
+	UsersFragment usersFragment;
+	GroupsFragment groupsFragment;
 
 	public SidebarFragment() {
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		image = Helper.getUserImage(getActivity());
 	}
 
 	@Override
@@ -49,79 +55,26 @@ public class SidebarFragment extends Fragment {
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
 		userImage = (RoundImageView) view.findViewById(R.id.userImage);
-		imageLoader = new ImageLoader(getActivity());
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
-		image = Helper.getUserImage(getActivity());
-		imageLoader.displayImage(getActivity(), image, userImage, false);
+
+		setUserImage();
 
 		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
 		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
 
 		profile = (Button) view.findViewById(R.id.profile);
-		profile.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				Intent intent = new Intent();
-				intent.putExtra(Const.USER_IMAGE_NAME, Helper.getUserImage(getActivity()));
-				intent.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(getActivity()));
-				intent.putExtra(Const.LASTNAME, Helper.getUserLastName(getActivity()));
-
-				if (pFragment == null) {
-					pFragment = new ProfileFragment(intent);
-				}
-
-				((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
-
-				switchFragment(pFragment);
-			}
-		});
+		profile.setOnClickListener(this);
 
 		lobby = (RobotoThinButton) view.findViewById(R.id.lobby);
-		lobby.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				switchFragment(new LobbyFragment());
-			}
-		});
+		lobby.setOnClickListener(this);
 
 		users = (RobotoThinButton) view.findViewById(R.id.users);
-		users.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				switchFragment(new UsersFragment());
-			}
-		});
+		users.setOnClickListener(this);
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
-		groups.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				switchFragment(new GroupsFragment());
-			}
-		});
+		groups.setOnClickListener(this);
 
 		logout = (RobotoThinButton) view.findViewById(R.id.logout);
-		logout.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				new UserApi().updateUserToken(getActivity(), new ApiCallback<BaseModel>() {
-
-					@Override
-					public void onApiResponse(Result<BaseModel> result) {
-						if (result.isSuccess()) {
-							Helper.logout(getActivity());
-						} else {
-							new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
-						}
-					}
-				});
-			}
-		});
+		logout.setOnClickListener(this);
 
 		return view;
 	}
@@ -131,7 +84,92 @@ public class SidebarFragment extends Fragment {
 		super.onResume();
 		if (!image.equals(Helper.getUserImage(getActivity()))) {
 			image = Helper.getUserImage(getActivity());
-			imageLoader.displayImage(getActivity(), image, userImage, true);
+			setUserImage();
+		}
+	}
+
+	private void setUserImage() {
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).getIMageLoader().displayImage(getActivity(), image, userImage);
+		}
+	}
+
+	@Override
+	public void onClick(View view) {
+
+		Intent intent = new Intent();
+
+		switch (view.getId()) {
+
+		case R.id.profile:
+
+			intent.putExtra(Const.USER_IMAGE_NAME, Helper.getUserImage(getActivity()));
+			intent.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(getActivity()));
+			intent.putExtra(Const.LASTNAME, Helper.getUserLastName(getActivity()));
+
+			if (profileFragment == null) {
+				profileFragment = new ProfileFragment(intent);
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
+			switchFragment(profileFragment);
+
+			break;
+
+		case R.id.lobby:
+
+			// TODO
+			if (lobbyFragment == null) {
+				lobbyFragment = new LobbyFragment();
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.lobby));
+			switchFragment(lobbyFragment);
+
+			break;
+
+		case R.id.users:
+
+			// TODO
+			if (usersFragment == null) {
+				usersFragment = new UsersFragment();
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.users));
+			switchFragment(usersFragment);
+
+			break;
+
+		case R.id.groups:
+
+			// TODO
+			if (groupsFragment == null) {
+				groupsFragment = new GroupsFragment();
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.groups));
+			switchFragment(groupsFragment);
+
+			break;
+
+		case R.id.logout:
+
+			new UserApi().updateUserToken(getActivity(), new ApiCallback<BaseModel>() {
+
+				@Override
+				public void onApiResponse(Result<BaseModel> result) {
+					if (result.isSuccess()) {
+						Helper.logout(getActivity());
+					} else {
+						new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
+					}
+				}
+			});
+
+			break;
+
+		default:
+			break;
 		}
 	}
 

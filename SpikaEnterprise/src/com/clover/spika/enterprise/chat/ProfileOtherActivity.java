@@ -58,7 +58,7 @@ public class ProfileOtherActivity extends MainActivity {
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage, false);
+			imageLoader.getBitmapAsync(this, intent.getExtras().getString(Const.IMAGE), profileImage);
 			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 		}
 	}

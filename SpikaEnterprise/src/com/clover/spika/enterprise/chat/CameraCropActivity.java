@@ -686,9 +686,6 @@ public class CameraCropActivity extends Activity implements OnTouchListener, OnC
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
 				if (result.isSuccess()) {
-					// TODO profile fragment
-					// ProfileActivity.openProfile(CameraCropActivity.this,
-					// fileId);
 					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {

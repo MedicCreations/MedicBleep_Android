@@ -80,6 +80,7 @@ public class Helper {
 	 * @param uri
 	 * @return
 	 */
+	// TODO
 	public static String getImagePath(Context cntx, Uri uri, boolean isOverJellyBeam) {
 
 		if (isOverJellyBeam) {
@@ -184,18 +185,7 @@ public class Helper {
 				if (result != null) {
 					@SuppressWarnings("unused")
 					int code = result.getInt(Const.CODE);
-					// This was used when your account has been blocked, it can
-					// be refactored to show something else depending on the
-					// returnning code
-					// if (code == Const.E_YOUR_ACC_IS_BLOCKED) {
-					//
-					// Intent intent = new Intent(BaseActivity.getInstance(),
-					// AccountBlockedActivity.class);
-					// intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					// BaseActivity.getInstance().startActivity(intent);
-					//
-					// return null;
-					// }
+					// This can be used to intercept the whole api response
 				}
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -263,33 +253,6 @@ public class Helper {
 			return new JSONArray(string);
 		} catch (Exception e) {
 			return null;
-		}
-	}
-
-	/**
-	 * get rounded bitmap
-	 * 
-	 * @param bmp
-	 * @param path
-	 * @param radius
-	 * @return
-	 */
-	public static Bitmap getCroppedBitmap(Bitmap bmp, String path, int radius) {
-
-		if (path != null) {
-			bmp = BitmapFactory.decodeFile(path);
-
-			if (bmp == null) {
-				return null;
-			}
-
-			return getRoundedBitmap(bmp, radius);
-		} else {
-			if (bmp == null) {
-				return null;
-			}
-
-			return getRoundedBitmap(bmp, radius);
 		}
 	}
 
