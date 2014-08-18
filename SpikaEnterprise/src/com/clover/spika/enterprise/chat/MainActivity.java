@@ -150,6 +150,11 @@ public class MainActivity extends BaseActivity {
 		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
 
+	/**
+	 * Set search bar
+	 * 
+	 * @param listener
+	 */
 	public void setSearch(OnSearchListener listener) {
 
 		searchBtn.setVisibility(View.VISIBLE);
@@ -162,6 +167,9 @@ public class MainActivity extends BaseActivity {
 		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
 	}
 
+	/**
+	 * Disable search bar
+	 */
 	public void disableSearch() {
 
 		if (isOpenSearch) {
