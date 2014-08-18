@@ -36,6 +36,7 @@ public class MainActivity extends BaseActivity {
 	/* Search bar */
 	ImageButton searchBtn;
 	EditText searchEt;
+	boolean isOpenSearch = false;
 
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
@@ -47,7 +48,6 @@ public class MainActivity extends BaseActivity {
 	/* Fragment currently in use */
 	CustomFragment mFragment;
 
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -100,6 +100,9 @@ public class MainActivity extends BaseActivity {
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchEt = (EditText) findViewById(R.id.searchEt);
 	}
 
 	public void setScreenTitle(String title) {
@@ -148,10 +151,8 @@ public class MainActivity extends BaseActivity {
 	}
 
 	public void setSearch(OnSearchListener listener) {
-		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-		searchEt = (EditText) findViewById(R.id.searchEt);
-		if (searchBtn == null || searchEt == null)
-			return;
+
+		searchBtn.setVisibility(View.VISIBLE);
 
 		mSearchListener = listener;
 
@@ -159,6 +160,16 @@ public class MainActivity extends BaseActivity {
 
 		searchEt.setOnEditorActionListener(editorActionListener);
 		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+	}
+
+	public void disableSearch() {
+
+		if (isOpenSearch) {
+			closeSearchAnimation();
+		}
+
+		searchBtn.setVisibility(View.GONE);
+		searchEt.setVisibility(View.GONE);
 	}
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
@@ -202,6 +213,7 @@ public class MainActivity extends BaseActivity {
 				searchBtn.setClickable(true);
 				sidebarBtn.setClickable(true);
 				showKeyboardForced(searchEt);
+				isOpenSearch = true;
 			}
 		});
 		AnimUtils.translationX(searchBtn, 0, -(screenWidth - searchBtn.getWidth()), speedSearchAnimation, null);
@@ -222,6 +234,7 @@ public class MainActivity extends BaseActivity {
 				super.onAnimationEnd(animation);
 				searchBtn.setClickable(true);
 				sidebarBtn.setClickable(true);
+				isOpenSearch = false;
 			}
 		});
 		AnimUtils.translationX(searchBtn, -(screenWidth - searchBtn.getWidth()), 0, speedSearchAnimation, null);

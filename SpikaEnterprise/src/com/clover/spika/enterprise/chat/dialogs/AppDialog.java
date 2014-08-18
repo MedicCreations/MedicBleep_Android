@@ -10,9 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CameraCropActivity;
+import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordVideoActivity;
-import com.clover.spika.enterprise.chat.UserListActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -96,7 +96,7 @@ public class AppDialog extends Dialog {
 				dismiss();
 
 				if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
-					Intent intent = new Intent(getContext(), UserListActivity.class);
+					Intent intent = new Intent(getContext(), LoginActivity.class);
 					getOwnerActivity().startActivity(intent);
 					getOwnerActivity().finish();
 
