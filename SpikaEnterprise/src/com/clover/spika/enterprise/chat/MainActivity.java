@@ -84,9 +84,9 @@ public class MainActivity extends BaseActivity {
 				slidingMenu.toggle(true);
 			}
 		});
-		
+
 		slidingMenu.setOnClosedListener(new OnClosedListener() {
-			
+
 			@Override
 			public void onClosed() {
 				mFragment.onClosed();
@@ -95,6 +95,7 @@ public class MainActivity extends BaseActivity {
 		// end: set sliding menu options
 
 		imageLoader = new ImageLoader(this);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 

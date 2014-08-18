@@ -4,7 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,11 +25,17 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ImageLoader {
 
-	private MemoryCache memoryCache = new MemoryCache();
-	private FileCache fileCache;
+	// Initialize MemoryCache
+	MemoryCache memoryCache = new MemoryCache();
 
-	private ExecutorService executorService;
-	private Handler handler = new Handler();
+	FileCache fileCache;
+
+	// Create Map (collection) to store image and image url in key value pair
+	private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	ExecutorService executorService;
+
+	// handler to display images in UI thread
+	Handler handler = new Handler();
 
 	private int defaultImageId = -1;
 
@@ -41,9 +50,8 @@ public class ImageLoader {
 
 	public void displayImage(Context ctx, String url, ImageView imageView) {
 
-		if (defaultImageId != -1) {
-			imageView.setImageResource(defaultImageId);
-		}
+		// Store image and url in Map
+		imageViews.put(imageView, url);
 
 		// Check image is stored in MemoryCache Map or not (see
 		// MemoryCache.java)
@@ -56,6 +64,11 @@ public class ImageLoader {
 		} else {
 			// queue Photo to download from url
 			queuePhoto(ctx, url, imageView);
+
+			// Before downloading image show default image
+			if (defaultImageId != -1) {
+				imageView.setImageResource(defaultImageId);
+			}
 		}
 	}
 
@@ -94,12 +107,19 @@ public class ImageLoader {
 		public void run() {
 			try {
 
+				// Check if image already downloaded
+				if (imageViewReused(photoToLoad))
+					return;
+
 				// download image from web url
 				Bitmap bmp = getBitmap(context, photoToLoad.url);
 
 				// set image data in Memory Cache
 				memoryCache.put(photoToLoad.url, bmp);
 
+				if (imageViewReused(photoToLoad))
+					return;
+				
 				// Get bitmap to display
 				BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad);
 
@@ -112,25 +132,6 @@ public class ImageLoader {
 
 			} catch (Throwable th) {
 				th.printStackTrace();
-			}
-		}
-	}
-
-	// Used to display bitmap in the UI thread
-	private class BitmapDisplayer implements Runnable {
-		Bitmap bitmap;
-		PhotoToLoad photoToLoad;
-
-		public BitmapDisplayer(Bitmap bitmap, PhotoToLoad photoLoad) {
-			this.bitmap = bitmap;
-			this.photoToLoad = photoLoad;
-		}
-
-		public void run() {
-
-			// Show bitmap on UI
-			if (bitmap != null) {
-				photoToLoad.imageView.setImageBitmap(bitmap);
 			}
 		}
 	}
@@ -194,7 +195,35 @@ public class ImageLoader {
 		return null;
 	}
 
-	private void clearCache() {
+	boolean imageViewReused(PhotoToLoad photoToLoad) {
+
+		String tag = imageViews.get(photoToLoad.imageView);
+		// Check url is already exist in imageViews MAP
+		if (tag == null || !tag.equals(photoToLoad.url))
+			return true;
+		return false;
+	}
+
+	// Used to display bitmap in the UI thread
+	private class BitmapDisplayer implements Runnable {
+		Bitmap bitmap;
+		PhotoToLoad photoToLoad;
+
+		public BitmapDisplayer(Bitmap bitmap, PhotoToLoad photoLoad) {
+			this.bitmap = bitmap;
+			this.photoToLoad = photoLoad;
+		}
+
+		public void run() {
+			
+			// Show bitmap on UI
+			if (bitmap != null) {
+				photoToLoad.imageView.setImageBitmap(bitmap);
+			}
+		}
+	}
+
+	public void clearCache() {
 		// Clear cache directory downloaded images and stored data in maps
 		memoryCache.clear();
 		fileCache.clear();

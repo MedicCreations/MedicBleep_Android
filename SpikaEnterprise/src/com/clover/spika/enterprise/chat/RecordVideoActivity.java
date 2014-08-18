@@ -351,7 +351,9 @@ public class RecordVideoActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		new File(sFileName).delete();
+		if (sFileName != null) {
+			new File(sFileName).delete();
+		}
 	}
 
 }

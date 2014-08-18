@@ -701,7 +701,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		new File(mFilePath).delete();
+		if (mFilePath != null) {
+			new File(mFilePath).delete();
+		}
 	}
 
 }
