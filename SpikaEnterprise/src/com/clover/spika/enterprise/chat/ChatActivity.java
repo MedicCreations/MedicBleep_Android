@@ -51,6 +51,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 	private RobotoThinTextView screenTitle;
 	private RoundImageView partnerIcon;
+	private ImageButton settingsBtn;
 	private TextView noItems;
 
 	private Button file;
@@ -93,6 +94,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
 		partnerIcon.setOnClickListener(this);
+		settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
+		settingsBtn.setOnClickListener(this);
+
 		noItems = (TextView) findViewById(R.id.noItems);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
@@ -126,9 +130,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		goBack.setOnClickListener(this);
 
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {
 
-				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
+						|| (actionId == EditorInfo.IME_ACTION_DONE)) {
 					String text;
 
 					if (!TextUtils.isEmpty(etMessage.getText().toString())) {
@@ -141,7 +147,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 						return false;
 					}
 
-					sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
+					sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null,
+							null, null, null);
 				}
 				return true;
 			}
@@ -151,7 +158,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	}
 
 	@Override
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
+	public void pushCall(String msg, String chatIdPush, String chatName,
+			String chatImage) {
 		getFromPush(msg, chatIdPush, chatName, chatImage);
 	}
 
@@ -195,36 +203,52 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private void rlDrawerManage() {
 		if (!rlDrawer.isSelected()) {
 			rlDrawer.setVisibility(View.VISIBLE);
-			AnimUtils.translationY(rlDrawer, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					rlDrawer.setSelected(true);
-					LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
-					params.bottomMargin = Helper.dpToPx(ChatActivity.this, drawerHeight);
-					main_list_view.setLayoutParams(params);
-					// main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
+			AnimUtils.translationY(rlDrawer, Helper.dpToPx(this, drawerHeight),
+					0, drawerDuration, new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							rlDrawer.setSelected(true);
+							LayoutParams params = (LayoutParams) main_list_view
+									.getLayoutParams();
+							params.bottomMargin = Helper.dpToPx(
+									ChatActivity.this, drawerHeight);
+							main_list_view.setLayoutParams(params);
+							// main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
 
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
-					hideKeyboard(etMessage);
-				}
-			});
-			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
+							footerMore.setImageDrawable(getResources()
+									.getDrawable(R.drawable.hide_more_btn_off));
+							hideKeyboard(etMessage);
+						}
+					});
+			AnimUtils.translationY(chatLayout, 0,
+					-Helper.dpToPx(this, drawerHeight), drawerDuration, null);
 		} else {
-			AnimUtils.translationY(rlDrawer, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					rlDrawer.setVisibility(View.GONE);
-					rlDrawer.setSelected(false);
+			AnimUtils.translationY(rlDrawer, 0,
+					Helper.dpToPx(this, drawerHeight), drawerDuration,
+					new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							rlDrawer.setVisibility(View.GONE);
+							rlDrawer.setSelected(false);
 
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
-				}
-			});
-			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+							footerMore.setImageDrawable(getResources()
+									.getDrawable(
+											R.drawable.more_button_selector));
+						}
+					});
+			AnimUtils
+					.translationY(chatLayout,
+							-Helper.dpToPx(this, drawerHeight), 0,
+							drawerDuration, null);
 			// main_list_view.smoothScrollToPosition(main_list_view.getAdapter().getCount());
-			LayoutParams params = (LayoutParams) main_list_view.getLayoutParams();
+			LayoutParams params = (LayoutParams) main_list_view
+					.getLayoutParams();
 			params.bottomMargin = 0;
 			main_list_view.setLayoutParams(params);
-			AnimUtils.translationY(main_list_view, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+			AnimUtils
+					.translationY(main_list_view,
+							-Helper.dpToPx(this, drawerHeight), 0,
+							drawerDuration, null);
 		}
 	}
 
@@ -251,37 +275,53 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 
-				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
+				boolean isGroup = intent.getExtras()
+						.containsKey(Const.IS_GROUP);
 
-				new ChatApi().startChat(isGroup, intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
+				new ChatApi().startChat(isGroup,
+						intent.getExtras().getString(Const.USER_ID), intent
+								.getExtras().getString(Const.FIRSTNAME), intent
+								.getExtras().getString(Const.LASTNAME), true,
+						this, new ApiCallback<Chat>() {
 
-					@Override
-					public void onApiResponse(Result<Chat> result) {
+							@Override
+							public void onApiResponse(Result<Chat> result) {
 
-						if (result.isSuccess()) {
+								if (result.isSuccess()) {
 
-							chatId = result.getResultData().getChat_id();
-							chatName = result.getResultData().getChat_name();
+									chatId = result.getResultData()
+											.getChat_id();
+									chatName = result.getResultData()
+											.getChat_name();
 
-							screenTitle.setText(chatName);
+									screenTitle.setText(chatName);
 
-							adapter.clearItems();
-							totalItems = Integer.valueOf(result.getResultData().getTotal_count());
-							adapter.addItems(result.getResultData().getMessagesList(), true);
-							adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
-						} else {
-							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+									adapter.clearItems();
+									totalItems = Integer.valueOf(result
+											.getResultData().getTotal_count());
+									adapter.addItems(result.getResultData()
+											.getMessagesList(), true);
+									adapter.setTotalCount(Integer
+											.valueOf(result.getResultData()
+													.getTotal_count()));
+								} else {
+									AppDialog dialog = new AppDialog(
+											ChatActivity.this, false);
 
-							if (result.getResultData() != null) {
-								dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
-							} else {
-								dialog.setFailed("");
+									if (result.getResultData() != null) {
+										dialog.setFailed(Helper
+												.errorDescriptions(
+														ChatActivity.this,
+														result.getResultData()
+																.getCode()));
+									} else {
+										dialog.setFailed("");
+									}
+								}
+
+								setNoItemsVisibility();
 							}
-						}
-
-						setNoItemsVisibility();
-					}
-				});
+						});
 			}
 
 			loadImage();
@@ -349,6 +389,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
 		} else if (id == R.id.goBack) {
 			finish();
+		} else if (id == R.id.settingsBtn) {
+			// TODO
 		}
 	}
 
@@ -365,11 +407,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 				if (fileUri.getScheme().equals("content")) {
 
-					String[] proj = { MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME };
-					Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
+					String[] proj = { MediaStore.Files.FileColumns.DATA,
+							MediaStore.Files.FileColumns.DISPLAY_NAME };
+					Cursor cursor = getContentResolver().query(fileUri, proj,
+							null, null, null);
 
-					int column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
-					int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+					int column_index_name = cursor
+							.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
+					int column_index_path = cursor
+							.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
 					cursor.moveToFirst();
 
 					fileName = cursor.getString(column_index_name);
@@ -384,53 +430,67 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 				final String finalFileName = fileName;
 
-				final String filePathTemp = Utils.handleFileEncryption(filePath, ChatActivity.this);
+				final String filePathTemp = Utils.handleFileEncryption(
+						filePath, ChatActivity.this);
 
 				if (filePathTemp == null) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
+					dialog.setFailed(getResources().getString(
+							R.string.e_while_encrypting_file));
 					return;
 				}
 
-				new FileManageApi().uploadFile(filePathTemp, this, true, new ApiCallback<UploadFileModel>() {
+				new FileManageApi().uploadFile(filePathTemp, this, true,
+						new ApiCallback<UploadFileModel>() {
 
-					@Override
-					public void onApiResponse(Result<UploadFileModel> result) {
-						if (result.isSuccess()) {
-							sendMessage(Const.MSG_TYPE_FILE, chatId, finalFileName, result.getResultData().getFileId(), null, null, null);
-						} else {
-							AppDialog dialog = new AppDialog(ChatActivity.this, false);
-							if (result.hasResultData()) {
-								dialog.setFailed(result.getResultData().getMessage());
-							} else {
-								dialog.setFailed("");
+							@Override
+							public void onApiResponse(
+									Result<UploadFileModel> result) {
+								if (result.isSuccess()) {
+									sendMessage(Const.MSG_TYPE_FILE, chatId,
+											finalFileName, result
+													.getResultData()
+													.getFileId(), null, null,
+											null);
+								} else {
+									AppDialog dialog = new AppDialog(
+											ChatActivity.this, false);
+									if (result.hasResultData()) {
+										dialog.setFailed(result.getResultData()
+												.getMessage());
+									} else {
+										dialog.setFailed("");
+									}
+								}
 							}
-						}
-					}
-				});
+						});
 			}
 		}
 	}
 
-	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
-		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
+	public void sendMessage(int type, String chatId, String text,
+			String fileId, String thumbId, String longitude, String latitude) {
+		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId,
+				longitude, latitude, this, new ApiCallback<Integer>() {
 
-			@Override
-			public void onApiResponse(Result<Integer> result) {
-				if (result.isSuccess()) {
-					etMessage.setText("");
-					hideKeyboard(etMessage);
+					@Override
+					public void onApiResponse(Result<Integer> result) {
+						if (result.isSuccess()) {
+							etMessage.setText("");
+							hideKeyboard(etMessage);
 
-					callNewMsgs();
-				} else {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(result.getResultData());
-				}
-			}
-		});
+							callNewMsgs();
+						} else {
+							AppDialog dialog = new AppDialog(ChatActivity.this,
+									false);
+							dialog.setFailed(result.getResultData());
+						}
+					}
+				});
 	}
 
-	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage) {
+	private void getFromPush(String msg, String chatIdPush, String chatName,
+			String chatImage) {
 		if (chatIdPush.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
 		} else {
@@ -438,7 +498,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
+	public void getMessages(final boolean isClear, final boolean processing,
+			final boolean isPagging, final boolean isNewMsg,
+			final boolean isSend, final boolean isRefresh) {
 
 		if (!isRunning) {
 			isRunning = true;
@@ -458,7 +520,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 
 			adapterCount = adapter.getCount();
 
-			if (!isClear && !adapter.getData().isEmpty() && adapter.getCount() > 0) {
+			if (!isClear && !adapter.getData().isEmpty()
+					&& adapter.getCount() > 0) {
 				msgId = adapter.getData().get(0).getId();
 			}
 		} else if (isNewMsg) {
@@ -470,46 +533,52 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			}
 		}
 
-		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, new ApiCallback<Chat>() {
+		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg,
+				isSend, isRefresh, chatId, msgId, adapterCount, this,
+				new ApiCallback<Chat>() {
 
-			@Override
-			public void onApiResponse(Result<Chat> result) {
+					@Override
+					public void onApiResponse(Result<Chat> result) {
 
-				isRunning = false;
+						isRunning = false;
 
-				if (result.isSuccess()) {
+						if (result.isSuccess()) {
 
-					Chat chat = result.getResultData();
+							Chat chat = result.getResultData();
 
-					adapter.addItems(chat.getMessagesList(), isNewMsg);
+							adapter.addItems(chat.getMessagesList(), isNewMsg);
 
-					totalItems = Integer.valueOf(chat.getTotal_count());
-					adapter.setTotalCount(totalItems);
+							totalItems = Integer.valueOf(chat.getTotal_count());
+							adapter.setTotalCount(totalItems);
 
-					if (!isRefresh) {
-						if (isClear || isSend) {
-							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
-						} else if (isPagging) {
-							main_list_view.setSelection(chat.getMessagesList().size());
+							if (!isRefresh) {
+								if (isClear || isSend) {
+									main_list_view.setSelectionFromTop(
+											adapter.getCount(), 0);
+								} else if (isPagging) {
+									main_list_view.setSelection(chat
+											.getMessagesList().size());
+								}
+							} else {
+								int visibleItem = main_list_view
+										.getFirstVisiblePosition();
+
+								boolean isScroll = false;
+
+								if ((adapter.getCount() - visibleItem) <= 15) {
+									isScroll = true;
+								}
+
+								if (isScroll && !isSend) {
+									main_list_view.setSelectionFromTop(
+											adapter.getCount(), 0);
+								}
+							}
 						}
-					} else {
-						int visibleItem = main_list_view.getFirstVisiblePosition();
 
-						boolean isScroll = false;
-
-						if ((adapter.getCount() - visibleItem) <= 15) {
-							isScroll = true;
-						}
-
-						if (isScroll && !isSend) {
-							main_list_view.setSelectionFromTop(adapter.getCount(), 0);
-						}
+						setNoItemsVisibility();
 					}
-				}
-
-				setNoItemsVisibility();
-			}
-		});
+				});
 	}
 
 	private void setNoItemsVisibility() {

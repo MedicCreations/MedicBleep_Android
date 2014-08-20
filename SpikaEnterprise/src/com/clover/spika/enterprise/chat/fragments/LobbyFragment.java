@@ -32,14 +32,9 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	LobbyModel model;
 	List<LobbyChangedListener> lobbyChangedListener = new ArrayList<LobbyChangedListener>();
 
-	boolean isCreate = false;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		isCreate = true;
-		getAllLobby(true, 0);
 	}
 
 	@Override
@@ -55,6 +50,8 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 		groupsTab.setOnClickListener(this);
 		usersTab = (ToggleButton) rootView.findViewById(R.id.usersTab);
 		usersTab.setOnClickListener(this);
+		
+		getAllLobby(true, 0);
 
 		return rootView;
 	}
@@ -81,12 +78,6 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	public void onResume() {
 		super.onResume();
 		setTabsStates(viewPager.getCurrentItem());
-
-		if (!isCreate) {
-			getAllLobby(false, 0);
-		}
-		
-		isCreate = false;
 	}
 
 	private void getAllLobby(boolean showProgress, int page) {

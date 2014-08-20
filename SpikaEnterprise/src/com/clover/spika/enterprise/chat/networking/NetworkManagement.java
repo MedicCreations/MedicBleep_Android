@@ -52,7 +52,7 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 public class NetworkManagement {
 
 	// <!-- HTTP User Agent -->
-	private static final String HTTP_USER_AGENT = "VectorChat Android v1.0";
+	private static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 
 	public static final String TOKEN = "Token";
 

@@ -11,7 +11,7 @@
         <ImageButton
             android:id="@+id/goBack"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:background="@drawable/selector_transp_blue"
             android:contentDescription="@null"
@@ -35,10 +35,22 @@
             android:id="@+id/partnerIcon"
             android:layout_width="@dimen/menu_height"
             android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/settingsBtn"
+            android:contentDescription="@null" />
+
+        <ImageButton
+            android:id="@+id/settingsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:contentDescription="@null" />
+            android:background="@null"
+            android:contentDescription="@null"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/selector_settings_button" />
     </RelativeLayout>
 
     <RelativeLayout

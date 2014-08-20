@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/baseLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/actionBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="@color/default_blue" >
+
+        <ImageButton
+            android:id="@+id/goBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:src="@drawable/btn_back" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/members"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/main_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBarLayout"
+        android:animationCache="false"
+        android:background="@color/transparent"
+        android:cacheColorHint="#00000000"
+        android:divider="@color/transparent"
+        android:dividerHeight="0dp"
+        android:fadingEdge="none"
+        android:listSelector="@color/transparent"
+        android:scrollbars="none"
+        android:scrollingCache="false"
+        android:smoothScrollbar="true" />
+
+</RelativeLayout>
