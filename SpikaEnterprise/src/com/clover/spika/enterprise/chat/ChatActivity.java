@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
+import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -52,6 +53,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 	private RobotoThinTextView screenTitle;
 	private RoundImageView partnerIcon;
 	private ImageButton settingsBtn;
+	private ListView settingsListView;
+	private SettingsAdapter settingsAdapter;
 	private TextView noItems;
 
 	private Button file;
@@ -96,6 +99,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 		partnerIcon.setOnClickListener(this);
 		settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
 		settingsBtn.setOnClickListener(this);
+
+		settingsListView = (ListView) findViewById(R.id.settings_list_view);
+		settingsAdapter = new SettingsAdapter(this);
+		settingsListView.setAdapter(settingsAdapter);
 
 		noItems = (TextView) findViewById(R.id.noItems);
 
@@ -391,6 +398,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener {
 			finish();
 		} else if (id == R.id.settingsBtn) {
 			// TODO
+			if (settingsListView.getVisibility() == View.GONE) {
+				settingsListView.setVisibility(View.VISIBLE);
+			} else {
+				settingsListView.setVisibility(View.GONE);
+			}
 		}
 	}
 

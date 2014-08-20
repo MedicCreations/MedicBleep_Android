@@ -118,4 +118,11 @@
     <string name="login_remember_me">Remember me</string>
     <string name="enable_passcode_label">Enable passcode</string>
 
+    <string-array name="chat_settings_array">
+        <item>Members</item>
+        <item>Item1</item>
+        <item>Item2</item>
+        <item>Item3</item>
+    </string-array>
+
 </resources>
