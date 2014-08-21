@@ -24,7 +24,14 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:contentDescription="@null" />
+                android:contentDescription="@null" />  
+           <!-- <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                android:id="@+id/userImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="@null" />  -->
         </RelativeLayout>
 
         <LinearLayout

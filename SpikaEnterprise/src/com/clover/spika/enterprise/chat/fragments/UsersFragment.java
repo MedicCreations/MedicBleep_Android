@@ -44,6 +44,8 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 
 		adapter = new UserAdapter(getActivity(), new ArrayList<User>());
+		
+		mCurrentIndex = 0;
 	}
 
 	@Override
@@ -95,13 +97,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-
-		if (currentCount >= mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		} else if (currentCount < mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-		}
-
+		
 		if (toClearPrevious)
 			adapter.setData(data);
 		else
@@ -115,6 +111,12 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 			noItems.setVisibility(View.VISIBLE);
 		} else {
 			noItems.setVisibility(View.GONE);
+		}
+		
+		if (currentCount >= mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
 	}
 

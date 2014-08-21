@@ -44,6 +44,8 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_lobby_child, container, false);
+		
+		mCurrentIndex = 0;
 
 		noItems = (TextView) view.findViewById(R.id.noItems);
 
@@ -78,14 +80,6 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 	private void setData(List<ChatsLobby> data, boolean toClearPrevious) {
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (currentCount >= mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		} else if (currentCount < mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-		} else {
-			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		}
-
 		if (toClearPrevious)
 			adapter.setData(data);
 		else
@@ -101,6 +95,14 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 		} else {
 			mainListView.setVisibility(View.VISIBLE);
 			noItems.setVisibility(View.GONE);
+		}
+		
+		if (currentCount >= mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+		} else {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
 	}
 

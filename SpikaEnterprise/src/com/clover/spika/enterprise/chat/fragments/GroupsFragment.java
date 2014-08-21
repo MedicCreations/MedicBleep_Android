@@ -38,6 +38,8 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		adapter = new GroupAdapter(getActivity(), new ArrayList<Group>());
+		
+		mCurrentIndex = 0;
 	}
 
 	@Override
@@ -89,12 +91,6 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (currentCount >= mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
-		} else if (currentCount < mTotalCount) {
-			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-		}
-
 		if (toClearPrevious)
 			adapter.clearItems();
 		adapter.addItems(data);
@@ -107,6 +103,12 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 			noItems.setVisibility(View.VISIBLE);
 		} else {
 			noItems.setVisibility(View.GONE);
+		}
+		
+		if (currentCount >= mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
 	}
 
