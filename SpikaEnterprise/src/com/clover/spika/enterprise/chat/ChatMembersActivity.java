@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -19,7 +21,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class ChatMembersActivity extends BaseActivity {
+public class ChatMembersActivity extends BaseActivity implements OnItemClickListener {
 
 	UsersApi api;
 
@@ -58,6 +60,7 @@ public class ChatMembersActivity extends BaseActivity {
 		mainList = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		mainList.setAdapter(adapter);
 		mainList.setOnRefreshListener(refreshListener2);
+		mainList.setOnItemClickListener(this);
 
 		handleIntent(getIntent());
 	}
@@ -120,5 +123,15 @@ public class ChatMembersActivity extends BaseActivity {
 			}
 		});
 
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		position = position - 1;
+
+		if (position != -1 && position != adapter.getCount()) {
+			User user = adapter.getItem(position);
+			ProfileOtherActivity.openOtherProfile(this, user.getImage(), user.getFirstName() + " " + user.getLastName());
+		}
 	}
 }
