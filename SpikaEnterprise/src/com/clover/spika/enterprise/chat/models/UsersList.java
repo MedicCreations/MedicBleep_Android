@@ -9,73 +9,86 @@ import java.util.List;
 
 public class UsersList extends BaseModel {
 
-    @SerializedName("page")
-    @Expose
-    private int page;
+	@SerializedName("page")
+	@Expose
+	private int page;
 
-    @SerializedName("total_count")
-    @Expose
-    private int totalCount;
+	@SerializedName("total_count")
+	@Expose
+	private int totalCount;
 
-    @SerializedName("users")
-    @Expose
-    private List<User> userList;
+	@SerializedName("users")
+	@Expose
+	private List<User> userList;
 
-    public int getPage() {
-        return page;
-    }
+	@SerializedName("members")
+	@Expose
+	private List<User> membersList;
 
-    public void setPage(int page) {
-        this.page = page;
-    }
+	public int getPage() {
+		return page;
+	}
 
-    public int getTotalCount() {
-        return totalCount;
-    }
+	public void setPage(int page) {
+		this.page = page;
+	}
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
+	public int getTotalCount() {
+		return totalCount;
+	}
 
-    public List<User> getUserList() {
-        return userList == null ? new ArrayList<User>() : userList;
-    }
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}
 
-    public void setUserList(List<User> userList) {
-        this.userList = userList;
-    }
+	public List<User> getUserList() {
+		return userList == null ? new ArrayList<User>() : userList;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+	public void setUserList(List<User> userList) {
+		this.userList = userList;
+	}
 
-        UsersList userModel = (UsersList) o;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
 
-        if (page != userModel.page) return false;
-        if (totalCount != userModel.totalCount) return false;
-        if (userList != null ? !userList.equals(userModel.userList) : userModel.userList != null)
-            return false;
+		UsersList userModel = (UsersList) o;
 
-        return true;
-    }
+		if (page != userModel.page)
+			return false;
+		if (totalCount != userModel.totalCount)
+			return false;
+		if (userList != null ? !userList.equals(userModel.userList) : userModel.userList != null)
+			return false;
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + page;
-        result = 31 * result + totalCount;
-        result = 31 * result + (userList != null ? userList.hashCode() : 0);
-        return result;
-    }
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "UserModel{" +
-                "page=" + page +
-                ", totalCount=" + totalCount +
-                ", userList=" + userList +
-                "} " + super.toString();
-    }
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + page;
+		result = 31 * result + totalCount;
+		result = 31 * result + (userList != null ? userList.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "UserModel{" + "page=" + page + ", totalCount=" + totalCount + ", userList=" + userList + "} " + super.toString();
+	}
+
+	public List<User> getMembersList() {
+		return membersList;
+	}
+
+	public void setMembersList(List<User> membersList) {
+		this.membersList = membersList;
+	}
 }

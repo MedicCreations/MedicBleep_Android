@@ -125,6 +125,7 @@ public class Const {
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";
+	public static final String F_USER_GET_CHAT_MEMBERS = "/chat/member/list";
 	public static final String F_USER_GET_FILE = "/file/download";
 	public static final String F_POST_MESSAGE = "post_message";
 	public static final String F_GET_MESSAGES = "/message/paging";
