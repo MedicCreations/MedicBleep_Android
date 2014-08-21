@@ -9,6 +9,10 @@ public class Group {
 	@Expose
 	private int id;
 
+	@SerializedName("type")
+	@Expose
+	private String type;
+
 	@SerializedName("groupname")
 	@Expose
 	private String groupName;
@@ -83,5 +87,13 @@ public class Group {
 
 	public void setImage_thumb(String image_thumb) {
 		this.image_thumb = image_thumb;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

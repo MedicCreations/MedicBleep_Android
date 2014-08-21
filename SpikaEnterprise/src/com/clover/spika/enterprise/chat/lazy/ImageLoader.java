@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -162,7 +163,7 @@ public class ImageLoader {
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.FILE_ID, url);
 
-			InputStream is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
+			InputStream is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
 
 			BufferedInputStream bis = new BufferedInputStream(is);
 

@@ -116,7 +116,7 @@ public class FileManageApi {
 				getParams.put(Const.FILE_ID, fileId);
 
 				try {
-					HttpEntity en = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams);
+					HttpEntity en = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams);
 					InputStream is = en.getContent();
 
 					File file;
@@ -195,7 +195,8 @@ public class FileManageApi {
 				mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 				mBuilder = new NotificationCompat.Builder(context);
 				mBuilder.setAutoCancel(true);
-				mBuilder.setContentTitle(context.getResources().getString(R.string.file_download) + ":" + fileName).setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.ic_launcher);
+				mBuilder.setContentTitle(context.getResources().getString(R.string.file_download) + ":" + fileName)
+						.setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.ic_launcher);
 
 				mBuilder.setProgress(0, 0, true);
 				mNotifyManager.notify(id, mBuilder.build());
@@ -216,7 +217,7 @@ public class FileManageApi {
 
 				InputStream is;
 				try {
-					is = NetworkManagement.httpGetGetFile(Const.F_USER_GET_FILE, getParams).getContent();
+					is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
 
 					if (JNAesCrypto.isEncrypted) {
 						JNAesCrypto.decryptIs(is, downloadedFile, context);
@@ -282,7 +283,8 @@ public class FileManageApi {
 					} else if (uri.toString().contains(".txt")) {
 						// Text file
 						intent.setDataAndType(uri, "text/plain");
-					} else if (uri.toString().contains(".3gp") || uri.toString().contains(".mpg") || uri.toString().contains(".mpeg") || uri.toString().contains(".mpe") || uri.toString().contains(".mp4") || uri.toString().contains(".avi")) {
+					} else if (uri.toString().contains(".3gp") || uri.toString().contains(".mpg") || uri.toString().contains(".mpeg") || uri.toString().contains(".mpe")
+							|| uri.toString().contains(".mp4") || uri.toString().contains(".avi")) {
 						// Video files
 						intent.setDataAndType(uri, "video/*");
 					} else {

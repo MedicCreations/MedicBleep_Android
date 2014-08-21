@@ -77,6 +77,7 @@ public class Const {
 	public static final String FILE_ID = "file_id";
 	public static final String THUMB_ID = "thumb_id";
 	public static final String PUSH_CHAT_THUMB = "chat_thumb";
+	public static final String PUSH_CHAT_TYPE = "chat_type";
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
 	public static final String FILE = "file";
@@ -112,6 +113,11 @@ public class Const {
 	public static final int USERS_TYPE = 1;
 	public static final int GROUPS_TYPE = 2;
 	public static final String TYPE = "type";
+
+	// Chat type
+	public static final int C_PRIVATE = 1;
+	public static final int C_TEAM = 2;
+	public static final int C_GROUP = 3;
 
 	// Api urls
 	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";

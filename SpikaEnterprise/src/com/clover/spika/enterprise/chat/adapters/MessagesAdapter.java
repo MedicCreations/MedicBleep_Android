@@ -205,7 +205,6 @@ public class MessagesAdapter extends BaseAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO decryption
 						if (msg.isFailed()) {
 							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
 						} else {

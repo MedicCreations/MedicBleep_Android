@@ -168,7 +168,8 @@ public class NetworkManagement {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException, IOException, JSONException {
+	public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException,
+			IOException, JSONException {
 
 		HttpPost httppost = new HttpPost(Const.BASE_URL + Const.F_USER_UPLOAD_FILE);
 
@@ -204,7 +205,7 @@ public class NetworkManagement {
 		return Helper.jObjectFromString(getString(entity.getContent()));
 	}
 
-	public static HttpEntity httpGetGetFile(String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
+	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
 
 		// form parameters
@@ -221,6 +222,7 @@ public class NetworkManagement {
 		Logger.custom("RawRequest", httpGet.getURI().toString());
 
 		httpGet.setHeader("Encoding", "UTF-8");
+		httpGet.setHeader(TOKEN, prefs.getToken());
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();

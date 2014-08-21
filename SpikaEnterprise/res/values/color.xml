@@ -34,5 +34,7 @@
     <color name="trans">#00000000</color>
     <color name="text_time_gray">#616161</color>
     <color name="gray_in_adapter">#EFEFEF</color>
+    <color name="chat_settings_gray">#F4F4F4</color>
+    <color name="chat_settings_separator">#D7D7D7</color>
 
 </resources>

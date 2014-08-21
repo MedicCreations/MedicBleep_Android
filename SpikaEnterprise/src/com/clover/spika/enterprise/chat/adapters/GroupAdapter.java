@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -67,7 +66,7 @@ public class GroupAdapter extends BaseAdapter {
 
 		holder.talkName.setText(group.getGroupName());
 
-		String[] groupData = { String.valueOf(group.getId()), group.getGroupName() };
+		String[] groupData = { String.valueOf(group.getId()), group.getGroupName(), String.valueOf(group.getType()) };
 		holder.clickLayout.setTag(groupData);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(cntx).getCustomBoolean(String.valueOf(group.getId()))) {
@@ -86,14 +85,14 @@ public class GroupAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View view) {
-
 				String[] groupData = (String[]) view.getTag();
 
 				Intent intent = new Intent(cntx, ChatActivity.class);
-				intent.putExtra(Const.USER_ID, groupData[0]);
+				intent.putExtra(Const.CHAT_ID, groupData[0]);
 				intent.putExtra(Const.FIRSTNAME, groupData[1]);
+				intent.putExtra(Const.TYPE, groupData[2]);
 				intent.putExtra(Const.IS_GROUP, true);
-				((Activity) cntx).startActivity(intent);
+				cntx.startActivity(intent);
 			}
 		});
 

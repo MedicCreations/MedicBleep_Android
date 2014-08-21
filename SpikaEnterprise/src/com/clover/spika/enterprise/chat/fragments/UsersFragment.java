@@ -165,6 +165,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 			intent.putExtra(Const.FIRSTNAME, user.getFirstName());
 			intent.putExtra(Const.LASTNAME, user.getLastName());
 			intent.putExtra(Const.IMAGE, user.getImage());
+			intent.putExtra(Const.TYPE, user.getType());
 			startActivity(intent);
 		}
 	}

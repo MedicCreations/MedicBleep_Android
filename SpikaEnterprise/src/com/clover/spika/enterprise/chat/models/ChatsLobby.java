@@ -5,21 +5,25 @@ import com.google.gson.annotations.SerializedName;
 
 public class ChatsLobby {
 
-    @SerializedName("chat_id")
-    @Expose
-    private int chatId;
+	@SerializedName("chat_id")
+	@Expose
+	private int chatId;
 
-    @SerializedName("chat_name")
-    @Expose
-    private String chatName;
+	@SerializedName("type")
+	@Expose
+	private String type;
 
-    @SerializedName("unread")
-    @Expose
-    private String unread;
-    
-    @SerializedName("image")
-    @Expose
-    private String image;
+	@SerializedName("chat_name")
+	@Expose
+	private String chatName;
+
+	@SerializedName("unread")
+	@Expose
+	private String unread;
+
+	@SerializedName("image")
+	@Expose
+	private String image;
 
 	public int getChatId() {
 		return chatId;
@@ -52,5 +56,13 @@ public class ChatsLobby {
 	public void setImage(String image) {
 		this.image = image;
 	}
-    
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 }

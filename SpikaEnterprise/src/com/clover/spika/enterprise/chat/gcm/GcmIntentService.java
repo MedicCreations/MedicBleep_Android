@@ -51,6 +51,7 @@ public class GcmIntentService extends IntentService {
 				String firstName = "";
 				String chatName = "";
 				String chatImage = "";
+				String chatType = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
@@ -68,6 +69,10 @@ public class GcmIntentService extends IntentService {
 					chatImage = extras.getString(Const.PUSH_CHAT_THUMB);
 				}
 
+				if (extras.containsKey(Const.PUSH_CHAT_TYPE)) {
+					chatType = extras.getString(Const.PUSH_CHAT_TYPE);
+				}
+
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
 				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -80,6 +85,7 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.CHAT_NAME, chatName);
 					inBroadcast.putExtra(Const.IMAGE, chatImage);
 					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
+					inBroadcast.putExtra(Const.TYPE, chatType);
 
 					sendBroadcast(inBroadcast);
 				} else {
@@ -91,14 +97,16 @@ public class GcmIntentService extends IntentService {
 					pushIntent.putExtra(Const.CHAT_NAME, chatName);
 					pushIntent.putExtra(Const.IMAGE, chatImage);
 					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
+					pushIntent.putExtra(Const.TYPE, chatType);
 
 					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 					Notification notification = null;
 
 					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-						notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis()).setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true)
-								.setContentText(message).setSmallIcon(R.drawable.ic_launcher).build();
+						notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis())
+								.setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
+								.setSmallIcon(R.drawable.ic_launcher).build();
 					} else {
 						notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
 						notification.defaults = Notification.DEFAULT_ALL;

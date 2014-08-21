@@ -50,12 +50,12 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-		
+
 		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		((LobbyFragment) getParentFragment()).getLobby(this);
 
 		return view;
@@ -143,6 +143,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
+			intent.putExtra(Const.TYPE, user.getType());
 			startActivity(intent);
 		}
 	}

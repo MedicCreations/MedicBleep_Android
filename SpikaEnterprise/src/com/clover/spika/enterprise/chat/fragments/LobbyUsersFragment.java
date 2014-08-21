@@ -46,16 +46,16 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 		View view = inflater.inflate(R.layout.fragment_lobby_child, container, false);
 
 		noItems = (TextView) view.findViewById(R.id.noItems);
-		
+
 		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-		
+
 		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), true);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		((LobbyFragment) getParentFragment()).getLobby(this);
 
 		return view;
@@ -144,6 +144,7 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			intent.putExtra(Const.IMAGE, user.getImage());
+			intent.putExtra(Const.TYPE, user.getType());
 			startActivity(intent);
 		}
 	}
