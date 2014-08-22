@@ -20,7 +20,7 @@ public class PasscodeUtility {
     private boolean isSessionValid = false;
 
 //    private int handlerTimeToLive = 3 * 1000;
-    private int handlerTimeToLive = 10;
+    private int handlerTimeToLive = 500;
     private Handler mValidationSessionHandler = new Handler();
 
     private String passcode;

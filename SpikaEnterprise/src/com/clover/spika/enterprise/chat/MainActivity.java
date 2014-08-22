@@ -122,24 +122,11 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		// passcode callback injected methods are important for tracking active
-		// session
-		PasscodeUtility.getInstance().onResume();
-		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
-			if (!PasscodeUtility.getInstance().isSessionValid()) {
-				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
-			}
-		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-
-		// passcode callback injected methods are important for tracking active
-		// session
-		PasscodeUtility.getInstance().onPause();
 	}
 
 	/**

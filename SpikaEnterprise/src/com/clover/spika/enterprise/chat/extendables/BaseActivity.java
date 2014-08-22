@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import android.annotation.SuppressLint;
@@ -16,6 +18,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,12 +72,31 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		registerReceiver(myPushRecevier, intentFilter);
+		
+		// passcode callback injected methods are important for tracking active
+		// session
+		PasscodeUtility.getInstance().onResume();
+		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+			if (!PasscodeUtility.getInstance().isSessionValid()) {
+				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
+			}
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		PasscodeUtility.getInstance().setSessionValid(true);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(myPushRecevier);
+		
+		// passcode callback injected methods are important for tracking active
+		// session
+		PasscodeUtility.getInstance().onPause();
 	}
 
 	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
