@@ -304,5 +304,13 @@
         <!-- end: You message layout -->
 
     </RelativeLayout>
+    
+    <!-- seen by layout -->
+    <TextView android:id="@+id/tvSeenBy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#00ff00"
+        android:textSize="13sp"
+        android:visibility="visible"/>
 
 </LinearLayout>

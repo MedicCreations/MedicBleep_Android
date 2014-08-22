@@ -13,6 +13,9 @@ public class Chat extends BaseModel {
 	@SerializedName("chat_name")
 	private String chat_name;
 
+	@SerializedName("seen_by")
+	private String seen_by;
+	
 	@SerializedName("total_count")
 	private String total_count;
 
@@ -106,4 +109,12 @@ public class Chat extends BaseModel {
 		this.messages = messages;
 	}
 
+	public String getSeen_by() {
+		return seen_by;
+	}
+
+	public void setSeen_by(String seen_by) {
+		this.seen_by = seen_by;
+	}
+	
 }
