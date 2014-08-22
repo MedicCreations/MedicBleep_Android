@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
@@ -38,6 +39,8 @@ public class NewPasscodeActivity extends Activity {
 		if (backButton != null) {
 			backButton.setVisibility(View.VISIBLE);
 		}
+		
+		((TextView)findViewById(R.id.description)).setText(R.string.enter_a_passcode);
 	}
 
 	/**
@@ -112,6 +115,7 @@ public class NewPasscodeActivity extends Activity {
 				enteredValuesList.clear();
 
 				reDraw();
+				((TextView)findViewById(R.id.description)).setText(R.string.re_enter_your_passcode);
 				return;
 			}
 

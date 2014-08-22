@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -16,8 +17,10 @@ public class PasscodeActivity extends NewPasscodeActivity {
 
 		ImageButton backButton = (ImageButton) findViewById(R.id.goBack);
 		if (backButton != null) {
-			backButton.setVisibility(View.GONE);
+			backButton.setVisibility(View.INVISIBLE);
 		}
+		
+		((TextView)findViewById(R.id.description)).setText(R.string.enter_your_passcode);
 	}
 
 	@Override
