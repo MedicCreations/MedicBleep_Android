@@ -8,14 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
 
-import com.clover.spika.enterprise.chat.adapters.UserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
@@ -28,13 +32,15 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	UsersApi api;
 
 	PullToRefreshListView mainList;
-	UserAdapter adapter;
+	InviteUserAdapter adapter;
 
 	private String chatId = "";
 	private int chatType = 0;
 	private int mCurrentIndex = 0;
 	private String mSearchData = null;
 	private int mTotalCount = 0;
+
+	private ImageButton searchBtn;
 
 	public static void startActivity(String chatId, int type, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
@@ -61,7 +67,17 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			}
 		});
 
-		adapter = new UserAdapter(this, new ArrayList<User>());
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				invitePeople();
+			}
+		});
+
+		adapter = new InviteUserAdapter(this, new ArrayList<User>());
 
 		mainList = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		mainList.setAdapter(adapter);
@@ -122,7 +138,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	private void getUsers(int page, String search, final boolean toClear) {
 		if (search == null) {
-			api.getUsersWithPage(this, mCurrentIndex, true, new ApiCallback<UsersList>() {
+			api.getUsersWithPage(this, mCurrentIndex, chatId, true, new ApiCallback<UsersList>() {
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
@@ -133,7 +149,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				}
 			});
 		} else {
-			api.getUsersByName(mCurrentIndex, search, this, true, new ApiCallback<UsersList>() {
+			api.getUsersByName(mCurrentIndex, chatId, search, this, true, new ApiCallback<UsersList>() {
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
@@ -165,5 +181,27 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			mSearchData = data;
 		}
 		getUsers(mCurrentIndex, mSearchData, true);
+	}
+
+	private void invitePeople() {
+		api.inviteUsers(chatId, adapter.getData(), this, new ApiCallback<Chat>() {
+
+			@Override
+			public void onApiResponse(Result<Chat> result) {
+				if (result.isSuccess()) {
+					Chat chat = result.getResultData();
+
+					Intent intent = new Intent(InvitePeopleActivity.this, ChatActivity.class);
+					intent.putExtra(Const.CHAT_ID, String.valueOf(chat.getChat_id()));
+					intent.putExtra(Const.CHAT_NAME, chat.getChat_name());
+					intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
+					startActivity(intent);
+					finish();
+				} else {
+					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);
+					dialog.setFailed("");
+				}
+			}
+		});
 	}
 }

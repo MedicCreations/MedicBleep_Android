@@ -17,15 +17,16 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 
-public class UserAdapter extends BaseAdapter {
+public class InviteUserAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<User> data = new ArrayList<User>();
 
 	private ImageLoader imageLoader;
 
-	public UserAdapter(Context context, Collection<User> users) {
+	public InviteUserAdapter(Context context, Collection<User> users) {
 		this.mContext = context;
 		this.data.addAll(users);
 
@@ -45,6 +46,10 @@ public class UserAdapter extends BaseAdapter {
 	public void addData(List<User> list) {
 		data.addAll(list);
 		notifyDataSetChanged();
+	}
+
+	public List<User> getData() {
+		return data;
 	}
 
 	@Override
@@ -68,7 +73,7 @@ public class UserAdapter extends BaseAdapter {
 		final ViewHolderCharacter holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_person, parent, false);
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_invite_person, parent, false);
 
 			holder = new ViewHolderCharacter(convertView);
 			convertView.setTag(holder);
@@ -79,14 +84,39 @@ public class UserAdapter extends BaseAdapter {
 		// set image to null
 		holder.profileImg.setImageDrawable(null);
 
+		User user = getItem(position);
+
 		if (position % 2 == 0) {
 			holder.itemLayout.setBackgroundColor(getContext().getResources().getColor(R.color.gray_in_adapter));
 		} else {
 			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
-		imageLoader.displayImage(getContext(), getItem(position).getImage_thumb(), holder.profileImg);
-		holder.personName.setText(getItem(position).getFirstName() + " " + getItem(position).getLastName());
+		imageLoader.displayImage(getContext(), user.getImage_thumb(), holder.profileImg);
+		holder.personName.setText(user.getFirstName() + " " + user.getLastName());
+
+		if (user.isSelected() || user.isMember()) {
+			holder.isSelected.setChecked(true);
+		} else {
+			holder.isSelected.setChecked(false);
+		}
+
+		if (user.isMember()) {
+			holder.isSelected.setClickable(false);
+		} else {
+			holder.isSelected.setClickable(true);
+			holder.isSelected.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (data.get(position).isSelected()) {
+						data.get(position).setSelected(false);
+					} else {
+						data.get(position).setSelected(true);
+					}
+				}
+			});
+		}
 
 		return convertView;
 	}
@@ -97,6 +127,7 @@ public class UserAdapter extends BaseAdapter {
 		public ImageView profileImg;
 
 		public TextView personName;
+		public RobotoCheckBox isSelected;
 
 		public ViewHolderCharacter(View view) {
 
@@ -104,6 +135,7 @@ public class UserAdapter extends BaseAdapter {
 			profileImg = (ImageView) view.findViewById(R.id.userImage);
 
 			personName = (TextView) view.findViewById(R.id.personName);
+			isSelected = (RobotoCheckBox) view.findViewById(R.id.isSelected);
 		}
 
 	}

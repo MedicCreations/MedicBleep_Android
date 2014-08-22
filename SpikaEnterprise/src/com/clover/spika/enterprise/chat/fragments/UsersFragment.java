@@ -123,7 +123,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	public void getUsers(int page, String search, final boolean toClear) {
 		UsersApi api = new UsersApi();
 		if (search == null) {
-			api.getUsersWithPage(getActivity(), mCurrentIndex, true, new ApiCallback<UsersList>() {
+			api.getUsersWithPage(getActivity(), mCurrentIndex, null, true, new ApiCallback<UsersList>() {
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
@@ -134,7 +134,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 				}
 			});
 		} else {
-			api.getUsersByName(mCurrentIndex, search, getActivity(), true, new ApiCallback<UsersList>() {
+			api.getUsersByName(mCurrentIndex, null, search, getActivity(), true, new ApiCallback<UsersList>() {
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {

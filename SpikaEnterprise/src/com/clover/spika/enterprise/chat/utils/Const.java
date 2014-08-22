@@ -69,6 +69,7 @@ public class Const {
 	public static final String CODE = "code";
 	public static final String CHAT_NAME = "chat_name";
 	public static final String CHAT_ID = "chat_id";
+	public static final String USERS_TO_ADD = "users_to_add";
 	public static final String LAST_MSG_ID = "last_msg_id";
 	public static final String FIRST_MSG_ID = "first_msg_id";
 	public static final String MESSAGES = "messages";
@@ -125,6 +126,7 @@ public class Const {
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";
+	public static final String F_INVITE_USERS = "/chat/member/add";
 	public static final String F_USER_GET_CHAT_MEMBERS = "/chat/member/list";
 	public static final String F_USER_GET_FILE = "/file/download";
 	public static final String F_POST_MESSAGE = "post_message";

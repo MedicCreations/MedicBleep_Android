@@ -29,6 +29,12 @@ public class User {
 	@Expose
 	private String image_thumb;
 
+	@SerializedName("is_member")
+	@Expose
+	private boolean isMember;
+
+	private boolean isSelected = false;
+
 	public String getId() {
 		return id == null ? "" : id;
 	}
@@ -110,5 +116,21 @@ public class User {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
+	public boolean isMember() {
+		return isMember;
+	}
+
+	public void setIsMember(boolean isMember) {
+		this.isMember = isMember;
 	}
 }

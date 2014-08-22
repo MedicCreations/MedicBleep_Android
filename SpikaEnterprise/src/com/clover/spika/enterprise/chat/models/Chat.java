@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Chat extends BaseModel {
 
+	@SerializedName("chat")
+	private Chat chat;
+
 	@SerializedName("chat_id")
 	private String chat_id;
 
@@ -15,7 +18,7 @@ public class Chat extends BaseModel {
 
 	@SerializedName("seen_by")
 	private String seen_by;
-	
+
 	@SerializedName("total_count")
 	private String total_count;
 
@@ -116,5 +119,13 @@ public class Chat extends BaseModel {
 	public void setSeen_by(String seen_by) {
 		this.seen_by = seen_by;
 	}
-	
+
+	public Chat getChat() {
+		return chat;
+	}
+
+	public void setChat(Chat chat) {
+		this.chat = chat;
+	}
+
 }
