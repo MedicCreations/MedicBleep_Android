@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
 	/* Search bar */
 	ImageButton searchBtn;
 	EditText searchEt;
+	ImageButton closeSearchBtn;
 	boolean isOpenSearch = false;
 
 	int screenWidth;
@@ -99,8 +100,17 @@ public class MainActivity extends BaseActivity {
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
+		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
+		
+		closeSearchBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				closeSearchAnimation();
+			}
+		});
 	}
 
 	public void setScreenTitle(String title) {
@@ -151,7 +161,6 @@ public class MainActivity extends BaseActivity {
 	public void setSearch(OnSearchListener listener) {
 
 		searchBtn.setVisibility(View.VISIBLE);
-
 		mSearchListener = listener;
 
 		searchBtn.setOnClickListener(searchOnClickListener);
@@ -213,6 +222,7 @@ public class MainActivity extends BaseActivity {
 				super.onAnimationEnd(animation);
 				searchBtn.setClickable(true);
 				sidebarBtn.setClickable(true);
+				closeSearchBtn.setVisibility(View.VISIBLE);
 				showKeyboardForced(searchEt);
 				isOpenSearch = true;
 			}
@@ -226,7 +236,8 @@ public class MainActivity extends BaseActivity {
 		searchBtn.setClickable(false);
 		sidebarBtn.setClickable(false);
 		hideKeyboard(searchEt);
-
+		closeSearchBtn.setVisibility(View.GONE);
+		
 		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationEnd(Animator animation) {
