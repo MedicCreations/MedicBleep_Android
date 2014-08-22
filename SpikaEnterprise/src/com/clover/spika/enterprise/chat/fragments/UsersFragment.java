@@ -107,7 +107,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 		mainListView.onRefreshComplete();
 
-		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {
 			noItems.setVisibility(View.GONE);
