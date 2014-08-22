@@ -38,7 +38,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		adapter = new GroupAdapter(getActivity(), new ArrayList<Group>());
-		
+
 		mCurrentIndex = 0;
 	}
 
@@ -104,7 +104,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -119,8 +119,10 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getGroupList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getGroupList(), toClear);
+					}
 				}
 			});
 		} else {
@@ -128,8 +130,10 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getGroupList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getGroupList(), toClear);
+					}
 				}
 			});
 		}

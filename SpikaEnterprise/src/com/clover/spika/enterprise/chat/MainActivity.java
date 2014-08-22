@@ -2,7 +2,6 @@ package com.clover.spika.enterprise.chat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -22,7 +21,6 @@ import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -32,7 +30,6 @@ public class MainActivity extends BaseActivity {
 	/* Menu/Header */
 	SlidingMenu slidingMenu;
 	ImageButton sidebarBtn;
-	TextView screenTitle;
 
 	/* Search bar */
 	ImageButton searchBtn;
@@ -48,10 +45,10 @@ public class MainActivity extends BaseActivity {
 
 	/* Fragment currently in use */
 	CustomFragment mFragment;
+	TextView screenTitle;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		// start: set behind view (menu)
 		setBehindContentView(R.layout.sidebar_layout_empty);
 		getSupportFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
@@ -77,15 +74,6 @@ public class MainActivity extends BaseActivity {
 		slidingMenu.setFadeDegree(0.35f);
 		slidingMenu.setBehindWidth(80);
 
-		sidebarBtn = (ImageButton) findViewById(R.id.sidebarBtn);
-		sidebarBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				slidingMenu.toggle(true);
-			}
-		});
-
 		slidingMenu.setOnClosedListener(new OnClosedListener() {
 
 			@Override
@@ -95,19 +83,30 @@ public class MainActivity extends BaseActivity {
 		});
 		// end: set sliding menu options
 
+		sidebarBtn = (ImageButton) findViewById(R.id.sidebarBtn);
+		sidebarBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getSlidingMenu().toggle(true);
+			}
+		});
+
 		imageLoader = new ImageLoader(this);
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
-
-		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
+
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
 	}
 
 	public void setScreenTitle(String title) {
-		screenTitle.setText(title);
+		if (screenTitle != null) {
+			screenTitle.setText(title);
+		}
 	}
 
 	public ImageLoader getImageLoader() {
@@ -123,7 +122,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
 		} else {

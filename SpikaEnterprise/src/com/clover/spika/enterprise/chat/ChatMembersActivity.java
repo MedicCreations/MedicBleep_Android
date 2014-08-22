@@ -118,8 +118,10 @@ public class ChatMembersActivity extends BaseActivity implements OnItemClickList
 
 			@Override
 			public void onApiResponse(Result<UsersList> result) {
-				mTotalCount = result.getResultData().getTotalCount();
-				setData(result.getResultData().getMembersList(), toClear);
+				if (result.isSuccess()) {
+					mTotalCount = result.getResultData().getTotalCount();
+					setData(result.getResultData().getMembersList(), toClear);
+				}
 			}
 		});
 
