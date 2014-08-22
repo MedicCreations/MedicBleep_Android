@@ -180,7 +180,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		} else {
 			mSearchData = data;
 		}
-		
 		getUsers(mCurrentIndex, mSearchData, true);
 	}
 
