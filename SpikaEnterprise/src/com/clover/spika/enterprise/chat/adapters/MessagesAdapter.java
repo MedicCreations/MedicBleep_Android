@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private Context ctx;
 	private List<Message> data;
+	private String seenBy = "";
 
 	private SparseIntArray dateSeparator = new SparseIntArray();
 
@@ -326,6 +328,14 @@ public class MessagesAdapter extends BaseAdapter {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
 			}
 		}
+		
+		//Check if last message
+		if(position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)){
+			holder.seenByTv.setText("Seen by " + seenBy);
+			holder.seenByTv.setVisibility(View.VISIBLE);
+		}else{
+			holder.seenByTv.setVisibility(View.GONE);
+		}
 
 		return convertView;
 	}
@@ -379,6 +389,10 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		return 0;
+	}
+	
+	public void setSeenBy(String seenBy){
+		this.seenBy = seenBy;
 	}
 
 	public void addItems(List<Message> newItems, boolean isNew) {
@@ -537,6 +551,8 @@ public class MessagesAdapter extends BaseAdapter {
 		public RelativeLayout youFileLayout;
 		public TextView youFileName;
 		public ImageView youDownloadFile;
+		
+		public TextView seenByTv;
 
 		// start: message item for you message
 		public LinearLayout youMsgLayout;
@@ -585,6 +601,8 @@ public class MessagesAdapter extends BaseAdapter {
 			youFileLayout = (RelativeLayout) view.findViewById(R.id.youFileLayout);
 			youFileName = (TextView) view.findViewById(R.id.youFileName);
 			youDownloadFile = (ImageView) view.findViewById(R.id.youDownloadFile);
+			
+			seenByTv = (TextView) view.findViewById(R.id.tvSeenBy);
 
 			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message

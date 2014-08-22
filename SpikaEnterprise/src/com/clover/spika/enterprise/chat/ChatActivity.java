@@ -344,6 +344,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 									adapter.clearItems();
 									totalItems = Integer.valueOf(result.getResultData().getTotal_count());
 									adapter.addItems(result.getResultData().getMessagesList(), true);
+									adapter.setSeenBy(result.getResultData().getSeen_by());
 									adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
 								} else {
 									AppDialog dialog = new AppDialog(ChatActivity.this, false);
@@ -614,6 +615,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 					Chat chat = result.getResultData();
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
+					adapter.setSeenBy(chat.getSeen_by());
 
 					totalItems = Integer.valueOf(chat.getTotal_count());
 					adapter.setTotalCount(totalItems);

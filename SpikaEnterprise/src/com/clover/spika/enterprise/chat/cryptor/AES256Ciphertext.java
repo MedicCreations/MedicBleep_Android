@@ -17,8 +17,6 @@ package com.clover.spika.enterprise.chat.cryptor;
 
 import java.util.Arrays;
 
-import android.util.Log;
-
 /**
  * Base class for parsing and producing formatted ciphertext.
  */
