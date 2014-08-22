@@ -18,6 +18,11 @@ public class LobbyModel extends BaseModel {
     @Expose
     private GroupsLobby groupsLobby;
 
+    public LobbyModel () {
+    	usersLoby = new UsersLobby();
+    	groupsLobby = new GroupsLobby();
+    }
+    
 	public int getPage() {
 		return page;
 	}

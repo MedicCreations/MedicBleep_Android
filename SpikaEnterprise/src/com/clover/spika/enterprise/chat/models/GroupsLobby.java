@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -15,6 +16,10 @@ public class GroupsLobby {
     @Expose
     private List<ChatsLobby> chatsList;
 
+    public GroupsLobby () {
+    	chatsList = new ArrayList<ChatsLobby>();
+    }
+    
 	public int getTotalCount() {
 		return totalCount;
 	}

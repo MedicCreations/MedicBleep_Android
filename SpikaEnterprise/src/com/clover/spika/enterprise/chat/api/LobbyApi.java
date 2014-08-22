@@ -39,7 +39,13 @@ public class LobbyApi {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), LobbyModel.class);
+				
+				LobbyModel lobbyModel = new LobbyModel();
+				if (jsonObject != null) {
+					lobbyModel = new Gson().fromJson(jsonObject.toString(), LobbyModel.class);
+				}
+				
+				return lobbyModel;
 			}
 
 			@Override
