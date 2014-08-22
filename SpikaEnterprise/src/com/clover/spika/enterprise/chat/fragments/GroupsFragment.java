@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
@@ -13,17 +14,21 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.GroupsList;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
-public class GroupsFragment extends CustomFragment implements OnSearchListener {
+public class GroupsFragment extends CustomFragment implements OnSearchListener, OnItemClickListener {
 
 	TextView noItems;
 
@@ -38,7 +43,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 	public void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		adapter = new GroupAdapter(getActivity(), new ArrayList<Group>());
-		
+
 		mCurrentIndex = 0;
 	}
 
@@ -58,6 +63,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 		mainListView = (PullToRefreshListView) rootView.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
+		mainListView.setOnItemClickListener(this);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
@@ -99,12 +105,12 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 		mainListView.onRefreshComplete();
 
-		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -119,8 +125,10 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getGroupList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getGroupList(), toClear);
+					}
 				}
 			});
 		} else {
@@ -128,8 +136,10 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 
 				@Override
 				public void onApiResponse(Result<GroupsList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getGroupList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getGroupList(), toClear);
+					}
 				}
 			});
 		}
@@ -144,5 +154,22 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener {
 			mSearchData = data;
 		}
 		getGroup(mCurrentIndex, mSearchData, true);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		position = position - 1;
+
+		if (position != -1 && position != adapter.getCount()) {
+			Group group = adapter.getItem(position);
+
+			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			intent.putExtra(Const.CHAT_ID, group.getId());
+			intent.putExtra(Const.CHAT_NAME, group.getGroupName());
+			intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
+			intent.putExtra(Const.IS_GROUP, true);
+			startActivity(intent);
+		}
 	}
 }

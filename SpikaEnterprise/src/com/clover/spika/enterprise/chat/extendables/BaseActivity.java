@@ -10,6 +10,7 @@ import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import android.annotation.SuppressLint;
@@ -18,7 +19,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,11 +43,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
 		}
-		
+
 		setBehindContentView(R.layout.sidebar_layout_empty);
 
 		// start: handle notifications
@@ -72,13 +72,16 @@ public class BaseActivity extends SlidingFragmentActivity {
 			}
 		};
 		// end: handle notifications
+
+		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
+		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		registerReceiver(myPushRecevier, intentFilter);
-		
+
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onResume();
@@ -88,7 +91,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -99,7 +102,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onPause() {
 		super.onPause();
 		unregisterReceiver(myPushRecevier);
-		
+
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();

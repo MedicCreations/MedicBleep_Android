@@ -44,7 +44,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 
 		adapter = new UserAdapter(getActivity(), new ArrayList<User>());
-		
+
 		mCurrentIndex = 0;
 	}
 
@@ -97,7 +97,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		
+
 		if (toClearPrevious)
 			adapter.setData(data);
 		else
@@ -107,12 +107,12 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 		mainListView.onRefreshComplete();
 
-		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -127,8 +127,10 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getUserList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getUserList(), toClear);
+					}
 				}
 			});
 		} else {
@@ -136,8 +138,10 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getUserList(), toClear);
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getUserList(), toClear);
+					}
 				}
 			});
 		}
