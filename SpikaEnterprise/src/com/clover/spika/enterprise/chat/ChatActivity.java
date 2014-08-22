@@ -362,6 +362,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 
 			if (intent.getExtras().containsKey(Const.TYPE)) {
 				chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
+				settingsAdapter.disableItem(chatType);
 			}
 
 			loadImage();
@@ -460,6 +461,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		if (settingsAdapter.getItem(position).isDisabled()) {
+			return;
+		}
+
 		if (position == 0) {
 			if (chatType == Const.C_PRIVATE) {
 				ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
@@ -467,6 +473,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 				ChatMembersActivity.startActivity(chatId, this);
 			}
 		} else if (position == 1) {
+			if (chatType == Const.C_GROUP || chatType == Const.C_PRIVATE) {
+				InvitePeopleActivity.startActivity(chatId, chatType, this);
+			} else {
+				// This options is disabled for chat type C_TEAM
+				return;
+			}
+		} else if (position == 2) {
 			// TODO add other settings items
 		}
 	}
