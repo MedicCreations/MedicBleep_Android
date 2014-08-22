@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -122,6 +123,12 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
+		} else {
+			getWindow().clearFlags(LayoutParams.FLAG_SECURE);
+		}
 	}
 
 	@Override
