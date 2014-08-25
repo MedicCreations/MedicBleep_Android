@@ -52,7 +52,7 @@ public class GcmIntentService extends IntentService {
 				String chatName = "";
 				String chatImage = "";
 				String chatType = "";
-				int type = 1;
+				String type = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
@@ -75,7 +75,7 @@ public class GcmIntentService extends IntentService {
 				}
 
 				if (extras.containsKey(Const.TYPE)) {
-					type = extras.getInt(Const.TYPE);
+					type = extras.getString(Const.TYPE);
 				}
 
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
@@ -85,7 +85,7 @@ public class GcmIntentService extends IntentService {
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
 
-					if (type == Const.PUSH_TYPE_SEEN) {
+					if (Integer.parseInt(type) == Const.PUSH_TYPE_SEEN) {
 						return;
 					}
 

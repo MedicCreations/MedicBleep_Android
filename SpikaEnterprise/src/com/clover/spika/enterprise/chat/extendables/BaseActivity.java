@@ -67,7 +67,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
 				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				String chatImage = intent.getExtras().getString(Const.IMAGE);
-				int pushType = intent.getExtras().getInt(Const.PUSH_TYPE);
+				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
 
 				pushCall(message, chatId, chatName, chatImage, pushType);
 			}
@@ -109,8 +109,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, int pushType) {
-		if (pushType != Const.PUSH_TYPE_SEEN) {
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
+		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
 			showPopUp(msg, chatIdPush, chatName, chatImage);
 		}
 	}

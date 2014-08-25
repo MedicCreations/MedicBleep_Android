@@ -200,12 +200,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-//				Log.d("Vida", "Editor");
-//				Log.d("Vida", "Editor: " + event);
-//				Log.d("Vida", "Editor: " + event.getKeyCode());
-//				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
-//				Log.d("Vida", "actionId: " + actionId);
-//				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
+				Log.d("Vida", "Editor");
+				Log.d("Vida", "Editor: " + event);
+				Log.d("Vida", "Editor: " + (event != null ? event.getKeyCode() : "null"));
+				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
+				Log.d("Vida", "actionId: " + actionId);
+				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
 
 				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
 					String text;
@@ -230,7 +230,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 	}
 
 	@Override
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, int pushType) {
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
 		getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
 	}
 
@@ -582,7 +582,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		});
 	}
 
-	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, int pushType) {
+	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
 		if (chatIdPush.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
 		} else {
