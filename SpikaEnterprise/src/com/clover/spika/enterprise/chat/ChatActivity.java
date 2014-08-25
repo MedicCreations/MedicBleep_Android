@@ -200,12 +200,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-				Log.d("Vida", "Editor");
-				Log.d("Vida", "Editor: " + event);
-				Log.d("Vida", "Editor: " + event.getKeyCode());
-				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
-				Log.d("Vida", "actionId: " + actionId);
-				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
+//				Log.d("Vida", "Editor");
+//				Log.d("Vida", "Editor: " + event);
+//				Log.d("Vida", "Editor: " + event.getKeyCode());
+//				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
+//				Log.d("Vida", "actionId: " + actionId);
+//				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
 
 				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
 					String text;
