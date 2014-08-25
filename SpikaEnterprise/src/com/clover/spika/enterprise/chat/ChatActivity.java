@@ -481,6 +481,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 				return;
 			}
 		} else if (position == 2) {
+			if (chatType == Const.C_GROUP) {
+				leaveChat();
+			} else {
+				// This option is disabled got chat type C_TEAM and C_PRIVATE
+			}
+		} else if (position == 3) {
 			// TODO add other settings items
 		}
 	}
@@ -644,6 +650,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 				setNoItemsVisibility();
 			}
 		});
+	}
+
+	private void leaveChat() {
+		// TODO implement leave chat
 	}
 
 	private void setNoItemsVisibility() {

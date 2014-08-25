@@ -77,8 +77,13 @@ public class SettingsAdapter extends BaseAdapter {
 	public void disableItem(int type) {
 		switch (type) {
 
+		case Const.C_PRIVATE:
+			data.get(2).setDisabled(true);
+			break;
+
 		case Const.C_TEAM:
 			data.get(1).setDisabled(true);
+			data.get(2).setDisabled(true);
 			break;
 
 		default:

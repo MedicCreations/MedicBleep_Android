@@ -125,7 +125,7 @@
     <string-array name="chat_settings_array">
         <item>Members</item>
         <item>Invite</item>
-        <item>Item2</item>
+        <item>Leave</item>
         <item>Item3</item>
     </string-array>
 
