@@ -144,7 +144,8 @@ public class Utils {
 	}
 
 	public static boolean isOsVersionHigherThenGingerbread() {
-		if (android.os.Build.VERSION.RELEASE.startsWith("1.") || android.os.Build.VERSION.RELEASE.startsWith("2.0") || android.os.Build.VERSION.RELEASE.startsWith("2.1") || android.os.Build.VERSION.RELEASE.startsWith("2.2") || android.os.Build.VERSION.RELEASE.startsWith("2.3")) {
+		if (android.os.Build.VERSION.RELEASE.startsWith("1.") || android.os.Build.VERSION.RELEASE.startsWith("2.0") || android.os.Build.VERSION.RELEASE.startsWith("2.1")
+				|| android.os.Build.VERSION.RELEASE.startsWith("2.2") || android.os.Build.VERSION.RELEASE.startsWith("2.3")) {
 			return false;
 		} else {
 			return true;
@@ -396,8 +397,17 @@ public class Utils {
 
 		Log.d("MEMORY_HANDLING", "debug. =================================" + step);
 		Log.d("MEMORY_HANDLING",
-				"debug.memory: allocated: " + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "MB of " + df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "MB ("
-						+ df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576)) + "MB free)");
+				"debug.memory: allocated: " + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "MB of "
+						+ df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "MB (" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576))
+						+ "MB free)");
 		Log.d("MEMORY_HANDLING", "debug. =================================END");
+	}
+
+	public static String convertByteArrayToHexString(byte[] arrayBytes) {
+		StringBuffer stringBuffer = new StringBuffer();
+		for (int i = 0; i < arrayBytes.length; i++) {
+			stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16).substring(1));
+		}
+		return stringBuffer.toString();
 	}
 }

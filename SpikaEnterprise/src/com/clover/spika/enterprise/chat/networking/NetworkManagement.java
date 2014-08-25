@@ -51,9 +51,6 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
-	// <!-- HTTP User Agent -->
-	private static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
-
 	public static final String TOKEN = "Token";
 
 	public static JSONObject httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
@@ -297,7 +294,7 @@ public class NetworkManagement {
 				sTimestamp = System.currentTimeMillis() / 1000L;
 
 				HttpParams params = new BasicHttpParams();
-				params.setParameter(CoreProtocolPNames.USER_AGENT, HTTP_USER_AGENT);
+				params.setParameter(CoreProtocolPNames.USER_AGENT, Const.HTTP_USER_AGENT);
 				params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 
 				SchemeRegistry schemeRegistry = new SchemeRegistry();

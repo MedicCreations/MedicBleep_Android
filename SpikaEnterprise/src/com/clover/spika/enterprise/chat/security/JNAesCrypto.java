@@ -20,7 +20,7 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 public class JNAesCrypto {
 
 	public static final boolean isEncrypted = true;
-	private static JNCryptor cryptor = new AES256JNCryptor(SecureConst.ITERATIONS);
+	private static JNCryptor cryptor = new AES256JNCryptor(Const.S_ITERATIONS);
 
 	// *******encrypt string and return string
 	public static String encryptJN(String textToEncrypt) throws Exception {
@@ -30,7 +30,7 @@ public class JNAesCrypto {
 		}
 
 		byte[] text = textToEncrypt.getBytes();
-		byte[] cypterText = cryptor.encryptData(text, SecureConst.getPassword());
+		byte[] cypterText = cryptor.encryptData(text, Const.getPassword());
 
 		String cypherString = toHex(cypterText);
 
@@ -58,7 +58,7 @@ public class JNAesCrypto {
 
 		byte[] image = stream.toByteArray();
 
-		byte[] cypterText = cryptor.encryptData(image, SecureConst.getPassword());
+		byte[] cypterText = cryptor.encryptData(image, Const.getPassword());
 
 		String cypherString = toHex(cypterText);
 
@@ -72,7 +72,7 @@ public class JNAesCrypto {
 			return clearData;
 		}
 
-		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.getPassword());
+		byte[] cypterText = cryptor.encryptData(clearData, Const.getPassword());
 
 		String hexText = toHex(cypterText);
 
@@ -89,7 +89,7 @@ public class JNAesCrypto {
 	 */
 	public static void encryptWithFiles(File in, File tempOut, File out) throws Exception {
 
-		cryptor.encryptData(SecureConst.getPassword(), in, tempOut);
+		cryptor.encryptData(Const.getPassword(), in, tempOut);
 
 		FileInputStream inputHex = new FileInputStream(tempOut);
 		FileOutputStream ouputHex = new FileOutputStream(out);
@@ -127,7 +127,7 @@ public class JNAesCrypto {
 			return null;
 		}
 
-		byte[] cypterText = cryptor.encryptData(clearData, SecureConst.getPassword());
+		byte[] cypterText = cryptor.encryptData(clearData, Const.getPassword());
 
 		String cypherString = toHex(cypterText);
 
@@ -143,7 +143,7 @@ public class JNAesCrypto {
 
 		byte[] textText = toByte(encrypted);
 
-		byte[] decipherText = cryptor.decryptData(textText, SecureConst.getPassword());
+		byte[] decipherText = cryptor.decryptData(textText, Const.getPassword());
 
 		String decypher = new String(decipherText);
 
@@ -159,7 +159,7 @@ public class JNAesCrypto {
 		}
 
 		byte[] textText = toByte(encrypted);
-		byte[] decipherImage = cryptor.decryptData(textText, SecureConst.getPassword());
+		byte[] decipherImage = cryptor.decryptData(textText, Const.getPassword());
 
 		return BitmapFactory.decodeByteArray(decipherImage, 0, decipherImage.length);
 	}
@@ -173,7 +173,7 @@ public class JNAesCrypto {
 
 		byte[] deHex = toByte(new String(encrypted));
 
-		byte[] decipher = cryptor.decryptData(deHex, SecureConst.getPassword());
+		byte[] decipher = cryptor.decryptData(deHex, Const.getPassword());
 
 		return decipher;
 	}
@@ -209,7 +209,7 @@ public class JNAesCrypto {
 		ouputHex.close();
 		in.delete();
 
-		cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
+		cryptor.decryptData(Const.getPassword(), tempOut, out);
 
 		tempOut.delete();
 	}
@@ -247,7 +247,7 @@ public class JNAesCrypto {
 		inputHex.close();
 		ouputHex.close();
 
-		cryptor.decryptData(SecureConst.getPassword(), tempOut, out);
+		cryptor.decryptData(Const.getPassword(), tempOut, out);
 
 		tempOut.delete();
 		tempIn.delete();

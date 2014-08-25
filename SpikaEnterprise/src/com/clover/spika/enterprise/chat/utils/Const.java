@@ -7,6 +7,13 @@ import java.util.UUID;
 
 public class Const {
 
+	// Version constants
+	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
+	public static final String GCM_SENDER_ID = "772714193583";
+	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
+	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
+	public static final int S_ITERATIONS = 3;
+
 	// Activity for result constants
 	public static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 	public static final int REQUEST_NEW_PASSCODE = 9001;
@@ -16,8 +23,6 @@ public class Const {
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
 	public static final String PUSH_TOKEN_LOCAL = "PushTokenLocal";
-
-	public static final String GCM_SENDER_ID = "772714193583";
 
 	public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
 	public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
@@ -121,8 +126,6 @@ public class Const {
 	public static final int C_GROUP = 3;
 
 	// Api urls
-	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
-
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";
@@ -151,5 +154,12 @@ public class Const {
 	public static String getUUID(Context cntx) {
 		String androidID = Settings.Secure.getString(cntx.getContentResolver(), Settings.Secure.ANDROID_ID);
 		return UUID.nameUUIDFromBytes(androidID.getBytes()).toString();
+	}
+
+	/* Get encryption password */
+	public static char[] getPassword() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(S_PASSWORD);
+		return builder.toString().toCharArray();
 	}
 }
