@@ -38,6 +38,7 @@ import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -655,7 +656,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 	}
 
 	private void leaveChat() {
-		// TODO implement leave chat
+		new ChatApi().leaveChat(chatId, true, this, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(ChatActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(null);
+				}
+			}
+		});
 	}
 
 	private void setNoItemsVisibility() {

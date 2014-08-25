@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -118,7 +119,7 @@ public class AppDialog extends Dialog {
 		this.setContentView(R.layout.dialog_failed);
 
 		TextView failedDesc = (TextView) findViewById(R.id.failedDescription);
-		failedDesc.setText(failedText);
+		failedDesc.setText(TextUtils.isEmpty(failedText) ? "" : failedText);
 
 		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(new View.OnClickListener() {

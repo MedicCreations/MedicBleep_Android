@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
 import java.util.HashMap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -19,12 +21,13 @@ import com.google.gson.Gson;
 
 public class ChatApi {
 
-	public void startChat(final boolean isGroup, final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx, final ApiCallback<Chat> listener) {
+	public void startChat(final boolean isGroup, final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx,
+			final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, showProgressBar) {
 
 			protected Chat doInBackground(Void... params) {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
-				
+
 				JSONObject jsonObject = new JSONObject();
 				try {
 
@@ -42,13 +45,15 @@ public class ChatApi {
 					}
 
 					jsonObject = NetworkManagement.httpPostRequest(url, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 
-				return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+				return null;
 			};
 
 			protected void onPostExecute(Chat chat) {
@@ -75,8 +80,8 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh, final String chatId, final String msgId, final int adapterCount, Context ctx,
-			final ApiCallback<Chat> listener) {
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh,
+			final String chatId, final String msgId, final int adapterCount, Context ctx, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, processing) {
 
 			protected Chat doInBackground(Void... params) {
@@ -137,7 +142,8 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String thumbId, final String longitude, final String latitude, Context ctx, final ApiCallback<Integer> listener) {
+	public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String thumbId, final String longitude, final String latitude,
+			Context ctx, final ApiCallback<Integer> listener) {
 		new BaseAsyncTask<Void, Void, Integer>(ctx, true) {
 
 			protected void onPreExecute() {
@@ -199,6 +205,50 @@ public class ChatApi {
 				}
 			};
 
+		}.execute();
+	}
+
+	public void leaveChat(final String chatId, boolean showProgressBar, Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, showProgressBar) {
+
+			protected BaseModel doInBackground(Void... params) {
+				HashMap<String, String> requestParams = new HashMap<String, String>();
+
+				JSONObject jsonObject = new JSONObject();
+				requestParams.put(Const.CHAT_ID, chatId);
+
+				try {
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			};
+
+			protected void onPostExecute(BaseModel model) {
+				super.onPostExecute(model);
+
+				if (listener != null) {
+					Result<BaseModel> apiResult;
+
+					if (model != null) {
+						if (model.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+			};
 		}.execute();
 	}
 
