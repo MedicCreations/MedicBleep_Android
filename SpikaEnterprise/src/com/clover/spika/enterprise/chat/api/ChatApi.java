@@ -24,7 +24,7 @@ public class ChatApi {
 
 			protected Chat doInBackground(Void... params) {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
-
+				
 				JSONObject jsonObject = new JSONObject();
 				try {
 

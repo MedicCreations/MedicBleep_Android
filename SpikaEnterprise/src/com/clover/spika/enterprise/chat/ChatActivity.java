@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -200,14 +199,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-				Log.d("Vida", "Editor");
-				Log.d("Vida", "Editor: " + event);
-				Log.d("Vida", "Editor: " + (event != null ? event.getKeyCode() : "null"));
-				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
-				Log.d("Vida", "actionId: " + actionId);
-				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
-
-				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+				if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || actionId == EditorInfo.IME_ACTION_DONE) {
 					String text;
 
 					if (!TextUtils.isEmpty(etMessage.getText().toString())) {
@@ -321,10 +313,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 
-			if (intent.getExtras().containsKey(Const.PUSH_TYPE)) {
-				// TODO
-			}
-
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
@@ -340,9 +328,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
+				String userId = intent.getExtras().getString(Const.USER_ID);
 
-				new ChatApi().startChat(isGroup, intent.getExtras().getString(Const.USER_ID), intent.getExtras().getString(Const.FIRSTNAME),
-						intent.getExtras().getString(Const.LASTNAME), true, this, new ApiCallback<Chat>() {
+				new ChatApi().startChat(isGroup, userId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
+						new ApiCallback<Chat>() {
 
 							@Override
 							public void onApiResponse(Result<Chat> result) {
