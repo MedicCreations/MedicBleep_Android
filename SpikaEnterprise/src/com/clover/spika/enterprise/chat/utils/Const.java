@@ -114,6 +114,10 @@ public class Const {
 	public static final int MSG_TYPE_VOICE = 5;
 	public static final int MSG_TYPE_FILE = 6;
 
+	public static final String PUSH_TYPE = "PushType";
+	public static final int PUSH_TYPE_MSG = 1;
+	public static final int PUSH_TYPE_SEEN = 2;
+
 	// Lobby
 	public static final int ALL_TYPE = 0;
 	public static final int USERS_TYPE = 1;

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -199,6 +200,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		etMessage.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
+				Log.d("Vida", "Editor");
+				Log.d("Vida", "Editor: " + event);
+				Log.d("Vida", "Editor: " + event.getKeyCode());
+				Log.d("Vida", "const: " + KeyEvent.KEYCODE_ENTER);
+				Log.d("Vida", "actionId: " + actionId);
+				Log.d("Vida", "actionIdConst: " + EditorInfo.IME_ACTION_DONE);
+
 				if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
 					String text;
 
@@ -222,8 +230,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 	}
 
 	@Override
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage) {
-		getFromPush(msg, chatIdPush, chatName, chatImage);
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, int pushType) {
+		getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
 	}
 
 	@Override
@@ -312,6 +320,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
+
+			if (intent.getExtras().containsKey(Const.PUSH_TYPE)) {
+				// TODO
+			}
+
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
@@ -569,7 +582,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		});
 	}
 
-	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage) {
+	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, int pushType) {
 		if (chatIdPush.equals(chatId)) {
 			getMessages(false, false, false, true, false, true);
 		} else {

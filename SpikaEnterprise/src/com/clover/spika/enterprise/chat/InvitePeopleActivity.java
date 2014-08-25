@@ -66,6 +66,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
 
+	TextView invitedPeople;
+
 	public static void startActivity(String chatId, int type, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
@@ -124,6 +126,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		searchEt.setOnEditorActionListener(editorActionListener);
 		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+
+		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
 
 		adapter = new InviteUserAdapter(this, new ArrayList<User>());
 

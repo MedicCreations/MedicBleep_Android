@@ -52,6 +52,7 @@ public class GcmIntentService extends IntentService {
 				String chatName = "";
 				String chatImage = "";
 				String chatType = "";
+				int type = 1;
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
@@ -73,29 +74,40 @@ public class GcmIntentService extends IntentService {
 					chatType = extras.getString(Const.PUSH_CHAT_TYPE);
 				}
 
+				if (extras.containsKey(Const.TYPE)) {
+					type = extras.getInt(Const.TYPE);
+				}
+
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
 				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 				List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
+
+					if (type == Const.PUSH_TYPE_SEEN) {
+						return;
+					}
+
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
 					inBroadcast.putExtra(Const.CHAT_ID, chatId);
 					inBroadcast.putExtra(Const.CHAT_NAME, chatName);
 					inBroadcast.putExtra(Const.IMAGE, chatImage);
+					inBroadcast.putExtra(Const.PUSH_TYPE, type);
 					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
 					inBroadcast.putExtra(Const.TYPE, chatType);
 
 					sendBroadcast(inBroadcast);
 				} else {
-
+					
 					NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 					Intent pushIntent = new Intent(this, SplashActivity.class);
 					pushIntent.putExtra(Const.CHAT_ID, chatId);
 					pushIntent.putExtra(Const.CHAT_NAME, chatName);
 					pushIntent.putExtra(Const.IMAGE, chatImage);
+					pushIntent.putExtra(Const.PUSH_TYPE, type);
 					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
 					pushIntent.putExtra(Const.TYPE, chatType);
 
