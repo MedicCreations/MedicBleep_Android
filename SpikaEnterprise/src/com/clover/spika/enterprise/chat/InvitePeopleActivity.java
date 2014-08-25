@@ -27,6 +27,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -36,7 +37,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener {
+public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<User> {
 
 	UsersApi api;
 
@@ -67,6 +68,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	OnSearchListener mSearchListener;
 
 	TextView invitedPeople;
+
+	List<User> usersToAdd = new ArrayList<User>();
 
 	public static void startActivity(String chatId, int type, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
@@ -129,7 +132,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
 
-		adapter = new InviteUserAdapter(this, new ArrayList<User>());
+		adapter = new InviteUserAdapter(this, new ArrayList<User>(), this);
 
 		mainList = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		mainList.setAdapter(adapter);
@@ -385,5 +388,37 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onChange(User obj) {
+		// TODO Auto-generated method stub
+
+		boolean isFound = false;
+		int j = 0;
+
+		for (User user : usersToAdd) {
+			if (user.getId().equals(obj.getId())) {
+				isFound = true;
+				break;
+			}
+			j++;
+		}
+
+		if (isFound) {
+			usersToAdd.remove(j);
+		} else {
+			usersToAdd.add(obj);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < usersToAdd.size(); i++) {
+			builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+			if (i != (usersToAdd.size() - 1)) {
+				builder.append(", ");
+			}
+		}
+
+		invitedPeople.setText(builder.toString());
 	}
 }

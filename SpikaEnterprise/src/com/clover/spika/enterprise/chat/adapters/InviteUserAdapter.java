@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 
@@ -27,12 +28,16 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	private ImageLoader imageLoader;
 
-	public InviteUserAdapter(Context context, Collection<User> users) {
+	private OnChangeListener<User> listener;
+
+	public InviteUserAdapter(Context context, Collection<User> users, OnChangeListener<User> listener) {
 		this.mContext = context;
 		this.data.addAll(users);
 
 		imageLoader = new ImageLoader(context);
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
+
+		this.listener = listener;
 	}
 
 	public Context getContext() {
@@ -125,6 +130,10 @@ public class InviteUserAdapter extends BaseAdapter {
 					} else {
 						data.get(position).setSelected(true);
 						setId(data.get(position).getId());
+					}
+
+					if (listener != null) {
+						listener.onChange(data.get(position));
 					}
 				}
 			});

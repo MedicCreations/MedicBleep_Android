@@ -1,5 +1,5 @@
 package com.clover.spika.enterprise.chat.listeners;
 
-interface OnChangeListener<T> {
+public interface OnChangeListener<T> {
 	void onChange(T obj);
 }
