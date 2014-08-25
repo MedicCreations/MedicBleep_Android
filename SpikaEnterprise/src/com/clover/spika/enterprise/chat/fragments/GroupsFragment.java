@@ -167,7 +167,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener, 
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
 			intent.putExtra(Const.CHAT_ID, group.getId());
 			intent.putExtra(Const.CHAT_NAME, group.getGroupName());
-			intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
+			intent.putExtra(Const.TYPE, String.valueOf(Const.C_TEAM));
 			intent.putExtra(Const.IS_GROUP, true);
 			startActivity(intent);
 		}

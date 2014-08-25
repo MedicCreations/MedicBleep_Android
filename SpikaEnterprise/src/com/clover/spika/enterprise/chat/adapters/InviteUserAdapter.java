@@ -23,6 +23,7 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<User> data = new ArrayList<User>();
+	private List<String> userIds = new ArrayList<String>();
 
 	private ImageLoader imageLoader;
 
@@ -40,6 +41,15 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	public void setData(List<User> list) {
 		data = list;
+
+		for (String selectedId : userIds) {
+			for (int i = 0; i < data.size(); i++) {
+				if (selectedId.equals(data.get(i).getId())) {
+					data.get(i).setSelected(true);
+				}
+			}
+		}
+
 		notifyDataSetChanged();
 	}
 
@@ -111,14 +121,28 @@ public class InviteUserAdapter extends BaseAdapter {
 				public void onClick(View v) {
 					if (data.get(position).isSelected()) {
 						data.get(position).setSelected(false);
+						removeId(data.get(position).getId());
 					} else {
 						data.get(position).setSelected(true);
+						setId(data.get(position).getId());
 					}
 				}
 			});
 		}
 
 		return convertView;
+	}
+
+	private void setId(String id) {
+		userIds.add(id);
+	}
+
+	private void removeId(String id) {
+		userIds.remove(id);
+	}
+
+	public List<String> getSelected() {
+		return userIds;
 	}
 
 	public class ViewHolderCharacter {

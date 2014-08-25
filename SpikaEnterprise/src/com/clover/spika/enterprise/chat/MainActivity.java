@@ -61,7 +61,7 @@ public class MainActivity extends BaseActivity {
 		if (mFragment == null)
 			mFragment = new LobbyFragment();
 
-		setContentView(R.layout.activity_base);
+		setContentView(R.layout.activity_main);
 		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
 		// end: set the above view (content)
 

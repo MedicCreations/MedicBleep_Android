@@ -77,6 +77,10 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 	};
 
 	private void setData(List<ChatsLobby> data, boolean toClearPrevious) {
+		if(mainListView == null){
+			return;
+		}
+		
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
 		if (toClearPrevious)

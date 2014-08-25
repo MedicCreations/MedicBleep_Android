@@ -2,8 +2,6 @@ package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,7 +11,6 @@ import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -172,7 +169,7 @@ public class UsersApi {
 		}.execute();
 	}
 
-	public void inviteUsers(final String chatId, final List<User> data, Context ctx, final ApiCallback<Chat> listener) {
+	public void inviteUsers(final String chatId, final String users, Context ctx, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, true) {
 
 			@Override
@@ -182,26 +179,7 @@ public class UsersApi {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.CHAT_ID, chatId);
-
-				StringBuilder users = new StringBuilder();
-
-				boolean isComma = false;
-				for (User user : data) {
-
-					if (isComma) {
-						users.append(",");
-					}
-
-					if (!user.isMember() && user.isSelected()) {
-						users.append(user.getId());
-						isComma = true;
-					} else {
-						isComma = false;
-					}
-
-				}
-
-				getParams.put(Const.USERS_TO_ADD, users.toString());
+				getParams.put(Const.USERS_TO_ADD, users);
 
 				if (chatId != null) {
 					getParams.put(Const.CHAT_ID, chatId);

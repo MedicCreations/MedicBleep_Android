@@ -3,17 +3,25 @@ package com.clover.spika.enterprise.chat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -35,12 +43,24 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	InviteUserAdapter adapter;
 
 	private String chatId = "";
+	@SuppressWarnings("unused")
 	private int chatType = 0;
 	private int mCurrentIndex = 0;
 	private String mSearchData = null;
 	private int mTotalCount = 0;
 
-	private ImageButton searchBtn;
+	ImageButton goBack;
+	TextView screenTitle;
+
+	/* Search bar */
+	ImageButton searchBtn;
+	EditText searchEt;
+	ImageButton closeSearchBtn;
+	boolean isOpenSearch = false;
+
+	int screenWidth;
+	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
+	OnSearchListener mSearchListener;
 
 	public static void startActivity(String chatId, int type, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
@@ -59,7 +79,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		api = new UsersApi();
 
-		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
+		goBack = (ImageButton) findViewById(R.id.goBack);
+		goBack.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -67,15 +88,28 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			}
 		});
 
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
+
+		screenWidth = getResources().getDisplayMetrics().widthPixels;
+
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-		searchBtn.setOnClickListener(new OnClickListener() {
+		searchEt = (EditText) findViewById(R.id.searchEt);
+		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
+
+		closeSearchBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				invitePeople();
+				closeSearchAnimation();
 			}
 		});
+
+		mSearchListener = this;
+
+		searchBtn.setOnClickListener(searchOnClickListener);
+
+		searchEt.setOnEditorActionListener(editorActionListener);
+		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
 
 		adapter = new InviteUserAdapter(this, new ArrayList<User>());
 
@@ -183,8 +217,132 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		getUsers(mCurrentIndex, mSearchData, true);
 	}
 
+	/**
+	 * Set search bar
+	 * 
+	 * @param listener
+	 */
+	public void setSearch(OnSearchListener listener) {
+
+		searchBtn.setVisibility(View.VISIBLE);
+		mSearchListener = listener;
+
+		searchBtn.setOnClickListener(searchOnClickListener);
+
+		searchEt.setOnEditorActionListener(editorActionListener);
+		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+	}
+
+	/**
+	 * Disable search bar
+	 */
+	public void disableSearch() {
+
+		if (isOpenSearch) {
+			closeSearchAnimation();
+		}
+
+		searchBtn.setVisibility(View.GONE);
+		searchEt.setVisibility(View.GONE);
+	}
+
+	private OnClickListener searchOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			if (searchEt.getVisibility() == View.GONE) {
+				openSearchAnimation();
+			} else {
+				if (mSearchListener != null) {
+					String data = searchEt.getText().toString();
+					hideKeyboard(searchEt);
+					mSearchListener.onSearch(data);
+				}
+			}
+		}
+	};
+
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
+
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+				hideKeyboard(searchEt);
+				if (mSearchListener != null)
+					mSearchListener.onSearch(v.getText().toString());
+			}
+			return false;
+		}
+	};
+
+	private void openSearchAnimation() {
+		searchBtn.setClickable(false);
+		goBack.setClickable(false);
+		searchEt.setVisibility(View.VISIBLE);
+
+		AnimUtils.translationX(searchEt, screenWidth, 0f, speedSearchAnimation, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				searchBtn.setClickable(true);
+				goBack.setClickable(true);
+				closeSearchBtn.setVisibility(View.VISIBLE);
+				showKeyboardForced(searchEt);
+				isOpenSearch = true;
+			}
+		});
+		AnimUtils.translationX(searchBtn, 0, -(screenWidth - searchBtn.getWidth()), speedSearchAnimation, null);
+		AnimUtils.fadeAnim(goBack, 1, 0, speedSearchAnimation);
+		AnimUtils.translationX(screenTitle, 0, -screenWidth, speedSearchAnimation, null);
+	}
+
+	private void closeSearchAnimation() {
+		searchBtn.setClickable(false);
+		goBack.setClickable(false);
+		hideKeyboard(searchEt);
+		closeSearchBtn.setVisibility(View.GONE);
+
+		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				searchEt.setVisibility(View.GONE);
+				searchEt.setText("");
+				super.onAnimationEnd(animation);
+				searchBtn.setClickable(true);
+				goBack.setClickable(true);
+				isOpenSearch = false;
+			}
+		});
+		AnimUtils.translationX(searchBtn, -(screenWidth - searchBtn.getWidth()), 0, speedSearchAnimation, null);
+		AnimUtils.fadeAnim(goBack, 0, 1, speedSearchAnimation);
+		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
+
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
+			closeSearchAnimation();
+			return;
+		}
+
+		finish();
+	}
+
 	private void invitePeople() {
-		api.inviteUsers(chatId, adapter.getData(), this, new ApiCallback<Chat>() {
+
+		StringBuilder users = new StringBuilder();
+
+		List<String> usersId = adapter.getSelected();
+		for (int i = 0; i < usersId.size(); i++) {
+			users.append(usersId.get(i));
+
+			if (i != (usersId.size() - 1)) {
+				users.append(",");
+			}
+		}
+
+		api.inviteUsers(chatId, users.toString(), this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
