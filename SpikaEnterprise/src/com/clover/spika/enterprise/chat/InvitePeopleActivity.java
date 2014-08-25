@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -51,6 +52,9 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	ImageButton goBack;
 	TextView screenTitle;
+
+	LinearLayout invitationOptions;
+	ImageButton inviteBtn;
 
 	/* Search bar */
 	ImageButton searchBtn;
@@ -91,6 +95,16 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+		invitationOptions = (LinearLayout) findViewById(R.id.invitationOptions);
+		inviteBtn = (ImageButton) findViewById(R.id.inviteBtn);
+		inviteBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				invitePeople();
+			}
+		});
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
@@ -291,7 +305,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				isOpenSearch = true;
 			}
 		});
-		AnimUtils.translationX(searchBtn, 0, -(screenWidth - searchBtn.getWidth()), speedSearchAnimation, null);
+
+		AnimUtils.translationX(invitationOptions, 0, -(screenWidth - invitationOptions.getWidth()), speedSearchAnimation, null);
 		AnimUtils.fadeAnim(goBack, 1, 0, speedSearchAnimation);
 		AnimUtils.translationX(screenTitle, 0, -screenWidth, speedSearchAnimation, null);
 	}
@@ -313,7 +328,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				isOpenSearch = false;
 			}
 		});
-		AnimUtils.translationX(searchBtn, -(screenWidth - searchBtn.getWidth()), 0, speedSearchAnimation, null);
+		AnimUtils.translationX(invitationOptions, -(screenWidth - invitationOptions.getWidth()), 0, speedSearchAnimation, null);
 		AnimUtils.fadeAnim(goBack, 0, 1, speedSearchAnimation);
 		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
 
@@ -334,6 +349,11 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		StringBuilder users = new StringBuilder();
 
 		List<String> usersId = adapter.getSelected();
+
+		if (usersId.isEmpty()) {
+			return;
+		}
+
 		for (int i = 0; i < usersId.size(); i++) {
 			users.append(usersId.get(i));
 
