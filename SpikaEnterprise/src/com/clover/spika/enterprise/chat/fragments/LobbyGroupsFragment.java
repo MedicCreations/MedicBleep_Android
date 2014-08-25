@@ -38,13 +38,14 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		((LobbyFragment) getParentFragment()).getLobby(this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_lobby_child, container, false);
-		
+
 		mCurrentIndex = 0;
 
 		noItems = (TextView) view.findViewById(R.id.noItems);
@@ -57,8 +58,6 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-
-		((LobbyFragment) getParentFragment()).getLobby(this);
 
 		return view;
 	}
@@ -96,7 +95,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			mainListView.setVisibility(View.VISIBLE);
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {

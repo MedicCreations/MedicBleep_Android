@@ -50,10 +50,15 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 		groupsTab.setOnClickListener(this);
 		usersTab = (ToggleButton) rootView.findViewById(R.id.usersTab);
 		usersTab.setOnClickListener(this);
-		
-		getAllLobby(true, 0);
 
 		return rootView;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setTabsStates(viewPager.getCurrentItem());
+		getAllLobby(true, 0);
 	}
 
 	private void setLobbyChangedListener(LobbyChangedListener listener) {
@@ -63,7 +68,6 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	}
 
 	public void getLobby(LobbyChangedListener listener) {
-
 		if (listener == null)
 			return;
 
@@ -72,12 +76,6 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 			listener.onChangeAll(this.model);
 		}
 
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		setTabsStates(viewPager.getCurrentItem());
 	}
 
 	private void getAllLobby(boolean showProgress, int page) {
@@ -147,5 +145,4 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 			usersTab.setChecked(true);
 		}
 	}
-
 }
