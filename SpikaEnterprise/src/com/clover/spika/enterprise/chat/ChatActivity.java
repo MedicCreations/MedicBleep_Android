@@ -59,7 +59,7 @@ public class ChatActivity extends BaseChatActivity {
                 if (parent.getAdapter() != null) {
                     Message message = (Message) parent.getAdapter().getItem(position);
                     ThreadsActivity.start(ChatActivity.this, String.valueOf(message.getRootId()),
-                            message.getChat_id(), message.getId());
+                            message.getChat_id(), message.getId(), chatImage);
                 }
             }
         });

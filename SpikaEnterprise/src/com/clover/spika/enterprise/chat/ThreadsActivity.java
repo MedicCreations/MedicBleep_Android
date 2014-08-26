@@ -19,12 +19,14 @@ public class ThreadsActivity extends BaseChatActivity {
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
     public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.extra_message_id";
+    public static final String EXTRA_PHOTO_THUMB = "com.clover.spika.enterprise.extra_photo_thumb";
 
-    public static void start(Activity activity, String root, String chatId, String messageId) {
+    public static void start(Activity activity, String root, String chatId, String messageId, String photoThumb) {
         Intent threadIntent = new Intent(activity, ThreadsActivity.class);
         threadIntent.putExtra(EXTRA_ROOT_ID, root);
         threadIntent.putExtra(EXTRA_CHAT_ID, chatId);
         threadIntent.putExtra(EXTRA_MESSAGE_ID, messageId);
+        threadIntent.putExtra(EXTRA_PHOTO_THUMB, photoThumb);
         activity.startActivity(threadIntent);
     }
 
@@ -41,8 +43,15 @@ public class ThreadsActivity extends BaseChatActivity {
             mRootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
             chatId = getIntent().getStringExtra(EXTRA_CHAT_ID);
             mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
+            chatImage = getIntent().getStringExtra(EXTRA_PHOTO_THUMB);
             getThreads();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadImage();
     }
 
     private void getThreads() {
