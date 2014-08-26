@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Media;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -59,8 +60,6 @@ public class RecordVideoActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_video);
-		// TODO
-		// disableSidebar();
 
 		setRecordingVideoActivity();
 
@@ -180,13 +179,12 @@ public class RecordVideoActivity extends BaseActivity {
 
 					videoFolder.mkdirs(); // <----
 					File video = new File(videoFolder, "video.mp4");
-					// Uri uriSavedVideo = Uri.fromFile(video);
+					Uri uriSavedVideo = Uri.fromFile(video);
 
 					sFileName = video.getPath();
 
 					cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-					// cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-					// uriSavedVideo);
+					cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
 					startActivityForResult(cameraIntent, RESULT_FROM_CAMERA);
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -276,6 +274,8 @@ public class RecordVideoActivity extends BaseActivity {
 	private void startPlaying() {
 		if (mIsPlaying == 0) {
 			mVideoView.requestFocus();
+
+			Log.d("Vida", "sFileName: " + sFileName);
 
 			mVideoView.setVideoURI(Uri.parse(sFileName));
 

@@ -48,8 +48,6 @@ public class VideoActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_video);
-		// TODO
-		// disableSidebar();
 
 		new FileManageApi().downloadFile(getIntent().getExtras().getString(Const.FILE_ID), this, new ApiCallback<String>() {
 
@@ -126,50 +124,55 @@ public class VideoActivity extends BaseActivity {
 	}
 
 	private void startPlaying() {
-		if (mIsPlaying == VIDEO_IS_STOPPED) {
-			mVideoView.requestFocus();
+		try {
+			if (mIsPlaying == VIDEO_IS_STOPPED) {
+				mVideoView.requestFocus();
 
-			mVideoView.setVideoURI(Uri.parse(sFileName));
-			mVideoView.setVideoPath(sFileName);
+				mVideoView.setVideoURI(Uri.parse(sFileName));
+				mVideoView.setVideoPath(sFileName);
 
-			mVideoView.start();
+				mVideoView.start();
 
-			mVideoView.setOnPreparedListener(new OnPreparedListener() {
+				mVideoView.setOnPreparedListener(new OnPreparedListener() {
 
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					mDurationOfVideo = mVideoView.getDuration();
-					mPbForPlaying.setMax((int) mDurationOfVideo);
+					@Override
+					public void onPrepared(MediaPlayer mp) {
+						mDurationOfVideo = mVideoView.getDuration();
+						mPbForPlaying.setMax((int) mDurationOfVideo);
 
-					mRunnForProgressBar = new Runnable() {
+						mRunnForProgressBar = new Runnable() {
 
-						@Override
-						public void run() {
-							mPbForPlaying.setProgress((int) mVideoView.getCurrentPosition());
-							if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
-								mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
-							} else {
-								mPbForPlaying.setProgress((int) mVideoView.getDuration());
-								new Handler().postDelayed(new Runnable() {
-									// *******wait for video to finish
-									@Override
-									public void run() {
-										mPlayPause.setImageResource(R.drawable.play_btn);
-										onPlay(2);
-									}
-								}, 120);
+							@Override
+							public void run() {
+								mPbForPlaying.setProgress((int) mVideoView.getCurrentPosition());
+								if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
+									mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
+								} else {
+									mPbForPlaying.setProgress((int) mVideoView.getDuration());
+									new Handler().postDelayed(new Runnable() {
+										// *******wait for video to finish
+										@Override
+										public void run() {
+											mPlayPause.setImageResource(R.drawable.play_btn);
+											onPlay(2);
+										}
+									}, 120);
+								}
 							}
-						}
-					};
-					mHandlerForProgressBar.post(mRunnForProgressBar);
-					mIsPlaying = VIDEO_IS_PLAYING;
-				}
-			});
+						};
+						mHandlerForProgressBar.post(mRunnForProgressBar);
+						mIsPlaying = VIDEO_IS_PLAYING;
+					}
+				});
 
-		} else if (mIsPlaying == VIDEO_IS_PAUSED) {
-			mVideoView.start();
-			mHandlerForProgressBar.post(mRunnForProgressBar);
-			mIsPlaying = VIDEO_IS_PLAYING;
+			} else if (mIsPlaying == VIDEO_IS_PAUSED) {
+				mVideoView.start();
+				mHandlerForProgressBar.post(mRunnForProgressBar);
+				mIsPlaying = VIDEO_IS_PLAYING;
+			}
+		} catch (Exception e) {
+			AppDialog dialog = new AppDialog(this, true);
+			dialog.setFailed(getResources().getString(R.string.e_something_went_wrong));
 		}
 	}
 
