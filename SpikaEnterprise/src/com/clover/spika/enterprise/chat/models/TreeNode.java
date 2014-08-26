@@ -10,24 +10,31 @@ import java.util.TreeSet;
 
 public class TreeNode {
 
+    private int level;
     private Message message;
     private TreeSet<TreeNode> children = new TreeSet<TreeNode>(new TreeNodeComparator());
 
     public TreeNode(Message data) {
         this.message = data;
+        this.level = 0;
+    }
+
+    private TreeNode(Message data, int level) {
+        this.message = data;
+        this.level = level;
     }
 
     public TreeNode(List<Message> collection) {
         if (!collection.isEmpty()) {
             Collections.sort(collection, new MessageIdComparator());
-            List<Integer> ids = new ArrayList<Integer>();
-            for (Message m : collection) {
-                ids.add(m.getIntegerId());
-            }
 
+            this.level = 0;
             this.message = collection.get(0);
+
             collection.remove(0);
             addAll(collection);
+        } else {
+            throw new IllegalArgumentException("List must not be empty!");
         }
     }
 
@@ -39,15 +46,19 @@ public class TreeNode {
         return message;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
     public void add(Message message) {
         int parentId = message.getParentId();
 
         if (parentId == this.message.getIntegerId()) {
-            children.add(new TreeNode(message));
+            children.add(new TreeNode(message, this.level + 1));
         } else {
             for (TreeNode node : children) {
                 if (parentId == node.message.getIntegerId()) {
-                    node.children.add(new TreeNode(message));
+                    node.children.add(new TreeNode(message, node.level + 1));
                     break;
                 } else {
                     node.add(message);
@@ -64,21 +75,22 @@ public class TreeNode {
         }
     }
 
-    public List<Message> toArrayList() {
-        List<Message> messages = new ArrayList<Message>();
+    public List<TreeNode> asList() {
+        List<TreeNode> nodes = new ArrayList<TreeNode>();
 
+        nodes.add(this);
         for (TreeNode node : this.children) {
-            messages.addAll(node.toArrayList());
+            nodes.addAll(node.asList());
         }
-        messages.add(this.message);
 
-        return messages;
+        return nodes;
     }
 
     @Override
     public String toString() {
         return "TreeNode{" +
-                "message=" + message +
+                "level=" + level +
+                ", message=" + message +
                 ", children=" + children +
                 '}';
     }

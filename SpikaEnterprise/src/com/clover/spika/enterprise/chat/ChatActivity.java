@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
@@ -194,7 +195,22 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
         main_list_view.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ThreadsActivity.start(ChatActivity.this);
+                if (parent.getAdapter() != null) {
+                    Message message = (Message) parent.getAdapter().getItem(position);
+                    ThreadsActivity.start(ChatActivity.this, message.getIntegerId());
+                }
+            }
+        });
+        main_list_view.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getAdapter() != null) {
+                    Message message = (Message) parent.getAdapter().getItem(position);
+                    if (message.isMe()) {
+                        Toast.makeText(ChatActivity.this, message.getCreated(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
             }
         });
 
