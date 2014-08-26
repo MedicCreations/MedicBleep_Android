@@ -1,11 +1,5 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -18,6 +12,12 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class ChatApi {
 
@@ -251,5 +251,48 @@ public class ChatApi {
 			};
 		}.execute();
 	}
+
+    public void getThreads(final int messageId, boolean showProgressBar, Context context, final ApiCallback<Chat> listener) {
+        new BaseAsyncTask<Void, Void, Chat>(context, showProgressBar) {
+
+            @Override
+            protected Chat doInBackground(Void... params) {
+                HashMap<String, String> requestParams = new HashMap<String, String>();
+                requestParams.put(Const.ROOT_ID, String.valueOf(messageId));
+
+                try {
+                    JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_THREADS, requestParams,
+                            SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+                    return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Chat model) {
+                super.onPostExecute(model);
+
+                if (listener != null) {
+                    Result<Chat> apiResult;
+
+                    if (model != null) {
+                        if (model.getCode() == Const.API_SUCCESS) {
+                            apiResult = new Result<Chat>(model, Result.ApiResponseState.SUCCESS);
+                        } else {
+                            apiResult = new Result<Chat>(model, Result.ApiResponseState.FAILURE);
+                        }
+                    } else {
+                        apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+                    }
+                    listener.onApiResponse(apiResult);
+                }
+            }
+
+        }.execute();
+    }
 
 }

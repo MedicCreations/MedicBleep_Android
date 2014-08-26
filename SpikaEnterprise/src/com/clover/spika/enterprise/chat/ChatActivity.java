@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
@@ -49,6 +45,10 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
 
 public class ChatActivity extends BaseActivity implements OnClickListener, OnItemClickListener {
 
@@ -190,6 +190,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnIte
 		main_list_view = (ListView) findViewById(R.id.main_list_view);
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		main_list_view.setAdapter(adapter);
+        // TODO: elegantnije riješiti click listener
+        main_list_view.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ThreadsActivity.start(ChatActivity.this);
+            }
+        });
 
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(this);

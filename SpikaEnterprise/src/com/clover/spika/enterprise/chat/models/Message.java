@@ -52,6 +52,12 @@ public class Message implements Parcelable {
 	@SerializedName("modified")
 	private String modified;
 
+    @SerializedName("root_id")
+    private int rootId;
+
+    @SerializedName("parent_id")
+    private int parentId;
+
 	public Message() {
 	}
 
@@ -67,6 +73,8 @@ public class Message implements Parcelable {
 		file_id = source.readString();
 		latitude = source.readString();
 		longitude = source.readString();
+        rootId = source.readInt();
+        parentId = source.readInt();
 	}
 
 	public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
@@ -97,11 +105,17 @@ public class Message implements Parcelable {
 		parcel.writeString(file_id);
 		parcel.writeString(latitude);
 		parcel.writeString(longitude);
+        parcel.writeInt(rootId);
+        parcel.writeInt(parentId);
 	}
 
 	public String getId() {
 		return id;
 	}
+
+    public int getIntegerId() {
+        return Integer.parseInt(id);
+    }
 
 	public void setId(String id) {
 		this.id = id;
@@ -227,4 +241,97 @@ public class Message implements Parcelable {
 		this.isFailed = isFailed;
 	}
 
+    public int getRootId() {
+        return rootId;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message = (Message) o;
+
+        if (isFailed != message.isFailed) return false;
+        if (isMe != message.isMe) return false;
+        if (parentId != message.parentId) return false;
+        if (rootId != message.rootId) return false;
+        if (type != message.type) return false;
+        if (chat_id != null ? !chat_id.equals(message.chat_id) : message.chat_id != null)
+            return false;
+        if (created != null ? !created.equals(message.created) : message.created != null)
+            return false;
+        if (file_id != null ? !file_id.equals(message.file_id) : message.file_id != null)
+            return false;
+        if (firstname != null ? !firstname.equals(message.firstname) : message.firstname != null)
+            return false;
+        if (id != null ? !id.equals(message.id) : message.id != null) return false;
+        if (image != null ? !image.equals(message.image) : message.image != null) return false;
+        if (lastname != null ? !lastname.equals(message.lastname) : message.lastname != null)
+            return false;
+        if (latitude != null ? !latitude.equals(message.latitude) : message.latitude != null)
+            return false;
+        if (longitude != null ? !longitude.equals(message.longitude) : message.longitude != null)
+            return false;
+        if (modified != null ? !modified.equals(message.modified) : message.modified != null)
+            return false;
+        if (text != null ? !text.equals(message.text) : message.text != null) return false;
+        if (thumb_id != null ? !thumb_id.equals(message.thumb_id) : message.thumb_id != null)
+            return false;
+        if (user_id != null ? !user_id.equals(message.user_id) : message.user_id != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isMe ? 1 : 0);
+        result = 31 * result + (isFailed ? 1 : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (chat_id != null ? chat_id.hashCode() : 0);
+        result = 31 * result + (user_id != null ? user_id.hashCode() : 0);
+        result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
+        result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        result = 31 * result + (text != null ? text.hashCode() : 0);
+        result = 31 * result + (file_id != null ? file_id.hashCode() : 0);
+        result = 31 * result + (thumb_id != null ? thumb_id.hashCode() : 0);
+        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
+        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
+        result = 31 * result + type;
+        result = 31 * result + (created != null ? created.hashCode() : 0);
+        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        result = 31 * result + rootId;
+        result = 31 * result + parentId;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "isMe=" + isMe +
+                ", isFailed=" + isFailed +
+                ", id='" + id + '\'' +
+                ", chat_id='" + chat_id + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", image='" + image + '\'' +
+                ", text='" + text + '\'' +
+                ", file_id='" + file_id + '\'' +
+                ", thumb_id='" + thumb_id + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", type=" + type +
+                ", created='" + created + '\'' +
+                ", modified='" + modified + '\'' +
+                ", rootId=" + rootId +
+                ", parentId=" + parentId +
+                '}';
+    }
 }
