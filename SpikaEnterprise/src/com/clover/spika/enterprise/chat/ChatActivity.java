@@ -58,7 +58,8 @@ public class ChatActivity extends BaseChatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (parent.getAdapter() != null) {
                     Message message = (Message) parent.getAdapter().getItem(position);
-                    ThreadsActivity.start(ChatActivity.this, message.getIntegerId());
+                    ThreadsActivity.start(ChatActivity.this, String.valueOf(message.getRootId()),
+                            message.getChat_id(), message.getId());
                 }
             }
         });

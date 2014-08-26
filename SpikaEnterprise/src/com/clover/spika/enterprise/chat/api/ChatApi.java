@@ -142,8 +142,13 @@ public class ChatApi {
 		}.execute();
 	}
 
+    public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String thumbId, final String longitude, final String latitude,
+                            Context ctx, final ApiCallback<Integer> listener) {
+        sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, ctx, listener);
+    }
+
 	public void sendMessage(final int type, final String chatId, final String text, final String fileId, final String thumbId, final String longitude, final String latitude,
-			Context ctx, final ApiCallback<Integer> listener) {
+			final String rootId, final String parentId, Context ctx, final ApiCallback<Integer> listener) {
 		new BaseAsyncTask<Void, Void, Integer>(ctx, true) {
 
 			protected void onPreExecute() {
@@ -174,6 +179,9 @@ public class ChatApi {
 						requestParams.put(Const.LONGITUDE, JNAesCrypto.encryptJN(longitude));
 						requestParams.put(Const.LATITUDE, JNAesCrypto.encryptJN(latitude));
 					}
+
+                    requestParams.put(Const.ROOT_ID, String.valueOf(rootId));
+                    requestParams.put(Const.PARENT_ID, String.valueOf(parentId));
 
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_SEND_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
@@ -252,7 +260,7 @@ public class ChatApi {
 		}.execute();
 	}
 
-    public void getThreads(final int messageId, boolean showProgressBar, Context context, final ApiCallback<Chat> listener) {
+    public void getThreads(final String messageId, boolean showProgressBar, Context context, final ApiCallback<Chat> listener) {
         new BaseAsyncTask<Void, Void, Chat>(context, showProgressBar) {
 
             @Override

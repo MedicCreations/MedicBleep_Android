@@ -1,13 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -34,10 +26,17 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSorting;
+
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class MessagesAdapter extends BaseAdapter {
 
@@ -407,7 +406,7 @@ public class MessagesAdapter extends BaseAdapter {
 						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
 							msg = newItems.get(i);
 							msg.setMe(isMe(newItems.get(i).getUser_id()));
-							msg = decryptContent(newItems.get(i));
+							msg = Message.decryptContent(ctx, newItems.get(i));
 							data.set(j, newItems.get(i));
 						}
 					}
@@ -416,7 +415,7 @@ public class MessagesAdapter extends BaseAdapter {
 				if (!isFound) {
 					msg = newItems.get(i);
 					msg.setMe(isMe(newItems.get(i).getUser_id()));
-					msg = decryptContent(newItems.get(i));
+                    msg = Message.decryptContent(ctx, newItems.get(i));
 					data.add(msg);
 				}
 			}
@@ -425,7 +424,7 @@ public class MessagesAdapter extends BaseAdapter {
 			for (int i = 0; i < newItems.size(); i++) {
 				msg = newItems.get(i);
 				msg.setMe(isMe(newItems.get(i).getUser_id()));
-				msg = decryptContent(newItems.get(i));
+                msg = Message.decryptContent(ctx, newItems.get(i));
 				newItems.set(i, msg);
 			}
 			data.addAll(newItems);
@@ -434,43 +433,6 @@ public class MessagesAdapter extends BaseAdapter {
 		Collections.sort(data, new MessageSorting());
 		addSeparatorDate();
 		this.notifyDataSetChanged();
-	}
-
-	private Message decryptContent(Message msg) {
-
-		switch (msg.getType()) {
-
-		case Const.MSG_TYPE_DEFAULT:
-		case Const.MSG_TYPE_FILE:
-
-			try {
-				msg.setText(JNAesCrypto.decryptJN(msg.getText()));
-			} catch (Exception e) {
-				e.printStackTrace();
-				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
-				msg.setFailed(true);
-			}
-
-			break;
-
-		case Const.MSG_TYPE_LOCATION:
-
-			try {
-				msg.setLongitude(JNAesCrypto.decryptJN(msg.getLongitude()));
-				msg.setLatitude(JNAesCrypto.decryptJN(msg.getLatitude()));
-			} catch (Exception e) {
-				e.printStackTrace();
-				msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
-				msg.setFailed(true);
-			}
-
-			break;
-
-		default:
-			break;
-		}
-
-		return msg;
 	}
 
 	private void addSeparatorDate() {

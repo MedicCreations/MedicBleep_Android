@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 
 import java.util.ArrayList;
@@ -58,8 +59,9 @@ public class ThreadsAdapter extends BaseAdapter {
         }
 
         TreeNode node = mMessageList.get(position);
+        Message message = Message.decryptContent(mContext, node.getMessage());
 
-        holder.textViewMessage.setText("id: " + node.getMessage().getId() + "; pid: " + node.getMessage().getParentId());
+        holder.textViewMessage.setText("id: " + node.getMessage().getId() + "; pid: " + node.getMessage().getParentId() + "; text: " + message.getText());
         holder.textViewMessage.setPadding(node.getLevel() * 50, 0, 0, 0);
 
         return convertView;

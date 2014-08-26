@@ -1,8 +1,12 @@
 package com.clover.spika.enterprise.chat.models;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.annotations.SerializedName;
 
 public class Message implements Parcelable {
@@ -333,5 +337,42 @@ public class Message implements Parcelable {
                 ", rootId=" + rootId +
                 ", parentId=" + parentId +
                 '}';
+    }
+
+    public static Message decryptContent(Context ctx, Message msg) {
+
+        switch (msg.getType()) {
+
+            case Const.MSG_TYPE_DEFAULT:
+            case Const.MSG_TYPE_FILE:
+
+                try {
+                    msg.setText(JNAesCrypto.decryptJN(msg.getText()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+                    msg.setFailed(true);
+                }
+
+                break;
+
+            case Const.MSG_TYPE_LOCATION:
+
+                try {
+                    msg.setLongitude(JNAesCrypto.decryptJN(msg.getLongitude()));
+                    msg.setLatitude(JNAesCrypto.decryptJN(msg.getLatitude()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
+                    msg.setFailed(true);
+                }
+
+                break;
+
+            default:
+                break;
+        }
+
+        return msg;
     }
 }
