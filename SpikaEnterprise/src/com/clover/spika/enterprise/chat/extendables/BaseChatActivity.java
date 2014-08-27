@@ -27,8 +27,11 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordAudioActivity;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -273,6 +276,17 @@ public abstract class BaseChatActivity extends BaseActivity {
         }
     }
 
+    protected void deleteMessage(String messageId) {
+        new ChatApi().deleteMessage(messageId, this, new ApiCallback<BaseModel>() {
+            @Override
+            public void onApiResponse(Result<BaseModel> result) {
+                if (result.isSuccess()) {
+                    onMessageDeleted();
+                }
+            }
+        });
+    }
+
     @Override
     public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
         getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
@@ -376,4 +390,6 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected abstract void onEditorSendEvent(String text);
 
     protected abstract void onChatPushUpdated();
+
+    protected abstract void onMessageDeleted();
 }

@@ -115,6 +115,11 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     @Override
+    protected void onMessageDeleted() {
+
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
         threadsAdapter.setSelectedItem(position);

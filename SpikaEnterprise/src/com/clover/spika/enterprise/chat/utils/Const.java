@@ -150,6 +150,7 @@ public class Const {
 	public static final String F_UPDATE_PUSH_TOKEN = "/user/pushtoken/android/update";
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
     public static final String F_GET_THREADS = "/message/child/list";
+    public static final String F_DELETE_MESSAGE = "/message/delete";
 
 	public static final int API_SUCCESS = 2000;
 

@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -67,7 +66,7 @@ public class ChatActivity extends BaseChatActivity {
                 if (parent.getAdapter() != null) {
                     Message message = (Message) parent.getAdapter().getItem(position);
                     if (message.isMe()) {
-                        Toast.makeText(ChatActivity.this, message.getCreated(), Toast.LENGTH_SHORT).show();
+                        deleteMessage(message.getId());
                     }
                 }
                 return true;
@@ -253,6 +252,11 @@ public class ChatActivity extends BaseChatActivity {
 
     @Override
     protected void onChatPushUpdated() {
+        getMessages(false, false, false, true, false, true);
+    }
+
+    @Override
+    protected void onMessageDeleted() {
         getMessages(false, false, false, true, false, true);
     }
 

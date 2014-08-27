@@ -13,6 +13,7 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -300,6 +301,50 @@ public class ChatApi {
                 }
             }
 
+        }.execute();
+    }
+
+    public void deleteMessage(final String messageId, Context context, final ApiCallback<BaseModel> listener) {
+        new BaseAsyncTask<Void, Void, BaseModel>(context, true) {
+
+            @Override
+            protected BaseModel doInBackground(Void... params) {
+                HashMap<String, String> requestParams = new HashMap<String, String>();
+                requestParams.put(Const.MESSAGE_ID, messageId);
+
+                try {
+                    JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_DELETE_MESSAGE, requestParams,
+                            SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+                    return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(BaseModel model) {
+                super.onPostExecute(model);
+
+                if (listener != null) {
+                    Result<BaseModel> apiResult;
+
+                    if (model != null) {
+                        if (model.getCode() == Const.API_SUCCESS) {
+                            apiResult = new Result<BaseModel>(model, Result.ApiResponseState.SUCCESS);
+                        } else {
+                            apiResult = new Result<BaseModel>(model, Result.ApiResponseState.FAILURE);
+                        }
+                    } else {
+                        apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+                    }
+                    listener.onApiResponse(apiResult);
+                }
+            }
         }.execute();
     }
 
