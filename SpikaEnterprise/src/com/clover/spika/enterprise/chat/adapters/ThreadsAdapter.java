@@ -1,8 +1,10 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +24,28 @@ import java.util.List;
 
 public class ThreadsAdapter extends BaseAdapter {
 
+    private static final int INDENTATION_PADDING = 50;
+
     private int mSelectedItem = -1;
+    private int mMaxIndentLevel = 0;
     private Context mContext;
     private List<TreeNode> mMessageList = new ArrayList<TreeNode>();
 
     private ImageLoader imageLoader;
 
     public ThreadsAdapter(Context context) {
-        this.mContext = context;
-        this.imageLoader = ImageLoader.getInstance();
+        if (context instanceof Activity) {
+            this.mContext = context;
+            this.imageLoader = ImageLoader.getInstance();
+
+            DisplayMetrics dm = new DisplayMetrics();
+            ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            int maxIndent = dm.widthPixels / 2;
+            mMaxIndentLevel = maxIndent / INDENTATION_PADDING;
+        } else {
+            throw new IllegalArgumentException("Context must be an Activity context to proceed.");
+        }
+
     }
 
     public void updateContent(List<TreeNode> collection) {
@@ -53,6 +68,11 @@ public class ThreadsAdapter extends BaseAdapter {
     public void setSelectedItem(int position) {
         this.mSelectedItem = position;
         notifyDataSetInvalidated();
+    }
+
+    private int getIndentPadding(int level) {
+        level = level > mMaxIndentLevel ? mMaxIndentLevel : level;
+        return INDENTATION_PADDING  * level;
     }
 
     @Override
@@ -112,7 +132,7 @@ public class ThreadsAdapter extends BaseAdapter {
             holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
         }
 
-        convertView.setPadding(node.getLevel() * 50, 0, 0, 0);
+        convertView.setPadding(getIndentPadding(node.getLevel()), 0, 0, 0);
 
         return convertView;
     }
