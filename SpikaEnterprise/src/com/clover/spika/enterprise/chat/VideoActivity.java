@@ -7,11 +7,15 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.VideoView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
@@ -110,6 +114,8 @@ public class VideoActivity extends BaseActivity {
 				}
 			}
 		});
+
+		scaleView();
 	}
 
 	private void onPlay(int playPauseStop) {
@@ -187,6 +193,27 @@ public class VideoActivity extends BaseActivity {
 		mVideoView.pause();
 		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 		mIsPlaying = VIDEO_IS_PAUSED;
+	}
+
+	private void scaleView() {
+
+		Display display = getWindowManager().getDefaultDisplay();
+
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		display.getMetrics(displaymetrics);
+
+		int height = displaymetrics.heightPixels;
+
+		// 90% of width
+		int height_cut = (int) ((float) height * (1f - (40f / 100f)));
+
+		// Image container
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height_cut);
+		params.addRule(RelativeLayout.CENTER_IN_PARENT);
+		params.addRule(RelativeLayout.ABOVE, R.id.soundControler);
+		params.addRule(RelativeLayout.BELOW, R.id.topLayout);
+
+		mVideoView.setLayoutParams(params);
 	}
 
 	@Override

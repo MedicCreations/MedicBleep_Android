@@ -12,13 +12,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Media;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.VideoView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -60,15 +64,6 @@ public class RecordVideoActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_video);
-
-		setRecordingVideoActivity();
-
-		Bundle extras = getIntent().getExtras();
-		chatId = extras.getString(Const.CHAT_ID);
-		gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
-	}
-
-	private void setRecordingVideoActivity() {
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +140,12 @@ public class RecordVideoActivity extends BaseActivity {
 				}
 			}
 		});
+
+		Bundle extras = getIntent().getExtras();
+		chatId = extras.getString(Const.CHAT_ID);
+		gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
+
+		scaleView();
 	}
 
 	private void sendMsg(String fileId) {
@@ -346,6 +347,27 @@ public class RecordVideoActivity extends BaseActivity {
 			cursor.close();
 		}
 		return Integer.parseInt(duration);
+	}
+
+	private void scaleView() {
+
+		Display display = getWindowManager().getDefaultDisplay();
+
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		display.getMetrics(displaymetrics);
+
+		int height = displaymetrics.heightPixels;
+
+		// 90% of width
+		int height_cut = (int) ((float) height * (1f - (40f / 100f)));
+
+		// Image container
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height_cut);
+		params.addRule(RelativeLayout.CENTER_IN_PARENT);
+		params.addRule(RelativeLayout.ABOVE, R.id.soundControler);
+		params.addRule(RelativeLayout.BELOW, R.id.topLayout);
+
+		mVideoView.setLayoutParams(params);
 	}
 
 	@Override
