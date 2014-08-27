@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 
@@ -19,9 +21,16 @@ public class ThreadsAdapter extends BaseAdapter {
     private Context mContext;
     private List<TreeNode> mMessageList = new ArrayList<TreeNode>();
 
+    private ImageLoader imageLoader;
+
     public ThreadsAdapter(Context context, List<TreeNode> messages) {
         this.mContext = context;
         this.mMessageList.addAll(messages);
+        this.imageLoader = new ImageLoader(context);
+
+        for (TreeNode node : mMessageList) {
+            Message.decryptContent(mContext, node.getMessage());
+        }
     }
 
     public Context getContext() {
@@ -51,6 +60,8 @@ public class ThreadsAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_message, parent, false);
 
             holder = new ViewHolder();
+            holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+            holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
             holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
 
             convertView.setTag(holder);
@@ -59,15 +70,19 @@ public class ThreadsAdapter extends BaseAdapter {
         }
 
         TreeNode node = mMessageList.get(position);
-        Message message = Message.decryptContent(mContext, node.getMessage());
 
-        holder.textViewMessage.setText("id: " + node.getMessage().getId() + "; pid: " + node.getMessage().getParentId() + "; text: " + message.getText());
-        holder.textViewMessage.setPadding(node.getLevel() * 50, 0, 0, 0);
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+        holder.textViewMessage.setText(node.getMessage().getText());
+
+        convertView.setPadding(node.getLevel() * 50, 0, 0, 0);
 
         return convertView;
     }
 
     private static final class ViewHolder {
+        ImageView imageViewUser;
         TextView textViewMessage;
+        TextView textViewUser;
     }
 }

@@ -221,6 +221,11 @@ public class Message implements Parcelable {
 		this.lastname = lastname;
 	}
 
+    public String getName() {
+        // TODO: genereate "preferences" where user can check to either use first-last or last-first
+        return firstname + " " + lastname;
+    }
+
 	public boolean isMe() {
 		return isMe;
 	}
