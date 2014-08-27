@@ -3,6 +3,8 @@ package com.clover.spika.enterprise.chat;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.clover.spika.enterprise.chat.adapters.ThreadsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -14,7 +16,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class ThreadsActivity extends BaseChatActivity {
+public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener {
 
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
@@ -44,6 +46,11 @@ public class ThreadsActivity extends BaseChatActivity {
             chatId = getIntent().getStringExtra(EXTRA_CHAT_ID);
             mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
             chatImage = getIntent().getStringExtra(EXTRA_PHOTO_THUMB);
+
+            setTitle("parent_id: " + mMessageId);
+
+            chatListView.setOnItemClickListener(this);
+            chatListView.setAdapter(new ThreadsAdapter(this));
             getThreads();
         }
     }
@@ -60,7 +67,7 @@ public class ThreadsActivity extends BaseChatActivity {
             public void onApiResponse(Result<Chat> result) {
                 if (result.isSuccess()) {
                     threads = new TreeNode(result.getResultData().getMessagesList());
-                    chatListView.setAdapter(new ThreadsAdapter(ThreadsActivity.this, threads.asList(), getImageLoader()));
+                    ((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
                 }
             }
         });
@@ -91,5 +98,22 @@ public class ThreadsActivity extends BaseChatActivity {
     @Override
     protected void onEditorSendEvent(String text) {
         sendMessage(text);
+    }
+
+    @Override
+    protected void onChatPushUpdated() {
+        getThreads();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+        threadsAdapter.setSelectedItem(position);
+
+        TreeNode node = threadsAdapter.getItem(position);
+        mMessageId = node.getMessage().getId();
+        setTitle("parent_id: " + mMessageId);
+
+        showKeyboard(etMessage);
     }
 }

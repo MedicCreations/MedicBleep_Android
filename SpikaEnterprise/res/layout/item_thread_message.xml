@@ -5,35 +5,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/image_view_user"
-        android:layout_width="100px"
-        android:layout_height="100px"
-        android:layout_centerVertical="true"
-        android:layout_margin="10dp" />
-
     <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/image_view_user"
-        android:layout_toRightOf="@id/image_view_user">
+        android:id="@+id/relative_layout_thread_item_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_view_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_gray_image"
-            android:textSize="14sp"
-            tools:text="Stiven Spilberg" />
+        <ImageView
+            android:id="@+id/image_view_user"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            tools:src="@drawable/default_user_image" />
 
-        <TextView
-            android:id="@+id/text_view_message"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text_view_user"
-            android:textSize="20sp"
-            tools:text="Stigla ti je poruka" />
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/image_view_user"
+            android:layout_toRightOf="@id/image_view_user">
+
+            <TextView
+                android:id="@+id/text_view_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_gray_image"
+                android:textSize="14sp"
+                tools:text="Stiven Spilberg" />
+
+            <TextView
+                android:id="@+id/text_view_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_view_user"
+                android:textSize="20sp"
+                tools:text="Stigla ti je poruka" />
+        </RelativeLayout>
+
     </RelativeLayout>
 
 

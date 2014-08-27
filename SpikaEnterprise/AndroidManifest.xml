@@ -135,6 +135,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ThreadsActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"/>
     </application>
 

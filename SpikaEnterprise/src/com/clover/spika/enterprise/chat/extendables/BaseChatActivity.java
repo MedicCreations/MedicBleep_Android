@@ -32,9 +32,10 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
-public abstract class BaseChatActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public abstract class BaseChatActivity extends BaseActivity {
 
     protected static final int PICK_FILE_RESULT_CODE = 987;
 
@@ -54,6 +55,7 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
     private RelativeLayout rlDrawer;
     private RelativeLayout chatLayout;
     private RoundImageView partnerIcon;
+    private RobotoThinTextView screenTitle;
     protected EditText etMessage;
     protected ListView chatListView;
 
@@ -73,40 +75,41 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
         imageLoader = ImageLoader.getInstance();
 
         Button file = (Button) findViewById(R.id.bntFile);
-        file.setOnClickListener(this);
+        file.setOnClickListener(thisClickListener);
         Button photo = (Button) findViewById(R.id.btnPhoto);
-        photo.setOnClickListener(this);
+        photo.setOnClickListener(thisClickListener);
         Button gallery = (Button) findViewById(R.id.btnGallery);
-        gallery.setOnClickListener(this);
+        gallery.setOnClickListener(thisClickListener);
         Button video = (Button) findViewById(R.id.btnVideo);
-        video.setOnClickListener(this);
+        video.setOnClickListener(thisClickListener);
         Button location = (Button) findViewById(R.id.btnLocation);
-        location.setOnClickListener(this);
+        location.setOnClickListener(thisClickListener);
         Button record = (Button) findViewById(R.id.btnRecord);
-        record.setOnClickListener(this);
+        record.setOnClickListener(thisClickListener);
 
         chatListView = (ListView) findViewById(R.id.main_list_view);
 
         partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
+        screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
         ImageButton goBack = (ImageButton) findViewById(R.id.goBack);
-        goBack.setOnClickListener(this);
+        goBack.setOnClickListener(thisClickListener);
         ImageButton settingsBtn = (ImageButton) findViewById(R.id.settingsBtn);
-        settingsBtn.setOnClickListener(this);
+        settingsBtn.setOnClickListener(thisClickListener);
 
         settingsListView = (ListView) findViewById(R.id.settings_list_view);
         settingsAdapter = new SettingsAdapter(this);
         settingsListView.setAdapter(settingsAdapter);
-        settingsListView.setOnItemClickListener(this);
+        settingsListView.setOnItemClickListener(thisItemClickListener);
 
         etMessage = (EditText) findViewById(R.id.etMessage);
-        etMessage.setOnClickListener(this);
+        etMessage.setOnClickListener(thisClickListener);
         setEditTextEditorAction();
 
         rlDrawer = (RelativeLayout) findViewById(R.id.rlDrawer);
         rlDrawer.setSelected(false);
 
         footerMore = (ImageButton) findViewById(R.id.footerMore);
-        footerMore.setOnClickListener(this);
+        footerMore.setOnClickListener(thisClickListener);
 
         chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
 
@@ -167,6 +170,10 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
         super.onResume();
         settingsAnimationHack();
         forceClose();
+    }
+
+    protected void setTitle(String title) {
+        screenTitle.setText(title);
     }
 
     protected ImageLoader getImageLoader() {
@@ -250,12 +257,25 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
     protected void loadImage() {
         if (!TextUtils.isEmpty(chatImage)) {
             partnerIcon.setVisibility(View.VISIBLE);
-            partnerIcon.setOnClickListener(this);
+            partnerIcon.setOnClickListener(thisClickListener);
             imageLoader.displayImage(this, chatImage, partnerIcon);
         } else {
             partnerIcon.setVisibility(View.INVISIBLE);
             partnerIcon.setOnClickListener(null);
         }
+    }
+
+    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
+        if (chatIdPush.equals(chatId)) {
+            onChatPushUpdated();
+        } else {
+            showPopUp(msg, chatIdPush, chatName, chatImage);
+        }
+    }
+
+    @Override
+    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
+        getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
     }
 
     @Override
@@ -267,87 +287,93 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
+    View.OnClickListener thisClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
 
-        if (id == R.id.bntFile) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            startActivityForResult(intent, PICK_FILE_RESULT_CODE);
-        } else if (id == R.id.btnPhoto) {
-            Intent intent = new Intent(this, CameraCropActivity.class);
-            intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
-            intent.putExtra(Const.FROM_WAll, true);
-            intent.putExtra(Const.CHAT_ID, chatId);
-            startActivity(intent);
-        } else if (id == R.id.btnGallery) {
-            Intent intent = new Intent(this, CameraCropActivity.class);
-            intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-            intent.putExtra(Const.FROM_WAll, true);
-            intent.putExtra(Const.CHAT_ID, chatId);
-            startActivity(intent);
-        } else if (id == R.id.btnVideo) {
-            AppDialog dialog = new AppDialog(this, false);
-            dialog.choseCamGallery(chatId);
-            hideSettings();
-        } else if (id == R.id.btnLocation) {
-            Intent intent = new Intent(this, LocationActivity.class);
-            intent.putExtra(Const.CHAT_ID, chatId);
-            startActivity(intent);
-        } else if (id == R.id.btnRecord) {
-            Intent intent = new Intent(this, RecordAudioActivity.class);
-            intent.putExtra(Const.CHAT_ID, chatId);
-            startActivity(intent);
-
-        } else if (id == R.id.etMessage) {
-            showKeyboard(etMessage);
-            forceClose();
-            hideSettings();
-        } else if (id == R.id.footerMore) {
-
-            rlDrawerManage();
-            hideSettings();
-        } else if (id == R.id.partnerIcon) {
-            ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
-        } else if (id == R.id.goBack) {
-            finish();
-        } else if (id == R.id.settingsBtn) {
-            if (settingsListView.getVisibility() == View.GONE) {
-                showSettings();
-            } else {
+            if (id == R.id.bntFile) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                startActivityForResult(intent, PICK_FILE_RESULT_CODE);
+            } else if (id == R.id.btnPhoto) {
+                Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+                intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+                intent.putExtra(Const.FROM_WAll, true);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                startActivity(intent);
+            } else if (id == R.id.btnGallery) {
+                Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+                intent.putExtra(Const.FROM_WAll, true);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                startActivity(intent);
+            } else if (id == R.id.btnVideo) {
+                AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+                dialog.choseCamGallery(chatId);
                 hideSettings();
+            } else if (id == R.id.btnLocation) {
+                Intent intent = new Intent(BaseChatActivity.this, LocationActivity.class);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                startActivity(intent);
+            } else if (id == R.id.btnRecord) {
+                Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                startActivity(intent);
+
+            } else if (id == R.id.etMessage) {
+                showKeyboard(etMessage);
+                forceClose();
+                hideSettings();
+            } else if (id == R.id.footerMore) {
+
+                rlDrawerManage();
+                hideSettings();
+            } else if (id == R.id.partnerIcon) {
+                ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+            } else if (id == R.id.goBack) {
+                finish();
+            } else if (id == R.id.settingsBtn) {
+                if (settingsListView.getVisibility() == View.GONE) {
+                    showSettings();
+                } else {
+                    hideSettings();
+                }
             }
         }
-    }
+    };
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (parent.getAdapter() != null) {
+    AdapterView.OnItemClickListener thisItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (parent.getAdapter() != null) {
 
-            SettingsItem item = (SettingsItem) parent.getAdapter().getItem(position);
-            if (!item.isDisabled()) {
+                SettingsItem item = (SettingsItem) parent.getAdapter().getItem(position);
+                if (!item.isDisabled()) {
 
-                if (position == SETTINGS_POSITION_MEMBERS) {
-                    if (chatType == Const.C_PRIVATE) {
-                        ProfileOtherActivity.openOtherProfile(this, chatImage, chatName);
-                    } else if (chatType == Const.C_GROUP || chatType == Const.C_TEAM) {
-                        ChatMembersActivity.startActivity(chatId, this);
-                    }
-                } else if (position == SETTINGS_POSITION_INVITE) {
-                    if (chatType == Const.C_GROUP || chatType == Const.C_PRIVATE) {
-                        InvitePeopleActivity.startActivity(chatId, chatType, this);
-                    }
-                } else if (position == SETTINGS_POSITION_LEAVE) {
-                    if (chatType == Const.C_GROUP) {
-                        leaveChat();
+                    if (position == SETTINGS_POSITION_MEMBERS) {
+                        if (chatType == Const.C_PRIVATE) {
+                            ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                        } else if (chatType == Const.C_GROUP || chatType == Const.C_TEAM) {
+                            ChatMembersActivity.startActivity(chatId, BaseChatActivity.this);
+                        }
+                    } else if (position == SETTINGS_POSITION_INVITE) {
+                        if (chatType == Const.C_GROUP || chatType == Const.C_PRIVATE) {
+                            InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
+                        }
+                    } else if (position == SETTINGS_POSITION_LEAVE) {
+                        if (chatType == Const.C_GROUP) {
+                            leaveChat();
+                        }
                     }
                 }
             }
         }
-    }
+    };
 
     protected abstract void leaveChat();
 
     protected abstract void onEditorSendEvent(String text);
+
+    protected abstract void onChatPushUpdated();
 }

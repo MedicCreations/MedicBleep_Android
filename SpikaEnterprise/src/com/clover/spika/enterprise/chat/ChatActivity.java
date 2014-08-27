@@ -25,7 +25,6 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
 import java.io.File;
 import java.net.URI;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
 
 public class ChatActivity extends BaseChatActivity {
 
-	private RobotoThinTextView screenTitle;
 	private TextView noItems;
 
 	public MessagesAdapter adapter;
@@ -47,7 +45,6 @@ public class ChatActivity extends BaseChatActivity {
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
-		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		noItems = (TextView) findViewById(R.id.noItems);
 
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
@@ -58,7 +55,8 @@ public class ChatActivity extends BaseChatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (parent.getAdapter() != null) {
                     Message message = (Message) parent.getAdapter().getItem(position);
-                    ThreadsActivity.start(ChatActivity.this, String.valueOf(message.getRootId()),
+                    int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+                    ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
                             message.getChat_id(), message.getId(), chatImage);
                 }
             }
@@ -77,11 +75,6 @@ public class ChatActivity extends BaseChatActivity {
         });
 
 		getIntentData(getIntent());
-	}
-
-	@Override
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
-		getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
 	}
 
 	@Override
@@ -119,7 +112,7 @@ public class ChatActivity extends BaseChatActivity {
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 
-				screenTitle.setText(chatName);
+				setTitle(chatName);
 
 				adapter.clearItems();
 				getMessages(true, true, true, false, false, false);
@@ -141,7 +134,7 @@ public class ChatActivity extends BaseChatActivity {
 									chatId = result.getResultData().getChat_id();
 									chatName = result.getResultData().getChat_name();
 
-									screenTitle.setText(chatName);
+									setTitle(chatName);
 
 									adapter.clearItems();
 									totalItems = Integer.valueOf(result.getResultData().getTotal_count());
@@ -258,15 +251,12 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
-		if (chatIdPush.equals(chatId)) {
-			getMessages(false, false, false, true, false, true);
-		} else {
-			showPopUp(msg, chatIdPush, chatName, chatImage);
-		}
-	}
+    @Override
+    protected void onChatPushUpdated() {
+        getMessages(false, false, false, true, false, true);
+    }
 
-	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
+    public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
 
 		if (!isRunning) {
 			isRunning = true;
