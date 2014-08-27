@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res/com.clover.spika.enterprise.chat.views"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
@@ -64,7 +65,8 @@
             android:layout_centerInParent="true"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:textColor="@color/text_time_gray" />
+            android:textColor="@color/text_time_gray"
+            tools:text="25.05:1990"/>
 
         <View
             android:id="@+id/whiteDivider2"
@@ -113,18 +115,32 @@
                     android:layout_alignParentRight="true"
                     android:textColor="@color/default_blue"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="ME Name"/>
             </RelativeLayout>
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:id="@+id/meMsgContent"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:gravity="right"
-                android:linksClickable="true"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/me_image_view_threads_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:contentDescription="@null" />
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/meMsgContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/me_image_view_threads_indicator"
+                    android:autoLink="all"
+                    android:gravity="right"
+                    android:linksClickable="true"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/meListenSound"
@@ -228,15 +244,30 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:id="@+id/youMsgContent"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:gravity="left"
-                android:linksClickable="true"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/you_image_view_threads_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@null"
+                    tools:src="@drawable/ic_thread_reply"/>
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/youMsgContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/you_image_view_threads_indicator"
+                    android:autoLink="all"
+                    android:gravity="left"
+                    android:linksClickable="true"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/youListenSound"

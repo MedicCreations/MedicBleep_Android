@@ -62,55 +62,10 @@ public class Message implements Parcelable {
     @SerializedName("parent_id")
     private int parentId;
 
+    @SerializedName("child_list")
+    private String childListText;
+
 	public Message() {
-	}
-
-	public Message(Parcel source) {
-		text = source.readString();
-		type = source.readInt();
-		created = source.readString();
-		modified = source.readString();
-		id = source.readString();
-		chat_id = source.readString();
-		user_id = source.readString();
-		image = source.readString();
-		file_id = source.readString();
-		latitude = source.readString();
-		longitude = source.readString();
-        rootId = source.readInt();
-        parentId = source.readInt();
-	}
-
-	public static final Parcelable.Creator<Message> CREATOR = new Parcelable.Creator<Message>() {
-		public Message createFromParcel(Parcel source) {
-			return new Message(source);
-		}
-
-		public Message[] newArray(int size) {
-			return new Message[size];
-		}
-	};
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(text);
-		parcel.writeInt(type);
-		parcel.writeString(created);
-		parcel.writeString(modified);
-		parcel.writeString(id);
-		parcel.writeString(chat_id);
-		parcel.writeString(user_id);
-		parcel.writeString(image);
-		parcel.writeString(file_id);
-		parcel.writeString(latitude);
-		parcel.writeString(longitude);
-        parcel.writeInt(rootId);
-        parcel.writeInt(parentId);
 	}
 
 	public String getId() {
@@ -258,6 +213,10 @@ public class Message implements Parcelable {
         return parentId;
     }
 
+    public String getChildListText() {
+        return childListText;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -271,6 +230,8 @@ public class Message implements Parcelable {
         if (rootId != message.rootId) return false;
         if (type != message.type) return false;
         if (chat_id != null ? !chat_id.equals(message.chat_id) : message.chat_id != null)
+            return false;
+        if (childListText != null ? !childListText.equals(message.childListText) : message.childListText != null)
             return false;
         if (created != null ? !created.equals(message.created) : message.created != null)
             return false;
@@ -317,6 +278,7 @@ public class Message implements Parcelable {
         result = 31 * result + (modified != null ? modified.hashCode() : 0);
         result = 31 * result + rootId;
         result = 31 * result + parentId;
+        result = 31 * result + (childListText != null ? childListText.hashCode() : 0);
         return result;
     }
 
@@ -341,6 +303,7 @@ public class Message implements Parcelable {
                 ", modified='" + modified + '\'' +
                 ", rootId=" + rootId +
                 ", parentId=" + parentId +
+                ", childListText='" + childListText + '\'' +
                 '}';
     }
 
@@ -380,4 +343,64 @@ public class Message implements Parcelable {
 
         return msg;
     }
+
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte(isMe ? (byte) 1 : (byte) 0);
+        dest.writeByte(isFailed ? (byte) 1 : (byte) 0);
+        dest.writeString(this.id);
+        dest.writeString(this.chat_id);
+        dest.writeString(this.user_id);
+        dest.writeString(this.firstname);
+        dest.writeString(this.lastname);
+        dest.writeString(this.image);
+        dest.writeString(this.text);
+        dest.writeString(this.file_id);
+        dest.writeString(this.thumb_id);
+        dest.writeString(this.longitude);
+        dest.writeString(this.latitude);
+        dest.writeInt(this.type);
+        dest.writeString(this.created);
+        dest.writeString(this.modified);
+        dest.writeInt(this.rootId);
+        dest.writeInt(this.parentId);
+        dest.writeString(this.childListText);
+    }
+
+    private Message(Parcel in) {
+        this.isMe = in.readByte() != 0;
+        this.isFailed = in.readByte() != 0;
+        this.id = in.readString();
+        this.chat_id = in.readString();
+        this.user_id = in.readString();
+        this.firstname = in.readString();
+        this.lastname = in.readString();
+        this.image = in.readString();
+        this.text = in.readString();
+        this.file_id = in.readString();
+        this.thumb_id = in.readString();
+        this.longitude = in.readString();
+        this.latitude = in.readString();
+        this.type = in.readInt();
+        this.created = in.readString();
+        this.modified = in.readString();
+        this.rootId = in.readInt();
+        this.parentId = in.readInt();
+        this.childListText = in.readString();
+    }
+
+    public static final Creator<Message> CREATOR = new Creator<Message>() {
+        public Message createFromParcel(Parcel source) {
+            return new Message(source);
+        }
+
+        public Message[] newArray(int size) {
+            return new Message[size];
+        }
+    };
 }

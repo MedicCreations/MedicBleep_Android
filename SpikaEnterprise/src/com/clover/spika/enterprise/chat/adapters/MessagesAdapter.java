@@ -58,11 +58,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 		imageLoader = ImageLoader.getInstance();
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-			isJellyBean = true;
-		} else {
-			isJellyBean = false;
-		}
+        isJellyBean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN;
 	}
 
 	@Override
@@ -97,11 +93,7 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// set items to null
-		if (isJellyBean) {
-			holder.loading_bar_img.setBackgroundDrawable(null);
-		} else {
-			holder.loading_bar_img.setBackground(null);
-		}
+        holder.loading_bar_img.setBackgroundColor(Color.TRANSPARENT);
 
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
@@ -127,7 +119,7 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.loading_bar.setVisibility(View.GONE);
 
 		// Assign values
-		final Message msg = (Message) getItem(position);
+		final Message msg = getItem(position);
 
 		if (msg.isMe()) {
 			// My chat messages
@@ -215,6 +207,14 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			}
+
+            if (!TextUtils.isEmpty(msg.getChildListText())) {
+                holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+            } else if (msg.getRootId() > 0) {
+                holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+            } else {
+                holder.meThreadIndicator.setImageDrawable(null);
+            }
 		} else {
 			// Chat member messages, not mine
 
@@ -307,6 +307,14 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			}
+
+            if (!TextUtils.isEmpty(msg.getChildListText())) {
+                holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+            } else if (msg.getRootId() > 0) {
+                holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+            } else {
+                holder.youThreadIndicator.setImageDrawable(null);
+            }
 		}
 
 		// Date separator
@@ -491,6 +499,7 @@ public class MessagesAdapter extends BaseAdapter {
 		public LinearLayout meMsgLayout;
 		public TextView mePersonName;
 		public TextView meMsgContent;
+        public ImageView meThreadIndicator;
 		public TextView meMsgTime;
 		// end: me msg
 
@@ -520,6 +529,7 @@ public class MessagesAdapter extends BaseAdapter {
 		public LinearLayout youMsgLayout;
 		public TextView youPersonName;
 		public TextView youMsgContent;
+        public ImageView youThreadIndicator;
 		public TextView youMsgTime;
 		// end: you msg
 
@@ -542,6 +552,7 @@ public class MessagesAdapter extends BaseAdapter {
 			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
 			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
+            meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			// end: me msg
 
 			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
@@ -571,6 +582,7 @@ public class MessagesAdapter extends BaseAdapter {
 			youMsgTime = (TextView) view.findViewById(R.id.timeYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
+            youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
 			// end: you msg
 
 			// start: loading bar
