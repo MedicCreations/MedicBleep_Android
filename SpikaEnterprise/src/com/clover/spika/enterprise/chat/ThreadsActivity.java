@@ -16,7 +16,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener {
+public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
@@ -50,6 +50,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             setTitle("parent_id: " + mMessageId);
 
             chatListView.setOnItemClickListener(this);
+            chatListView.setOnItemLongClickListener(this);
             chatListView.setAdapter(new ThreadsAdapter(this));
             getThreads();
         }
@@ -116,7 +117,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
     @Override
     protected void onMessageDeleted() {
-
+        getThreads();
     }
 
     @Override
@@ -127,5 +128,16 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
         TreeNode node = threadsAdapter.getItem(position);
         mMessageId = node.getMessage().getId();
         setTitle("parent_id: " + mMessageId);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if (parent.getAdapter() != null) {
+            ThreadsAdapter threadsAdapter = (ThreadsAdapter) parent.getAdapter();
+            if (threadsAdapter.getItem(position).getMessage().isMe()) {
+                deleteMessage(threadsAdapter.getItem(position).getMessage().getId());
+            }
+        }
+        return true;
     }
 }

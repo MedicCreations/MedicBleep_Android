@@ -108,6 +108,7 @@
     <string name="download_complete">Download complete</string>
     <string name="download_failed">Download failed&#8230;</string>
     <string name="open">OPEN</string>
+    <string name="message_deleted">[deleted]</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>

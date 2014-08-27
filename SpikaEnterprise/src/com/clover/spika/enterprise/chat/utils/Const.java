@@ -116,6 +116,7 @@ public class Const {
 	public static final int MSG_TYPE_LOCATION = 4;
 	public static final int MSG_TYPE_VOICE = 5;
 	public static final int MSG_TYPE_FILE = 6;
+    public static final int MSG_TYPE_DELETED = 7;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;
