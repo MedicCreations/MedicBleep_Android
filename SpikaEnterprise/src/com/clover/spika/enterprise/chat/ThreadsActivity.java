@@ -68,6 +68,15 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
                 if (result.isSuccess()) {
                     threads = new TreeNode(result.getResultData().getMessagesList());
                     ((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
+
+                    ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+                    for (int i = 0; i < threadsAdapter.getCount(); i++) {
+                        if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
+                            threadsAdapter.setSelectedItem(i);
+                            chatListView.setSelection(i);
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -113,7 +122,5 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
         TreeNode node = threadsAdapter.getItem(position);
         mMessageId = node.getMessage().getId();
         setTitle("parent_id: " + mMessageId);
-
-        showKeyboard(etMessage);
     }
 }
