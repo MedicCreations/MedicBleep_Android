@@ -26,7 +26,7 @@ public class ThreadsAdapter extends BaseAdapter {
     public ThreadsAdapter(Context context, List<TreeNode> messages) {
         this.mContext = context;
         this.mMessageList.addAll(messages);
-        this.imageLoader = new ImageLoader(context);
+        this.imageLoader = ImageLoader.getInstance();
 
         for (TreeNode node : mMessageList) {
             Message.decryptContent(mContext, node.getMessage());

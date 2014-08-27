@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -18,6 +14,10 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.User;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class UserAdapter extends BaseAdapter {
 
 	private Context mContext;
@@ -29,7 +29,7 @@ public class UserAdapter extends BaseAdapter {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = new ImageLoader(context);
+		imageLoader = ImageLoader.getInstance();
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 	}
 

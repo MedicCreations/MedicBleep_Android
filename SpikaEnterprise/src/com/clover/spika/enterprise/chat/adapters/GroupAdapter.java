@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -17,6 +14,9 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Group;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupAdapter extends BaseAdapter {
 
@@ -34,7 +34,7 @@ public class GroupAdapter extends BaseAdapter {
 		this.cntx = context;
 		this.data = arrayList;
 
-		imageLoader = new ImageLoader(context);
+		imageLoader = ImageLoader.getInstance();
 		imageLoader.setDefaultImage(R.drawable.default_group_image);
 	}
 

@@ -70,7 +70,7 @@ public abstract class BaseChatActivity extends BaseActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        imageLoader = new ImageLoader(this);
+        imageLoader = ImageLoader.getInstance();
 
         Button file = (Button) findViewById(R.id.bntFile);
         file.setOnClickListener(this);

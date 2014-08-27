@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 
@@ -19,6 +20,7 @@ public class SplashActivity extends LoginBaseActivity {
 		setContentView(R.layout.activity_splash);
 
 		extras = getIntent().getExtras();
+        ImageLoader.init(this);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			pause(1000, false);

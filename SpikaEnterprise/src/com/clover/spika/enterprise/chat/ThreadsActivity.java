@@ -60,7 +60,7 @@ public class ThreadsActivity extends BaseChatActivity {
             public void onApiResponse(Result<Chat> result) {
                 if (result.isSuccess()) {
                     threads = new TreeNode(result.getResultData().getMessagesList());
-                    chatListView.setAdapter(new ThreadsAdapter(ThreadsActivity.this, threads.asList()));
+                    chatListView.setAdapter(new ThreadsAdapter(ThreadsActivity.this, threads.asList(), getImageLoader()));
                 }
             }
         });

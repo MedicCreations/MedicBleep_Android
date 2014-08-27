@@ -1,18 +1,5 @@
 package com.clover.spika.enterprise.chat.lazy;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.http.util.ByteArrayBuffer;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -24,7 +11,35 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
+import org.apache.http.util.ByteArrayBuffer;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class ImageLoader {
+
+    // singleton usage
+    private static ImageLoader sInstance;
+
+    public static ImageLoader getInstance() {
+        if (sInstance == null) {
+            throw new NullPointerException("ImageLoader has to be initialized first before instance can be used. " +
+                    "Call init method before usage.");
+        }
+        return sInstance;
+    }
+
+    public static void init(Context initActivityContext) {
+        sInstance = new ImageLoader(initActivityContext);
+    }
 
 	// Initialize MemoryCache
 	MemoryCache memoryCache = new MemoryCache();
@@ -40,7 +55,7 @@ public class ImageLoader {
 
 	private int defaultImageId = -1;
 
-	public ImageLoader(Context context) {
+	private ImageLoader(Context context) {
 
 		fileCache = new FileCache(context);
 
