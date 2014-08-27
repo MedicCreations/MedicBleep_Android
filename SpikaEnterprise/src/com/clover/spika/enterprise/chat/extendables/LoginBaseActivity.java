@@ -13,16 +13,21 @@ import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
 public abstract class LoginBaseActivity extends Activity {
 
-	protected void executeLoginApi(String user, String pass, String token, final Bundle extras, boolean showProgress) {
-		new LoginApi().loginWithCredentials(user, pass, token, this, showProgress, new ApiCallback<Login>() {
+	protected void executeLoginApi(String user, String pass, final Bundle extras, boolean showProgress) {
+		new LoginApi().loginWithCredentials(user, pass, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {
-					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(), result.getResultData().getLastname());
+					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(),
+							result.getResultData().getLastname());
+
+					new GoogleUtils().getPushToken(LoginBaseActivity.this);
+
 					Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
 					if (extras != null) {

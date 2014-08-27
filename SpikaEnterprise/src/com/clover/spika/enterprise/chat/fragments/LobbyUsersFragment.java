@@ -77,10 +77,10 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 	};
 
 	private void setData(List<ChatsLobby> data, boolean toClearPrevious) {
-		if(mainListView == null){
+		if (mainListView == null) {
 			return;
 		}
-		
+
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
 		if (toClearPrevious)
@@ -92,7 +92,7 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 
 		mainListView.onRefreshComplete();
 
-		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+		if (adapter.getCount() == 0) {
 			mainListView.setVisibility(View.INVISIBLE);
 			noItems.setVisibility(View.VISIBLE);
 		} else {

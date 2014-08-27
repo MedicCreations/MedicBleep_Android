@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 
 public class LoginApi {
 
-	public void loginWithCredentials(final String username, final String password, final String token, Context ctx, boolean showProgressBar, final ApiCallback<Login> listener) {
+	public void loginWithCredentials(final String username, final String password, Context ctx, boolean showProgressBar, final ApiCallback<Login> listener) {
 
 		new BaseAsyncTask<Void, Void, Login>(ctx, showProgressBar) {
 
@@ -29,7 +29,6 @@ public class LoginApi {
 
 					requestParams.put(Const.USERNAME, username);
 					requestParams.put(Const.PASSWORD, password);
-					requestParams.put(Const.ANDROID_PUSH_TOKEN, token);
 
 					JSONObject jsonObject = new JSONObject();
 

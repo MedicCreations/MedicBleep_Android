@@ -91,7 +91,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 
 		mainListView.onRefreshComplete();
 
-		if (adapter.getCount() == 0 || adapter.getCount() == 1) {
+		if (adapter.getCount() == 0) {
 			mainListView.setVisibility(View.INVISIBLE);
 			noItems.setVisibility(View.VISIBLE);
 		} else {

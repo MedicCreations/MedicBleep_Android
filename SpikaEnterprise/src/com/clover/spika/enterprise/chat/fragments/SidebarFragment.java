@@ -151,7 +151,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.logout:
 
-			new UserApi().updateUserToken(getActivity(), new ApiCallback<BaseModel>() {
+			new UserApi().logout(getActivity(), new ApiCallback<BaseModel>() {
 
 				@Override
 				public void onApiResponse(Result<BaseModel> result) {

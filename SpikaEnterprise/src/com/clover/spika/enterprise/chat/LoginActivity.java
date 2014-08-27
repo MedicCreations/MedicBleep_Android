@@ -17,7 +17,6 @@ import android.widget.EditText;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class LoginActivity extends LoginBaseActivity {
@@ -95,7 +94,7 @@ public class LoginActivity extends LoginBaseActivity {
 				byte[] digest = MessageDigest.getInstance("MD5").digest(password.getText().toString().getBytes("UTF-8"));
 				hasPass = Utils.convertByteArrayToHexString(digest);
 
-				executeLoginApi(username.getText().toString(), hasPass, new GoogleUtils().getPushToken(this), null, true);
+				executeLoginApi(username.getText().toString(), hasPass, null, true);
 
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());

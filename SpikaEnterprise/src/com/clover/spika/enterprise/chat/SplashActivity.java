@@ -8,7 +8,6 @@ import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 
 public class SplashActivity extends LoginBaseActivity {
 
@@ -20,7 +19,7 @@ public class SplashActivity extends LoginBaseActivity {
 		setContentView(R.layout.activity_splash);
 
 		extras = getIntent().getExtras();
-        ImageLoader.init(this);
+		ImageLoader.init(this);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			pause(1000, false);
@@ -43,10 +42,6 @@ public class SplashActivity extends LoginBaseActivity {
 					e.printStackTrace();
 				}
 
-				if (!goToLogin) {
-					new GoogleUtils().getPushToken(context);
-				}
-
 				return null;
 			}
 
@@ -64,8 +59,8 @@ public class SplashActivity extends LoginBaseActivity {
 	}
 
 	private void login() {
-		executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PUSH_TOKEN_LOCAL), extras,
-				false);
+		executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), SpikaEnterpriseApp.getSharedPreferences(this)
+				.getCustomString(Const.PASSWORD), extras, false);
 	}
 
 	@Override

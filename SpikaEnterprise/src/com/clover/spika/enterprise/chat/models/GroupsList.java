@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: renameati u nešto smisleno
 public class GroupsList extends BaseModel {
 
     @SerializedName("page")

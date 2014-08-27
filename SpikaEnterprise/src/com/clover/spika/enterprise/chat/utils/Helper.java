@@ -80,7 +80,6 @@ public class Helper {
 	 * @param uri
 	 * @return
 	 */
-	// TODO
 	public static String getImagePath(Context cntx, Uri uri, boolean isOverJellyBeam) {
 
 		if (isOverJellyBeam) {
