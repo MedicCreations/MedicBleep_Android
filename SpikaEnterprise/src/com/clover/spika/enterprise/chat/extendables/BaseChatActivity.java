@@ -394,8 +394,8 @@ public abstract class BaseChatActivity extends BaseActivity {
                 intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
-                intent.putExtra(CameraCropActivity.EXTRA_ROOT_ID, getRootId());
-                intent.putExtra(CameraCropActivity.EXTRA_MESSAGE_ID, getMessageId());
+                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.btnGallery) {
@@ -403,8 +403,8 @@ public abstract class BaseChatActivity extends BaseActivity {
                 intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
-                intent.putExtra(CameraCropActivity.EXTRA_ROOT_ID, getRootId());
-                intent.putExtra(CameraCropActivity.EXTRA_MESSAGE_ID, getMessageId());
+                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.btnVideo) {
@@ -415,6 +415,8 @@ public abstract class BaseChatActivity extends BaseActivity {
             } else if (id == R.id.btnLocation) {
                 Intent intent = new Intent(BaseChatActivity.this, LocationActivity.class);
                 intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.btnRecord) {

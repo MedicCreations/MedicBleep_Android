@@ -160,7 +160,10 @@ public class LocationActivity extends BaseActivity {
 	}
 
 	private void sendMsg() {
-		new ChatApi().sendMessage(Const.MSG_TYPE_LOCATION, chatId, null, null, null, String.valueOf(longitude), String.valueOf(latitude), this, new ApiCallback<Integer>() {
+        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+		new ChatApi().sendMessage(Const.MSG_TYPE_LOCATION, chatId, null, null, null,
+                String.valueOf(longitude), String.valueOf(latitude), rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

@@ -53,9 +53,6 @@ import java.io.FileOutputStream;
 
 public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
 
-    public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
-    public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
-
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
 	private Matrix savedMatrix = new Matrix();
@@ -646,8 +643,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void sendMessage(final String fileId, final String thumbId) {
-        String rootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
-        String messageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
+        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null,
                 rootId, messageId, this, new ApiCallback<Integer>() {
 

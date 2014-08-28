@@ -162,6 +162,10 @@ public class Const {
 	public static final int E_SOMETHING_WENT_WRONG = 1111;
 	public static final int E_FAILED = 999;
 
+    // extras
+    public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
+    public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
+
 	// Get an UUID for this phone
 	public static String getUUID(Context cntx) {
 		String androidID = Settings.Secure.getString(cntx.getContentResolver(), Settings.Secure.ANDROID_ID);

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- file upload -->
     <item name="tag_file_id" type="id" />
+    <!-- locations -->
+    <item name="tag_latitude" type="id" />
+    <item name="tag_longitude" type="id" />
 </resources>
