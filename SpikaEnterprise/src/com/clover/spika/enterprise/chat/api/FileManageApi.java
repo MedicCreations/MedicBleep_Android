@@ -44,7 +44,7 @@ public class FileManageApi {
 
 			protected void onPreExecute() {
 				progressBar = new AppProgressDialogWithBar(ctx);
-				progressBar.show();
+				progressBar.setProgress();
 			};
 
 			protected UploadFileModel doInBackground(Void... params) {
@@ -78,6 +78,7 @@ public class FileManageApi {
 
 						@Override
 						public void onFinish() {
+							progressBar.dismiss();
 						}
 					});
 

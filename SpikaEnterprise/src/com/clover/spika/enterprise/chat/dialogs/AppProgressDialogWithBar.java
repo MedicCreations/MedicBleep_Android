@@ -36,9 +36,6 @@ public class AppProgressDialogWithBar extends Dialog {
 
 		this.ctx = context;
 		blink = AnimationUtils.loadAnimation(ctx, R.anim.anim_blink);
-
-		setCancelable(false);
-		setCanceledOnTouchOutside(false);
 	}
 
 	public void setProgress() {
@@ -100,6 +97,15 @@ public class AppProgressDialogWithBar extends Dialog {
 		if (tvDecrypting != null) {
 			tvDecrypting.startAnimation(blink);
 		}
+	}
+
+	@Override
+	public void show() {
+
+		setCancelable(false);
+		setCanceledOnTouchOutside(false);
+
+		super.show();
 	}
 
 	@Override
