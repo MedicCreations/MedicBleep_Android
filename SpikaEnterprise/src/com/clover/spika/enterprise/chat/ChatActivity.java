@@ -191,6 +191,16 @@ public class ChatActivity extends BaseChatActivity {
         }
     }
 
+    @Override
+    protected String getRootId() {
+        return null;
+    }
+
+    @Override
+    protected String getMessageId() {
+        return null;
+    }
+
     public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
 

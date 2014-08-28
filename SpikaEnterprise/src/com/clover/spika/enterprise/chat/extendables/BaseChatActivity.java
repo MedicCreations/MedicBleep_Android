@@ -394,6 +394,8 @@ public abstract class BaseChatActivity extends BaseActivity {
                 intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(CameraCropActivity.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(CameraCropActivity.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.btnGallery) {
@@ -401,6 +403,8 @@ public abstract class BaseChatActivity extends BaseActivity {
                 intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(CameraCropActivity.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(CameraCropActivity.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.btnVideo) {
@@ -497,4 +501,8 @@ public abstract class BaseChatActivity extends BaseActivity {
      * @param filePath a path to the file which user has selected, may be null if result isn't successful
      */
     protected abstract void onFileSelected(int result, String fileName, String filePath);
+
+    protected abstract String getRootId();
+
+    protected abstract String getMessageId();
 }

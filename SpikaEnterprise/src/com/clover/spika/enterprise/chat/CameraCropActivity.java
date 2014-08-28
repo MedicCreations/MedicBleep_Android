@@ -1,11 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -51,7 +45,16 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
+
+    public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
+    public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
 
 	// These matrices will be used to move and zoom image
 	private Matrix matrix = new Matrix();
@@ -643,7 +646,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void sendMessage(final String fileId, final String thumbId) {
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, this, new ApiCallback<Integer>() {
+        String rootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
+        String messageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null,
+                rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

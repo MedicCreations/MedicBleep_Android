@@ -55,7 +55,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             chatListView.setOnItemClickListener(this);
             chatListView.setOnItemLongClickListener(this);
             chatListView.setAdapter(new ThreadsAdapter(this));
-            getThreads();
         }
     }
 
@@ -63,6 +62,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     protected void onResume() {
         super.onResume();
         loadImage();
+        getThreads();
     }
 
     private void getThreads() {
@@ -134,6 +134,16 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
                 }
             });
         }
+    }
+
+    @Override
+    protected String getRootId() {
+        return this.mRootId;
+    }
+
+    @Override
+    protected String getMessageId() {
+        return this.mMessageId;
     }
 
     @Override
