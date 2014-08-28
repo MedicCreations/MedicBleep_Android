@@ -1,10 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,10 +20,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 
 public class ChatActivity extends BaseChatActivity {
@@ -172,67 +166,32 @@ public class ChatActivity extends BaseChatActivity {
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onFileSelected(int result, final String fileName, String filePath) {
+        if (result == RESULT_OK) {
+            new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
-		if (requestCode == PICK_FILE_RESULT_CODE) {
-			if (resultCode == RESULT_OK) {
-				Uri fileUri = data.getData();
+                @Override
+                public void onApiResponse(Result<UploadFileModel> result) {
+                    if (result.isSuccess()) {
+                        sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
+                    } else {
+                        AppDialog dialog = new AppDialog(ChatActivity.this, false);
+                        if (result.hasResultData()) {
+                            dialog.setFailed(result.getResultData().getMessage());
+                        } else {
+                            dialog.setFailed("");
+                        }
+                    }
+                }
+            });
+        } else {
+            AppDialog dialog = new AppDialog(this, false);
+            dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
+        }
+    }
 
-				String fileName = null;
-				String filePath = null;
-
-				if (fileUri.getScheme().equals("content")) {
-
-					String[] proj = { MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME };
-					Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
-
-					int column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
-					int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-					cursor.moveToFirst();
-
-					fileName = cursor.getString(column_index_name);
-					filePath = cursor.getString(column_index_path);
-
-				} else if (fileUri.getScheme().equals("file")) {
-
-					File file = new File(URI.create(fileUri.toString()));
-					fileName = file.getName();
-					filePath = file.getAbsolutePath();
-				}
-
-				final String finalFileName = fileName;
-
-				final String filePathTemp = Utils.handleFileEncryption(filePath, ChatActivity.this);
-
-				if (filePathTemp == null) {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
-					return;
-				}
-
-				new FileManageApi().uploadFile(filePathTemp, this, true, new ApiCallback<UploadFileModel>() {
-
-					@Override
-					public void onApiResponse(Result<UploadFileModel> result) {
-						if (result.isSuccess()) {
-							sendMessage(Const.MSG_TYPE_FILE, chatId, finalFileName, result.getResultData().getFileId(), null, null, null);
-						} else {
-							AppDialog dialog = new AppDialog(ChatActivity.this, false);
-							if (result.hasResultData()) {
-								dialog.setFailed(result.getResultData().getMessage());
-							} else {
-								dialog.setFailed("");
-							}
-						}
-					}
-				});
-			}
-		}
-	}
-
-	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
+    public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
 
 			@Override

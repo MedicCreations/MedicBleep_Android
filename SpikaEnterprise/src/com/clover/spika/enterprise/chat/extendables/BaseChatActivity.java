@@ -3,7 +3,11 @@ package com.clover.spika.enterprise.chat.extendables;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,8 +39,19 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URI;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -175,6 +190,74 @@ public abstract class BaseChatActivity extends BaseActivity {
         forceClose();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_FILE_RESULT_CODE) {
+            if (resultCode == RESULT_OK) {
+                Uri fileUri = data.getData();
+
+                String fileName = null;
+                String filePath = null;
+
+                if (fileUri.getScheme().equals("content")) {
+
+
+                    String[] proj = {MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME};
+                    Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
+
+                    int column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
+                    int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+                    cursor.moveToFirst();
+
+                    fileName = cursor.getString(column_index_name);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
+                        try {
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                                    getContentResolver().openInputStream(fileUri)));
+                            StringBuilder builder = new StringBuilder();
+                            String line;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                builder.append(line);
+                            }
+                            bufferedReader.close();
+
+                            File tempFile = Utils.getTempFile(this, fileName);
+                            OutputStream out = new FileOutputStream(tempFile);
+                            OutputStreamWriter writer = new OutputStreamWriter(out);
+                            writer.write(builder.toString());
+                            writer.close();
+
+                            filePath = tempFile.getAbsolutePath();
+                            fileName = tempFile.getName();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        filePath = cursor.getString(column_index_path);
+                    }
+
+                } else if (fileUri.getScheme().equals("file")) {
+
+                    File file = new File(URI.create(fileUri.toString()));
+                    fileName = file.getName();
+                    filePath = file.getAbsolutePath();
+                }
+
+                filePath = Utils.handleFileEncryption(filePath, BaseChatActivity.this);
+
+                onFileSelected(RESULT_OK, fileName, filePath);
+            } else {
+                onFileSelected(RESULT_CANCELED, null, null);
+            }
+        }
+    }
+
     protected void setTitle(String title) {
         screenTitle.setText(title);
     }
@@ -310,26 +393,31 @@ public abstract class BaseChatActivity extends BaseActivity {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");
                 startActivityForResult(intent, PICK_FILE_RESULT_CODE);
+
             } else if (id == R.id.btnPhoto) {
                 Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
                 intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
                 startActivity(intent);
+
             } else if (id == R.id.btnGallery) {
                 Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
                 intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
                 intent.putExtra(Const.FROM_WAll, true);
                 intent.putExtra(Const.CHAT_ID, chatId);
                 startActivity(intent);
+
             } else if (id == R.id.btnVideo) {
                 AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
                 dialog.choseCamGallery(chatId);
                 hideSettings();
+
             } else if (id == R.id.btnLocation) {
                 Intent intent = new Intent(BaseChatActivity.this, LocationActivity.class);
                 intent.putExtra(Const.CHAT_ID, chatId);
                 startActivity(intent);
+
             } else if (id == R.id.btnRecord) {
                 Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
                 intent.putExtra(Const.CHAT_ID, chatId);
@@ -339,14 +427,17 @@ public abstract class BaseChatActivity extends BaseActivity {
                 showKeyboard(etMessage);
                 forceClose();
                 hideSettings();
-            } else if (id == R.id.footerMore) {
 
+            } else if (id == R.id.footerMore) {
                 rlDrawerManage();
                 hideSettings();
+
             } else if (id == R.id.partnerIcon) {
                 ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+
             } else if (id == R.id.goBack) {
                 finish();
+
             } else if (id == R.id.settingsBtn) {
                 if (settingsListView.getVisibility() == View.GONE) {
                     showSettings();
@@ -385,11 +476,30 @@ public abstract class BaseChatActivity extends BaseActivity {
         }
     };
 
+    /**
+     *
+     */
     protected abstract void leaveChat();
 
+    /**
+     * Called when "enter" key has been pressed on keyboard
+     * @param text text provided from EditText
+     */
     protected abstract void onEditorSendEvent(String text);
 
+    /**
+     * Called when push (related to this chat) has been received
+     */
     protected abstract void onChatPushUpdated();
 
     protected abstract void onMessageDeleted();
+
+    /**
+     * Called as a callback method after user has selected a file.
+     * @param result same as result available in {@link android.app.Activity},
+     *               {@link android.app.Activity#RESULT_OK} or {@link android.app.Activity#RESULT_CANCELED}
+     * @param fileName name of the file selected by user, may be null oif result isn't successful
+     * @param filePath a path to the file which user has selected, may be null if result isn't successful
+     */
+    protected abstract void onFileSelected(int result, String fileName, String filePath);
 }

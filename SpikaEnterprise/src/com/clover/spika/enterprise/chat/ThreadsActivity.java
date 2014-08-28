@@ -9,14 +9,17 @@ import android.widget.AdapterView;
 import com.clover.spika.enterprise.chat.adapters.ThreadsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
+import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
+        ApiCallback<Integer> {
 
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
@@ -84,20 +87,12 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     private void sendMessage(String text) {
-        new ChatApi().sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this, new ApiCallback<Integer>() {
-            @Override
-            public void onApiResponse(Result<Integer> result) {
-                if (result.isSuccess()) {
-                    etMessage.setText("");
-                    hideKeyboard(etMessage);
+        new ChatApi().sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this, this);
+    }
 
-                    getThreads();
-                } else {
-                    AppDialog dialog = new AppDialog(ThreadsActivity.this, false);
-                    dialog.setFailed(result.getResultData());
-                }
-            }
-        });
+    private void sendFile(String fileName, String fileId) {
+        new ChatApi().sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null,
+                mRootId, mMessageId, this, this);
     }
 
     @Override
@@ -121,6 +116,27 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     @Override
+    protected void onFileSelected(int result, final String fileName, String filePath) {
+        if (result == RESULT_OK) {
+            new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+                @Override
+                public void onApiResponse(Result<UploadFileModel> result) {
+                    if (result.isSuccess()) {
+                        sendFile(fileName, result.getResultData().getFileId());
+                    } else {
+                        AppDialog dialog = new AppDialog(ThreadsActivity.this, false);
+                        if (result.hasResultData()) {
+                            dialog.setFailed(result.getResultData().getMessage());
+                        } else {
+                            dialog.setFailed("");
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
         threadsAdapter.setSelectedItem(position);
@@ -139,5 +155,17 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             }
         }
         return true;
+    }
+
+    public void onApiResponse(Result<Integer> result) {
+        if (result.isSuccess()) {
+            etMessage.setText("");
+            hideKeyboard(etMessage);
+
+            getThreads();
+        } else {
+            AppDialog dialog = new AppDialog(this, false);
+            dialog.setFailed(result.getResultData());
+        }
     }
 }

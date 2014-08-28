@@ -24,6 +24,18 @@
 
 package com.clover.spika.enterprise.chat.utils;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,17 +48,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Random;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Environment;
-import android.util.Log;
-
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 /**
  * Utils
@@ -389,6 +390,10 @@ public class Utils {
 
 		return cacheDir;
 	}
+
+    public static File getTempFile(Context context, String name) {
+        return new File(getFileDir(context), TextUtils.isEmpty(name) ? "temp.spika" : name);
+    }
 
 	public static void logHeap(String step) {
 		DecimalFormat df = new DecimalFormat();
