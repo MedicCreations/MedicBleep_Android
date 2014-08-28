@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.DisplayMetrics;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -26,10 +28,12 @@ import java.util.List;
 public class ThreadsAdapter extends BaseAdapter {
 
     private static final int VIEW_TYPE_MESSAGE = 0;
-    private static final int VIEW_TYPE_DELETED = 1;
+    private static final int VIEW_TYPE_PHOTO = 1;
+    private static final int VIEW_TYPE_DELETED = 2;
 
     private static final int[] VIEW_TYPES = {
             VIEW_TYPE_MESSAGE,
+            VIEW_TYPE_PHOTO,
             VIEW_TYPE_DELETED
     };
 
@@ -90,6 +94,9 @@ public class ThreadsAdapter extends BaseAdapter {
             case Const.MSG_TYPE_DELETED:
                 return VIEW_TYPE_DELETED;
 
+            case Const.MSG_TYPE_PHOTO:
+                return VIEW_TYPE_PHOTO;
+
             case Const.MSG_TYPE_DEFAULT:
             default:
                 return VIEW_TYPE_MESSAGE;
@@ -134,6 +141,10 @@ public class ThreadsAdapter extends BaseAdapter {
                     convertView = inflateDeleted(holder, parent);
                     break;
 
+                case VIEW_TYPE_PHOTO:
+                    convertView = inflatePhoto(holder, parent);
+                    break;
+
                 case VIEW_TYPE_MESSAGE:
                 default:
                     convertView = inflateMessage(holder, parent);
@@ -153,6 +164,10 @@ public class ThreadsAdapter extends BaseAdapter {
 
         switch (type) {
             case VIEW_TYPE_DELETED:
+                break;
+
+            case VIEW_TYPE_PHOTO:
+                populatePhoto(holder, node, position);
                 break;
 
             case VIEW_TYPE_MESSAGE:
@@ -184,6 +199,17 @@ public class ThreadsAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private View inflatePhoto(final ViewHolder holder, final ViewGroup parent) {
+        View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_photo, parent, false);
+
+        holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
+        holder.imageViewPhoto = (ImageView) convertView.findViewById(R.id.image_view_photo);
+        holder.imageViewPhoto.setOnClickListener(mOnClickPhoto);
+
+        return convertView;
+    }
+
     private void populateMessage(ViewHolder holder, TreeNode node, int position) {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
@@ -206,6 +232,28 @@ public class ThreadsAdapter extends BaseAdapter {
         }
     }
 
+    private void populatePhoto(ViewHolder holder, TreeNode node, int position) {
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+
+        if (node.getMessage().isMe()) {
+            holder.textViewUser.setTypeface(holder.textViewUser.getTypeface(), Typeface.BOLD);
+        } else {
+            holder.textViewUser.setTypeface(holder.textViewUser.getTypeface(), Typeface.NORMAL);
+        }
+
+        imageLoader.displayImage(mContext, node.getMessage().getThumb_id(), holder.imageViewPhoto);
+        holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+
+        if (position == this.mSelectedItem) {
+            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+            holder.textViewUser.setTextColor(Color.WHITE);
+        } else {
+            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+            holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+        }
+    }
+
     private View inflateDeleted(final ViewHolder holder, final ViewGroup parent) {
         View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_deleted, parent, false);
 
@@ -214,10 +262,23 @@ public class ThreadsAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private View.OnClickListener mOnClickPhoto = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getTag(R.id.tag_file_id) != null) {
+                String fileId = (String) v.getTag(R.id.tag_file_id);
+                Intent photoIntent = new Intent(mContext, PhotoActivity.class);
+                photoIntent.putExtra(Const.IMAGE, fileId);
+                mContext.startActivity(photoIntent);
+            }
+        }
+    };
+
     private static final class ViewHolder {
         RelativeLayout relativeLayoutHolder;
 
         ImageView imageViewUser;
+        ImageView imageViewPhoto;
         TextView textViewMessage;
         TextView textViewUser;
     }

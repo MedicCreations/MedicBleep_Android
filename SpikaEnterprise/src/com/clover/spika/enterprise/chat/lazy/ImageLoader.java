@@ -9,6 +9,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 import org.apache.http.util.ByteArrayBuffer;
@@ -31,7 +32,7 @@ public class ImageLoader {
 
     public static ImageLoader getInstance() {
         if (sInstance == null) {
-            throw new NullPointerException("ImageLoader has to be initialized first before instance can be used. " +
+            Logger.error("ImageLoader has to be initialized first before instance can be used. " +
                     "Call init method before usage.");
         }
         return sInstance;

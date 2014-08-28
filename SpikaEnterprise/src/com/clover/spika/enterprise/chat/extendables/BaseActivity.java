@@ -1,18 +1,5 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.PasscodeActivity;
-import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
-import com.clover.spika.enterprise.chat.models.Push;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -24,12 +11,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.PasscodeActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.models.Push;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -43,6 +44,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        if (ImageLoader.getInstance() == null) {
+            ImageLoader.init(this);
+        }
 
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);

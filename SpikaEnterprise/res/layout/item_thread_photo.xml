@@ -33,13 +33,14 @@
                 android:textSize="14sp"
                 tools:text="Stiven Spilberg" />
 
-            <TextView
-                android:id="@+id/text_view_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                android:id="@+id/image_view_photo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_below="@id/text_view_user"
-                android:textSize="20sp"
-                tools:text="Stigla ti je poruka" />
+                android:layout_centerInParent="true"
+                android:padding="5dp" />
+
         </RelativeLayout>
 
     </RelativeLayout>
