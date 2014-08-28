@@ -49,7 +49,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
@@ -603,32 +602,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	private void fileUploadAsync(String filePath, final String thumbPath) {
 
-		filePath = Utils.handleFileEncryption(filePath, this);
-
-		if (filePath == null) {
-			AppDialog dialog = new AppDialog(this, false);
-			dialog.setFailed(getResources().getString(R.string.e_while_encrypting_image));
-			btnSend.setClickable(true);
-			return;
-		}
-
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
-
-					String thumbFilePath = Utils.handleFileEncryption(thumbPath, CameraCropActivity.this);
-
-					if (thumbFilePath == null) {
-						AppDialog dialog = new AppDialog(CameraCropActivity.this, false);
-						dialog.setFailed(getResources().getString(R.string.e_while_encrypting_image));
-						btnSend.setClickable(true);
-						return;
-					}
-
-					thumbUploadAsync(thumbFilePath, result.getResultData().getFileId());
-
+					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);

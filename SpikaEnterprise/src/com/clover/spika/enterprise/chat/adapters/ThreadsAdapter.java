@@ -30,7 +30,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
     public ThreadsAdapter(Context context) {
         this.mContext = context;
-        this.imageLoader = ImageLoader.getInstance();
+        this.imageLoader = ImageLoader.getInstance(context);
     }
 
     public void updateContent(List<TreeNode> collection) {

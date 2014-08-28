@@ -25,6 +25,9 @@ public class AppProgressDialog extends Dialog {
 		super(context, R.style.Theme_Dialog);
 		setContentView(R.layout.dialog_progress);
 
+		setCancelable(false);
+		setCanceledOnTouchOutside(false);
+
 		dot1 = (TextView) findViewById(R.id.dot1);
 		dot2 = (TextView) findViewById(R.id.dot2);
 		dot3 = (TextView) findViewById(R.id.dot3);
@@ -68,11 +71,4 @@ public class AppProgressDialog extends Dialog {
 		handler.removeCallbacks(run);
 	}
 
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		if (!hasFocus) {
-			this.dismiss();
-		}
-		super.onWindowFocusChanged(hasFocus);
-	}
 }

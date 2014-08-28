@@ -24,7 +24,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.File;
 import java.net.URI;
@@ -49,30 +48,29 @@ public class ChatActivity extends BaseChatActivity {
 
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
-        // TODO: elegantnije riješiti click listener
-        chatListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent.getAdapter() != null) {
-                    Message message = (Message) parent.getAdapter().getItem(position);
-                    int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-                    ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                            message.getChat_id(), message.getId(), chatImage);
-                }
-            }
-        });
-        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent.getAdapter() != null) {
-                    Message message = (Message) parent.getAdapter().getItem(position);
-                    if (message.isMe()) {
-                        Toast.makeText(ChatActivity.this, message.getCreated(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                return true;
-            }
-        });
+		// TODO: elegantnije riješiti click listener
+		chatListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (parent.getAdapter() != null) {
+					Message message = (Message) parent.getAdapter().getItem(position);
+					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImage);
+				}
+			}
+		});
+		chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if (parent.getAdapter() != null) {
+					Message message = (Message) parent.getAdapter().getItem(position);
+					if (message.isMe()) {
+						Toast.makeText(ChatActivity.this, message.getCreated(), Toast.LENGTH_SHORT).show();
+					}
+				}
+				return true;
+			}
+		});
 
 		getIntentData(getIntent());
 	}
@@ -205,15 +203,7 @@ public class ChatActivity extends BaseChatActivity {
 
 				final String finalFileName = fileName;
 
-				final String filePathTemp = Utils.handleFileEncryption(filePath, ChatActivity.this);
-
-				if (filePathTemp == null) {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
-					return;
-				}
-
-				new FileManageApi().uploadFile(filePathTemp, this, true, new ApiCallback<UploadFileModel>() {
+				new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -251,12 +241,12 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
-    protected void onChatPushUpdated() {
-        getMessages(false, false, false, true, false, true);
-    }
+	@Override
+	protected void onChatPushUpdated() {
+		getMessages(false, false, false, true, false, true);
+	}
 
-    public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
 
 		if (!isRunning) {
 			isRunning = true;
@@ -331,7 +321,7 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
+	@Override
 	protected void leaveChat() {
 		new ChatApi().leaveChat(chatId, true, this, new ApiCallback<BaseModel>() {
 
@@ -348,12 +338,12 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
-    protected void onEditorSendEvent(String text) {
-        sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
-    }
+	@Override
+	protected void onEditorSendEvent(String text) {
+		sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
+	}
 
-    private void setNoItemsVisibility() {
+	private void setNoItemsVisibility() {
 		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {

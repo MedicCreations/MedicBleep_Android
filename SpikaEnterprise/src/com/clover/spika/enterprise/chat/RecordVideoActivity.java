@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import java.io.File;
+import java.net.URI;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,7 +14,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Media;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -80,15 +80,7 @@ public class RecordVideoActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 
-				final String filePath = Utils.handleFileEncryption(sFileName, RecordVideoActivity.this);
-
-				if (filePath == null) {
-					AppDialog dialog = new AppDialog(RecordVideoActivity.this, false);
-					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_video));
-					return;
-				}
-
-				new FileManageApi().uploadFile(filePath, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
+				new FileManageApi().uploadFile(sFileName, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -99,8 +91,6 @@ public class RecordVideoActivity extends BaseActivity {
 							AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
 							dialog.setFailed("");
 						}
-
-						new File(filePath).delete();
 					}
 				});
 			}
@@ -212,32 +202,14 @@ public class RecordVideoActivity extends BaseActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		try {
+			Uri selected_video = data.getData();
 
-		if (requestCode == RESULT_FROM_CAMERA) {
-
-			if (data != null) {
-				Uri contentUri = data.getData();
-				try {
-					videoDuration = getVideoDuration(contentUri);
-					String tmppath = getVideoPath(contentUri);
-					sFileName = tmppath;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				finish();
-			}
-
-		} else if (requestCode == RESULT_FROM_GALLERY) {
-			try {
-				Uri selected_video = data.getData();
-
-				videoDuration = getVideoDuration(selected_video);
-				sFileName = getVideoPath(selected_video);
-			} catch (Exception e) {
-				e.printStackTrace();
-				finish();
-			}
+			videoDuration = getVideoDuration(selected_video);
+			sFileName = getVideoPath(selected_video);
+		} catch (Exception e) {
+			e.printStackTrace();
+			finish();
 		}
 
 		new Handler().postDelayed(new Runnable() {
@@ -275,8 +247,6 @@ public class RecordVideoActivity extends BaseActivity {
 	private void startPlaying() {
 		if (mIsPlaying == 0) {
 			mVideoView.requestFocus();
-
-			Log.d("Vida", "sFileName: " + sFileName);
 
 			mVideoView.setVideoURI(Uri.parse(sFileName));
 
@@ -328,11 +298,22 @@ public class RecordVideoActivity extends BaseActivity {
 	}
 
 	private String getVideoPath(Uri uri) {
-		String[] projection = { MediaStore.Video.Media.DATA };
-		Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
-		cursor.moveToFirst();
-		return cursor.getString(column_index);
+
+		if (uri.getScheme().equals("content")) {
+
+			String[] proj = { MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME };
+			Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
+
+			int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+			cursor.moveToFirst();
+
+			return cursor.getString(column_index_path);
+
+		} else if (uri.getScheme().equals("file")) {
+			return new File(URI.create(uri.toString())).getAbsolutePath();
+		}
+
+		return null;
 	}
 
 	private int getVideoDuration(Uri uri) {
@@ -368,14 +349,6 @@ public class RecordVideoActivity extends BaseActivity {
 		params.addRule(RelativeLayout.BELOW, R.id.topLayout);
 
 		mVideoView.setLayoutParams(params);
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (sFileName != null) {
-			new File(sFileName).delete();
-		}
 	}
 
 }

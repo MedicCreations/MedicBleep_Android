@@ -34,7 +34,7 @@ public class ProfileOtherActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_other_profile);
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = ImageLoader.getInstance(this);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 

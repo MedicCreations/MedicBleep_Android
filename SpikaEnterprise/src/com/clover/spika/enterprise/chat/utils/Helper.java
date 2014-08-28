@@ -128,7 +128,7 @@ public class Helper {
 				return true;
 			}
 		} catch (NameNotFoundException e) {
-			Logger.info("Could not get package name for app version checkup.");
+			Logger.i("Could not get package name for app version checkup.");
 			e.printStackTrace();
 		}
 
@@ -146,7 +146,7 @@ public class Helper {
 			int currentVersion = packageInfo.versionCode;
 			SpikaEnterpriseApp.getSharedPreferences(cntx).setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
 		} catch (NameNotFoundException e) {
-			Logger.info("Could not get package name for app version checkup.");
+			Logger.i("Could not get package name for app version checkup.");
 			e.printStackTrace();
 		}
 	}

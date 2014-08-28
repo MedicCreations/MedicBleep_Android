@@ -34,7 +34,7 @@ public class GroupAdapter extends BaseAdapter {
 		this.cntx = context;
 		this.data = arrayList;
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = ImageLoader.getInstance(context);
 		imageLoader.setDefaultImage(R.drawable.default_group_image);
 	}
 

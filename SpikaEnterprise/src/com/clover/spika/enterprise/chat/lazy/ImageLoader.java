@@ -1,18 +1,5 @@
 package com.clover.spika.enterprise.chat.lazy;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.widget.ImageView;
-
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
-
-import org.apache.http.util.ByteArrayBuffer;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,22 +11,34 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.http.util.ByteArrayBuffer;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Handler;
+import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
+
 public class ImageLoader {
 
-    // singleton usage
-    private static ImageLoader sInstance;
+	// singleton usage
+	private static ImageLoader sInstance;
 
-    public static ImageLoader getInstance() {
-        if (sInstance == null) {
-            throw new NullPointerException("ImageLoader has to be initialized first before instance can be used. " +
-                    "Call init method before usage.");
-        }
-        return sInstance;
-    }
+	public static ImageLoader getInstance(Context ctx) {
+		if (sInstance == null) {
+			init(ctx);
+		}
+		return sInstance;
+	}
 
-    public static void init(Context initActivityContext) {
-        sInstance = new ImageLoader(initActivityContext);
-    }
+	public static void init(Context initActivityContext) {
+		sInstance = new ImageLoader(initActivityContext);
+	}
 
 	// Initialize MemoryCache
 	MemoryCache memoryCache = new MemoryCache();
@@ -135,7 +134,7 @@ public class ImageLoader {
 
 				if (imageViewReused(photoToLoad))
 					return;
-				
+
 				// Get bitmap to display
 				BitmapDisplayer bd = new BitmapDisplayer(bmp, photoToLoad);
 
@@ -152,7 +151,14 @@ public class ImageLoader {
 		}
 	}
 
-	private Bitmap getBitmap(Context context, String url) {
+	/**
+	 * This should be used in a seperate thread
+	 * 
+	 * @param context
+	 * @param url
+	 * @return
+	 */
+	public Bitmap getBitmap(Context context, String url) {
 
 		File file = fileCache.getFile(url);
 
@@ -231,7 +237,7 @@ public class ImageLoader {
 		}
 
 		public void run() {
-			
+
 			// Show bitmap on UI
 			if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);

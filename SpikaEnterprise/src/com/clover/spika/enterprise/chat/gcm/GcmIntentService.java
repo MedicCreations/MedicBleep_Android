@@ -43,7 +43,7 @@ public class GcmIntentService extends IntentService {
 
 		if (!extras.isEmpty()) {
 
-			Logger.info("PushReceived: " + extras.toString());
+			Logger.i("PushReceived: " + extras.toString());
 
 			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 

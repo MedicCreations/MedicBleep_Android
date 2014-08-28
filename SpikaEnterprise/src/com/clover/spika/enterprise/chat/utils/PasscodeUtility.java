@@ -53,7 +53,7 @@ public class PasscodeUtility {
      * correctly in the near past.
      */
     public boolean isSessionValid() {
-        Logger.debug("isSessionValid: " + isSessionValid);
+        Logger.d("isSessionValid: " + isSessionValid);
         return isSessionValid;
     }
 
@@ -67,7 +67,7 @@ public class PasscodeUtility {
             throw new IllegalAccessError("You can only set new values on main thread!");
         }
 
-        Logger.debug("setSessionValid: " + isSessionValid);
+        Logger.d("setSessionValid: " + isSessionValid);
         this.isSessionValid = isSessionValid;
     }
 

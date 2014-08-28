@@ -29,7 +29,7 @@ public class LobbyAdapter extends BaseAdapter {
         this.mContext = context;
         this.data.addAll(users);
 
-        imageLoader = ImageLoader.getInstance();
+        imageLoader = ImageLoader.getInstance(context);
         if(isUsers){
         	imageLoader.setDefaultImage(R.drawable.default_user_image);
         }else{

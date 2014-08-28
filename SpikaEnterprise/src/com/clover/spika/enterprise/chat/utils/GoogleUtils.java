@@ -33,11 +33,11 @@ public class GoogleUtils {
 			registerInBackground(ctx);
 
 			regId = getRegistrationId(ctx);
-			Logger.info("PUSH_TOKEN: " + regId);
+			Logger.i("PUSH_TOKEN: " + regId);
 
 			return regId;
 		} else {
-			Logger.info("Google Play Services are missing");
+			Logger.i("Google Play Services are missing");
 			return null;
 		}
 	}
@@ -66,7 +66,7 @@ public class GoogleUtils {
 					// if (regId != null &&
 					// !regId.equals(getRegistrationId(context))) {
 					storeRegistrationId(context, regId);
-					Logger.info("NEW PUSH_TOKEN: " + regId);
+					Logger.i("NEW PUSH_TOKEN: " + regId);
 					// }
 				} catch (IOException ex) {
 					msg = "Error :" + ex.getMessage();
@@ -98,9 +98,9 @@ public class GoogleUtils {
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
 				if (result.isSuccess()) {
-					Logger.info("NEW PUSH_TOKEN: DONE");
+					Logger.i("NEW PUSH_TOKEN: DONE");
 				} else {
-					Logger.info("NEW PUSH_TOKEN: FAILED");
+					Logger.i("NEW PUSH_TOKEN: FAILED");
 				}
 			}
 		});
@@ -141,7 +141,7 @@ public class GoogleUtils {
 		String registrationId = SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PUSH_TOKEN_LOCAL);
 
 		if (registrationId == null || registrationId.isEmpty()) {
-			Logger.info("GCM registration ID not found");
+			Logger.i("GCM registration ID not found");
 			return "";
 		}
 
@@ -149,7 +149,7 @@ public class GoogleUtils {
 		// since the existing regID is not guaranteed to work with the new
 		// app version.
 		if (Helper.isUpdated(context)) {
-			Logger.info("App has been updated, we need to register GCM again.");
+			Logger.i("App has been updated, we need to register GCM again.");
 			return "";
 		}
 

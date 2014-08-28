@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -10,7 +11,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
@@ -52,8 +55,24 @@ public class PhotoActivity extends BaseActivity {
 		if (intent.getExtras() != null && intent.getExtras().containsKey(Const.IMAGE)) {
 			imageUrl = intent.getExtras().getString(Const.IMAGE, "");
 
-			ImageLoader imageLoader = ImageLoader.getInstance();
-			imageLoader.displayImage(this, imageUrl, mImageView);
+			new BaseAsyncTask<Void, Void, Bitmap>(this, true) {
+
+				protected Bitmap doInBackground(Void... params) {
+					return ImageLoader.getInstance(context).getBitmap(context, imageUrl);
+				}
+
+				@Override
+				protected void onPostExecute(Bitmap result) {
+					super.onPostExecute(result);
+					if (result != null) {
+						mImageView.setImageBitmap(result);
+					} else {
+						AppDialog dialog = new AppDialog(context, true);
+						dialog.setFailed(context.getResources().getString(R.string.e_error_downloading_file));
+					}
+				}
+
+			}.execute();
 		}
 	}
 

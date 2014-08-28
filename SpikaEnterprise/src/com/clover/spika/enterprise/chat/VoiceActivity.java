@@ -8,7 +8,6 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -36,8 +35,6 @@ public class VoiceActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_audio);
-		// TODO
-		// disableSidebar();
 
 		findViewById(R.id.sendAudio).setVisibility(View.INVISIBLE);
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
@@ -53,7 +50,7 @@ public class VoiceActivity extends BaseActivity {
 			@Override
 			public void onApiResponse(Result<String> result) {
 				if (result.isSuccess()) {
-					sFileName = Utils.handleFileDecryption(result.getResultData(), VoiceActivity.this);
+					sFileName = result.getResultData();
 				} else {
 					AppDialog dialog = new AppDialog(VoiceActivity.this, true);
 					dialog.setFailed(getResources().getString(R.string.e_error_downloading_file));

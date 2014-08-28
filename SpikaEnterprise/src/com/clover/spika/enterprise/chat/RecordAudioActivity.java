@@ -68,8 +68,6 @@ public class RecordAudioActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_audio);
-		// TODO
-		// disableSidebar();
 
 		findViewById(R.id.goBack).setOnClickListener(new OnClickListener() {
 
@@ -84,16 +82,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-
-				String filePath = Utils.handleFileEncryption(sFileName, RecordAudioActivity.this);
-
-				if (filePath == null) {
-					AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
-					dialog.setFailed(getResources().getString(R.string.e_while_encrypting_audio));
-					return;
-				}
-
-				new FileManageApi().uploadFile(filePath, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
+				new FileManageApi().uploadFile(sFileName, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -103,8 +92,6 @@ public class RecordAudioActivity extends BaseActivity {
 							AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
 							dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
 						}
-
-						new File(sFileName).delete();
 					}
 				});
 			}

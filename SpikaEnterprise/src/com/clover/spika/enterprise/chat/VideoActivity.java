@@ -23,7 +23,6 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class VideoActivity extends BaseActivity {
 
@@ -58,8 +57,7 @@ public class VideoActivity extends BaseActivity {
 			@Override
 			public void onApiResponse(Result<String> result) {
 				if (result.isSuccess()) {
-					sFileName = Utils.handleFileDecryption(result.getResultData(), VideoActivity.this);
-
+					sFileName = result.getResultData();
 					// Play video
 					mPlayPause.setImageResource(R.drawable.pause_btn);
 					onPlay(0);
