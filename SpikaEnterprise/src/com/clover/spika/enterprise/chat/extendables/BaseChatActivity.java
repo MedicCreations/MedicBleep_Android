@@ -43,14 +43,12 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URI;
 
 public abstract class BaseChatActivity extends BaseActivity {
@@ -216,23 +214,20 @@ public abstract class BaseChatActivity extends BaseActivity {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
                         try {
-                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                                    getContentResolver().openInputStream(fileUri)));
-                            StringBuilder builder = new StringBuilder();
-                            String line;
-                            while ((line = bufferedReader.readLine()) != null) {
-                                builder.append(line);
-                            }
-                            bufferedReader.close();
-
+                            InputStream in = getContentResolver().openInputStream(fileUri);
                             File tempFile = Utils.getTempFile(this, fileName);
                             OutputStream out = new FileOutputStream(tempFile);
-                            OutputStreamWriter writer = new OutputStreamWriter(out);
-                            writer.write(builder.toString());
-                            writer.close();
+
+                            // Transfer bytes from in to out
+                            byte[] buf = new byte[1024];
+                            int len;
+                            while ((len = in.read(buf)) > 0) {
+                                out.write(buf, 0, len);
+                            }
+                            in.close();
+                            out.close();
 
                             filePath = tempFile.getAbsolutePath();
-                            fileName = tempFile.getName();
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
