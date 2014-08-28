@@ -8,7 +8,7 @@ import java.util.UUID;
 public class Const {
 
 	// Version constants
-	public static final String BASE_URL = "http://local.clover-studio.com/SpikaAPI/wwwroot/v1";
+	public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
@@ -94,8 +94,8 @@ public class Const {
 	public static final String IS_GROUP = "isGroup";
 	public static final String PUSH_TOKEN = "push_token";
 
-    public static final String ROOT_ID = "root_id";
-    public static final String PARENT_ID = "parent_id";
+	public static final String ROOT_ID = "root_id";
+	public static final String PARENT_ID = "parent_id";
 
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
@@ -149,9 +149,10 @@ public class Const {
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
 	public static final String F_UPDATE_PUSH_TOKEN = "/user/pushtoken/android/update";
+	public static final String F_LOGOUT_API = "/user/logout";
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
-    public static final String F_GET_THREADS = "/message/child/list";
     public static final String F_DELETE_MESSAGE = "/message/delete";
+	public static final String F_GET_THREADS = "/message/child/list";
 
 	public static final int API_SUCCESS = 2000;
 

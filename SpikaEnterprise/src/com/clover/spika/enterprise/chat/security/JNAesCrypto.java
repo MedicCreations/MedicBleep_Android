@@ -214,7 +214,6 @@ public class JNAesCrypto {
 		tempOut.delete();
 	}
 
-	// TODO
 	public static void decryptIs(InputStream is, File out, Context ctx) throws Exception {
 
 		File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);

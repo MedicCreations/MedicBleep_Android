@@ -66,6 +66,50 @@ public class UserApi {
 	}
 
 	public void updateUserToken(final Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, false) {
+			@Override
+			protected BaseModel doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL));
+
+				try {
+					jsonObject = NetworkManagement
+							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+			}
+
+			@Override
+			protected void onPostExecute(BaseModel baseModel) {
+				super.onPostExecute(baseModel);
+
+				if (listener != null) {
+					Result<BaseModel> result;
+
+					if (baseModel != null) {
+						if (baseModel.getCode() == Const.API_SUCCESS) {
+							result = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+
+	public void logout(final Context ctx, final ApiCallback<BaseModel> listener) {
 		new BaseAsyncTask<Void, Void, BaseModel>(ctx, true) {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
@@ -76,13 +120,16 @@ public class UserApi {
 				postParams.put(Const.PUSH_TOKEN, "");
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+
+				return null;
+
 			}
 
 			@Override

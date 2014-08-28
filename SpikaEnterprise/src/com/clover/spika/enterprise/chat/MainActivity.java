@@ -103,9 +103,9 @@ public class MainActivity extends BaseActivity {
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
-		
+
 		closeSearchBtn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				closeSearchAnimation();
@@ -237,7 +237,7 @@ public class MainActivity extends BaseActivity {
 		sidebarBtn.setClickable(false);
 		hideKeyboard(searchEt);
 		closeSearchBtn.setVisibility(View.GONE);
-		
+
 		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationEnd(Animator animation) {

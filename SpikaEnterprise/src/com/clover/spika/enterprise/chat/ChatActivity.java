@@ -187,7 +187,7 @@ public class ChatActivity extends BaseChatActivity {
             });
         } else {
             AppDialog dialog = new AppDialog(this, false);
-            dialog.setFailed(getResources().getString(R.string.e_while_encrypting_file));
+            dialog.setFailed(getResources().getString(R.string.e_while_encrypting));
         }
     }
 
@@ -209,10 +209,10 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
-    protected void onChatPushUpdated() {
-        getMessages(false, false, false, true, false, true);
-    }
+	@Override
+	protected void onChatPushUpdated() {
+		getMessages(false, false, false, true, false, true);
+	}
 
     @Override
     protected void onMessageDeleted() {
@@ -294,7 +294,7 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
+	@Override
 	protected void leaveChat() {
 		new ChatApi().leaveChat(chatId, true, this, new ApiCallback<BaseModel>() {
 
@@ -311,12 +311,12 @@ public class ChatActivity extends BaseChatActivity {
 		});
 	}
 
-    @Override
-    protected void onEditorSendEvent(String text) {
-        sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
-    }
+	@Override
+	protected void onEditorSendEvent(String text) {
+		sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
+	}
 
-    private void setNoItemsVisibility() {
+	private void setNoItemsVisibility() {
 		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {

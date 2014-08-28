@@ -43,7 +43,7 @@ public class GcmIntentService extends IntentService {
 
 		if (!extras.isEmpty()) {
 
-			Logger.info("PushReceived: " + extras.toString());
+			Logger.i("PushReceived: " + extras.toString());
 
 			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
@@ -85,10 +85,6 @@ public class GcmIntentService extends IntentService {
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
 
-					if (Integer.parseInt(type) == Const.PUSH_TYPE_SEEN) {
-						return;
-					}
-
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
 					inBroadcast.putExtra(Const.CHAT_ID, chatId);
@@ -100,7 +96,11 @@ public class GcmIntentService extends IntentService {
 
 					sendBroadcast(inBroadcast);
 				} else {
-					
+
+					if (Integer.parseInt(type) == Const.PUSH_TYPE_SEEN) {
+						return;
+					}
+
 					NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
 					Intent pushIntent = new Intent(this, SplashActivity.class);

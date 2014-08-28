@@ -7,9 +7,13 @@ import android.app.Dialog;
 import android.content.Context;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -26,19 +30,14 @@ public class GoogleUtils {
 
 		if (checkPlayServices(ctx)) {
 
-			gcm = GoogleCloudMessaging.getInstance(ctx);
+			registerInBackground(ctx);
+
 			regId = getRegistrationId(ctx);
-
-			Logger.info("PUSH_TOKEN: " + regId);
-
-			if (regId.isEmpty()) {
-				registerInBackground(ctx);
-			}
+			Logger.i("PUSH_TOKEN: " + regId);
 
 			return regId;
 		} else {
-			Logger.info("Google Play Services are missing");
-
+			Logger.i("Google Play Services are missing");
 			return null;
 		}
 	}
@@ -53,16 +52,25 @@ public class GoogleUtils {
 		new BaseAsyncTask<Void, Void, String>(ctx, false) {
 
 			protected String doInBackground(Void... params) {
+
 				String msg = "";
+
 				try {
 					if (gcm == null) {
 						gcm = GoogleCloudMessaging.getInstance(context);
 					}
+
 					String regId = gcm.register(Const.GCM_SENDER_ID);
 					msg = "Device registered, registration ID=" + regId;
+
+					// if (regId != null &&
+					// !regId.equals(getRegistrationId(context))) {
 					storeRegistrationId(context, regId);
+					Logger.i("NEW PUSH_TOKEN: " + regId);
+					// }
 				} catch (IOException ex) {
 					msg = "Error :" + ex.getMessage();
+					ex.printStackTrace();
 					// If there is an error, don't just keep trying to register.
 					// Require the user to click a button again, or perform
 					// exponential back-off.
@@ -85,6 +93,17 @@ public class GoogleUtils {
 	private void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
+		new UserApi().updateUserToken(ctx, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					Logger.i("NEW PUSH_TOKEN: DONE");
+				} else {
+					Logger.i("NEW PUSH_TOKEN: FAILED");
+				}
+			}
+		});
 	}
 
 	/**
@@ -122,7 +141,7 @@ public class GoogleUtils {
 		String registrationId = SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PUSH_TOKEN_LOCAL);
 
 		if (registrationId == null || registrationId.isEmpty()) {
-			Logger.info("GCM registration ID not found");
+			Logger.i("GCM registration ID not found");
 			return "";
 		}
 
@@ -130,7 +149,7 @@ public class GoogleUtils {
 		// since the existing regID is not guaranteed to work with the new
 		// app version.
 		if (Helper.isUpdated(context)) {
-			Logger.info("App has been updated, we need to register GCM again.");
+			Logger.i("App has been updated, we need to register GCM again.");
 			return "";
 		}
 

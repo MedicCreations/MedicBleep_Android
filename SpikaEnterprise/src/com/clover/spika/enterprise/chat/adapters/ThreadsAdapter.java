@@ -58,7 +58,6 @@ public class ThreadsAdapter extends BaseAdapter {
         } else {
             throw new IllegalArgumentException("Context must be an Activity context to proceed.");
         }
-
     }
 
     public void updateContent(List<TreeNode> collection) {

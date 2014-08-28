@@ -1,16 +1,6 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-
-import org.apache.http.HttpEntity;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -31,7 +21,19 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.gson.Gson;
+
+import org.apache.http.HttpEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
 
 public class FileManageApi {
 
@@ -42,15 +44,25 @@ public class FileManageApi {
 
 			protected void onPreExecute() {
 				progressBar = new AppProgressDialogWithBar(ctx);
-				progressBar.show();
-			};
+				progressBar.showProgress();
+			}
 
 			protected UploadFileModel doInBackground(Void... params) {
-				HashMap<String, String> postParams = new HashMap<String, String>();
-				postParams.put(Const.FILE, path);
-
-				JSONObject jsonObject = new JSONObject();
 				try {
+
+					// start: encrypt
+					String finalPath = Utils.handleFileEncryption(path, context);
+
+					if (finalPath == null) {
+						return null;
+					}
+					// end: encrypt
+
+					HashMap<String, String> postParams = new HashMap<String, String>();
+					postParams.put(Const.FILE, finalPath);
+
+					JSONObject jsonObject = new JSONObject();
+
 					jsonObject = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams, new ProgressBarListeners() {
 
 						@Override
@@ -66,16 +78,20 @@ public class FileManageApi {
 
 						@Override
 						public void onFinish() {
-
+                            progressBar.dismiss();
 						}
 					});
+
+					new File(finalPath).delete();
+
+					return new Gson().fromJson(String.valueOf(jsonObject), UploadFileModel.class);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 
-				return new Gson().fromJson(String.valueOf(jsonObject), UploadFileModel.class);
+				return null;
 			}
 
 			protected void onPostExecute(UploadFileModel upload) {
@@ -94,6 +110,9 @@ public class FileManageApi {
 						}
 					} else {
 						result = new Result<UploadFileModel>(Result.ApiResponseState.FAILURE);
+						UploadFileModel data = new UploadFileModel();
+						data.setMessage(context.getResources().getString(R.string.e_while_encrypting));
+						result.setResultData(data);
 					}
 
 					listener.onApiResponse(result);
@@ -108,7 +127,7 @@ public class FileManageApi {
 
 			protected void onPreExecute() {
 				progressBar = new AppProgressDialogWithBar(ctx);
-				progressBar.show();
+				progressBar.showProgress();
 			};
 
 			protected String doInBackground(Void... params) {
@@ -144,14 +163,22 @@ public class FileManageApi {
 						@Override
 						public void onFinish() {
 							progressBar.dismiss();
+
+							((Activity) context).runOnUiThread(new Runnable() {
+                                public void run() {
+                                    progressBar = new AppProgressDialogWithBar(ctx);
+                                    progressBar.showDecrypting();
+                                }
+                            });
 						}
 					});
 
 					is.close();
 					os.close();
 
-					return file.getAbsolutePath();
+					String finalFilePath = Utils.handleFileDecryption(file.getAbsolutePath(), context);
 
+					return finalFilePath;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -173,6 +200,10 @@ public class FileManageApi {
 					}
 
 					listener.onApiResponse(result);
+				}
+
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
 				}
 			}
 
