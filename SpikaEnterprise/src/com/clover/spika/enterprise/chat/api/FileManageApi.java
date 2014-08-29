@@ -96,7 +96,7 @@ public class FileManageApi {
 
 			protected void onPostExecute(UploadFileModel upload) {
 				super.onPostExecute(upload);
-
+				
 				if (listener != null) {
 					Result<UploadFileModel> result;
 
@@ -116,6 +116,10 @@ public class FileManageApi {
 					}
 
 					listener.onApiResponse(result);
+				}
+				
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
 				}
 			}
 

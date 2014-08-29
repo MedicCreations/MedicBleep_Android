@@ -132,11 +132,4 @@ public class AppProgressDialogWithBar extends Dialog {
 		loadingBar.setProgress(current);
 	}
 
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		if (!hasFocus) {
-			this.dismiss();
-		}
-		super.onWindowFocusChanged(hasFocus);
-	}
 }
