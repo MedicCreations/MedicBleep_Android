@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/default_blue"
+        android:orientation="horizontal" >
+
+        <ToggleButton
+            android:id="@+id/groupsTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_toggle_tab"
+            android:textColor="@drawable/selector_tab_toggle"
+            android:textOff="Users"
+            android:textOn="Users" />
+
+        <ToggleButton
+            android:id="@+id/usersTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_toggle_tab"
+            android:textColor="@drawable/selector_tab_toggle"
+            android:textOff="Groups"
+            android:textOn="Groups" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>
