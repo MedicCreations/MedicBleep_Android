@@ -244,8 +244,6 @@ public abstract class BaseChatActivity extends BaseActivity {
                     filePath = file.getAbsolutePath();
                 }
 
-                filePath = Utils.handleFileEncryption(filePath, BaseChatActivity.this);
-
                 onFileSelected(RESULT_OK, fileName, filePath);
             } else {
                 onFileSelected(RESULT_CANCELED, null, null);
