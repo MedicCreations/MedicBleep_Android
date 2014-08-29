@@ -50,7 +50,7 @@ public class ChatActivity extends BaseChatActivity {
                     Message message = (Message) parent.getAdapter().getItem(position);
                     int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
                     ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                            message.getChat_id(), message.getId(), chatImage);
+                            message.getChat_id(), message.getId(), chatImage, chatName);
                 }
             }
         });
