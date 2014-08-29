@@ -2,9 +2,11 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -192,46 +194,37 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        String fileName = null;
+        String filePath = null;
+
         if (requestCode == PICK_FILE_RESULT_CODE) {
             if (resultCode == RESULT_OK) {
                 Uri fileUri = data.getData();
 
-                String fileName = null;
-                String filePath = null;
-
                 if (fileUri.getScheme().equals("content")) {
 
 
-                    String[] proj = {MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME};
+                    String proj[];
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        proj = new String[]{MediaStore.Files.FileColumns.DISPLAY_NAME};
+                    } else {
+                        proj = new String[]{MediaStore.Files.FileColumns.DATA, MediaStore.Files.FileColumns.DISPLAY_NAME};
+                    }
                     Cursor cursor = getContentResolver().query(fileUri, proj, null, null, null);
-
-                    int column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME);
-                    int column_index_path = cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
                     cursor.moveToFirst();
+
+                    int column_index_name = cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME);
+                    int column_index_path = cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
 
                     fileName = cursor.getString(column_index_name);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-
                         try {
-                            InputStream in = getContentResolver().openInputStream(fileUri);
-                            File tempFile = Utils.getTempFile(this, fileName);
-                            OutputStream out = new FileOutputStream(tempFile);
-
-                            // Transfer bytes from in to out
-                            byte[] buf = new byte[1024];
-                            int len;
-                            while ((len = in.read(buf)) > 0) {
-                                out.write(buf, 0, len);
-                            }
-                            in.close();
-                            out.close();
-
-                            filePath = tempFile.getAbsolutePath();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            new BuildTempFileAsync(this, fileName).execute(getContentResolver().openInputStream(fileUri));
+                            // async task initialized, exit
+                            return;
+                        } catch (FileNotFoundException ignored) {
+                            filePath = "";
                         }
                     } else {
                         filePath = cursor.getString(column_index_path);
@@ -244,10 +237,13 @@ public abstract class BaseChatActivity extends BaseActivity {
                     filePath = file.getAbsolutePath();
                 }
 
-                onFileSelected(RESULT_OK, fileName, filePath);
-            } else {
-                onFileSelected(RESULT_CANCELED, null, null);
             }
+        }
+
+        if (!TextUtils.isEmpty(fileName) && !TextUtils.isEmpty(filePath)) {
+            onFileSelected(RESULT_OK, fileName, filePath);
+        } else {
+            onFileSelected(RESULT_CANCELED, null, null);
         }
     }
 
@@ -505,4 +501,53 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected abstract String getRootId();
 
     protected abstract String getMessageId();
+
+    private class BuildTempFileAsync extends AsyncTask<InputStream, Void, String> {
+
+        private Context mContext;
+        private String mFileName;
+
+        BuildTempFileAsync(Context ctx, String fileName) {
+            this.mContext = ctx;
+            this.mFileName = fileName;
+        }
+
+        @Override
+        protected String doInBackground(InputStream... params) {
+            try {
+                InputStream in = params[0];
+
+                File tempFile = Utils.getTempFile(mContext, mFileName);
+                OutputStream out = new FileOutputStream(tempFile);
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+
+                return tempFile.getAbsolutePath();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            if (TextUtils.isEmpty(s)) {
+                onFileSelected(RESULT_CANCELED, null, null);
+            } else {
+                onFileSelected(RESULT_OK, mFileName, s);
+            }
+        }
+    }
 }
