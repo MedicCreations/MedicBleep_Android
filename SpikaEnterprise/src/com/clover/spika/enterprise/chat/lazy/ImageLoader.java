@@ -209,7 +209,7 @@ public class ImageLoader {
 			return bitmap;
 
 		} catch (Throwable ex) {
-			ex.printStackTrace();
+			if(Const.DEBUG_CRYPTO) ex.printStackTrace();
 			if (ex instanceof OutOfMemoryError) {
 				clearCache();
 			}
