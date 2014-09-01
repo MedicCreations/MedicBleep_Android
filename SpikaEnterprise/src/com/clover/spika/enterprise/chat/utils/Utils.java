@@ -79,7 +79,7 @@ public class Utils {
 				return out.getAbsolutePath();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(Const.DEBUG_CRYPTO) e.printStackTrace();
 			return null;
 		}
 
@@ -107,7 +107,7 @@ public class Utils {
 				return out.getAbsolutePath();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(Const.DEBUG_CRYPTO) e.printStackTrace();
 			return null;
 		}
 
@@ -213,7 +213,7 @@ public class Utils {
 			// content=JNAesCrypto.encryptJNChunk(bitmap);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(Const.DEBUG_CRYPTO) e.printStackTrace();
 		}
 		byte[] data = content.getBytes();
 		try {
@@ -250,7 +250,7 @@ public class Utils {
 				content = JNAesCrypto.encryptJN(dataInput);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				if(Const.DEBUG_CRYPTO) e.printStackTrace();
 			}
 		} else {
 			content = dataInput;
@@ -289,7 +289,7 @@ public class Utils {
 			try {
 				content = JNAesCrypto.encryptJN(dataInput);
 			} catch (Exception e) {
-				e.printStackTrace();
+				if(Const.DEBUG_CRYPTO) e.printStackTrace();
 			}
 		} else {
 			content = dataInput;

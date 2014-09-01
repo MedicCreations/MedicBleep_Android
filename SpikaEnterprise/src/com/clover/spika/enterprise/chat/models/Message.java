@@ -317,7 +317,7 @@ public class Message implements Parcelable {
                 try {
                     msg.setText(JNAesCrypto.decryptJN(msg.getText()));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if(Const.DEBUG_CRYPTO) e.printStackTrace();
                     msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
                     msg.setFailed(true);
                 }
@@ -330,7 +330,7 @@ public class Message implements Parcelable {
                     msg.setLongitude(JNAesCrypto.decryptJN(msg.getLongitude()));
                     msg.setLatitude(JNAesCrypto.decryptJN(msg.getLatitude()));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                	if(Const.DEBUG_CRYPTO) e.printStackTrace();
                     msg.setText(ctx.getResources().getString(R.string.e_error_not_decrypted));
                     msg.setFailed(true);
                 }

@@ -265,7 +265,7 @@ public class FileManageApi {
 					is.close();
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					if(Const.DEBUG_CRYPTO) e.printStackTrace();
 				}
 
 				return null;

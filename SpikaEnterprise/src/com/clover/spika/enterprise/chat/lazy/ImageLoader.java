@@ -175,7 +175,7 @@ public class ImageLoader {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(Const.DEBUG_CRYPTO) e.printStackTrace();
 		}
 		// end: Get image from cache
 

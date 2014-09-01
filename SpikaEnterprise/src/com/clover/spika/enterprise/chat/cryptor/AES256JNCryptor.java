@@ -37,6 +37,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 /**
@@ -484,7 +485,7 @@ private static void copy(InputStream is, OutputStream os) throws IOException {
 		try {
 			encryptData(password, encryptionSalt, hmacSalt, iv, in, out);
 		} catch (Exception e) {
-			e.printStackTrace();
+			if(Const.DEBUG_CRYPTO) e.printStackTrace();
 		}
 	}
 
