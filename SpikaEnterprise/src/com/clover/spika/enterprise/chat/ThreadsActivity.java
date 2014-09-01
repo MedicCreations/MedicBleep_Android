@@ -152,6 +152,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
         threadsAdapter.setSelectedItem(position);
+        mMessageId = threadsAdapter.getItem(position).getMessage().getId();
     }
 
     @Override

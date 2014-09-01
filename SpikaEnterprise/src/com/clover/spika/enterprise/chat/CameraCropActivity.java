@@ -64,6 +64,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private static final int ZOOM = 2;
 	private int mode = NONE;
 
+    // thumbnail width and height
+    private static final int WIDTH = 100;
+    private static final int HEIGHT = 100;
+
 	// Remember some things for zooming
 	private PointF start = new PointF();
 	private PointF mid = new PointF();
@@ -563,7 +567,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void createThumb(String path, Bitmap b) {
-		int width = 200, height = 200;
+		int width = WIDTH, height = HEIGHT;
 		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
 
 		saveBitmapToFile(sb, path);
