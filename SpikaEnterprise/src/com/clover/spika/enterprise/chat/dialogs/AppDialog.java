@@ -140,7 +140,7 @@ public class AppDialog extends Dialog {
 	/**
 	 * Go to recording screen from gallery or camera
 	 */
-	public void choseCamGallery(final String chatId) {
+	public void choseCamGallery(final String chatId, final String rootId, final String messageId) {
 		this.setContentView(R.layout.dialog_chose_cam_rec);
 
 		ImageButton camera = (ImageButton) findViewById(R.id.camera);
@@ -155,6 +155,8 @@ public class AppDialog extends Dialog {
 				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+                recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
+                recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
 				getContext().startActivity(recordVideoIntent);
 			}
 		});
@@ -168,6 +170,8 @@ public class AppDialog extends Dialog {
 				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+                recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
+                recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
 				getContext().startActivity(recordVideoIntent);
 			}
 		});

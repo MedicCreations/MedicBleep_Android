@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -220,7 +219,16 @@ public abstract class BaseChatActivity extends BaseActivity {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         try {
-                            new BuildTempFileAsync(this, fileName).execute(getContentResolver().openInputStream(fileUri));
+                            new BuildTempFileAsync(this, fileName, new OnTempFileCreatedListener() {
+                                @Override
+                                public void onTempFileCreated(String path, String name) {
+                                    if (TextUtils.isEmpty(path)) {
+                                        onFileSelected(RESULT_CANCELED, null, null);
+                                    } else {
+                                        onFileSelected(RESULT_OK, name, path);
+                                    }
+                                }
+                            }).execute(getContentResolver().openInputStream(fileUri));
                             // async task initialized, exit
                             return;
                         } catch (FileNotFoundException ignored) {
@@ -403,7 +411,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
             } else if (id == R.id.btnVideo) {
                 AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
-                dialog.choseCamGallery(chatId);
+                dialog.choseCamGallery(chatId, getRootId(), getMessageId());
                 hideSettings();
 
             } else if (id == R.id.btnLocation) {
@@ -502,14 +510,19 @@ public abstract class BaseChatActivity extends BaseActivity {
 
     protected abstract String getMessageId();
 
-    private class BuildTempFileAsync extends AsyncTask<InputStream, Void, String> {
+    public static interface OnTempFileCreatedListener {
+        void onTempFileCreated(String path, String name);
+    }
 
-        private Context mContext;
+    public static class BuildTempFileAsync extends BaseAsyncTask<InputStream, Void, String> {
+
         private String mFileName;
+        private OnTempFileCreatedListener mListener;
 
-        BuildTempFileAsync(Context ctx, String fileName) {
-            this.mContext = ctx;
+        public BuildTempFileAsync(Context ctx, String fileName, OnTempFileCreatedListener listener) {
+            super(ctx, true);
             this.mFileName = fileName;
+            this.mListener = listener;
         }
 
         @Override
@@ -517,7 +530,7 @@ public abstract class BaseChatActivity extends BaseActivity {
             try {
                 InputStream in = params[0];
 
-                File tempFile = Utils.getTempFile(mContext, mFileName);
+                File tempFile = Utils.getTempFile(getContext(), mFileName);
                 OutputStream out = new FileOutputStream(tempFile);
 
                 // Transfer bytes from in to out
@@ -542,11 +555,8 @@ public abstract class BaseChatActivity extends BaseActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-
-            if (TextUtils.isEmpty(s)) {
-                onFileSelected(RESULT_CANCELED, null, null);
-            } else {
-                onFileSelected(RESULT_OK, mFileName, s);
+            if (mListener != null) {
+                mListener.onTempFileCreated(s, mFileName);
             }
         }
     }
