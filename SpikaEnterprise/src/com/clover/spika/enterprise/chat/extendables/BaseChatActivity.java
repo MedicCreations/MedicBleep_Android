@@ -424,6 +424,8 @@ public abstract class BaseChatActivity extends BaseActivity {
             } else if (id == R.id.btnRecord) {
                 Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
                 intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
             } else if (id == R.id.etMessage) {

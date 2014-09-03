@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +27,9 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
 import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class RecordAudioActivity extends BaseActivity {
 
@@ -375,7 +375,10 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	private void sendMsg(String fileId) {
-		new ChatApi().sendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), null, fileId, null, null, null, this, new ApiCallback<Integer>() {
+        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+		new ChatApi().sendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID),
+                null, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

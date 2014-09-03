@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
+import com.clover.spika.enterprise.chat.VoiceActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.TreeNode;
@@ -33,7 +34,8 @@ public class ThreadsAdapter extends BaseAdapter {
     private static final int VIEW_TYPE_PHOTO = 1;
     private static final int VIEW_TYPE_VIDEO = 2;
     private static final int VIEW_TYPE_LOCATION = 3;
-    private static final int VIEW_TYPE_DELETED = 4;
+    private static final int VIEW_TYPE_SOUND = 4;
+    private static final int VIEW_TYPE_DELETED = 5;
 
     private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_DELETED + 1;
 
@@ -102,6 +104,9 @@ public class ThreadsAdapter extends BaseAdapter {
             case Const.MSG_TYPE_VIDEO:
                 return VIEW_TYPE_VIDEO;
 
+            case Const.MSG_TYPE_VOICE:
+                return VIEW_TYPE_SOUND;
+
             case Const.MSG_TYPE_DEFAULT:
             default:
                 return VIEW_TYPE_MESSAGE;
@@ -152,6 +157,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
                 case VIEW_TYPE_LOCATION:
                 case VIEW_TYPE_VIDEO:
+                case VIEW_TYPE_SOUND:
                     convertView = inflateMedia(holder, parent, type);
                     break;
 
@@ -187,6 +193,9 @@ public class ThreadsAdapter extends BaseAdapter {
             case VIEW_TYPE_VIDEO:
                 populateVideo(holder, node, position);
                 break;
+
+            case VIEW_TYPE_SOUND:
+                populateSound(holder, node, position);
 
             case VIEW_TYPE_MESSAGE:
             default:
@@ -251,6 +260,11 @@ public class ThreadsAdapter extends BaseAdapter {
 
             case VIEW_TYPE_VIDEO:
                 holder.imageViewIcon.setOnClickListener(mOnClickVideo);
+                break;
+
+            case VIEW_TYPE_SOUND:
+                holder.imageViewIcon.setOnClickListener(mOnClickSound);
+                break;
         }
 
         return convertView;
@@ -349,6 +363,28 @@ public class ThreadsAdapter extends BaseAdapter {
         }
     }
 
+    private void populateSound(ViewHolder holder, TreeNode node, int position) {
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+
+        if (node.getMessage().isMe()) {
+            holder.textViewUser.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
+        }
+
+        holder.imageViewIcon.setImageResource(R.drawable.icon_voice);
+        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+
+        if (position == this.mSelectedItem) {
+            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+            holder.textViewUser.setTextColor(Color.WHITE);
+        } else {
+            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+            holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+        }
+    }
+
     private View.OnClickListener mOnClickPhoto = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -380,6 +416,17 @@ public class ThreadsAdapter extends BaseAdapter {
                 Intent videoIntent = new Intent(mContext, VideoActivity.class);
                 videoIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
                 mContext.startActivity(videoIntent);
+            }
+        }
+    };
+
+    private View.OnClickListener mOnClickSound = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getTag(R.id.tag_file_id) != null) {
+                Intent soundIntent = new Intent(mContext, VoiceActivity.class);
+                soundIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
+                mContext.startActivity(soundIntent);
             }
         }
     };
