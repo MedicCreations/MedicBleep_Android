@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.TreeNode;
@@ -30,15 +31,11 @@ public class ThreadsAdapter extends BaseAdapter {
 
     private static final int VIEW_TYPE_MESSAGE = 0;
     private static final int VIEW_TYPE_PHOTO = 1;
-    private static final int VIEW_TYPE_LOCATION = 2;
-    private static final int VIEW_TYPE_DELETED = 3;
+    private static final int VIEW_TYPE_VIDEO = 2;
+    private static final int VIEW_TYPE_LOCATION = 3;
+    private static final int VIEW_TYPE_DELETED = 4;
 
-    private static final int[] VIEW_TYPES = {
-            VIEW_TYPE_MESSAGE,
-            VIEW_TYPE_PHOTO,
-            VIEW_TYPE_LOCATION,
-            VIEW_TYPE_DELETED
-    };
+    private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_DELETED + 1;
 
     private static final int INDENTATION_PADDING = 50;
 
@@ -102,6 +99,9 @@ public class ThreadsAdapter extends BaseAdapter {
             case Const.MSG_TYPE_LOCATION:
                 return VIEW_TYPE_LOCATION;
 
+            case Const.MSG_TYPE_VIDEO:
+                return VIEW_TYPE_VIDEO;
+
             case Const.MSG_TYPE_DEFAULT:
             default:
                 return VIEW_TYPE_MESSAGE;
@@ -110,7 +110,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return VIEW_TYPES.length;
+        return TOTAL_VIEW_TYPES;
     }
 
     @Override
@@ -151,7 +151,8 @@ public class ThreadsAdapter extends BaseAdapter {
                     break;
 
                 case VIEW_TYPE_LOCATION:
-                    convertView = inflateMedia(holder, parent);
+                case VIEW_TYPE_VIDEO:
+                    convertView = inflateMedia(holder, parent, type);
                     break;
 
                 case VIEW_TYPE_MESSAGE:
@@ -181,6 +182,10 @@ public class ThreadsAdapter extends BaseAdapter {
 
             case VIEW_TYPE_LOCATION:
                 populateLocation(holder, node, position);
+                break;
+
+            case VIEW_TYPE_VIDEO:
+                populateVideo(holder, node, position);
                 break;
 
             case VIEW_TYPE_MESSAGE:
@@ -231,14 +236,22 @@ public class ThreadsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private View inflateMedia(final ViewHolder holder, final ViewGroup parent) {
+    private View inflateMedia(final ViewHolder holder, final ViewGroup parent, int viewType) {
         View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_media, parent, false);
 
         holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
         holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
         holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
         holder.imageViewIcon = (ImageView) convertView.findViewById(R.id.image_view_icon);
-        holder.imageViewIcon.setOnClickListener(mOnClickLocation);
+
+        switch (viewType) {
+            case VIEW_TYPE_LOCATION:
+                holder.imageViewIcon.setOnClickListener(mOnClickLocation);
+                break;
+
+            case VIEW_TYPE_VIDEO:
+                holder.imageViewIcon.setOnClickListener(mOnClickVideo);
+        }
 
         return convertView;
     }
@@ -314,6 +327,28 @@ public class ThreadsAdapter extends BaseAdapter {
         }
     }
 
+    private void populateVideo(ViewHolder holder, TreeNode node, int position) {
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+
+        if (node.getMessage().isMe()) {
+            holder.textViewUser.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
+        }
+
+        holder.imageViewIcon.setImageResource(R.drawable.icon_video);
+        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+
+        if (position == this.mSelectedItem) {
+            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+            holder.textViewUser.setTextColor(Color.WHITE);
+        } else {
+            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+            holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+        }
+    }
+
     private View.OnClickListener mOnClickPhoto = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -334,6 +369,17 @@ public class ThreadsAdapter extends BaseAdapter {
                 locationIntent.putExtra(Const.LATITUDE, Double.parseDouble((String) v.getTag(R.id.tag_latitude)));
                 locationIntent.putExtra(Const.LONGITUDE, Double.parseDouble((String) v.getTag(R.id.tag_longitude)));
                 mContext.startActivity(locationIntent);
+            }
+        }
+    };
+
+    private View.OnClickListener mOnClickVideo = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getTag(R.id.tag_file_id) != null) {
+                Intent videoIntent = new Intent(mContext, VideoActivity.class);
+                videoIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
+                mContext.startActivity(videoIntent);
             }
         }
     };
