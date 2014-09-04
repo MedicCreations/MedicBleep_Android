@@ -57,8 +57,6 @@ public class MessagesAdapter extends BaseAdapter {
 		this.data = arrayList;
 
 		imageLoader = ImageLoader.getInstance();
-
-        isJellyBean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN;
 	}
 
 	@Override
@@ -329,7 +327,7 @@ public class MessagesAdapter extends BaseAdapter {
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
 
-			Helper.startPaggingAnimation(ctx, holder.loading_bar_img, isJellyBean);
+			Helper.startPaggingAnimation(ctx, holder.loading_bar_img);
 
 			if (ctx instanceof ChatActivity) {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);

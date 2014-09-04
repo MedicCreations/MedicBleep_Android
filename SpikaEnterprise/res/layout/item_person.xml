@@ -3,35 +3,28 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent" >
+    android:background="@color/transparent">
 
     <RelativeLayout
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp" >
+        android:layout_marginLeft="5dp">
 
         <RelativeLayout
             android:id="@+id/imageLayout"
-            android:layout_width="65dp"
-            android:layout_height="85dp"
+            android:layout_width="35dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp" >
+            android:layout_marginRight="10dp">
 
             <com.clover.spika.enterprise.chat.views.RoundImageView
                 android:id="@+id/userImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:contentDescription="@null" />  
-           <!-- <com.clover.spika.enterprise.chat.views.RoundCornersImageView
-                android:id="@+id/userImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:contentDescription="@null" />  -->
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:contentDescription="@null"
+                tools:src="@drawable/default_user_image" />
         </RelativeLayout>
 
         <LinearLayout
@@ -40,7 +33,7 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/imageLayoutControl"
             android:layout_toRightOf="@+id/imageLayout"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/personName"
@@ -62,8 +55,7 @@
             android:layout_alignBottom="@id/imageLayout"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/imageLayout"
-            android:background="@drawable/icon_tablearrow" >
-        </RelativeLayout>
+            android:background="@drawable/icon_tablearrow"/>
     </RelativeLayout>
 
 </RelativeLayout>

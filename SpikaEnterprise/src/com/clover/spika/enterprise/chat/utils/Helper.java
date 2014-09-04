@@ -260,7 +260,7 @@ public class Helper {
 	 */
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	public static void startPaggingAnimation(final Context cntx, final ImageView loading, final boolean isJellyBean) {
+	public static void startPaggingAnimation(final Context cntx, final ImageView loading) {
 		AnimationDrawable animation = new AnimationDrawable();
 		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame1), 500);
 		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame2), 500);
@@ -268,10 +268,10 @@ public class Helper {
 		animation.addFrame(cntx.getResources().getDrawable(R.drawable.process_frame4), 500);
 		animation.setOneShot(false);
 
-		if (isJellyBean) {
-			loading.setBackgroundDrawable(animation);
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            loading.setBackground(animation);
 		} else {
-			loading.setBackground(animation);
+            loading.setBackgroundDrawable(animation);
 		}
 
 		animation.start();

@@ -3,40 +3,40 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent" >
+    android:background="@color/transparent">
 
     <RelativeLayout
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp" >
+        android:layout_marginLeft="5dp">
 
         <RelativeLayout
             android:id="@+id/imageLayout"
-            android:layout_width="65dp"
-            android:layout_height="85dp"
+            android:layout_width="35dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp" >
-            
+            android:layout_marginRight="10dp">
+
             <com.clover.spika.enterprise.chat.views.RoundImageView
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:id="@+id/lobbyImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"/>
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:contentDescription="@null"
+                tools:src="@drawable/default_user_image" />
 
             <RelativeLayout
                 android:id="@+id/unreadLayout"
                 android:layout_width="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:visibility="invisible" >
+                android:layout_marginTop="5dp"
+                android:visibility="invisible">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:contentDescription="@null"
                     android:src="@drawable/notification_icon" />
 
@@ -47,7 +47,7 @@
                     android:layout_centerInParent="true"
                     android:text="!"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </RelativeLayout>
         </RelativeLayout>
@@ -58,16 +58,16 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/imageLayoutControl"
             android:layout_toRightOf="@+id/imageLayout"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/lobbyName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:maxLines="1"
-                android:ellipsize="end"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -76,9 +76,9 @@
             android:id="@+id/imageLayoutControl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/imageLayout"
             android:layout_alignBottom="@id/imageLayout"
             android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/imageLayout"
             android:background="@drawable/icon_tablearrow">
 
         </RelativeLayout>
