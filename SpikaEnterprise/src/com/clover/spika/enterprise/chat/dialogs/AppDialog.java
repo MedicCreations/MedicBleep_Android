@@ -22,6 +22,9 @@ public class AppDialog extends Dialog {
 	boolean isFinish = false;
 	boolean checked = false;
 
+    private OnPositiveButtonClickListener mOnPositiveButtonClick;
+    private OnNegativeButtonCLickListener mOnNegativeButtonClick;
+
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
 		setOwnerActivity((Activity) context);
@@ -29,7 +32,15 @@ public class AppDialog extends Dialog {
 		this.isFinish = isFinish;
 	}
 
-	/**
+    public void setOnPositiveButtonClick(OnPositiveButtonClickListener mOnPositiveButtonClick) {
+        this.mOnPositiveButtonClick = mOnPositiveButtonClick;
+    }
+
+    public void setOnNegativeButtonClick(OnNegativeButtonCLickListener mOnNegativeButtonClick) {
+        this.mOnNegativeButtonClick = mOnNegativeButtonClick;
+    }
+
+    /**
 	 * Show info dialog
 	 * 
 	 * @param message
@@ -56,6 +67,35 @@ public class AppDialog extends Dialog {
 		show();
 	}
 
+    public void setYesNo(String message) {
+        this.setContentView(R.layout.dialog_confirmation);
+        View btnYes = findViewById(R.id.layout_yes);
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnPositiveButtonClick != null) {
+                    mOnPositiveButtonClick.onPositiveButtonClick(v);
+                }
+                dismiss();
+            }
+        });
+        View btnNo = findViewById(R.id.layout_no);
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnNegativeButtonClick != null) {
+                    mOnNegativeButtonClick.onNegativeButtonClick(v);
+                }
+                dismiss();
+            }
+        });
+
+        TextView infoText = (TextView) findViewById(R.id.infoText);
+        infoText.setText(message);
+
+        show();
+    }
+
 	/**
 	 * Show succeeded dialog
 	 */
@@ -65,15 +105,15 @@ public class AppDialog extends Dialog {
 		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				dismiss();
+            @Override
+            public void onClick(View v) {
+                dismiss();
 
-				if (isFinish) {
-					getOwnerActivity().finish();
-				}
-			}
-		});
+                if (isFinish) {
+                    getOwnerActivity().finish();
+                }
+            }
+        });
 
 		show();
 	}
@@ -92,20 +132,20 @@ public class AppDialog extends Dialog {
 		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				dismiss();
+            @Override
+            public void onClick(View v) {
+                dismiss();
 
-				if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
-					Intent intent = new Intent(getContext(), LoginActivity.class);
-					getOwnerActivity().startActivity(intent);
-					getOwnerActivity().finish();
+                if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
+                    Intent intent = new Intent(getContext(), LoginActivity.class);
+                    getOwnerActivity().startActivity(intent);
+                    getOwnerActivity().finish();
 
-				} else if (isFinish) {
-					getOwnerActivity().finish();
-				}
-			}
-		});
+                } else if (isFinish) {
+                    getOwnerActivity().finish();
+                }
+            }
+        });
 
 		show();
 	}
@@ -148,18 +188,18 @@ public class AppDialog extends Dialog {
 
 		camera.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				dismiss();
+            @Override
+            public void onClick(View v) {
+                dismiss();
 
-				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
-				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
-				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+                Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
+                recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
+                recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
                 recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
                 recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
-				getContext().startActivity(recordVideoIntent);
-			}
-		});
+                getContext().startActivity(recordVideoIntent);
+            }
+        });
 
 		gallery.setOnClickListener(new View.OnClickListener() {
 
@@ -259,5 +299,12 @@ public class AppDialog extends Dialog {
 
 		super.onWindowFocusChanged(hasFocus);
 	}
+
+    public interface OnPositiveButtonClickListener {
+        void onPositiveButtonClick(View v);
+    }
+    public interface OnNegativeButtonCLickListener {
+        void onNegativeButtonClick(View v);
+    }
 
 }

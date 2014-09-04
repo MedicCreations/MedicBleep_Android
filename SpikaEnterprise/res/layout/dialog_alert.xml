@@ -21,7 +21,8 @@
             android:gravity="center"
             android:textColor="@color/green"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Stating the obvious"/>
 
         <LinearLayout
             android:id="@+id/controlLayout"

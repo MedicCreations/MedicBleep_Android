@@ -356,15 +356,22 @@ public abstract class BaseChatActivity extends BaseActivity {
         }
     }
 
-    protected void deleteMessage(String messageId) {
-        new ChatApi().deleteMessage(messageId, this, new ApiCallback<BaseModel>() {
+    protected void deleteMessage(final String messageId) {
+        AppDialog deleteDialog = new AppDialog(this, false);
+        deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
             @Override
-            public void onApiResponse(Result<BaseModel> result) {
-                if (result.isSuccess()) {
-                    onMessageDeleted();
-                }
+            public void onPositiveButtonClick(View v) {
+                new ChatApi().deleteMessage(messageId, BaseChatActivity.this, new ApiCallback<BaseModel>() {
+                    @Override
+                    public void onApiResponse(Result<BaseModel> result) {
+                        if (result.isSuccess()) {
+                            onMessageDeleted();
+                        }
+                    }
+                });
             }
         });
+        deleteDialog.setYesNo(getString(R.string.delete_message_confirmation));
     }
 
     @Override
