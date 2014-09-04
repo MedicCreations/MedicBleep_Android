@@ -43,9 +43,17 @@ public class FileManageApi {
 		new BaseAsyncTask<Void, Void, UploadFileModel>(ctx, showProgressBar) {
 
 			protected void onPreExecute() {
-				progressBar = new AppProgressDialogWithBar(ctx);
-				progressBar.showProgress();
-			};
+                File checkFile = new File(path);
+                if (checkFile.length() > Const.MAX_FILE_SIZE) {
+                    AppDialog largeFileDialog = new AppDialog(ctx, false);
+                    largeFileDialog.setInfo(ctx.getString(R.string.file_size_error));
+                    cancel(true);
+                } else {
+                    progressBar = new AppProgressDialogWithBar(ctx);
+                    progressBar.showProgress();
+                }
+
+			}
 
 			protected UploadFileModel doInBackground(Void... params) {
 				try {

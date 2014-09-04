@@ -68,6 +68,9 @@ public class Const {
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds
 	public static final long MAX_RECORDING_TIME_VOICE = 180000; // milliseconds
 
+    // File upload constant
+    public static final long MAX_FILE_SIZE = 8 * 1024 * 1024;
+
 	// custom params key
 	public static final String TOKEN = "token";
 	public static final String USERNAME = "username";

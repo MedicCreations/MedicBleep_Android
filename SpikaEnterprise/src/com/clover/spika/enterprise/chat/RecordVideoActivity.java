@@ -279,10 +279,10 @@ public class RecordVideoActivity extends BaseActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mDurationOfVideo = mVideoView.getDuration();
-                    if (isRecordTooLong(mDurationOfVideo)) {
-                        mVideoView.pause();
-                        return;
-                    }
+//                    if (isRecordTooLong(mDurationOfVideo)) {
+//                        mVideoView.pause();
+//                        return;
+//                    }
 
                     mPbForPlaying.setMax((int) mDurationOfVideo);
 

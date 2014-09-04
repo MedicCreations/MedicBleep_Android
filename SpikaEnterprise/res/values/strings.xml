@@ -75,6 +75,7 @@
     <string name="e_error_while_logout">Unable to logout, please try again.</string>
     <string name="e_error_not_decrypted">Message has not been decrypted!</string>
     <string name="e_while_encrypting">Error while encrypting.</string>
+    <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>
