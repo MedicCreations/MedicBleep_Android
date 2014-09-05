@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +14,10 @@ import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends LoginBaseActivity {
 
@@ -98,7 +98,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
-					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.PASSWORD, hasPass);
+					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.PASSWORD, password.getText().toString());
 				}
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
