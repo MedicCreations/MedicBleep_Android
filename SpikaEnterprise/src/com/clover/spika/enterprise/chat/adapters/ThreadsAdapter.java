@@ -19,6 +19,7 @@ import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.VoiceActivity;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.TreeNode;
@@ -35,7 +36,8 @@ public class ThreadsAdapter extends BaseAdapter {
     private static final int VIEW_TYPE_VIDEO = 2;
     private static final int VIEW_TYPE_LOCATION = 3;
     private static final int VIEW_TYPE_SOUND = 4;
-    private static final int VIEW_TYPE_DELETED = 5;
+    private static final int VIEW_TYPE_FILE = 5;
+    private static final int VIEW_TYPE_DELETED = 6;
 
     private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_DELETED + 1;
 
@@ -107,6 +109,9 @@ public class ThreadsAdapter extends BaseAdapter {
             case Const.MSG_TYPE_VOICE:
                 return VIEW_TYPE_SOUND;
 
+            case Const.MSG_TYPE_FILE:
+                return VIEW_TYPE_FILE;
+
             case Const.MSG_TYPE_DEFAULT:
             default:
                 return VIEW_TYPE_MESSAGE;
@@ -158,6 +163,7 @@ public class ThreadsAdapter extends BaseAdapter {
                 case VIEW_TYPE_LOCATION:
                 case VIEW_TYPE_VIDEO:
                 case VIEW_TYPE_SOUND:
+                case VIEW_TYPE_FILE:
                     convertView = inflateMedia(holder, parent, type);
                     break;
 
@@ -196,6 +202,11 @@ public class ThreadsAdapter extends BaseAdapter {
 
             case VIEW_TYPE_SOUND:
                 populateSound(holder, node, position);
+                break;
+
+            case VIEW_TYPE_FILE:
+                populateFile(holder, node, position);
+                break;
 
             case VIEW_TYPE_MESSAGE:
             default:
@@ -264,6 +275,10 @@ public class ThreadsAdapter extends BaseAdapter {
 
             case VIEW_TYPE_SOUND:
                 holder.imageViewIcon.setOnClickListener(mOnClickSound);
+                break;
+
+            case VIEW_TYPE_FILE:
+                holder.imageViewIcon.setOnClickListener(mOnClickFile);
                 break;
         }
 
@@ -385,6 +400,31 @@ public class ThreadsAdapter extends BaseAdapter {
         }
     }
 
+    private void populateFile(ViewHolder holder, TreeNode node, int position) {
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+        holder.textViewMessage.setText(node.getMessage().getText());
+
+        if (node.getMessage().isMe()) {
+            holder.textViewUser.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
+        }
+
+        holder.imageViewIcon.setImageResource(R.drawable.icon_file);
+        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage());
+
+        if (position == this.mSelectedItem) {
+            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+            holder.textViewUser.setTextColor(Color.WHITE);
+            holder.textViewMessage.setTextColor(Color.WHITE);
+        } else {
+            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+            holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+        }
+    }
+
     private View.OnClickListener mOnClickPhoto = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -427,6 +467,16 @@ public class ThreadsAdapter extends BaseAdapter {
                 Intent soundIntent = new Intent(mContext, VoiceActivity.class);
                 soundIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
                 mContext.startActivity(soundIntent);
+            }
+        }
+    };
+
+    private View.OnClickListener mOnClickFile = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Message message = (Message) v.getTag(R.id.tag_file_id);
+            if (message != null) {
+                new FileManageApi().startFileDownload(message.getText(), message.getFile_id(), Integer.valueOf(message.getId()), mContext);
             }
         }
     };

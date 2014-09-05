@@ -159,6 +159,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (parent.getAdapter() != null) {
             ThreadsAdapter threadsAdapter = (ThreadsAdapter) parent.getAdapter();
+            mMessageId = threadsAdapter.getItem(position).getMessage().getId();
             if (threadsAdapter.getItem(position).getMessage().isMe()) {
                 deleteMessage(threadsAdapter.getItem(position).getMessage().getId());
             }
