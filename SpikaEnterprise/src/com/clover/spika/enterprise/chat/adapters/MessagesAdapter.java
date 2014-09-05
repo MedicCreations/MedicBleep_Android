@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -97,7 +98,9 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youMsgLayout.setVisibility(View.GONE);
 
 		holder.meMsgContent.setVisibility(View.GONE);
+        holder.meMsgContent.setTypeface(null, Typeface.NORMAL);
 		holder.youMsgContent.setVisibility(View.GONE);
+        holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
 
 		holder.meViewImage.setVisibility(View.GONE);
 		holder.youViewImage.setVisibility(View.GONE);
@@ -204,7 +207,12 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 
-			}
+			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
+                holder.mePersonName.setText("");
+                holder.meMsgContent.setVisibility(View.VISIBLE);
+                holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
+                holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
+            }
 
             if (!TextUtils.isEmpty(msg.getChildListText())) {
                 holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
@@ -304,7 +312,12 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 
-			}
+			}  else if (msg.getType() == Const.MSG_TYPE_DELETED) {
+                holder.youPersonName.setText("");
+                holder.youMsgContent.setVisibility(View.VISIBLE);
+                holder.youMsgContent.setText(ctx.getString(R.string.message_deleted));
+                holder.youMsgContent.setTypeface(null, Typeface.ITALIC);
+            }
 
             if (!TextUtils.isEmpty(msg.getChildListText())) {
                 holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);

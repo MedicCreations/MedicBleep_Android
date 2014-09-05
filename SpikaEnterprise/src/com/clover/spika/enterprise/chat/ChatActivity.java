@@ -48,9 +48,11 @@ public class ChatActivity extends BaseChatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (parent.getAdapter() != null) {
                     Message message = (Message) parent.getAdapter().getItem(position);
-                    int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-                    ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                            message.getChat_id(), message.getId(), chatImage, chatName);
+                    if (message.getType() != Const.MSG_TYPE_DELETED) {
+                        int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+                        ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
+                                message.getChat_id(), message.getId(), chatImage, chatName);
+                    }
                 }
             }
         });
