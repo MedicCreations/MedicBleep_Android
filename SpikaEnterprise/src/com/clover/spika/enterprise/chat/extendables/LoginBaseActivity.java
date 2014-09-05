@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -45,21 +46,24 @@ public abstract class LoginBaseActivity extends Activity {
 					startActivity(intent);
 					finish();
 				} else {
-					if (result.hasResultData()) {
+                    String message;
+                    if (result.hasResultData()) {
+                        message = result.getResultData().getMessage();
+                    } else {
+                        message = getString(R.string.e_something_went_wrong);
+                    }
+                    AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
+                    dialog.setFailed(message);
+                    dialog.setOnDismissListener(new OnDismissListener() {
 
-						AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
-						dialog.setFailed(result.getResultData().getMessage());
-						dialog.setOnDismissListener(new OnDismissListener() {
-
-							@Override
-							public void onDismiss(DialogInterface dialog) {
-								Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
-								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-								startActivity(intent);
-							}
-						});
-					}
-				}
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    });
+                }
 			}
 		});
 	}
