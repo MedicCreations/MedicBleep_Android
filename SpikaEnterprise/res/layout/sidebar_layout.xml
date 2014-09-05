@@ -69,6 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:orientation="vertical" >
 
             <com.clover.spika.enterprise.chat.views.RobotoThinButton
@@ -146,6 +147,11 @@
                 android:text="@string/logout"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white"/>
         </LinearLayout>
     </ScrollView>
 

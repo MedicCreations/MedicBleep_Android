@@ -15,11 +15,19 @@ import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public abstract class LoginBaseActivity extends Activity {
 
-	protected void executeLoginApi(String user, String pass, final Bundle extras, boolean showProgress) {
-		new LoginApi().loginWithCredentials(user, pass, this, showProgress, new ApiCallback<Login>() {
+	protected void executeLoginApi(String user, String pass, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        byte[] digest = MessageDigest.getInstance("MD5").digest(pass.getBytes("UTF-8"));
+        String hashPassword = Utils.convertByteArrayToHexString(digest);
+
+		new LoginApi().loginWithCredentials(user, hashPassword, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {

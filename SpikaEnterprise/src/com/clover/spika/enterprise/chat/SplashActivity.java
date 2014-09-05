@@ -9,6 +9,9 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 public class SplashActivity extends LoginBaseActivity {
 
 	Bundle extras;
@@ -58,10 +61,16 @@ public class SplashActivity extends LoginBaseActivity {
 		}.execute();
 	}
 
-	private void login() {
-		executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), SpikaEnterpriseApp.getSharedPreferences(this)
-				.getCustomString(Const.PASSWORD), extras, false);
-	}
+    private void login() {
+        try {
+            executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
+                    SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	public void startActivity(Intent intent) {

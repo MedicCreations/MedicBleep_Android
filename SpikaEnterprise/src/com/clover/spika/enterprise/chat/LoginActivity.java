@@ -13,10 +13,8 @@ import android.widget.EditText;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends LoginBaseActivity {
@@ -89,12 +87,9 @@ public class LoginActivity extends LoginBaseActivity {
 
 		if (!errorLock) {
 
-			String hasPass;
 			try {
-				byte[] digest = MessageDigest.getInstance("MD5").digest(password.getText().toString().getBytes("UTF-8"));
-				hasPass = Utils.convertByteArrayToHexString(digest);
 
-				executeLoginApi(username.getText().toString(), hasPass, null, true);
+				executeLoginApi(username.getText().toString(), password.getText().toString(), null, true);
 
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
