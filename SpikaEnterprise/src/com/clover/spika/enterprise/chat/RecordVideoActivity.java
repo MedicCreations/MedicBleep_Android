@@ -10,15 +10,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -127,7 +123,6 @@ public class RecordVideoActivity extends BaseActivity {
 		chatId = extras.getString(Const.CHAT_ID);
 		gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
 
-		scaleView();
 	}
 
 	private void sendMsg(String fileId) {
@@ -279,10 +274,6 @@ public class RecordVideoActivity extends BaseActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mDurationOfVideo = mVideoView.getDuration();
-//                    if (isRecordTooLong(mDurationOfVideo)) {
-//                        mVideoView.pause();
-//                        return;
-//                    }
 
                     mPbForPlaying.setMax((int) mDurationOfVideo);
 
@@ -354,26 +345,5 @@ public class RecordVideoActivity extends BaseActivity {
         }
         return name;
     }
-
-	private void scaleView() {
-
-		Display display = getWindowManager().getDefaultDisplay();
-
-		DisplayMetrics displaymetrics = new DisplayMetrics();
-		display.getMetrics(displaymetrics);
-
-		int height = displaymetrics.heightPixels;
-
-		// 90% of width
-		int height_cut = (int) ((float) height * (1f - (40f / 100f)));
-
-		// Image container
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height_cut);
-		params.addRule(RelativeLayout.CENTER_IN_PARENT);
-		params.addRule(RelativeLayout.ABOVE, R.id.soundControler);
-		params.addRule(RelativeLayout.BELOW, R.id.topLayout);
-
-		mVideoView.setLayoutParams(params);
-	}
 
 }
