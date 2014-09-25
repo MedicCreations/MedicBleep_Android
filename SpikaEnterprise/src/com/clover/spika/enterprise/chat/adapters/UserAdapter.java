@@ -88,6 +88,12 @@ public class UserAdapter extends BaseAdapter {
 		imageLoader.displayImage(getContext(), getItem(position).getImage_thumb(), holder.profileImg);
 		holder.personName.setText(getItem(position).getFirstName() + " " + getItem(position).getLastName());
 
+		if (getItem(position).isSelected()){
+			holder.imgCheck.setVisibility(View.VISIBLE);
+		} else {
+			holder.imgCheck.setVisibility(View.INVISIBLE);
+		}
+		
 		return convertView;
 	}
 
@@ -95,15 +101,16 @@ public class UserAdapter extends BaseAdapter {
 
 		public RelativeLayout itemLayout;
 		public ImageView profileImg;
-
 		public TextView personName;
+		public ImageView imgCheck;
 
 		public ViewHolderCharacter(View view) {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			profileImg = (ImageView) view.findViewById(R.id.userImage);
-
 			personName = (TextView) view.findViewById(R.id.personName);
+			imgCheck = (ImageView) view.findViewById(R.id.imageCheck);
+			
 		}
 
 	}

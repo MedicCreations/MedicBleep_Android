@@ -31,6 +31,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	RobotoThinButton lobby;
 	RobotoThinButton users;
 	RobotoThinButton groups;
+	RobotoThinButton createRoom;
 	RobotoThinButton logout;
 
 	String image;
@@ -39,6 +40,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	LobbyFragment lobbyFragment;
 	UsersFragment usersFragment;
 	GroupsFragment groupsFragment;
+	CreateRoomFragment createRoomFragment;
 
 	public SidebarFragment() {
 	}
@@ -72,6 +74,9 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(this);
+		
+		createRoom = (RobotoThinButton) view.findViewById(R.id.create_room);
+		createRoom.setOnClickListener(this);
 
 		logout = (RobotoThinButton) view.findViewById(R.id.logout);
 		logout.setOnClickListener(this);
@@ -149,6 +154,17 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			break;
 
+		case R.id.create_room:
+
+			if (createRoomFragment == null) {
+				createRoomFragment = new CreateRoomFragment();
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.create_room));
+			switchFragment(createRoomFragment);
+
+			break;	
+			
 		case R.id.logout:
 
 			new UserApi().logout(getActivity(), new ApiCallback<BaseModel>() {

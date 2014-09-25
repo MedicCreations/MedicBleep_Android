@@ -56,6 +56,7 @@ public class Const {
 	public static final String PHOTO_INTENT = "PhotoIntent";
 	public static final String VIDEO_INTENT = "VideoIntent";
 	public static final String GALLERY_INTENT = "GalleryIntent";
+	public static final String ROOM_INTENT = "RoomIntent";
 	public static final int VIDEO_INTENT_INT = 9000;
 	public static final int GALLERY_INTENT_INT = 9001;
 	public static final String ANONYMOUS_INTENT = "AnnonymousIntent";
@@ -98,6 +99,9 @@ public class Const {
 	public static final String USER_IMAGE_NAME = "user_image_name";
 	public static final String IS_GROUP = "isGroup";
 	public static final String PUSH_TOKEN = "push_token";
+	public static final String ROOM_FILE_ID = "room_file_id";
+	public static final String ROOM_THUMB_ID = "room_thumb_id";
+	public static final String NAME = "name";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -158,6 +162,7 @@ public class Const {
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
     public static final String F_DELETE_MESSAGE = "/message/delete";
 	public static final String F_GET_THREADS = "/message/child/list";
+	public static final String F_CREATE_ROOM = "/chat/create";
 
 	public static final int API_SUCCESS = 2000;
 

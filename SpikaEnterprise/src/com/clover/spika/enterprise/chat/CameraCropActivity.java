@@ -43,6 +43,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -629,7 +630,14 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
-					if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
+					
+					if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)){
+						//get fileid and thumbid for create room
+						Helper.setRoomFileId(getApplicationContext(), fileId);
+						Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+						
+						finish();
+					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// send message
 						sendMessage(fileId, result.getResultData().getFileId());
 					} else {

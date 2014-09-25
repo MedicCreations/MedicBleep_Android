@@ -239,6 +239,22 @@ public class Helper {
 	public static String getUserId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
 	}
+	
+	public static void setRoomFileId(Context ctx, String fileId) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_FILE_ID, fileId);
+	}
+	
+	public static String getRoomFileId(Context ctx) {
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_FILE_ID);
+	}
+	
+	public static void setRoomThumbId(Context ctx, String thumbId) {
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_THUMB_ID, thumbId);
+	}
+	
+	public static String getRoomThumbId(Context ctx) {
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_THUMB_ID);
+	}
 
 	/**
 	 * Return JSON array from string

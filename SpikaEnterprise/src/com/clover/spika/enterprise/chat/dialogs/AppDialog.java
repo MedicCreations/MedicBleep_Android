@@ -16,6 +16,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordVideoActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 
 public class AppDialog extends Dialog {
 
@@ -256,6 +257,49 @@ public class AppDialog extends Dialog {
 
 		show();
 	}
+	
+	
+	/**
+	 * Go to recording screen from gallery or camera
+	 */
+	public void choseCamGalleryRoom() {
+		this.setContentView(R.layout.dialog_chose_cam_rec);
+
+		ImageButton camera = (ImageButton) findViewById(R.id.camera);
+		ImageButton gallery = (ImageButton) findViewById(R.id.galleryImageButton);
+
+		camera.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+				intent.putExtra(Const.ROOM_INTENT, true);
+				//getContext().startActivity(intent);
+				getOwnerActivity().startActivityForResult(intent, 1);
+			}
+		});
+
+		gallery.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+				intent.putExtra(Const.ROOM_INTENT, true);
+//				getContext().startActivity(intent);
+				Logger.d("activity "+ getOwnerActivity().getLocalClassName());
+				getOwnerActivity().startActivityForResult(intent, 1);
+			}
+		});
+
+		show();
+	}
+	
 
 	/**
 	 * Open file or confirm the download

@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -20,7 +21,9 @@ import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -37,9 +40,13 @@ public class MainActivity extends BaseActivity {
 	ImageButton closeSearchBtn;
 	boolean isOpenSearch = false;
 
+	/* create room */
+	TextView createRoomBtn;
+	
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
+	OnCreateRoomListener mCreateRoomListener;
 
 	/* Main ImageLoader */
 	ImageLoader imageLoader;
@@ -99,6 +106,7 @@ public class MainActivity extends BaseActivity {
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		createRoomBtn = (TextView) findViewById(R.id.createRoom);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
@@ -139,7 +147,7 @@ public class MainActivity extends BaseActivity {
 			getWindow().clearFlags(LayoutParams.FLAG_SECURE);
 		}
 	}
-
+	
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -181,6 +189,29 @@ public class MainActivity extends BaseActivity {
 		searchBtn.setVisibility(View.GONE);
 		searchEt.setVisibility(View.GONE);
 	}
+	
+	
+	/**
+	 * set create room btn
+	 */
+	public void setCreateRoom(OnCreateRoomListener listener){
+		
+		createRoomBtn.setVisibility(View.VISIBLE);
+		mCreateRoomListener = listener;
+		
+		createRoomBtn.setOnClickListener(createRoomOnClickListener);
+		
+	}
+	
+	/**
+	 * disable create room btn
+	 */
+	public void disableCreateRoom(){
+		
+		createRoomBtn.setVisibility(View.INVISIBLE);
+		
+	}
+	
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 
@@ -254,6 +285,20 @@ public class MainActivity extends BaseActivity {
 		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
 
 	}
+	
+	private OnClickListener createRoomOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			
+				if (mCreateRoomListener != null) {
+					
+					mCreateRoomListener.onCreateRoom();
+				
+			}
+		}
+	};
+	
 
 	@Override
 	public void onBackPressed() {

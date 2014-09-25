@@ -40,6 +40,18 @@
             android:scaleType="centerInside"
             android:src="@drawable/icon_search"
             android:visibility="gone" />
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/createRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:text="@string/create"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/close_search"

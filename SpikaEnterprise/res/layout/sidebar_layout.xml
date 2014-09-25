@@ -38,6 +38,8 @@
             android:layout_toRightOf="@+id/userImageLayout"
             android:orientation="vertical"
             android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingRight="10dp"
             android:paddingTop="10dp" >
 
             <com.clover.spika.enterprise.chat.views.RobotoThinTextView
@@ -129,6 +131,21 @@
                 android:gravity="left"
                 android:padding="10dp"
                 android:text="@string/groups"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+            
+             <com.clover.spika.enterprise.chat.views.RobotoThinButton
+                android:id="@+id/create_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_groups"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/create_room"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
