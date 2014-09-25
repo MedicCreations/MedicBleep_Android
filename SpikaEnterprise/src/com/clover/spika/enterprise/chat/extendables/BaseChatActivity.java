@@ -246,13 +246,14 @@ public abstract class BaseChatActivity extends BaseActivity {
                 }
 
             }
+
+            if (!TextUtils.isEmpty(fileName) && !TextUtils.isEmpty(filePath)) {
+                onFileSelected(RESULT_OK, fileName, filePath);
+            } else {
+                onFileSelected(RESULT_CANCELED, null, null);
+            }
         }
 
-        if (!TextUtils.isEmpty(fileName) && !TextUtils.isEmpty(filePath)) {
-            onFileSelected(RESULT_OK, fileName, filePath);
-        } else {
-            onFileSelected(RESULT_CANCELED, null, null);
-        }
     }
 
     protected void setTitle(String title) {
