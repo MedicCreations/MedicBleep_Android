@@ -102,6 +102,7 @@ public class Const {
 	public static final String ROOM_FILE_ID = "room_file_id";
 	public static final String ROOM_THUMB_ID = "room_thumb_id";
 	public static final String NAME = "name";
+	public static final String IS_ADMIN = "is_admin";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -139,8 +140,9 @@ public class Const {
 
 	// Chat type
 	public static final int C_PRIVATE = 1;
-	public static final int C_TEAM = 2;
-	public static final int C_GROUP = 3;
+	public static final int C_GROUP = 2;
+	public static final int C_ROOM = 3;
+	public static final int C_ROOM_ADMIN = 4;
 
 	// Api urls
 	public static final String F_LOGIN = "/user/login";

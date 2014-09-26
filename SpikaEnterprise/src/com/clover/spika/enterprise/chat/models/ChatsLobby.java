@@ -24,6 +24,10 @@ public class ChatsLobby {
 	@SerializedName("image")
 	@Expose
 	private String image;
+	
+	@SerializedName("admin_id")
+	@Expose
+	private String adminId;
 
 	public int getChatId() {
 		return chatId;
@@ -63,6 +67,14 @@ public class ChatsLobby {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	public String getAdminId() {
+		return adminId;
+	}
+
+	public void setAdmin(String adminId) {
+		this.adminId = adminId;
 	}
 
 }

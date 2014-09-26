@@ -23,6 +23,8 @@ import com.clover.spika.enterprise.chat.models.ChatsLobby;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -148,6 +150,9 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			intent.putExtra(Const.TYPE, user.getType());
+			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
+				intent.putExtra(Const.IS_ADMIN, true);
+			}
 			startActivity(intent);
 		}
 	}

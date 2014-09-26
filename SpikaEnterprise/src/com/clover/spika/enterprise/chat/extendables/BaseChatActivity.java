@@ -56,12 +56,14 @@ public abstract class BaseChatActivity extends BaseActivity {
 
     protected static final int PICK_FILE_RESULT_CODE = 987;
 
-    protected static final int SETTINGS_POSITION_MEMBERS = 0;
-    protected static final int SETTINGS_POSITION_INVITE = 1;
-    protected static final int SETTINGS_POSITION_LEAVE = 2;
+    protected static final int SETTINGS_POSITION_FIRST = 0;
+    protected static final int SETTINGS_POSITION_SECOND = 1;
+    protected static final int SETTINGS_POSITION_THIRD = 2;
+    protected static final int SETTINGS_POSITION_FOURTH = 3;
 
     protected String chatImage = null;
     protected String chatId = null;
+    protected Boolean isAdmin = false;
     private int drawerDuration = 300;
     private int drawerHeight = 200;
     protected String chatName = null;
@@ -334,8 +336,8 @@ public abstract class BaseChatActivity extends BaseActivity {
         });
     }
 
-    protected void disableSettingsItems(int chatType) {
-        settingsAdapter.disableItem(chatType);
+    protected void setSettingsItems(int chatType) {
+        settingsAdapter.setSettings(chatType);
     }
 
     protected void loadImage() {
@@ -467,24 +469,24 @@ public abstract class BaseChatActivity extends BaseActivity {
             if (parent.getAdapter() != null) {
 
                 SettingsItem item = (SettingsItem) parent.getAdapter().getItem(position);
-                if (!item.isDisabled()) {
 
-                    if (position == SETTINGS_POSITION_MEMBERS) {
-                        if (chatType == Const.C_PRIVATE) {
-                            ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
-                        } else if (chatType == Const.C_GROUP || chatType == Const.C_TEAM) {
-                            ChatMembersActivity.startActivity(chatId, BaseChatActivity.this);
-                        }
-                    } else if (position == SETTINGS_POSITION_INVITE) {
-                        if (chatType == Const.C_GROUP || chatType == Const.C_PRIVATE) {
+                    if (position == SETTINGS_POSITION_FIRST) {
+                        ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                    } else if (position == SETTINGS_POSITION_SECOND) {
+                        if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
                             InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
+                        } else if (chatType == Const.C_ROOM_ADMIN){
+                        	
                         }
-                    } else if (position == SETTINGS_POSITION_LEAVE) {
-                        if (chatType == Const.C_GROUP) {
+                    } else if (position == SETTINGS_POSITION_THIRD) {
+                        if (chatType == Const.C_ROOM) {
                             leaveChat();
+                        } else if (chatType == Const.C_ROOM_ADMIN) {
+                        	//deactivate chat
                         }
+                    } else if (position == SETTINGS_POSITION_FOURTH) {
+                    	//delete chat
                     }
-                }
             }
         }
     };

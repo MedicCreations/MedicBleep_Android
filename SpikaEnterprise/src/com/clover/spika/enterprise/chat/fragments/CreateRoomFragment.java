@@ -31,16 +31,21 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager.OnActivityStopListener;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 
 public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener {
 
@@ -61,6 +66,8 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	
 	private ImageView imgRoom;
 	private RobotoThinEditText roomName;
+	private ImageButton btnSearch;
+	private EditText etSearch;
 	
 	private Map<String, User> mapUsers = new HashMap<String, User>();
 
@@ -99,6 +106,22 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
+		
+		btnSearch = (ImageButton) rootView.findViewById(R.id.searchBtn);
+		btnSearch.setOnClickListener(this);
+		
+		etSearch = (EditText) rootView.findViewById(R.id.searchEt);
+		etSearch.setOnEditorActionListener(new OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					((MainActivity) getActivity()).hideKeyboard(etSearch);
+						onSearch(etSearch.getText().toString());
+				}
+				return false;
+			}
+		});
 
 		getUsers(mCurrentIndex, null, false);
 		
@@ -246,13 +269,6 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			
 			adapter.notifyDataSetChanged();
 
-//			Intent intent = new Intent(getActivity(), ChatActivity.class);
-//			intent.putExtra(Const.USER_ID, user.getId());
-//			intent.putExtra(Const.FIRSTNAME, user.getFirstName());
-//			intent.putExtra(Const.LASTNAME, user.getLastName());
-//			intent.putExtra(Const.IMAGE, user.getImage());
-//			intent.putExtra(Const.TYPE, String.valueOf(Const.C_PRIVATE));
-//			startActivity(intent);
 		}
 	}
 
@@ -262,6 +278,9 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		case R.id.img_room:
 			showDialog();
 			break;
+		case R.id.searchBtn:
+			mSearchData = etSearch.getText().toString();
+			onSearch(mSearchData);
 		}
 		
 	}
@@ -276,6 +295,18 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		// TODO Auto-generated method stub
 		
 		String name = roomName.getText().toString();
+		
+		if (name.equals("")){
+			AppDialog dialog = new AppDialog(getActivity(), false);
+			dialog.setInfo("Room name is empty");
+			return;
+		}
+		
+		if (mapUsers.isEmpty()){
+			AppDialog dialog = new AppDialog(getActivity(), false);
+			dialog.setInfo("You didn't select any users");
+			return;
+		}
 		
 		String my_user_id = Helper.getUserId(getActivity());
 		
@@ -305,8 +336,8 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 					
 					Helper.setRoomFileId(getActivity(), "");
 					Helper.setRoomThumbId(getActivity(), "");
-					
-					
+					mapUsers.clear();
+					etSearch.setText("");
 				}
 			}
 		});

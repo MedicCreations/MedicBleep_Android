@@ -58,6 +58,7 @@
     <string name="send">Send</string>
     <string name="create_room">Create Room</string>
     <string name="create">Create</string>
+    <string name="searchUsers">Search users</string>
 
     <!-- Error strings -->
     <string name="e_no_network_connection">You have no internet connection.</string>
@@ -125,10 +126,27 @@
     <string name="enter_your_passcode">Enter your passcode</string>
     <string name="re_enter_your_passcode">Re-enter your passcode</string>
 
-    <string-array name="chat_settings_array">
-        <item>Members</item>
+    
+    <string-array name="group_chat_settings_array">
+        <item>Show profile</item>
+    </string-array>
+    
+    <string-array name="private_chat_settings_array">
+        <item>Show profile</item>
         <item>Invite</item>
-        <item>Leave</item>
+    </string-array>
+    
+    <string-array name="room_chat_settings_array">
+        <item>Show profile</item>
+        <item>Invite</item>
+        <item>Leave room</item>
+    </string-array>
+    
+    <string-array name="room_chat_admin_settings_array">
+        <item>Show profile</item>
+        <item>Manage members</item>
+        <item>Deactivate</item>
+        <item>Delete</item>
     </string-array>
 
 </resources>

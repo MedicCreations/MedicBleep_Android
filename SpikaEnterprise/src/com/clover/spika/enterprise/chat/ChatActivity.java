@@ -106,6 +106,7 @@ public class ChatActivity extends BaseChatActivity {
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
+				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
 
 				setTitle(chatName);
 
@@ -153,7 +154,11 @@ public class ChatActivity extends BaseChatActivity {
 
 			if (intent.getExtras().containsKey(Const.TYPE)) {
 				chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
-				disableSettingsItems(chatType);
+				if (isAdmin){
+					setSettingsItems(Const.C_ROOM_ADMIN);
+				} else {
+					setSettingsItems(chatType);
+				}
 			}
 
 			loadImage();

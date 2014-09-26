@@ -14,7 +14,7 @@
 	        android:id="@+id/img_room"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:padding="5dp"
+	        android:padding="10dp"
 	        android:background="@drawable/circle_with_white_border"
 	        android:src="@drawable/add_photo"
 	        tools:src="@drawable/@drawable/add_photo" />
@@ -38,11 +38,51 @@
         android:ems="13"
         />
     
+    <RelativeLayout 
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text_dark_gray"
+        android:layout_below="@+id/txtUserNames">
+        
+        <EditText
+            android:id="@+id/searchEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/searchBtn"
+            android:layout_toStartOf="@+id/searchBtn"
+            android:layout_centerVertical="true"
+            android:hint="@string/searchUsers"
+            android:imeOptions="actionSearch"
+            android:cursorVisible="true"
+            android:inputType="text"
+            android:singleLine="true"
+            android:background="@null"
+            android:textColor="@color/white"/>
+        
+        
+        <ImageButton
+            android:id="@+id/searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_search" />
+        
+    </RelativeLayout>
+    
+    
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/txtUserNames"
+        android:layout_below="@+id/search_layout"
         android:background="@color/transparent"
         android:divider="@null"
         android:dividerHeight="0dp"

@@ -25,11 +25,6 @@ public class SettingsAdapter extends BaseAdapter {
 	public SettingsAdapter(Context context) {
 		this.ctx = context;
 
-		String[] items = context.getResources().getStringArray(R.array.chat_settings_array);
-
-		for (String item : items) {
-			this.data.add(new SettingsItem(item, false));
-		}
 	}
 
 	@Override
@@ -65,25 +60,57 @@ public class SettingsAdapter extends BaseAdapter {
 
 		holder.item.setText(item.getName());
 
-		if (item.isDisabled()) {
-			holder.rootView.setBackgroundColor(ctx.getResources().getColor(R.color.button_gray));
-		} else {
-			holder.rootView.setBackgroundColor(ctx.getResources().getColor(android.R.color.transparent));
-		}
+//		if (item.isDisabled()) {
+//			holder.rootView.setBackgroundColor(ctx.getResources().getColor(R.color.button_gray));
+//			holder.rootView.removeView(convertView);
+//		} else {
+//			holder.rootView.setBackgroundColor(ctx.getResources().getColor(android.R.color.transparent));
+//		}
 
 		return convertView;
 	}
 
-	public void disableItem(int type) {
+	public void setSettings(int type) {
+		
+		String[] items;
 		switch (type) {
 
 		case Const.C_PRIVATE:
-			data.get(2).setDisabled(true);
+			this.data.clear();
+			items = ctx.getResources().getStringArray(R.array.private_chat_settings_array);
+
+			for (String item : items) {
+				this.data.add(new SettingsItem(item));
+			}
+			notifyDataSetChanged();
 			break;
 
-		case Const.C_TEAM:
-			data.get(1).setDisabled(true);
-			data.get(2).setDisabled(true);
+		case Const.C_ROOM:
+			this.data.clear();
+			items = ctx.getResources().getStringArray(R.array.room_chat_settings_array);
+
+			for (String item : items) {
+				this.data.add(new SettingsItem(item));
+			}
+			notifyDataSetChanged();
+			break;
+		case Const.C_ROOM_ADMIN:
+			this.data.clear();
+			items = ctx.getResources().getStringArray(R.array.room_chat_admin_settings_array);
+
+			for (String item : items) {
+				this.data.add(new SettingsItem(item));
+			}
+			notifyDataSetChanged();
+			break;
+		case Const.C_GROUP:
+			this.data.clear();
+			items = ctx.getResources().getStringArray(R.array.group_chat_settings_array);
+
+			for (String item : items) {
+				this.data.add(new SettingsItem(item));
+			}
+			notifyDataSetChanged();
 			break;
 
 		default:
