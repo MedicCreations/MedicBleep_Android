@@ -153,6 +153,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
 				intent.putExtra(Const.IS_ADMIN, true);
 			}
+			intent.putExtra(Const.IS_ACTIVE, user.isActive());
 			startActivity(intent);
 		}
 	}

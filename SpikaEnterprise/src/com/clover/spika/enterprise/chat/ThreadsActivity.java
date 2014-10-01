@@ -178,4 +178,19 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             dialog.setFailed(result.getResultData());
         }
     }
+
+	@Override
+	protected void deactivateChat() {
+	
+	}
+
+	@Override
+	protected void deleteChat() {
+		
+	}
+
+	@Override
+	protected void activateChat() {
+		
+	}
 }

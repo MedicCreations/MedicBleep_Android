@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 
 import java.util.ArrayList;
 
@@ -107,7 +108,10 @@ public class ChatActivity extends BaseChatActivity {
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
-
+				isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
+				if (isActive == 0){
+					etMessage.setFocusable(false);
+				}
 				setTitle(chatName);
 
 				adapter.clearItems();
@@ -154,11 +158,13 @@ public class ChatActivity extends BaseChatActivity {
 
 			if (intent.getExtras().containsKey(Const.TYPE)) {
 				chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
-				if (isAdmin){
-					setSettingsItems(Const.C_ROOM_ADMIN);
-				} else {
-					setSettingsItems(chatType);
+				if (isAdmin && isActive == 1){
+					chatType = Const.C_ROOM_ADMIN_ACTIVE;	
 				}
+				if (isAdmin && isActive == 0){
+					chatType = Const.C_ROOM_ADMIN_INACTIVE;	
+				}
+				setSettingsItems(chatType);
 			}
 
 			loadImage();
@@ -220,6 +226,7 @@ public class ChatActivity extends BaseChatActivity {
 					callNewMsgs();
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					Logger.d("ovo je result: " + result.toString());
 					dialog.setFailed(result.getResultData());
 				}
 			}
@@ -339,6 +346,57 @@ public class ChatActivity extends BaseChatActivity {
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
+	}
+
+	@Override
+	protected void deactivateChat() {
+		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(ChatActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(null);
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void deleteChat() {
+		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(ChatActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(null);
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void activateChat() {
+		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(ChatActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(null);
+				}
+			}
+		});	
 	}
 
 }

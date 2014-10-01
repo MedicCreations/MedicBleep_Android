@@ -28,6 +28,10 @@ public class ChatsLobby {
 	@SerializedName("admin_id")
 	@Expose
 	private String adminId;
+	
+	@SerializedName("is_active")
+	@Expose
+	private int isActive;
 
 	public int getChatId() {
 		return chatId;
@@ -75,6 +79,14 @@ public class ChatsLobby {
 
 	public void setAdmin(String adminId) {
 		this.adminId = adminId;
+	}
+	
+	public int isActive() {
+		return isActive;
+	}
+
+	public void setActive(int isActive) {
+		this.isActive = isActive;
 	}
 
 }

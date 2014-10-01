@@ -398,5 +398,70 @@ public class ChatApi {
             }
         }.execute();
     }
+    
+    
+    public void updateChat(final String chatId, final int type, final String image, final String image_thumb, final String name, boolean showProgressBar, Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, showProgressBar) {
+
+			protected BaseModel doInBackground(Void... params) {
+				HashMap<String, String> requestParams = new HashMap<String, String>();
+
+				JSONObject jsonObject = new JSONObject();
+				requestParams.put(Const.CHAT_ID, chatId);
+				
+				switch (type) {
+				case Const.UPDATE_CHAT_EDIT:
+					requestParams.put(Const.NAME, name);
+					requestParams.put(Const.IMAGE, image);
+					requestParams.put(Const.IMAGE_THUMB, image_thumb);
+					break;
+				case Const.UPDATE_CHAT_DEACTIVATE:
+					requestParams.put(Const.IS_ACTIVE, "0");
+					break;
+				case Const.UPDATE_CHAT_DELETE:
+					requestParams.put(Const.IS_DELETED, "1");
+					break;
+				case Const.UPDATE_CHAT_ACTIVATE:
+					requestParams.put(Const.IS_ACTIVE, "1");
+					break;
+				default:
+					break;
+				}
+				
+
+				try {
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			};
+
+			protected void onPostExecute(BaseModel model) {
+				super.onPostExecute(model);
+
+				if (listener != null) {
+					Result<BaseModel> apiResult;
+
+					if (model != null) {
+						if (model.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+			};
+		}.execute();
+	}
 
 }

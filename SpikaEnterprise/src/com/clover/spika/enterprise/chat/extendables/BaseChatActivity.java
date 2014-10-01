@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CameraCropActivity;
+import com.clover.spika.enterprise.chat.CameraFullPhotoActivity;
 import com.clover.spika.enterprise.chat.ChatMembersActivity;
 import com.clover.spika.enterprise.chat.InvitePeopleActivity;
 import com.clover.spika.enterprise.chat.LocationActivity;
@@ -35,11 +36,14 @@ import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -63,7 +67,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 
     protected String chatImage = null;
     protected String chatId = null;
-    protected Boolean isAdmin = false;
+    protected boolean isAdmin = false;
+    protected int isActive = 1;
     private int drawerDuration = 300;
     private int drawerHeight = 200;
     protected String chatName = null;
@@ -395,29 +400,81 @@ public abstract class BaseChatActivity extends BaseActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-
+            
             if (id == R.id.bntFile) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");
                 startActivityForResult(intent, PICK_FILE_RESULT_CODE);
 
             } else if (id == R.id.btnPhoto) {
-                Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
-                intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
-                intent.putExtra(Const.FROM_WAll, true);
-                intent.putExtra(Const.CHAT_ID, chatId);
-                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-                startActivity(intent);
-
+            	final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+            	dialog.setYesNo(getResources().getString(R.string.enableEditPhoto));
+            	dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+					
+					@Override
+					public void onPositiveButtonClick(View v) {
+						Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+		                intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+		                intent.putExtra(Const.FROM_WAll, true);
+		                intent.putExtra(Const.CHAT_ID, chatId);
+		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		                startActivity(intent);
+		                dialog.dismiss();
+					}
+				});
+            	
+            	dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+					
+					@Override
+					public void onNegativeButtonClick(View v) {
+						Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
+		                intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+		                intent.putExtra(Const.FROM_WAll, true);
+		                intent.putExtra(Const.CHAT_ID, chatId);
+		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		                startActivity(intent);
+		                dialog.dismiss();
+					}
+				});
+            	
+            	dialog.show();
+            	
             } else if (id == R.id.btnGallery) {
-                Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
-                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-                intent.putExtra(Const.FROM_WAll, true);
-                intent.putExtra(Const.CHAT_ID, chatId);
-                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-                startActivity(intent);
+            	final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+            	dialog.setYesNo(getResources().getString(R.string.enableEditPhoto));
+            	dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+					
+					@Override
+					public void onPositiveButtonClick(View v) {
+						Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+		                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+		                intent.putExtra(Const.FROM_WAll, true);
+		                intent.putExtra(Const.CHAT_ID, chatId);
+		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		                startActivity(intent);
+		                dialog.dismiss();
+					}
+				});
+            	
+            	dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+					
+					@Override
+					public void onNegativeButtonClick(View v) {
+						Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
+		                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+		                intent.putExtra(Const.FROM_WAll, true);
+		                intent.putExtra(Const.CHAT_ID, chatId);
+		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		                startActivity(intent);
+		                dialog.dismiss();
+					}
+				});
+            	
+            	dialog.show();
 
             } else if (id == R.id.btnVideo) {
                 AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
@@ -438,12 +495,12 @@ public abstract class BaseChatActivity extends BaseActivity {
                 intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
                 startActivity(intent);
 
-            } else if (id == R.id.etMessage) {
+            } else if (id == R.id.etMessage && isActive == 1) {
                 showKeyboard(etMessage);
                 forceClose();
                 hideSettings();
 
-            } else if (id == R.id.footerMore) {
+            } else if (id == R.id.footerMore && isActive == 1) {
                 rlDrawerManage();
                 hideSettings();
 
@@ -475,24 +532,45 @@ public abstract class BaseChatActivity extends BaseActivity {
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
                             InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
-                        } else if (chatType == Const.C_ROOM_ADMIN){
+                        } else if (chatType == Const.C_ROOM_ADMIN_ACTIVE){
                         	
                         }
                     } else if (position == SETTINGS_POSITION_THIRD) {
                         if (chatType == Const.C_ROOM) {
                             leaveChat();
-                        } else if (chatType == Const.C_ROOM_ADMIN) {
+                        } else if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
                         	//deactivate chat
+                        	deactivateChat();
+                        } else if (chatType == Const.C_ROOM_ADMIN_INACTIVE) {
+                        	//deactivate chat
+                        	activateChat();
                         }
                     } else if (position == SETTINGS_POSITION_FOURTH) {
                     	//delete chat
+                    	deleteChat();
                     }
             }
         }
     };
-
+    
+    
     /**
-     *
+     * Called when admin wants to activate chat 
+     */
+    protected abstract void activateChat();
+    
+    /**
+     * Called when admin wants to deactivate chat 
+     */
+    protected abstract void deactivateChat();
+    
+    /**
+     * Called when admin wants to delete chat
+     */
+    protected abstract void deleteChat();
+    
+    /**
+     * Called when user wants to leave chat
      */
     protected abstract void leaveChat();
 

@@ -59,6 +59,8 @@
     <string name="create_room">Create Room</string>
     <string name="create">Create</string>
     <string name="searchUsers">Search users</string>
+    <string name="enableEditPhoto">Do you want to enable editing Photo?</string>
+    <string name="enterRoomName">Enter room name</string>
 
     <!-- Error strings -->
     <string name="e_no_network_connection">You have no internet connection.</string>
@@ -79,6 +81,7 @@
     <string name="e_error_not_decrypted">Message has not been decrypted!</string>
     <string name="e_while_encrypting">Error while encrypting.</string>
     <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
+    <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>
@@ -142,10 +145,17 @@
         <item>Leave room</item>
     </string-array>
     
-    <string-array name="room_chat_admin_settings_array">
+    <string-array name="room_chat_admin_active_settings_array">
         <item>Show profile</item>
         <item>Manage members</item>
         <item>Deactivate</item>
+        <item>Delete</item>
+    </string-array>
+    
+    <string-array name="room_chat_admin_inactive_settings_array">
+        <item>Show profile</item>
+        <item>Manage members</item>
+        <item>Activate</item>
         <item>Delete</item>
     </string-array>
 

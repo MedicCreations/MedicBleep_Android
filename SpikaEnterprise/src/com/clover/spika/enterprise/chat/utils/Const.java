@@ -103,6 +103,8 @@ public class Const {
 	public static final String ROOM_THUMB_ID = "room_thumb_id";
 	public static final String NAME = "name";
 	public static final String IS_ADMIN = "is_admin";
+	public static final String IS_DELETED = "is_deleted";
+	public static final String IS_ACTIVE = "is_active";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -142,7 +144,15 @@ public class Const {
 	public static final int C_PRIVATE = 1;
 	public static final int C_GROUP = 2;
 	public static final int C_ROOM = 3;
-	public static final int C_ROOM_ADMIN = 4;
+	public static final int C_ROOM_ADMIN_ACTIVE = 4;
+	public static final int C_ROOM_ADMIN_INACTIVE = 5;
+	
+	//update chat type
+	public static final int UPDATE_CHAT_EDIT = 1;
+	public static final int UPDATE_CHAT_DEACTIVATE = 2;
+	public static final int UPDATE_CHAT_DELETE = 3;
+	public static final int UPDATE_CHAT_ACTIVATE = 4;
+	
 
 	// Api urls
 	public static final String F_LOGIN = "/user/login";
@@ -165,12 +175,15 @@ public class Const {
     public static final String F_DELETE_MESSAGE = "/message/delete";
 	public static final String F_GET_THREADS = "/message/child/list";
 	public static final String F_CREATE_ROOM = "/chat/create";
+	public static final String F_UPDATE_CHAT = "/chat/update";
 
 	public static final int API_SUCCESS = 2000;
 
 	// Error constants
 	public static final int E_INVALID_TOKEN = 1000;
 	public static final int E_EXPIRED_TOKEN = 1001;
+	public static final int E_CHAT_INACTIVE = 1006;
+	public static final int E_CHAT_DELETED = 1007;
 	public static final int E_SOMETHING_WENT_WRONG = 1111;
 	public static final int E_FAILED = 999;
 

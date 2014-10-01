@@ -60,13 +60,6 @@ public class SettingsAdapter extends BaseAdapter {
 
 		holder.item.setText(item.getName());
 
-//		if (item.isDisabled()) {
-//			holder.rootView.setBackgroundColor(ctx.getResources().getColor(R.color.button_gray));
-//			holder.rootView.removeView(convertView);
-//		} else {
-//			holder.rootView.setBackgroundColor(ctx.getResources().getColor(android.R.color.transparent));
-//		}
-
 		return convertView;
 	}
 
@@ -94,9 +87,18 @@ public class SettingsAdapter extends BaseAdapter {
 			}
 			notifyDataSetChanged();
 			break;
-		case Const.C_ROOM_ADMIN:
+		case Const.C_ROOM_ADMIN_ACTIVE:
 			this.data.clear();
-			items = ctx.getResources().getStringArray(R.array.room_chat_admin_settings_array);
+			items = ctx.getResources().getStringArray(R.array.room_chat_admin_active_settings_array);
+
+			for (String item : items) {
+				this.data.add(new SettingsItem(item));
+			}
+			notifyDataSetChanged();
+			break;
+		case Const.C_ROOM_ADMIN_INACTIVE:
+			this.data.clear();
+			items = ctx.getResources().getStringArray(R.array.room_chat_admin_inactive_settings_array);
 
 			for (String item : items) {
 				this.data.add(new SettingsItem(item));

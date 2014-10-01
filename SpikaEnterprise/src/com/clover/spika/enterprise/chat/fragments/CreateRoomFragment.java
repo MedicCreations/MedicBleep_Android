@@ -1,18 +1,17 @@
 package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.UserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -21,15 +20,12 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager.OnActivityStopListener;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,28 +34,25 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView.OnEditorActionListener;
 
-public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener {
+public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener, OnChangeListener<User> {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public UserAdapter adapter;
+	public InviteUserAdapter adapter;
 	
 	private TextView txtUsers;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
-	private String users = "";
 	
 	private String room_file_id = "";
 	private String room_thumb_id = "";
@@ -69,13 +62,16 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private ImageButton btnSearch;
 	private EditText etSearch;
 	
-	private Map<String, User> mapUsers = new HashMap<String, User>();
+	List<User> usersToAdd = new ArrayList<User>();
+	
+	LobbyFragment lobbyFragment;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new UserAdapter(getActivity(), new ArrayList<User>());
+		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
 
 		mCurrentIndex = 0;
 	}
@@ -139,7 +135,6 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	
 	@Override
 	public void onClosed() {
-		// TODO Auto-generated method stub
 		super.onClosed();
 		if (getActivity() instanceof MainActivity) {
 			
@@ -236,40 +231,6 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		position = position - 1;
 
-		if (position != -1 && position != adapter.getCount()) {
-			
-			User user = adapter.getItem(position);
-			
-			if (user.isSelected()){
-				user.setSelected(!user.isSelected());
-				mapUsers.remove(user.getId());
-				users = "";
-				for (String key: mapUsers.keySet()){
-					if (users == ""){
-						users += mapUsers.get(key).getFirstName() + " " + mapUsers.get(key).getLastName();
-					} else {
-						users += ", " + mapUsers.get(key).getFirstName() + " " + mapUsers.get(key).getLastName();
-					}
-				}
-				txtUsers.setText(users);
-				
-			} else {
-				
-				mapUsers.put(user.getId(), user);
-				
-				user.setSelected(!user.isSelected());
-				users = txtUsers.getText().toString();
-				if (users == ""){
-					users += user.getFirstName() + " " + user.getLastName();
-				} else {
-					users += ", " + user.getFirstName() + " " + user.getLastName();
-				}
-				txtUsers.setText(users);
-			}
-			
-			adapter.notifyDataSetChanged();
-
-		}
 	}
 
 	@Override
@@ -292,7 +253,6 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 	@Override
 	public void onCreateRoom() {
-		// TODO Auto-generated method stub
 		
 		String name = roomName.getText().toString();
 		
@@ -302,7 +262,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			return;
 		}
 		
-		if (mapUsers.isEmpty()){
+		if (usersToAdd.isEmpty()){
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo("You didn't select any users");
 			return;
@@ -310,17 +270,28 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		
 		String my_user_id = Helper.getUserId(getActivity());
 		
-		String users_to_add = my_user_id;
+		StringBuilder users_to_add = new StringBuilder();
 		
-		for (String key: mapUsers.keySet()){
-			users_to_add += "," + mapUsers.get(key).getId();
+		users_to_add.append(my_user_id + ",");
+
+		List<String> usersId = adapter.getSelected();
+
+		if (usersId.isEmpty()) {
+			return;
+		}
+
+		for (int i = 0; i < usersId.size(); i++) {
+			users_to_add.append(usersId.get(i));
+
+			if (i != (usersId.size() - 1)) {
+				users_to_add.append(",");
+			}
 		}
 		
-		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add, getActivity(), new ApiCallback<Chat>() {
+		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add.toString(), getActivity(), new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
-				// TODO Auto-generated method stub
 				if (result.isSuccess()) {
 					
 					String chat_name = result.getResultData().getChat().getChat_name();
@@ -328,19 +299,62 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 					String chat_image = room_thumb_id;
 					
 					Intent intent = new Intent(getActivity(), ChatActivity.class);
+					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
 					intent.putExtra(Const.CHAT_ID, chat_id);
 					intent.putExtra(Const.CHAT_NAME, chat_name);
 					intent.putExtra(Const.IMAGE, chat_image);
+					intent.putExtra(Const.IS_ACTIVE, 1);
 					
 					startActivity(intent);
 					
+					if (lobbyFragment == null) {
+						lobbyFragment = new LobbyFragment();
+					}
+
+					((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.lobby));
+					
+					MainActivity base = (MainActivity) getActivity();
+					base.switchContent(lobbyFragment);
+					
 					Helper.setRoomFileId(getActivity(), "");
 					Helper.setRoomThumbId(getActivity(), "");
-					mapUsers.clear();
+					usersToAdd.clear();
 					etSearch.setText("");
+					roomName.setText("");
 				}
 			}
 		});
+		
+	}
+
+	@Override
+	public void onChange(User obj) {
+		boolean isFound = false;
+		int j = 0;
+
+		for (User user : usersToAdd) {
+			if (user.getId().equals(obj.getId())) {
+				isFound = true;
+				break;
+			}
+			j++;
+		}
+
+		if (isFound) {
+			usersToAdd.remove(j);
+		} else {
+			usersToAdd.add(obj);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < usersToAdd.size(); i++) {
+			builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+			if (i != (usersToAdd.size() - 1)) {
+				builder.append(", ");
+			}
+		}
+
+		txtUsers.setText(builder.toString());
 		
 	}
 	

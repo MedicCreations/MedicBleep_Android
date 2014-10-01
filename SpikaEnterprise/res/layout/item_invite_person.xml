@@ -13,17 +13,17 @@
 
         <RelativeLayout
             android:id="@+id/imageLayout"
-            android:layout_width="65dp"
-            android:layout_height="85dp"
+            android:layout_width="35dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp" >
 
             <com.clover.spika.enterprise.chat.views.RoundImageView
                 android:id="@+id/userImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
                 android:contentDescription="@null" />
             <!--
                 <com.clover.spika.enterprise.chat.views.RoundCornersImageView
