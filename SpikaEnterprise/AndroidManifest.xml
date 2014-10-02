@@ -130,7 +130,11 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ManageUsersActivity"
+            android:name="com.clover.spika.enterprise.chat.ProfileGroupActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ManageUsersActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity

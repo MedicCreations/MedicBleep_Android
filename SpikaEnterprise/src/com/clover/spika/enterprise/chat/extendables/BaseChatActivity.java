@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.CameraFullPhotoActivity;
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.InvitePeopleActivity;
 import com.clover.spika.enterprise.chat.LocationActivity;
+import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordAudioActivity;
@@ -527,7 +528,15 @@ public abstract class BaseChatActivity extends BaseActivity {
                 SettingsItem item = (SettingsItem) parent.getAdapter().getItem(position);
 
                     if (position == SETTINGS_POSITION_FIRST) {
-                        ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                    	if (chatType == Const.C_PRIVATE) {
+                    		ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                    	} 
+                    	else if (chatType == Const.C_GROUP) {
+                    		ProfileGroupActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName, false);
+                    	}
+                    	else {
+                    		ProfileGroupActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName, true);
+                    	}
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
                             InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
