@@ -127,8 +127,10 @@ public class InviteUserAdapter extends BaseAdapter {
 
 		if (user.isMember()) {
 			holder.isSelected.setClickable(false);
+            holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
 		} else {
 			holder.isSelected.setClickable(true);
+            holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
 			holder.isSelected.setOnClickListener(new View.OnClickListener() {
 
 				@Override
