@@ -183,5 +183,5 @@ public class InviteUserAdapter extends BaseAdapter {
 		}
 
 	}
-
+	
 }

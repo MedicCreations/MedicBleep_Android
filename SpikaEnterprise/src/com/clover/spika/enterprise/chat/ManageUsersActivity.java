@@ -9,16 +9,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
+import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
@@ -40,6 +46,10 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
     private ManageUsersFragmentAdapter mPagerAdapter;
 
 	private String chatId = "";
+	
+	int screenWidth;
+	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
+	private OnSearchListener mSearchListener;
 
     public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
@@ -72,8 +82,18 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
+		
+		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		mTitleTextView = (TextView) findViewById(R.id.screenTitle);
+		
+		closeSearchBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+			}
+		});
 
 		handleIntent(getIntent());
 	}
@@ -199,5 +219,54 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
             }
         }
     }
+    
+    //****************SEARCH HANDLING
+    public void setSearch(OnSearchListener listener){
+		mSearchListener = listener;
+		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
+	}
+	
+	public void disableSearch(){
+		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, mTitleTextView, screenWidth, speedSearchAnimation);
+	}
+	
+	private OnClickListener searchOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			if (searchEt.getVisibility() == View.GONE) {
+				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+			} else {
+				if (mSearchListener != null) {
+					String data = searchEt.getText().toString();
+					hideKeyboard(searchEt);
+					mSearchListener.onSearch(data);
+				}
+			}
+		}
+	};
+
+	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
+
+		@Override
+		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+				hideKeyboard(searchEt);
+				if (mSearchListener != null)
+					mSearchListener.onSearch(v.getText().toString());
+			}
+			return false;
+		}
+	};
+	
+	@Override
+	public void onBackPressed() {
+		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
+			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+			return;
+		}
+
+		finish();
+	}
 
 }
