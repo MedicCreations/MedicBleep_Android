@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -15,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
@@ -23,7 +19,6 @@ import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -38,7 +33,6 @@ public class MainActivity extends BaseActivity {
 	ImageButton searchBtn;
 	EditText searchEt;
 	ImageButton closeSearchBtn;
-	boolean isOpenSearch = false;
 
 	/* create room */
 	TextView createRoomBtn;
@@ -116,7 +110,7 @@ public class MainActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				closeSearchAnimation();
+				closeSearchAnimation(searchBtn, sidebarBtn, closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			}
 		});
 	}
@@ -166,30 +160,14 @@ public class MainActivity extends BaseActivity {
 	 * 
 	 * @param listener
 	 */
-	public void setSearch(OnSearchListener listener) {
-
-		searchBtn.setVisibility(View.VISIBLE);
+	public void setSearch(OnSearchListener listener){
 		mSearchListener = listener;
-
-		searchBtn.setOnClickListener(searchOnClickListener);
-
-		searchEt.setOnEditorActionListener(editorActionListener);
-		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
-	}
-
-	/**
-	 * Disable search bar
-	 */
-	public void disableSearch() {
-
-		if (isOpenSearch) {
-			closeSearchAnimation();
-		}
-
-		searchBtn.setVisibility(View.GONE);
-		searchEt.setVisibility(View.GONE);
+		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 	}
 	
+	public void disableSearch(){
+		disableSearch(searchBtn, searchEt, sidebarBtn, closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation);
+	}
 	
 	/**
 	 * set create room btn
@@ -227,7 +205,7 @@ public class MainActivity extends BaseActivity {
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation();
+				openSearchAnimation(searchBtn, sidebarBtn, closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -251,50 +229,6 @@ public class MainActivity extends BaseActivity {
 		}
 	};
 
-	private void openSearchAnimation() {
-		searchBtn.setClickable(false);
-		sidebarBtn.setClickable(false);
-		searchEt.setVisibility(View.VISIBLE);
-
-		AnimUtils.translationX(searchEt, screenWidth, 0f, speedSearchAnimation, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				super.onAnimationEnd(animation);
-				searchBtn.setClickable(true);
-				sidebarBtn.setClickable(true);
-				closeSearchBtn.setVisibility(View.VISIBLE);
-				showKeyboardForced(searchEt);
-				isOpenSearch = true;
-			}
-		});
-		AnimUtils.translationX(searchBtn, 0, -(screenWidth - searchBtn.getWidth()), speedSearchAnimation, null);
-		AnimUtils.fadeAnim(sidebarBtn, 1, 0, speedSearchAnimation);
-		AnimUtils.translationX(screenTitle, 0, -screenWidth, speedSearchAnimation, null);
-	}
-
-	private void closeSearchAnimation() {
-		searchBtn.setClickable(false);
-		sidebarBtn.setClickable(false);
-		hideKeyboard(searchEt);
-		closeSearchBtn.setVisibility(View.GONE);
-
-		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				searchEt.setVisibility(View.GONE);
-				searchEt.setText("");
-				super.onAnimationEnd(animation);
-				searchBtn.setClickable(true);
-				sidebarBtn.setClickable(true);
-				isOpenSearch = false;
-			}
-		});
-		AnimUtils.translationX(searchBtn, -(screenWidth - searchBtn.getWidth()), 0, speedSearchAnimation, null);
-		AnimUtils.fadeAnim(sidebarBtn, 0, 1, speedSearchAnimation);
-		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
-
-	}
-	
 	private OnClickListener createRoomOnClickListener = new OnClickListener() {
 
 		@Override
@@ -312,7 +246,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation();
+			closeSearchAnimation(searchBtn, sidebarBtn, closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			return;
 		}
 

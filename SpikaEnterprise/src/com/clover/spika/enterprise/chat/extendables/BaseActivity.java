@@ -1,5 +1,10 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -8,19 +13,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
@@ -29,14 +39,12 @@ import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BaseActivity extends SlidingFragmentActivity {
 
 	/* Handling push notifications display */
 	List<Push> qPush = new ArrayList<Push>();
 	boolean isPushShowing = false;
+	boolean isOpenSearch = false;
 
 	PushBroadcastReceiver myPushRecevier;
 	IntentFilter intentFilter;
@@ -270,6 +278,82 @@ public class BaseActivity extends SlidingFragmentActivity {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInputFromWindow(et.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
 		et.requestFocus();
+	}
+	
+	/*HANDLING SEARCH LAYOUTS*/
+	/**
+	 * Set search bar
+	 * 
+	 * @param listener
+	 */
+	public void setSearch(ImageButton search, OnClickListener lis, EditText searchEt, OnEditorActionListener editorLis) {
+
+		search.setVisibility(View.VISIBLE);
+
+		search.setOnClickListener(lis);
+
+		searchEt.setOnEditorActionListener(editorLis);
+		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+	}
+
+	/**
+	 * Disable search bar
+	 */
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, 
+			TextView title, int width, int animSpeed) {
+
+		if (isOpenSearch) {
+			closeSearchAnimation(search, sidebar, closeSearch, searchEt, title, width, animSpeed);
+		}
+
+		search.setVisibility(View.GONE);
+		searchEt.setVisibility(View.GONE);
+	}
+	
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, TextView title, int width, int animSpeed) {
+		search.setClickable(false);
+		sidebar.setClickable(false);
+		searchEt.setVisibility(View.VISIBLE);
+
+		AnimUtils.translationX(searchEt, width, 0f, animSpeed, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				search.setClickable(true);
+				sidebar.setClickable(true);
+				closeSearch.setVisibility(View.VISIBLE);
+				showKeyboardForced(searchEt);
+				isOpenSearch = true;
+			}
+		});
+		AnimUtils.translationX(search, 0, -(width - search.getWidth()), animSpeed, null);
+		AnimUtils.fadeAnim(sidebar, 1, 0, animSpeed);
+		AnimUtils.translationX(title, 0, -width, animSpeed, null);
+	}
+
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, TextView title, int width, int animSpeed) {
+		search.setClickable(false);
+		sidebar.setClickable(false);
+		hideKeyboard(searchEt);
+		closeSearch.setVisibility(View.GONE);
+
+		AnimUtils.translationX(searchEt, 0f, width, animSpeed, new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				searchEt.setVisibility(View.GONE);
+				searchEt.setText("");
+				super.onAnimationEnd(animation);
+				search.setClickable(true);
+				sidebar.setClickable(true);
+				isOpenSearch = false;
+			}
+		});
+		AnimUtils.translationX(search, -(width - search.getWidth()), 0, animSpeed, null);
+		AnimUtils.fadeAnim(sidebar, 0, 1, animSpeed);
+		AnimUtils.translationX(title, -width, 0, animSpeed, null);
+
 	}
 
 }

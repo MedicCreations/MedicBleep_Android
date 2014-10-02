@@ -1,40 +1,46 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
+import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class InviteUsersFragment extends Fragment implements AdapterView.OnItemClickListener, OnChangeListener<User> {
+public class InviteUsersFragment extends Fragment implements AdapterView.OnItemClickListener, OnChangeListener<User>, OnSearchListener {
 
     public interface Callbacks {
-        void getUsers(int currentIndex);
+        void getUsers(int currentIndex, String search, final boolean toClear);
     }
     private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override public void getUsers(int currentIndex) { }
+        @Override public void getUsers(int currentIndex, String search, final boolean toClear) { }
     };
     private Callbacks mCallbacks = sDummyCallbacks;
 
-    private PullToRefreshListView mainList;
+    private PullToRefreshListView mainListView;
     private InviteUserAdapter adapter;
 
     private int mCurrentIndex = 0;
     private int mTotalCount = 0;
+    private String mSearchData = null;
+    
+    private TextView noItems;
 
     public static InviteUsersFragment newInstance() {
         InviteUsersFragment fragment = new InviteUsersFragment();
@@ -73,10 +79,12 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
         if (view != null) {
             adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
 
-            mainList = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
-            mainList.setAdapter(adapter);
-            mainList.setOnRefreshListener(refreshListener2);
-            mainList.setOnItemClickListener(this);
+            noItems = (TextView) view.findViewById(R.id.noItems);
+            
+            mainListView = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
+            mainListView.setAdapter(adapter);
+            mainListView.setOnRefreshListener(refreshListener2);
+            mainListView.setOnItemClickListener(this);
         }
     }
 
@@ -94,21 +102,44 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
     public void onChange(User obj) {
 
     }
+    
+    @Override
+	public void onSearch(String data) {
+		mCurrentIndex = 0;
+		if (TextUtils.isEmpty(data)) {
+			mSearchData = null;
+		} else {
+			mSearchData = data;
+		}
+		mCallbacks.getUsers(mCurrentIndex, mSearchData, true);
+	}
 
-    public void setData(List<User> data) {
-        // -2 is because of header and footer view
-        int currentCount = mainList.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+    public void setData(List<User> data, boolean toClearPrevious) {
+		// -2 is because of header and footer view
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
 
-        adapter.addData(data);
+		if (toClearPrevious)
+			adapter.setData(data);
+		else
+			adapter.addData(data);
+		if (toClearPrevious)
+			mainListView.getRefreshableView().setSelection(0);
 
-        mainList.onRefreshComplete();
+		mainListView.onRefreshComplete();
 
-        if (currentCount >= mTotalCount) {
-            mainList.setMode(PullToRefreshBase.Mode.DISABLED);
-        } else if (currentCount < mTotalCount) {
-            mainList.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-        }
-    }
+		if (adapter.getCount() == 0) {
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			noItems.setVisibility(View.GONE);
+		}
+		
+		if (currentCount >= mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+		}
+	}
 
     public void setTotalCount(int totalCount) {
         this.mTotalCount = totalCount;
@@ -122,8 +153,8 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-            mCurrentIndex++;
-            mCallbacks.getUsers(mCurrentIndex);
+        	mCurrentIndex++;
+			mCallbacks.getUsers(mCurrentIndex, mSearchData, false);
         }
     };
 }

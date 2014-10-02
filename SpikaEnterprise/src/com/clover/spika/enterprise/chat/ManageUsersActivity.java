@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +10,9 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
@@ -17,15 +23,18 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ManageUsersActivity extends BaseActivity implements InviteUsersFragment.Callbacks {
 
 	private UsersApi api;
     private ManageUsersFragmentAdapter mPagerAdapter;
 
 	private String chatId = "";
+	
+	/* Search bar */
+	private ImageButton searchBtn;
+	private EditText searchEt;
+	private ImageButton closeSearchBtn;
+	private TextView screenTitle;
 
 	public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
@@ -53,6 +62,11 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
         ViewPager userManagementViewPager = (ViewPager) findViewById(R.id.viewPagerUserManagement);
         mPagerAdapter = new ManageUsersFragmentAdapter();
         userManagementViewPager.setAdapter(mPagerAdapter);
+        
+        searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchEt = (EditText) findViewById(R.id.searchEt);
+		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
+		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
 		handleIntent(getIntent());
 	}
@@ -66,23 +80,36 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
 	private void handleIntent(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
-			getUsers(0);
+			getUsers(0, null, true);
 		}
 	}
 
     @Override
-	public void getUsers(int page) {
-		api.getUsersWithPage(this, page, chatId, true, new ApiCallback<UsersList>() {
+	public void getUsers(int currentIndex, String search, final boolean toClear) {
+		if (search == null) {
+			api.getUsersWithPage(this, currentIndex, chatId, true, new ApiCallback<UsersList>() {
 
-			@Override
-			public void onApiResponse(Result<UsersList> result) {
-				if (result.isSuccess()) {
-					mPagerAdapter.setTotalCount(result.getResultData().getTotalCount());
-                    mPagerAdapter.setData(result.getResultData().getUserList());
+				@Override
+				public void onApiResponse(Result<UsersList> result) {
+					if (result.isSuccess()) {
+						mPagerAdapter.setTotalCount(result.getResultData().getTotalCount());
+						mPagerAdapter.setData(result.getResultData().getUserList(), toClear);
+					}
 				}
-			}
-		});
+			});
+		} else {
+			api.getUsersByName(currentIndex, chatId, search, this, true, new ApiCallback<UsersList>() {
 
+				@Override
+				public void onApiResponse(Result<UsersList> result) {
+					if (result.isSuccess()) {
+						mPagerAdapter.setTotalCount(result.getResultData().getTotalCount());
+						mPagerAdapter.setData(result.getResultData().getUserList(), toClear);
+					}
+				}
+			});
+		}
+    	
 	}
 
     private class ManageUsersFragmentAdapter extends FragmentStatePagerAdapter {
@@ -104,10 +131,10 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
             return mFragmentList.size();
         }
 
-        public void setData(List<User> userList) {
+        public void setData(List<User> userList, boolean toClear) {
             for (Fragment fragment : mFragmentList) {
                 if (fragment instanceof InviteUsersFragment) {
-                    ((InviteUsersFragment) fragment).setData(userList);
+                    ((InviteUsersFragment) fragment).setData(userList, toClear);
                 }
             }
         }
