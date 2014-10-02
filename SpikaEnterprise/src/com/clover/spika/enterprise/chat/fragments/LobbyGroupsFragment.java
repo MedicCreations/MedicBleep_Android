@@ -39,7 +39,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((LobbyFragment) getParentFragment()).getLobby(this);
+//		((LobbyFragment) getParentFragment()).getLobby(this);
 	}
 
 	@SuppressWarnings("unchecked")

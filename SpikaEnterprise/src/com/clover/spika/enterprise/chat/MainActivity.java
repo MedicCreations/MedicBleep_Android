@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity {
 			mFragment = new LobbyFragment();
 
 		setContentView(R.layout.activity_main);
-		getFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment).commit();
+		getFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment, LobbyFragment.class.getSimpleName()).commit();
 		// end: set the above view (content)
 
 		// start: set sliding menu options

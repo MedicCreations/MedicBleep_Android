@@ -43,7 +43,7 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 		View rootView = inflater.inflate(R.layout.fragment_lobby, container, false);
 
 		viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-		viewPager.setAdapter(new SampleFragmentPagerAdapter());
+		viewPager.setAdapter(new LobbyFragmentPagerAdapter());
 		viewPager.setOnPageChangeListener(this);
 
 		groupsTab = (ToggleButton) rootView.findViewById(R.id.groupsTab);
@@ -93,22 +93,28 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 		});
 	}
 
-	public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
+	public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-		final int PAGE_COUNT = 2;
+        private List<Fragment> mFragmentList = new ArrayList<Fragment>();
 
-		public SampleFragmentPagerAdapter() {
-			super(getChildFragmentManager());
+		public LobbyFragmentPagerAdapter() {
+			super(getFragmentManager());
+            mFragmentList.add(new LobbyUsersFragment());
+            mFragmentList.add(new LobbyGroupsFragment());
+
+            for (Fragment fragment : mFragmentList) {
+                setLobbyChangedListener((LobbyChangedListener) fragment);
+            }
 		}
 
 		@Override
 		public int getCount() {
-			return PAGE_COUNT;
+			return mFragmentList.size();
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return position == 0 ? new LobbyUsersFragment() : new LobbyGroupsFragment();
+			return mFragmentList.get(position);
 		}
 	}
 
