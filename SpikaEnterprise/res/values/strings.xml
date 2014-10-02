@@ -115,6 +115,7 @@
     <string name="open">OPEN</string>
     <string name="message_deleted">[deleted]</string>
     <string name="flash_decrypting">Decrypting&#8230;</string>
+    <string name="remove">Remove</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
