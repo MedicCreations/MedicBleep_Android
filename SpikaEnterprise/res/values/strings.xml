@@ -158,5 +158,6 @@
         <item>Activate</item>
         <item>Delete</item>
     </string-array>
+        <string name="selected_users">"Selected users: "</string>
 
 </resources>

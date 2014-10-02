@@ -212,6 +212,15 @@ public class MainActivity extends BaseActivity {
 		
 	}
 	
+	/**
+	 * enabled create room btn
+	 */
+	public void enableCreateRoom(){
+		
+		createRoomBtn.setVisibility(View.VISIBLE);
+		
+	}
+	
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 

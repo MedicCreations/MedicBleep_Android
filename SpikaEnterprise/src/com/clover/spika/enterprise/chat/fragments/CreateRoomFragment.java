@@ -2,9 +2,30 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.R.color;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -23,23 +44,6 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.TextView.OnEditorActionListener;
 
 public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener, OnChangeListener<User> {
 
@@ -80,6 +84,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public void onResume() {
 		super.onResume();
 		onClosed();
+		((MainActivity) getActivity()).enableCreateRoom();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,17 +126,18 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		getUsers(mCurrentIndex, null, false);
 		
+		setInitialTextToTxtUsers();
+		
 		((MainActivity) getActivity()).setCreateRoom(this);
 		
 		return rootView;
 	}
-
+	
 	@Override
 	public void onPause() {
 		super.onPause();
 		((MainActivity) getActivity()).disableCreateRoom();
 	}
-	
 	
 	@Override
 	public void onClosed() {
@@ -165,6 +171,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -180,7 +187,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-
+		
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -296,7 +303,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 					
 					String chat_name = result.getResultData().getChat().getChat_name();
 					String chat_id = result.getResultData().getChat().getChat_id();
-					String chat_image = room_thumb_id;
+					String chat_image = room_file_id;
 					
 					Intent intent = new Intent(getActivity(), ChatActivity.class);
 					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
@@ -354,8 +361,20 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			}
 		}
 
-		txtUsers.setText(builder.toString());
+		String selectedUsers = getActivity().getString(R.string.selected_users);
+		Spannable span = new SpannableString(selectedUsers + builder.toString());
+		span.setSpan(new ForegroundColorSpan(color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		
+		txtUsers.setText(span);
+		
+	}
+	
+	private void setInitialTextToTxtUsers(){
+		String selectedUsers = getActivity().getString(R.string.selected_users);
+		Spannable span = new SpannableString(selectedUsers);
+		span.setSpan(new ForegroundColorSpan(color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		
+		txtUsers.setText(span);
 	}
 	
 }

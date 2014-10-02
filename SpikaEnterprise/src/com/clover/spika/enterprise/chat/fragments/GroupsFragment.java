@@ -96,6 +96,7 @@ public class GroupsFragment extends CustomFragment implements OnSearchListener, 
 	private void setData(List<Group> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.clearItems();

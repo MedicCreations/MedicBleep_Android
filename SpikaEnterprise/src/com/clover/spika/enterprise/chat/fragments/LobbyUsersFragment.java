@@ -82,6 +82,7 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);

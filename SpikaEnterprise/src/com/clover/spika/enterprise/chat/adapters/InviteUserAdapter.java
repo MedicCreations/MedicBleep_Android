@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -15,10 +19,6 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class InviteUserAdapter extends BaseAdapter {
 
@@ -60,6 +60,15 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	public void addData(List<User> list) {
 		data.addAll(list);
+		
+		for (String selectedId : userIds) {
+			for (int i = 0; i < data.size(); i++) {
+				if (selectedId.equals(data.get(i).getId())) {
+					data.get(i).setSelected(true);
+				}
+			}
+		}
+		
 		notifyDataSetChanged();
 	}
 
