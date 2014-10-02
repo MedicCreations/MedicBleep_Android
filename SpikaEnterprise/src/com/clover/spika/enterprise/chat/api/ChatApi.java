@@ -1,5 +1,12 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -11,15 +18,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.google.gson.Gson;
-
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 public class ChatApi {
 
@@ -463,5 +462,101 @@ public class ChatApi {
 			};
 		}.execute();
 	}
+    
+    public void leaveChat(final String chatId, final String userIds, Context context, final ApiCallback<BaseModel> listener) {
+        new BaseAsyncTask<Void, Void, BaseModel>(context, true) {
+
+            @Override
+            protected BaseModel doInBackground(Void... params) {
+                HashMap<String, String> requestParams = new HashMap<String, String>();
+                requestParams.put(Const.CHAT_ID, chatId);
+                requestParams.put(Const.USER_IDS, userIds);
+
+                try {
+                	
+                	JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, 
+                			SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(BaseModel model) {
+                super.onPostExecute(model);
+                
+                if (listener != null) {
+					Result<BaseModel> apiResult;
+
+					if (model != null) {
+						if (model.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+
+            }
+        }.execute();
+    }
+    
+    public void addChatToRoom(final String userToAdd, final String chatId, Context context, final ApiCallback<Chat> listener) {
+        new BaseAsyncTask<Void, Void, Chat>(context, true) {
+
+            @Override
+            protected Chat doInBackground(Void... params) {
+                HashMap<String, String> requestParams = new HashMap<String, String>();
+                requestParams.put(Const.USERS_TO_ADD, userToAdd);
+                requestParams.put(Const.CHAT_ID, chatId);
+
+                try {
+                    JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, requestParams,
+                            SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+                    return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Chat chat) {
+                super.onPostExecute(chat);
+
+                if (listener != null) {
+                    Result<Chat> apiResult;
+
+                    if (chat != null) {
+                        if (chat.getCode() == Const.API_SUCCESS) {
+                            apiResult = new Result<Chat>(chat, Result.ApiResponseState.SUCCESS);
+                            apiResult.setResultData(chat);
+                        } else {
+                            apiResult = new Result<Chat>(chat, Result.ApiResponseState.FAILURE);
+                            apiResult.setResultData(chat);
+                        }
+                    } else {
+                        apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+                    }
+                    listener.onApiResponse(apiResult);
+                }
+            }
+        }.execute();
+    }
 
 }
