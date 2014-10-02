@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CameraCropActivity;
 import com.clover.spika.enterprise.chat.CameraFullPhotoActivity;
-import com.clover.spika.enterprise.chat.ChatMembersActivity;
+import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.InvitePeopleActivity;
 import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
@@ -44,7 +44,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -542,7 +541,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
                             InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
                         } else if (chatType == Const.C_ROOM_ADMIN_ACTIVE){
-                        	
+                            ManageUsersActivity.startActivity(chatId, BaseChatActivity.this);
                         }
                     } else if (position == SETTINGS_POSITION_THIRD) {
                         if (chatType == Const.C_ROOM) {
