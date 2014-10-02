@@ -18,25 +18,30 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
+import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class ManageUsersActivity extends BaseActivity implements InviteUsersFragment.Callbacks {
+
+public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
+        InviteUsersFragment.Callbacks,
+        RemoveUsersFragment.Callbacks {
+
+    private TextView mTitleTextView;
+    
+    /* Search bar */
+	private ImageButton searchBtn;
+	private EditText searchEt;
+	private ImageButton closeSearchBtn;
 
 	private UsersApi api;
     private ManageUsersFragmentAdapter mPagerAdapter;
 
 	private String chatId = "";
-	
-	/* Search bar */
-	private ImageButton searchBtn;
-	private EditText searchEt;
-	private ImageButton closeSearchBtn;
-	private TextView screenTitle;
 
-	public static void startActivity(String chatId, Context context) {
+    public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -61,12 +66,14 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
 
         ViewPager userManagementViewPager = (ViewPager) findViewById(R.id.viewPagerUserManagement);
         mPagerAdapter = new ManageUsersFragmentAdapter();
-        userManagementViewPager.setAdapter(mPagerAdapter);
-        
-        searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		userManagementViewPager.setAdapter(mPagerAdapter);
+		userManagementViewPager.setOnPageChangeListener(this);
+
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
-		screenTitle = (TextView) findViewById(R.id.screenTitle);
+
+		mTitleTextView = (TextView) findViewById(R.id.screenTitle);
 
 		handleIntent(getIntent());
 	}
@@ -81,6 +88,7 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
 		if (intent != null && intent.getExtras() != null) {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			getUsers(0, null, true);
+			getMembers(0);
 		}
 	}
 
@@ -92,8 +100,8 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
 					if (result.isSuccess()) {
-						mPagerAdapter.setTotalCount(result.getResultData().getTotalCount());
-						mPagerAdapter.setData(result.getResultData().getUserList(), toClear);
+						mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
+						mPagerAdapter.setInviteUsers(result.getResultData().getUserList(), toClear);
 					}
 				}
 			});
@@ -103,14 +111,41 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
 				@Override
 				public void onApiResponse(Result<UsersList> result) {
 					if (result.isSuccess()) {
-						mPagerAdapter.setTotalCount(result.getResultData().getTotalCount());
-						mPagerAdapter.setData(result.getResultData().getUserList(), toClear);
+						mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
+						mPagerAdapter.setInviteUsers(result.getResultData().getUserList(), toClear);
 					}
 				}
 			});
 		}
     	
 	}
+
+    @Override
+    public void getMembers(int page) {
+        api.getChatMembersWithPage(this, chatId, page, true, new ApiCallback<UsersList>() {
+            @Override
+            public void onApiResponse(Result<UsersList> result) {
+                if (result.isSuccess()) {
+                    mPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
+                    mPagerAdapter.setMembers(result.getResultData().getMembersList());
+                }
+            }
+        });
+    }
+
+    @Override public void onPageScrollStateChanged(int state) { }
+    @Override public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (0 == position) {
+            // invite users selected
+            mTitleTextView.setText(getString(R.string.invite));
+        } else if (1 == position) {
+            // remove users selected
+            mTitleTextView.setText(getString(R.string.remove));
+        }
+    }
 
     private class ManageUsersFragmentAdapter extends FragmentStatePagerAdapter {
 
@@ -119,6 +154,7 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
         public ManageUsersFragmentAdapter() {
             super(getFragmentManager());
             mFragmentList.add(InviteUsersFragment.newInstance());
+            mFragmentList.add(RemoveUsersFragment.newInstance());
         }
 
         @Override
@@ -131,7 +167,7 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
             return mFragmentList.size();
         }
 
-        public void setData(List<User> userList, boolean toClear) {
+        public void setInviteUsers(List<User> userList, boolean toClear) {
             for (Fragment fragment : mFragmentList) {
                 if (fragment instanceof InviteUsersFragment) {
                     ((InviteUsersFragment) fragment).setData(userList, toClear);
@@ -139,10 +175,26 @@ public class ManageUsersActivity extends BaseActivity implements InviteUsersFrag
             }
         }
 
-        public void setTotalCount(int totalCount) {
+        public void setUserTotalCount(int totalCount) {
             for (Fragment fragment : mFragmentList) {
                 if (fragment instanceof InviteUsersFragment) {
                     ((InviteUsersFragment) fragment).setTotalCount(totalCount);
+                }
+            }
+        }
+
+        public void setMemberTotalCount(int totalCount) {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof RemoveUsersFragment) {
+                    ((RemoveUsersFragment) fragment).setTotalCount(totalCount);
+                }
+            }
+        }
+
+        public void setMembers(List<User> members) {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof RemoveUsersFragment) {
+                    ((RemoveUsersFragment) fragment).setMembers(members);
                 }
             }
         }
