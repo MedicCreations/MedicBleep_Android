@@ -13,7 +13,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
-import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
+import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
@@ -24,7 +24,7 @@ import java.util.List;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
         InviteUsersFragment.Callbacks,
-        RemoveUsersFragment.Callbacks {
+        MembersFragment.Callbacks {
 
     private TextView mTitleTextView;
 
@@ -129,7 +129,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
         public ManageUsersFragmentAdapter() {
             super(getFragmentManager());
             mFragmentList.add(InviteUsersFragment.newInstance());
-            mFragmentList.add(RemoveUsersFragment.newInstance());
+            mFragmentList.add(MembersFragment.newInstance());
         }
 
         @Override
@@ -160,16 +160,16 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
         public void setMemberTotalCount(int totalCount) {
             for (Fragment fragment : mFragmentList) {
-                if (fragment instanceof RemoveUsersFragment) {
-                    ((RemoveUsersFragment) fragment).setTotalCount(totalCount);
+                if (fragment instanceof MembersFragment) {
+                    ((MembersFragment) fragment).setTotalCount(totalCount);
                 }
             }
         }
 
         public void setMembers(List<User> members) {
             for (Fragment fragment : mFragmentList) {
-                if (fragment instanceof RemoveUsersFragment) {
-                    ((RemoveUsersFragment) fragment).setMembers(members);
+                if (fragment instanceof MembersFragment) {
+                    ((MembersFragment) fragment).setMembers(members);
                 }
             }
         }

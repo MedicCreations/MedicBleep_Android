@@ -17,7 +17,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class RemoveUsersFragment extends Fragment {
+public class MembersFragment extends Fragment {
 
     public interface Callbacks {
         void getMembers(int index);
@@ -32,8 +32,8 @@ public class RemoveUsersFragment extends Fragment {
     private int mCurrentIndex = 0;
     private int mTotalCount = 0;
 
-    public static RemoveUsersFragment newInstance() {
-        RemoveUsersFragment fragment = new RemoveUsersFragment();
+    public static MembersFragment newInstance() {
+        MembersFragment fragment = new MembersFragment();
         Bundle arguments = new Bundle();
         fragment.setArguments(arguments);
         return fragment;
