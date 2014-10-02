@@ -532,10 +532,10 @@ public abstract class BaseChatActivity extends BaseActivity {
                     		ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
                     	} 
                     	else if (chatType == Const.C_GROUP) {
-                    		ProfileGroupActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName, false);
+                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
                     	}
                     	else {
-                    		ProfileGroupActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName, true);
+                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true);
                     	}
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {

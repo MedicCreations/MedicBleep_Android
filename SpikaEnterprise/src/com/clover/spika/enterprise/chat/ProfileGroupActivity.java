@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -11,23 +14,34 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ToggleButton;
 
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener {
+public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks {
 
 	ViewPager viewPager;
 	ToggleButton profileTab;
 	ToggleButton membersTab;
 	
-	public static void openOtherProfile(Context context, String fileId, String chatName, boolean isAdmin) {
+	UsersApi api;
+	String chatId;
+	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
+	
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
 		intent.putExtra(Const.IMAGE, fileId);
 		intent.putExtra(Const.CHAT_NAME, chatName);
 		intent.putExtra(Const.IS_ADMIN, isAdmin);
+		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
@@ -38,6 +52,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
 
+		api = new UsersApi();
+		
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -47,13 +63,24 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		});
 		
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
-		viewPager.setAdapter(new SampleFragmentPagerAdapter());
+		
+		profileFragmentPagerAdapter = new ProfileFragmentPagerAdapter();
+		viewPager.setAdapter(profileFragmentPagerAdapter);
 		viewPager.setOnPageChangeListener(this);
 
 		profileTab = (ToggleButton) findViewById(R.id.profileTab);
 		profileTab.setOnClickListener(this);
 		membersTab = (ToggleButton) findViewById(R.id.membersTab);
 		membersTab.setOnClickListener(this);
+		
+		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
+		getMembers(0);
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		getMembers(0);
 	}
 	
 	@Override
@@ -62,23 +89,41 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		setTabsStates(viewPager.getCurrentItem());
 	}
 	
-	public class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
+	public class ProfileFragmentPagerAdapter extends FragmentPagerAdapter {
 
-		final int PAGE_COUNT = 2;
-
-		public SampleFragmentPagerAdapter() {
+		private List<Fragment> mFragmentList = new ArrayList<Fragment>();
+		
+		public ProfileFragmentPagerAdapter() {
 			super(getFragmentManager());
+			mFragmentList.add(new ProfileGroupFragment(getIntent()));
+            mFragmentList.add(MembersFragment.newInstance());
 		}
 
 		@Override
 		public int getCount() {
-			return PAGE_COUNT;
+			return mFragmentList.size();
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return position == 0 ? new ProfileGroupFragment(getIntent()) : new Fragment();
+			return mFragmentList.get(position);
 		}
+		
+		public void setMemberTotalCount(int totalCount) {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof MembersFragment) {
+                    ((MembersFragment) fragment).setTotalCount(totalCount);
+                }
+            }
+        }
+
+        public void setMembers(List<User> members) {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof MembersFragment) {
+                    ((MembersFragment) fragment).setMembers(members);
+                }
+            }
+        }
 	}
 
 	@Override
@@ -114,4 +159,17 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			membersTab.setChecked(true);
 		}
 	}
+	
+	@Override
+    public void getMembers(int page) {
+        api.getChatMembersWithPage(this, chatId, page, true, new ApiCallback<UsersList>() {
+            @Override
+            public void onApiResponse(Result<UsersList> result) {
+                if (result.isSuccess()) {
+                	profileFragmentPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
+                	profileFragmentPagerAdapter.setMembers(result.getResultData().getMembersList());
+                }
+            }
+        });
+    }
 }
