@@ -1,6 +1,4 @@
 package com.clover.spika.enterprise.chat.fragments;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +23,6 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.R.color;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -44,6 +41,9 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener, OnChangeListener<User> {
 
@@ -363,7 +363,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers + builder.toString());
-		span.setSpan(new ForegroundColorSpan(color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		
 		txtUsers.setText(span);
 		
@@ -372,7 +372,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private void setInitialTextToTxtUsers(){
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers);
-		span.setSpan(new ForegroundColorSpan(color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		
 		txtUsers.setText(span);
 	}
