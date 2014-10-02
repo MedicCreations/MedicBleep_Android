@@ -40,6 +40,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ImageButton searchBtn;
 	private EditText searchEt;
 	private ImageButton closeSearchBtn;
+	private ImageButton mInviteBtn;
 
 	private UsersApi api;
     private ManageUsersFragmentAdapter mPagerAdapter;
@@ -80,6 +81,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
+		mInviteBtn = (ImageButton) findViewById(R.id.inviteBtn);
 		
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -89,7 +91,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 			@Override
 			public void onClick(View v) {
-				closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+				closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn,
+						mTitleTextView, screenWidth, speedSearchAnimation);
 			}
 		});
 
@@ -225,7 +228,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	}
 	
 	public void disableSearch(){
-		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, mTitleTextView, screenWidth, speedSearchAnimation);
+		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn,
+				mTitleTextView, screenWidth, speedSearchAnimation, mInviteBtn);
 	}
 	
 	private OnClickListener searchOnClickListener = new OnClickListener() {
@@ -233,7 +237,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, 
+						searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation);
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -260,7 +265,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mTitleTextView, screenWidth, speedSearchAnimation);
+			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt,
+					mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation);
 			return;
 		}
 
