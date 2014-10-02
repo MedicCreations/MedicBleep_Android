@@ -1,6 +1,6 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 
 public class CustomFragment extends Fragment {
 
