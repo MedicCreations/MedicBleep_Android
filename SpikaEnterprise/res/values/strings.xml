@@ -161,8 +161,20 @@
         <item>Activate</item>
         <item>Delete</item>
     </string-array>
-        <string name="selected_users">"Selected users: "</string>
-        <string name="you_didn_t_select_any_users">You didn\'t select any users</string>
-        <string name="all">All</string>
+    <string name="selected_users">"Selected users: "</string>
+    <string name="you_didn_t_select_any_users">You didn\'t select any users</string>
+    <string name="all">All</string>
+
+    <string-array name="profile_detail_keys">
+        <item>mobile_number</item>
+        <item>phone_number</item>
+        <item>email</item>
+    </string-array>
+    <!-- map values in correct order as keys above -->
+    <string-array name="profile_detail_values">
+        <item>Mobile Number</item>
+        <item>Phone Number</item>
+        <item>Email</item>
+    </string-array>
 
 </resources>

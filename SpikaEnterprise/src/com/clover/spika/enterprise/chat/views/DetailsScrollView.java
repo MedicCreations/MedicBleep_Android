@@ -12,6 +12,8 @@ import com.clover.spika.enterprise.chat.R;
 
 import java.util.Map;
 
+import static com.clover.spika.enterprise.chat.utils.ProfileUtils.mapToKey;
+
 public class DetailsScrollView extends ScrollView {
 
     private LinearLayout mHolder;
@@ -57,7 +59,7 @@ public class DetailsScrollView extends ScrollView {
         for (String key : detailsMap.keySet()) {
             LinearLayout row = createRow();
 
-            createTextView(key, row);
+            createTextView(mapToKey(key, getContext()), row);
 
             TextView value = createTextView(detailsMap.get(key), row);
             value.setTypeface(value.getTypeface(), Typeface.BOLD);
