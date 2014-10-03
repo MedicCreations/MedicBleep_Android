@@ -92,7 +92,11 @@ public class MembersFragment extends Fragment {
     }
 
     private PullToRefreshListView getListView() {
-        return (PullToRefreshListView) getView();
+        if (getView() != null) {
+            return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
+        } else {
+            return null;
+        }
     }
 
     PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
