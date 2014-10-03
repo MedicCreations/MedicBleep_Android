@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +37,7 @@ import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -76,14 +78,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-
+				
 				String message = intent.getExtras().getString(Const.PUSH_MESSAGE);
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
 				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				String chatImage = intent.getExtras().getString(Const.IMAGE);
 				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
-
-				pushCall(message, chatId, chatName, chatImage, pushType);
+				String isActive = intent.getExtras().getString(Const.IS_ACTIVE);
+				String adminId = intent.getExtras().getString(Const.ADMIN_ID);
+				String type = intent.getExtras().getString(Const.TYPE);
+			
+				int isActiveInt = isActive.equals("1") ? 1 : 0;
+				
+				pushCall(message, chatId, chatName, chatImage, pushType, type, adminId, isActiveInt);				
 			}
 		};
 		// end: handle notifications
@@ -123,9 +130,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {		
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-			showPopUp(msg, chatIdPush, chatName, chatImage);
+			showPopUp(msg, chatIdPush, chatName, chatImage, type, adminId, isActive);
 		}
 	}
 
@@ -137,14 +144,20 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * @param chatName
 	 * @param chatImage
 	 */
-	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage) {
-
+	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String type, final String adminId, final int isActive) {
+		
+		String userId = Helper.getUserId(BaseActivity.this);
+		final boolean isAdmin = userId.equals(adminId) ? true : false;
+				
 		if (isPushShowing) {
 			Push push = new Push();
 			push.setId(chatId);
 			push.setMessage(msg);
 			push.setChatName(chatName);
 			push.setChatImage(chatImage);
+			push.setType(type);
+			push.setAdminId(adminId);
+			push.setIsActive(isActive);
 
 			qPush.add(push);
 
@@ -174,6 +187,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 						intent.putExtra(Const.CHAT_ID, chatId);
 						intent.putExtra(Const.CHAT_NAME, chatName);
 						intent.putExtra(Const.IMAGE, chatImage);
+						intent.putExtra(Const.TYPE, type);
+						intent.putExtra(Const.IS_ADMIN, isAdmin);
+						intent.putExtra(Const.IS_ACTIVE, isActive);						
 						startActivity(intent);
 					}
 				});
@@ -242,7 +258,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive());
 							qPush.remove(0);
 						}
 					}
