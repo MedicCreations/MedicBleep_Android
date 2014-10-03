@@ -19,6 +19,7 @@ import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
@@ -33,7 +34,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	UsersApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
-	
+		
 	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
@@ -74,6 +75,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		membersTab.setOnClickListener(this);
 		
 		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
+				
 		getMembers(0);
 	}
 	

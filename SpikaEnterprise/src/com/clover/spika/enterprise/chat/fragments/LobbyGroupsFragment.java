@@ -150,6 +150,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			intent.putExtra(Const.TYPE, user.getType());
+			intent.putExtra(Const.IMAGE, user.getImage());
 			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
 				intent.putExtra(Const.IS_ADMIN, true);
 			}

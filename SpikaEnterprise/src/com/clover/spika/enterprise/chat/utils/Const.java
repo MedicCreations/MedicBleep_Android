@@ -203,4 +203,6 @@ public class Const {
 		builder.append(S_PASSWORD);
 		return builder.toString().toCharArray();
 	}
+	
+	public static final String UPDATE_PICTURE = "update_picture";
 }
