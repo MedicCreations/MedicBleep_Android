@@ -13,6 +13,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SplashActivity;
@@ -53,6 +54,8 @@ public class GcmIntentService extends IntentService {
 				String chatImage = "";
 				String chatType = "";
 				String type = "";
+				String isActive = "";
+				String adminId = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
@@ -77,12 +80,21 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.TYPE)) {
 					type = extras.getString(Const.TYPE);
 				}
-
+				
+				if (extras.containsKey(Const.ADMIN_ID)) {
+					adminId = extras.getString(Const.ADMIN_ID);
+				}
+				
+				if (extras.containsKey(Const.IS_ACTIVE)) {
+					isActive = extras.getString(Const.IS_ACTIVE);
+				}
+				
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
 				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 				List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
+								
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
 
 					Intent inBroadcast = new Intent();
@@ -93,6 +105,8 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.PUSH_TYPE, type);
 					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
 					inBroadcast.putExtra(Const.TYPE, chatType);
+					inBroadcast.putExtra(Const.IS_ACTIVE, isActive);
+					inBroadcast.putExtra(Const.ADMIN_ID, adminId);
 
 					sendBroadcast(inBroadcast);
 				} else {
@@ -110,6 +124,8 @@ public class GcmIntentService extends IntentService {
 					pushIntent.putExtra(Const.PUSH_TYPE, type);
 					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
 					pushIntent.putExtra(Const.TYPE, chatType);
+					pushIntent.putExtra(Const.IS_ACTIVE, isActive);
+					pushIntent.putExtra(Const.ADMIN_ID, adminId);
 
 					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

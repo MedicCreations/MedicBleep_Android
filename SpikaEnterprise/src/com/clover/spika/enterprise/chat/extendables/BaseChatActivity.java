@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -356,11 +357,11 @@ public abstract class BaseChatActivity extends BaseActivity {
         }
     }
 
-    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
+    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {
         if (chatIdPush.equals(chatId)) {
             onChatPushUpdated();
         } else {
-            showPopUp(msg, chatIdPush, chatName, chatImage);
+            showPopUp(msg, chatIdPush, chatName, chatImage, type, adminId, isActive);
         }
     }
 
@@ -383,8 +384,8 @@ public abstract class BaseChatActivity extends BaseActivity {
     }
 
     @Override
-    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType) {
-        getFromPush(msg, chatIdPush, chatName, chatImage, pushType);
+    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {    	
+        getFromPush(msg, chatIdPush, chatName, chatImage, pushType, type, adminId, isActive);
     }
 
     @Override

@@ -6,6 +6,9 @@ public class Push {
 	private String message;
 	private String chatName;
 	private String chatImage;
+	private String type;
+	private String adminId;
+	private int isActive;
 
 	public Push() {
 	}
@@ -41,5 +44,28 @@ public class Push {
 	public void setChatImage(String chatImage) {
 		this.chatImage = chatImage;
 	}
+	
+	public String getType() {
+		return type;
+	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getAdminId() {
+		return adminId;
+	}
+
+	public void setAdminId(String adminId) {
+		this.adminId = adminId;
+	}
+
+	public int getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(int isActive) {
+		this.isActive = isActive;
+	}
 }
