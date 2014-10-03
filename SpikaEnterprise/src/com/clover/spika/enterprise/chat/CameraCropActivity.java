@@ -359,6 +359,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
+		Log.e("???????", "" + resultCode);
+		
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 
@@ -580,6 +582,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		super.onResume();
 
 		if (return_flag) {
+			Log.e("KAKO", "JE OVO MOGUĆE");
 			finish();
 		}
 	}
@@ -707,9 +710,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
+				Log.e("KRAJ", "API CALLA");
 				if (result.isSuccess()) {
-					AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
-					dialog.setSucceed();
+					Helper.setRoomThumbId(getApplicationContext(), fileId);
+					finish();
 				} else {
 					AppDialog dialog = new AppDialog(CameraCropActivity.this, false);
 					dialog.setFailed(null);
@@ -720,6 +724,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	@Override
 	protected void onDestroy() {
+		
+		Log.e("JESI", "CRKO???");
 		super.onDestroy();
 		if (mFilePath != null) {
 			new File(mFilePath).delete();

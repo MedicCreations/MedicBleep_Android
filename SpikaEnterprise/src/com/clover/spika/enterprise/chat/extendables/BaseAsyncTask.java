@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -76,6 +77,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 			if (progressDialog != null && progressDialog.isShowing()) {
 				// because AsyncTask
 				try {
+					Log.e("DIS MIS", "DISSSA MISSAL");
 					progressDialog.dismiss();
 				} catch (IllegalArgumentException ignored) {
 				}
