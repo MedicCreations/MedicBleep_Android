@@ -1,13 +1,10 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,6 +29,9 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
@@ -192,7 +192,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
         private List<Fragment> mFragmentList = new ArrayList<Fragment>();
 
         public ManageUsersFragmentAdapter() {
-            super(getFragmentManager());
+            super(getSupportFragmentManager());
             mFragmentList.add(InviteUsersFragment.newInstance());
             mFragmentList.add(RemoveUsersFragment.newInstance());
         }

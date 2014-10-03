@@ -1,8 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +39,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		((LobbyFragment) getParentFragment()).getLobby(this);
+		((LobbyFragment) getParentFragment()).getLobby(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,6 +150,7 @@ public class LobbyGroupsFragment extends Fragment implements LobbyChangedListene
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			intent.putExtra(Const.TYPE, user.getType());
+			intent.putExtra(Const.IMAGE, user.getImage());
 			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
 				intent.putExtra(Const.IS_ADMIN, true);
 			}

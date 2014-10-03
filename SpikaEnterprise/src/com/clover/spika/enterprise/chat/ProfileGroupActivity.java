@@ -1,13 +1,10 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
@@ -19,10 +16,14 @@ import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks {
 
@@ -33,7 +34,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	UsersApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
-	
+		
 	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
@@ -74,6 +75,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		membersTab.setOnClickListener(this);
 		
 		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
+				
 		getMembers(0);
 	}
 	
@@ -94,7 +96,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		private List<Fragment> mFragmentList = new ArrayList<Fragment>();
 		
 		public ProfileFragmentPagerAdapter() {
-			super(getFragmentManager());
+            super(getSupportFragmentManager());
 			mFragmentList.add(new ProfileGroupFragment(getIntent()));
             mFragmentList.add(MembersFragment.newInstance());
 		}

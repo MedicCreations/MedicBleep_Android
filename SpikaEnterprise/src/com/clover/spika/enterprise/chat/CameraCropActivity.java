@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -633,8 +634,13 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					
 					if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)){
 						//get fileid and thumbid for create room
-						Helper.setRoomFileId(getApplicationContext(), fileId);
-						Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+						if (getIntent().getBooleanExtra(Const.UPDATE_PICTURE, false)) {
+							updateChatPicture(fileId, result.getResultData().getFileId());
+						} 
+						else {
+							Helper.setRoomFileId(getApplicationContext(), fileId);
+							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+						}
 						
 						finish();
 					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
@@ -690,6 +696,26 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				}
 			}
 		});
+	}
+	
+	private void updateChatPicture(final String fileId, final String thumbId) {
+		
+		String chatId = getIntent().getStringExtra(Const.CHAT_ID);
+		String chatName = getIntent().getStringExtra(Const.CHAT_NAME);
+		
+		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName, true, this, new ApiCallback<BaseModel>() {
+
+			@Override
+			public void onApiResponse(Result<BaseModel> result) {
+				if (result.isSuccess()) {
+					AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
+					dialog.setSucceed();
+				} else {
+					AppDialog dialog = new AppDialog(CameraCropActivity.this, false);
+					dialog.setFailed(null);
+				}
+			}
+		});	
 	}
 
 	@Override

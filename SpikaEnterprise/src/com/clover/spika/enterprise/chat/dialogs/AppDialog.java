@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -260,7 +261,7 @@ public class AppDialog extends Dialog {
 	
 	
 	/**
-	 * Go to recording screen from gallery or camera
+	 * Go to recording screen from gallery or camera on create room
 	 */
 	public void choseCamGalleryRoom() {
 		this.setContentView(R.layout.dialog_chose_cam_rec);
@@ -300,6 +301,51 @@ public class AppDialog extends Dialog {
 		show();
 	}
 	
+	/**
+	 * Go to recording screen from gallery or camera on update room
+	 */
+	public void choseCamGalleryRoomUpdate(final String chatId, final String chatName) {
+		this.setContentView(R.layout.dialog_chose_cam_rec);
+
+		ImageButton camera = (ImageButton) findViewById(R.id.camera);
+		ImageButton gallery = (ImageButton) findViewById(R.id.galleryImageButton);
+
+		camera.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+				intent.putExtra(Const.ROOM_INTENT, true);
+				intent.putExtra(Const.CHAT_ID, chatId);
+				intent.putExtra(Const.CHAT_NAME, chatName);
+				intent.putExtra(Const.UPDATE_PICTURE, true);
+								
+				getContext().startActivity(intent);
+			}
+		});
+
+		gallery.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				Intent intent = new Intent(getContext(), CameraCropActivity.class);
+				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+				intent.putExtra(Const.ROOM_INTENT, true);
+				intent.putExtra(Const.CHAT_ID, chatId);
+				intent.putExtra(Const.CHAT_NAME, chatName);
+				intent.putExtra(Const.UPDATE_PICTURE, true);
+								
+				getContext().startActivity(intent);
+			}
+		});
+
+		show();
+	}
 
 	/**
 	 * Open file or confirm the download

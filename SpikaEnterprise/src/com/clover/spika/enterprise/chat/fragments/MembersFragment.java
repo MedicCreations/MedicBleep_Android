@@ -1,24 +1,22 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
-import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MembersFragment extends Fragment implements OnChangeListener<User>{
 
@@ -99,8 +97,12 @@ public class MembersFragment extends Fragment implements OnChangeListener<User>{
         mUserAdapter.clearData();
     }
 
-    protected PullToRefreshListView getListView() {
-        return (PullToRefreshListView) getView();
+    private PullToRefreshListView getListView() {
+        if (getView() != null) {
+            return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
+        } else {
+            return null;
+        }
     }
 
     PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {

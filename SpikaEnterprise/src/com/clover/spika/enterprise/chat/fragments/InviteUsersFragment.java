@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -35,7 +35,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class InviteUsersFragment extends Fragment implements AdapterView.OnItemClickListener, OnChangeListener<User>, 
 													OnSearchManageUsersListener, OnInviteClickListener {
-
+	
     public interface Callbacks {
         void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember);
     }

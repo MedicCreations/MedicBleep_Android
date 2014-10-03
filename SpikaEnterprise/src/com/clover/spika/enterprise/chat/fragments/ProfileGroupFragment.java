@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +10,15 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
-public class ProfileGroupFragment extends CustomFragment implements OnClickListener{
+public class ProfileGroupFragment extends CustomFragment implements OnClickListener {
 
 	public ImageView profileImage;
 
@@ -24,6 +27,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 	String imageId;
 	String chatName;
+	String chatId;
 	boolean isAdmin;
 
 	public ProfileGroupFragment(Intent intent) {
@@ -56,14 +60,16 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
 		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
-
+		ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
+		
 		return rootView;
 	}
 
 	public void setData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			imageId = intent.getExtras().getString(Const.USER_IMAGE_NAME);
+			imageId = intent.getExtras().getString(Const.IMAGE);
 			chatName = intent.getExtras().getString(Const.CHAT_NAME);
+			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN);
 		}
 	}
@@ -82,6 +88,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 	private void showDialog() {
 		AppDialog dialog = new AppDialog(getActivity(), false);
-		dialog.choseCamGalleryProfile();
+		dialog.choseCamGalleryRoomUpdate(chatId, chatName);
 	}
 }
