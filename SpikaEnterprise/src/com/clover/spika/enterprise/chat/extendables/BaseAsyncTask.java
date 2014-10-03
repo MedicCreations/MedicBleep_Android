@@ -77,7 +77,6 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 			if (progressDialog != null && progressDialog.isShowing()) {
 				// because AsyncTask
 				try {
-					Log.e("DIS MIS", "DISSSA MISSAL");
 					progressDialog.dismiss();
 				} catch (IllegalArgumentException ignored) {
 				}

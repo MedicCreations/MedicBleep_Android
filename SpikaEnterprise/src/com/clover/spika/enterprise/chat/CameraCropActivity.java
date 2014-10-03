@@ -358,8 +358,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
-		Log.e("???????", "" + resultCode);
 		
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
@@ -582,7 +580,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		super.onResume();
 
 		if (return_flag) {
-			Log.e("KAKO", "JE OVO MOGUĆE");
 			finish();
 		}
 	}
@@ -643,9 +640,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 						else {
 							Helper.setRoomFileId(getApplicationContext(), fileId);
 							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+							finish();
 						}
-						
-						finish();
 					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// send message
 						sendMessage(fileId, result.getResultData().getFileId());
@@ -710,7 +706,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
-				Log.e("KRAJ", "API CALLA");
 				if (result.isSuccess()) {
 					Helper.setRoomThumbId(getApplicationContext(), fileId);
 					finish();
@@ -724,8 +719,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	@Override
 	protected void onDestroy() {
-		
-		Log.e("JESI", "CRKO???");
 		super.onDestroy();
 		if (mFilePath != null) {
 			new File(mFilePath).delete();
