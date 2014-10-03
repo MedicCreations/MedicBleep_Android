@@ -33,9 +33,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	private ImageView profileImage;
     private DetailsScrollView mDetailScrollView;
 
-	int width = 0;
-	int padding = 0;
-
 	String imageId;
 	String firstname;
 	String lastname;
@@ -55,10 +52,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		width = getResources().getDisplayMetrics().widthPixels;
-		padding = width / 4;
-
         setData(getArguments());
 	}
 
@@ -77,8 +70,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
-		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
 
 		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
 		mSwitchPasscodeEnabled.setOnClickListener(this);
