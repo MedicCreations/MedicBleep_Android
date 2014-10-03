@@ -1,9 +1,9 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +92,11 @@ public class MembersFragment extends Fragment {
     }
 
     private PullToRefreshListView getListView() {
-        return (PullToRefreshListView) getView();
+        if (getView() != null) {
+            return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
+        } else {
+            return null;
+        }
     }
 
     PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {

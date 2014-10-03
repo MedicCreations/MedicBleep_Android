@@ -105,6 +105,7 @@ public class Const {
 	public static final String IS_ADMIN = "is_admin";
 	public static final String IS_DELETED = "is_deleted";
 	public static final String IS_ACTIVE = "is_active";
+	public static final String USER_IDS = "user_ids";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";

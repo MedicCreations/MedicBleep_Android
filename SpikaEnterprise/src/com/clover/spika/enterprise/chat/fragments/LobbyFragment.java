@@ -1,8 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
@@ -93,30 +93,24 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 		});
 	}
 
-	public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
+    public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Fragment> mFragmentList = new ArrayList<Fragment>();
+        final int PAGE_COUNT = 2;
 
-		public LobbyFragmentPagerAdapter() {
-			super(getFragmentManager());
-            mFragmentList.add(new LobbyUsersFragment());
-            mFragmentList.add(new LobbyGroupsFragment());
+        public LobbyFragmentPagerAdapter() {
+            super(getChildFragmentManager());
+        }
 
-            for (Fragment fragment : mFragmentList) {
-                setLobbyChangedListener((LobbyChangedListener) fragment);
-            }
-		}
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
 
-		@Override
-		public int getCount() {
-			return mFragmentList.size();
-		}
-
-		@Override
-		public Fragment getItem(int position) {
-			return mFragmentList.get(position);
-		}
-	}
+        @Override
+        public Fragment getItem(int position) {
+            return position == 0 ? new LobbyUsersFragment() : new LobbyGroupsFragment();
+        }
+    }
 
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
