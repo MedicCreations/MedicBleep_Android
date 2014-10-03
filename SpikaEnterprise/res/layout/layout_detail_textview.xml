@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.clover.spika.enterprise.chat.views.RobotoThinTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:autoLink="all"
+    android:textColor="@android:color/white"
+    android:textSize="18sp"
+    android:textColorLink="@color/default_green_light"
+
+    tools:background="@color/baloon_blue"
+    tools:text="Detail" />

@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,11 +25,13 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.views.DetailsScrollView;
 
 public class ProfileFragment extends CustomFragment implements OnClickListener {
 
-	public Switch mSwitchPasscodeEnabled;
-	public ImageView profileImage;
+	private Switch mSwitchPasscodeEnabled;
+	private ImageView profileImage;
+    private DetailsScrollView mDetailScrollView;
 
 	int width = 0;
 	int padding = 0;
@@ -54,7 +57,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		width = getResources().getDisplayMetrics().widthPixels;
-		padding = (int) (width / 9);
+		padding = width / 4;
 
         setData(getArguments());
 	}
@@ -63,15 +66,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 		onClosed();
-
-        new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
-            @Override
-            public void onApiResponse(Result<UserWrapper> result) {
-                if (result.isSuccess()) {
-
-                }
-            }
-        });
 	}
 
 	@Override
@@ -90,10 +84,26 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
 
+        mDetailScrollView = (DetailsScrollView) rootView.findViewById(R.id.scrollViewDetails);
+
 		return rootView;
 	}
 
-	@Override
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
+            @Override
+            public void onApiResponse(Result<UserWrapper> result) {
+                if (result.isSuccess()) {
+                    mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+                }
+            }
+        });
+    }
+
+    @Override
 	public void onClosed() {
 		if (getActivity() instanceof MainActivity) {
 
