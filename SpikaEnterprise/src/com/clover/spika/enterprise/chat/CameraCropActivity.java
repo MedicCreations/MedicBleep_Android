@@ -358,7 +358,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 
@@ -640,9 +640,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 						else {
 							Helper.setRoomFileId(getApplicationContext(), fileId);
 							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+							finish();
 						}
-						
-						finish();
 					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// send message
 						sendMessage(fileId, result.getResultData().getFileId());
@@ -708,8 +707,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
 				if (result.isSuccess()) {
-					AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
-					dialog.setSucceed();
+					Helper.setRoomThumbId(getApplicationContext(), fileId);
+					finish();
 				} else {
 					AppDialog dialog = new AppDialog(CameraCropActivity.this, false);
 					dialog.setFailed(null);

@@ -60,6 +60,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
 		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
+		
+		Helper.setRoomThumbId(getActivity(), imageId);
 		ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
 		
 		return rootView;
@@ -89,5 +91,14 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	private void showDialog() {
 		AppDialog dialog = new AppDialog(getActivity(), false);
 		dialog.choseCamGalleryRoomUpdate(chatId, chatName);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
+			imageId = Helper.getRoomThumbId(getActivity());
+			ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
+		}
 	}
 }
