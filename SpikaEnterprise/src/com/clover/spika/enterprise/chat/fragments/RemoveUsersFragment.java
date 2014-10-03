@@ -1,10 +1,13 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
+import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -26,10 +29,15 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
     
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-    	super.onViewCreated(view, savedInstanceState);
-    	 if(getActivity() instanceof ManageUsersActivity){
-         	((ManageUsersActivity)getActivity()).setOnRemoveClickListener(this);
-         }
+		if (getListView() != null) {
+			mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
+
+			getListView().setAdapter(mUserAdapter);
+		}
+
+		if (getActivity() instanceof ManageUsersActivity) {
+			((ManageUsersActivity) getActivity()).setOnRemoveClickListener(this);
+		}
     }
     
 	@Override
@@ -56,7 +64,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 					mCurrentIndex = 0;
 					mUserAdapter.clearData();
 					mUserAdapter.resetSelected();
-					mCallbacks.getMembers(mCurrentIndex);
+					mCallbacks.getMembers(mCurrentIndex, true);
 				}
 			}
 		});
@@ -64,6 +72,11 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		
+	}
+
+	@Override
+	public void onChange(User obj) {
 		
 	}
 	

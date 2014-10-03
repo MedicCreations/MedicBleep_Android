@@ -6,25 +6,24 @@ import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
-import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class MembersFragment extends Fragment implements OnChangeListener<User>{
+public class MembersFragment extends CustomFragment {
 
     public interface Callbacks {
-        void getMembers(int index);
+        void getMembers(int index, final boolean toUpdateInviteMember);
     }
     private static Callbacks sDummyCallback = new Callbacks() {
-        @Override public void getMembers(int index) { }
+        @Override public void getMembers(int index, final boolean toUpdateInviteMember) { }
     };
     protected Callbacks mCallbacks = sDummyCallback;
 
@@ -67,7 +66,7 @@ public class MembersFragment extends Fragment implements OnChangeListener<User>{
         super.onViewCreated(view, savedInstanceState);
 
         if (getListView() != null) {
-            mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
+            mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>());
 
             getListView().setAdapter(mUserAdapter);
         }
@@ -97,7 +96,7 @@ public class MembersFragment extends Fragment implements OnChangeListener<User>{
         mUserAdapter.clearData();
     }
 
-    private PullToRefreshListView getListView() {
+    protected PullToRefreshListView getListView() {
         if (getView() != null) {
             return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
         } else {
@@ -114,13 +113,8 @@ public class MembersFragment extends Fragment implements OnChangeListener<User>{
         @Override
         public void onPullUpToRefresh(PullToRefreshBase refreshView) {
             mCurrentIndex++;
-            mCallbacks.getMembers(mCurrentIndex);
+            mCallbacks.getMembers(mCurrentIndex, false);
         }
     };
-
-	@Override
-	public void onChange(User obj) {
-		
-	}
 
 }
