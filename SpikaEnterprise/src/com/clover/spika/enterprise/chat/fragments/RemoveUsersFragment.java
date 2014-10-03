@@ -1,12 +1,11 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -44,7 +43,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 	public void onRemove(String chatId) {
 		if(mUserAdapter.getSelected().size() == 0){
 			AppDialog dialog = new AppDialog(getActivity(), false);
-			dialog.setInfo("You didn't select any users");
+			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 		

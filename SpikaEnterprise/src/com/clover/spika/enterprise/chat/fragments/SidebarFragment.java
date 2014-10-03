@@ -39,7 +39,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	ProfileFragment profileFragment;
 	LobbyFragment lobbyFragment;
 	UsersFragment usersFragment;
-	GroupsFragment groupsFragment;
+	CategoryFragment categoryFragment;
 	CreateRoomFragment createRoomFragment;
 
 	public SidebarFragment() {
@@ -145,12 +145,12 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.groups:
 
-			if (groupsFragment == null) {
-				groupsFragment = new GroupsFragment();
+			if (categoryFragment == null) {
+				categoryFragment = new CategoryFragment();
 			}
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.groups));
-			switchFragment(groupsFragment);
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
+			switchFragment(categoryFragment);
 
 			break;
 

@@ -73,6 +73,7 @@
     <string name="e_error_downloading_file">Error while downloading a file.</string>
     <string name="e_error_uploading_file">Error while uploading a file.</string>
     <string name="e_something_went_wrong">Something went wrong.</string>
+    <string name="e_not_chat_member">Not chat member.</string>
     <string name="e_invalid_token">Invalid token.</string>
     <string name="e_expired_token">Token expired.</string>
     <string name="no_network_connection">You do not have a connection to the internet.</string>
@@ -96,6 +97,7 @@
     <string name="lobby">Lobby</string>
     <string name="users">Users</string>
     <string name="groups">Groups</string>
+    <string name="pick_category">Pick category</string>
     <string name="title_lobby">Lobby</string>
     <string name="invite">Invite</string>
     <string name="camera">Camera</string>
@@ -160,5 +162,7 @@
         <item>Delete</item>
     </string-array>
         <string name="selected_users">"Selected users: "</string>
+        <string name="you_didn_t_select_any_users">You didn\'t select any users</string>
+        <string name="all">All</string>
 
 </resources>

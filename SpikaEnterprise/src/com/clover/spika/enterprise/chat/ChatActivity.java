@@ -141,6 +141,9 @@ public class ChatActivity extends BaseChatActivity {
 									adapter.addItems(result.getResultData().getMessagesList(), true);
 									adapter.setSeenBy(result.getResultData().getSeen_by());
 									adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
+									if(adapter.getCount() > 0){
+										chatListView.setSelectionFromTop(adapter.getCount(), 0);
+									}
 								} else {
 									AppDialog dialog = new AppDialog(ChatActivity.this, false);
 
@@ -193,7 +196,7 @@ public class ChatActivity extends BaseChatActivity {
                         if (result.hasResultData()) {
                             dialog.setFailed(result.getResultData().getMessage());
                         } else {
-                            dialog.setFailed("");
+                            dialog.setFailed(Helper.errorDescriptions(getApplicationContext(), result.getResultData().getCode()));
                         }
                     }
                 }

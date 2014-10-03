@@ -168,7 +168,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
     	
     	if(adapter.getSelected().size() == 0){
 			AppDialog dialog = new AppDialog(getActivity(), false);
-			dialog.setInfo("You didn't select any users");
+			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
     	

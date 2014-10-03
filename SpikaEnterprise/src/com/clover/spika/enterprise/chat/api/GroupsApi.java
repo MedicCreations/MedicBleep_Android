@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 
 public class GroupsApi {
 
-	public void getGroupsWithPage(final int page, Context ctx, boolean showProgressBar,
+	public void getGroupsWithPage(final int page, final String cat, Context ctx, boolean showProgressBar,
 			final ApiCallback<GroupsList> listener) {
 		new BaseAsyncTask<Void, Void, GroupsList>(ctx, showProgressBar) {
 
@@ -29,6 +29,7 @@ public class GroupsApi {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.PAGE, String.valueOf(page));
+				getParams.put(Const.CATEGORY_ID, String.valueOf(cat));
 
 				try {
 
@@ -67,7 +68,7 @@ public class GroupsApi {
 		}.execute();
 	}
 
-	public void getGroupsByName(final int page, final String data, Context ctx, boolean showProgressBar,
+	public void getGroupsByName(final int page, final String cat, final String data, Context ctx, boolean showProgressBar,
 			final ApiCallback<GroupsList> listener) {
 		new BaseAsyncTask<Void, Void, GroupsList>(ctx, showProgressBar) {
 
@@ -79,6 +80,7 @@ public class GroupsApi {
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.PAGE, String.valueOf(page));
 				getParams.put(Const.SEARCH, data);
+				getParams.put(Const.CATEGORY_ID, String.valueOf(cat));
 
 				try {
 

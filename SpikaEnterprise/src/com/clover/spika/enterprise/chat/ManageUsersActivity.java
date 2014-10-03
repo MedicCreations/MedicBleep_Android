@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -35,7 +36,8 @@ import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
         InviteUsersFragment.Callbacks,
-        RemoveUsersFragment.Callbacks {
+        RemoveUsersFragment.Callbacks,
+        OnClickListener{
 
     private TextView mTitleTextView;
     
@@ -56,6 +58,9 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private OnSearchManageUsersListener mSearchListener;
 	private OnInviteClickListener mOnInviteClickListener;
 	private OnRemoveClickListener mOnRemoveClickListener;
+	
+	private ToggleButton inviteTab;
+	private ToggleButton removeTab;
 
     public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
@@ -68,6 +73,11 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_members);
+		
+		inviteTab = (ToggleButton) findViewById(R.id.inviteTab);
+		inviteTab.setOnClickListener(this);
+		removeTab = (ToggleButton) findViewById(R.id.removeTab);
+		removeTab.setOnClickListener(this);
 
 		api = new UsersApi();
 
@@ -105,6 +115,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		handleIntent(getIntent());
 		
 		mInviteBtn.setOnClickListener(onInviteClick);
+		setTabsStates(mViewPager.getCurrentItem());
 	}
 
 	@Override
@@ -174,6 +185,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
     @Override
     public void onPageSelected(int position) {
+    	setTabsStates(position);
         if (0 == position) {
             // invite users selected
             mTitleTextView.setText(getString(R.string.invite));
@@ -324,6 +336,27 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		}
 
 		finish();
+	}
+
+	@Override
+	public void onClick(View view) {
+		if (view == inviteTab) {
+			setTabsStates(0);
+			mViewPager.setCurrentItem(0, true);
+		} else if (view == removeTab) {
+			setTabsStates(1);
+			mViewPager.setCurrentItem(1, true);
+		}
+	}
+
+	void setTabsStates(int position) {
+		if (position == 0) {
+			inviteTab.setChecked(true);
+			removeTab.setChecked(false);
+		} else {
+			inviteTab.setChecked(false);
+			removeTab.setChecked(true);
+		}
 	}
 
 }

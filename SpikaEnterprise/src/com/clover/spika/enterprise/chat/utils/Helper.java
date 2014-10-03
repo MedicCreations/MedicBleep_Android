@@ -383,6 +383,7 @@ public class Helper {
 		errors.put(Const.E_INVALID_TOKEN, cntx.getResources().getString(R.string.e_invalid_token));
 		errors.put(Const.E_EXPIRED_TOKEN, cntx.getResources().getString(R.string.e_expired_token));
 		errors.put(Const.E_CHAT_INACTIVE, cntx.getResources().getString(R.string.e_chat_inactive));
+		errors.put(Const.E_NOT_CHAT_MEMBER, cntx.getResources().getString(R.string.e_not_chat_member));
 		errors.put(Const.E_SOMETHING_WENT_WRONG, cntx.getResources().getString(R.string.e_something_went_wrong));
 
 		for (int i = 0; i < errors.size(); i++) {
