@@ -15,8 +15,12 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -33,9 +37,17 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	String firstname;
 	String lastname;
 
-	public ProfileFragment(Intent intent) {
-		setData(intent);
-	}
+    public static ProfileFragment newInstance(String imageId, String firstName, String lastName) {
+        ProfileFragment fragment = new ProfileFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(Const.USER_IMAGE_NAME, imageId);
+        arguments.putString(Const.FIRSTNAME, firstName);
+        arguments.putString(Const.LASTNAME, lastName);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
+	public ProfileFragment() { }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,12 +55,23 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 
 		width = getResources().getDisplayMetrics().widthPixels;
 		padding = (int) (width / 9);
+
+        setData(getArguments());
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		onClosed();
+
+        new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
+            @Override
+            public void onApiResponse(Result<UserWrapper> result) {
+                if (result.isSuccess()) {
+
+                }
+            }
+        });
 	}
 
 	@Override
@@ -82,11 +105,11 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		}
 	}
 
-	public void setData(Intent intent) {
-		if (intent != null && intent.getExtras() != null) {
-			imageId = intent.getExtras().getString(Const.USER_IMAGE_NAME);
-			firstname = intent.getExtras().getString(Const.FIRSTNAME);
-			lastname = intent.getExtras().getString(Const.LASTNAME);
+	public void setData(Bundle bundle) {
+		if (bundle != null) {
+			imageId = bundle.getString(Const.USER_IMAGE_NAME);
+			firstname = bundle.getString(Const.FIRSTNAME);
+			lastname = bundle.getString(Const.LASTNAME);
 		}
 	}
 

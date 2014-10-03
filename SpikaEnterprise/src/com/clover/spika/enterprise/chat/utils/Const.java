@@ -181,6 +181,7 @@ public class Const {
 	public static final String F_CREATE_ROOM = "/chat/create";
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
+    public static final String F_USER_PROFILE = "/user/profile";
 
 	public static final int API_SUCCESS = 2000;
 

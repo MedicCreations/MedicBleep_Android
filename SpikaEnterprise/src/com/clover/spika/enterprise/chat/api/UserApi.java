@@ -1,20 +1,21 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class UserApi {
 
@@ -154,4 +155,44 @@ public class UserApi {
 			}
 		}.execute();
 	}
+
+    public void getProfile(final Context context, final String userId, final ApiCallback<UserWrapper> callback) {
+        new BaseAsyncTask<Void, Void, UserWrapper>(context, false) {
+            @Override
+            protected UserWrapper doInBackground(Void... params) {
+                JSONObject jsonObject = new JSONObject();
+
+                HashMap<String, String> getParams = new HashMap<String, String>();
+                getParams.put(Const.USER_ID, userId);
+
+                try {
+                    jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams,
+                            SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
+                    return new Gson().fromJson(jsonObject.toString(), UserWrapper.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(UserWrapper userWrapper) {
+                super.onPostExecute(userWrapper);
+                if (callback != null) {
+                    Result<UserWrapper> result;
+                    if (userWrapper != null) {
+                        if (userWrapper.getCode() == Const.API_SUCCESS) {
+                            result = new Result<UserWrapper>(userWrapper, Result.ApiResponseState.SUCCESS);
+                        } else {
+                            result = new Result<UserWrapper>(Result.ApiResponseState.FAILURE);
+                        }
+                    } else {
+                        result = new Result<UserWrapper>(Result.ApiResponseState.FAILURE);
+                    }
+                    callback.onApiResponse(result);
+                }
+            }
+        }.execute();
+    }
 }
