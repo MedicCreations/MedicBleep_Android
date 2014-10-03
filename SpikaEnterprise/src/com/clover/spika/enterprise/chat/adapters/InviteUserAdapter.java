@@ -29,6 +29,7 @@ public class InviteUserAdapter extends BaseAdapter {
 	private ImageLoader imageLoader;
 
 	private OnChangeListener<User> listener;
+	private boolean showCheckBox = true;
 
 	public InviteUserAdapter(Context context, Collection<User> users, OnChangeListener<User> listener) {
 		this.mContext = context;
@@ -38,6 +39,17 @@ public class InviteUserAdapter extends BaseAdapter {
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		this.listener = listener;
+	}
+	
+	public InviteUserAdapter(Context context, Collection<User> users) {
+		this.mContext = context;
+		this.data.addAll(users);
+
+		imageLoader = ImageLoader.getInstance();
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
+
+		listener = null;
+		showCheckBox = false;
 	}
 
 	public Context getContext() {
@@ -69,6 +81,11 @@ public class InviteUserAdapter extends BaseAdapter {
 			}
 		}
 		
+		notifyDataSetChanged();
+	}
+	
+	public void clearData(){
+		data.clear();
 		notifyDataSetChanged();
 	}
 
@@ -118,36 +135,40 @@ public class InviteUserAdapter extends BaseAdapter {
 
 		imageLoader.displayImage(getContext(), user.getImage_thumb(), holder.profileImg);
 		holder.personName.setText(user.getFirstName() + " " + user.getLastName());
+		
+		if(showCheckBox){
+			if (user.isSelected() || user.isMember()) {
+				holder.isSelected.setChecked(true);
+			} else {
+				holder.isSelected.setChecked(false);
+			}
 
-		if (user.isSelected() || user.isMember()) {
-			holder.isSelected.setChecked(true);
-		} else {
-			holder.isSelected.setChecked(false);
-		}
+			if (user.isMember()) {
+				holder.isSelected.setClickable(false);
+	            holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
+			} else {
+				holder.isSelected.setClickable(true);
+	            holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
+				holder.isSelected.setOnClickListener(new View.OnClickListener() {
 
-		if (user.isMember()) {
-			holder.isSelected.setClickable(false);
-            holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
-		} else {
-			holder.isSelected.setClickable(true);
-            holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
-			holder.isSelected.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (data.get(position).isSelected()) {
+							data.get(position).setSelected(false);
+							removeId(data.get(position).getId());
+						} else {
+							data.get(position).setSelected(true);
+							setId(data.get(position).getId());
+						}
 
-				@Override
-				public void onClick(View v) {
-					if (data.get(position).isSelected()) {
-						data.get(position).setSelected(false);
-						removeId(data.get(position).getId());
-					} else {
-						data.get(position).setSelected(true);
-						setId(data.get(position).getId());
+						if (listener != null) {
+							listener.onChange(data.get(position));
+						}
 					}
-
-					if (listener != null) {
-						listener.onChange(data.get(position));
-					}
-				}
-			});
+				});
+			}
+		}else{
+			holder.isSelected.setVisibility(View.GONE);
 		}
 
 		return convertView;
@@ -163,6 +184,10 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	public List<String> getSelected() {
 		return userIds;
+	}
+	
+	public void resetSelected() {
+		userIds.clear();
 	}
 
 	public class ViewHolderCharacter {

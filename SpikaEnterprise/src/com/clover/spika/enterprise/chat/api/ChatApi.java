@@ -512,7 +512,7 @@ public class ChatApi {
         }.execute();
     }
     
-    public void addChatToRoom(final String userToAdd, final String chatId, Context context, final ApiCallback<Chat> listener) {
+    public void addUsersToRoom(final String userToAdd, final String chatId, Context context, final ApiCallback<Chat> listener) {
         new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
             @Override

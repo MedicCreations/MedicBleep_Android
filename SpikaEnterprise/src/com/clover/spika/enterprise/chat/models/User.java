@@ -8,6 +8,10 @@ public class User {
 	@SerializedName("id")
 	@Expose
 	private String id;
+	
+	@SerializedName("user_id")
+	@Expose
+	private String userId;
 
 	@SerializedName("firstname")
 	@Expose
@@ -36,7 +40,10 @@ public class User {
 	private boolean isSelected = false;
 
 	public String getId() {
-		return id == null ? "" : id;
+		if(id == null || id.equals("")){
+			return userId == null ? "" : userId;
+		}
+		return id;
 	}
 
 	public void setId(String id) {
@@ -67,6 +74,38 @@ public class User {
 		this.image = image;
 	}
 
+	public String getImage_thumb() {
+		return image_thumb;
+	}
+
+	public void setImage_thumb(String image_thumb) {
+		this.image_thumb = image_thumb;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
+	public boolean isMember() {
+		return isMember;
+	}
+
+	public void setIsMember(boolean isMember) {
+		this.isMember = isMember;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -100,37 +139,5 @@ public class User {
 	@Override
 	public String toString() {
 		return "User{" + "id='" + id + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", image='" + image + '\'' + '}';
-	}
-
-	public String getImage_thumb() {
-		return image_thumb;
-	}
-
-	public void setImage_thumb(String image_thumb) {
-		this.image_thumb = image_thumb;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-	}
-
-	public boolean isMember() {
-		return isMember;
-	}
-
-	public void setIsMember(boolean isMember) {
-		this.isMember = isMember;
 	}
 }
