@@ -30,6 +30,11 @@
         
     </RelativeLayout>
     
+    <View android:background="@color/chat_menu_gray"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/room"/>
+    
     <TextView 
         android:id="@+id/txtUserNames"
         android:layout_width="match_parent"
