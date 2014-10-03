@@ -59,10 +59,12 @@ public class ProfileOtherActivity extends BaseActivity {
 
         getIntentData(getIntent());
 
+        findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
         new UserApi().getProfile(this, mUserId, new ApiCallback<UserWrapper>() {
             @Override
             public void onApiResponse(Result<UserWrapper> result) {
                 if (result.isSuccess()) {
+                    findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
                 }
             }

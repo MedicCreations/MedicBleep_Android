@@ -81,13 +81,15 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	}
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        view.findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
         new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
             @Override
             public void onApiResponse(Result<UserWrapper> result) {
                 if (result.isSuccess()) {
+                    view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
                 }
             }

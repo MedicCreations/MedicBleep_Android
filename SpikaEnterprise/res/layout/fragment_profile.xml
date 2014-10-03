@@ -76,5 +76,14 @@
         android:layout_marginRight="20dp"
         android:divider="@android:color/transparent" />
 
+    <ProgressBar
+        android:id="@+id/progressBarDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
 </RelativeLayout>
