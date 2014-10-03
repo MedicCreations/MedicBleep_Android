@@ -114,7 +114,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 
         if (position != -1 && position != adapter.getCount()) {
             User user = adapter.getItem(position);
-            ProfileOtherActivity.openOtherProfile(getActivity(), user.getImage(), user.getFirstName() + " " + user.getLastName());
+            ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
         }
     }
 

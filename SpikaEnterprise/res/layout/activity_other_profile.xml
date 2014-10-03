@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/wholeScreen"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/default_blue">
 
     <RelativeLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
-        android:background="@color/default_blue" >
+        android:background="@color/default_blue">
 
         <ImageButton
             android:id="@+id/goBack"
@@ -30,38 +31,41 @@
             android:textSize="20sp" />
     </RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/mainScrollView"
+    <RelativeLayout
+        android:id="@+id/mainHolder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/actionBarLayout"
-        android:background="@color/default_blue" >
+        android:layout_height="wrap_content"
+        android:layout_below="@id/actionBarLayout">
 
-        <RelativeLayout
-            android:id="@+id/mainHolder"
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/profileImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:scaleType="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circle_with_white_border"
+            tools:src="@drawable/white_circle" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/profileName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileImage"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="45sp"
+            tools:text="John Doe" />
+    </RelativeLayout>
 
-            <com.clover.spika.enterprise.chat.views.RoundImageView
-                android:id="@+id/profileImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/circle_with_white_border"
-                tools:src="@drawable/white_circle" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinTextView
-                android:id="@+id/profileName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/profileImage"
-                android:layout_margin="20dp"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="45sp"
-                tools:text="John Doe" />
-        </RelativeLayout>
-    </ScrollView>
+    <com.clover.spika.enterprise.chat.views.DetailsScrollView
+        android:id="@+id/scrollViewDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mainHolder"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:divider="@android:color/transparent"/>
 
 </RelativeLayout>

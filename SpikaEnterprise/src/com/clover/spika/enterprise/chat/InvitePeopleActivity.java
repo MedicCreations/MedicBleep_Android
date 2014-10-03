@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -39,6 +36,9 @@ import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<User> {
 
@@ -229,7 +229,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		if (position != -1 && position != adapter.getCount()) {
 			User user = adapter.getItem(position);
-			ProfileOtherActivity.openOtherProfile(this, user.getImage(), user.getFirstName() + " " + user.getLastName());
+			ProfileOtherActivity.openOtherProfile(this, user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
 		}
 	}
 
