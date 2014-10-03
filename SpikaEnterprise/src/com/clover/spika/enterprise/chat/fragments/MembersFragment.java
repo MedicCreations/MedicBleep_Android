@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,15 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.UserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MembersFragment extends Fragment {
+public class MembersFragment extends Fragment implements OnChangeListener<User>{
 
     public interface Callbacks {
         void getMembers(int index);
@@ -25,12 +26,12 @@ public class MembersFragment extends Fragment {
     private static Callbacks sDummyCallback = new Callbacks() {
         @Override public void getMembers(int index) { }
     };
-    private Callbacks mCallbacks = sDummyCallback;
+    protected Callbacks mCallbacks = sDummyCallback;
 
-    private UserAdapter mUserAdapter;
+    protected InviteUserAdapter mUserAdapter;
 
-    private int mCurrentIndex = 0;
-    private int mTotalCount = 0;
+    protected int mCurrentIndex = 0;
+    protected int mTotalCount = 0;
 
     public static MembersFragment newInstance() {
         MembersFragment fragment = new MembersFragment();
@@ -66,7 +67,7 @@ public class MembersFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getListView() != null) {
-            mUserAdapter = new UserAdapter(getActivity(), new ArrayList<User>());
+            mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
 
             getListView().setAdapter(mUserAdapter);
         }
@@ -90,6 +91,11 @@ public class MembersFragment extends Fragment {
     public void setTotalCount(int totalCount) {
         this.mTotalCount = totalCount;
     }
+    
+    public void resetMembers() {
+        this.mCurrentIndex = 0;
+        mUserAdapter.clearData();
+    }
 
     private PullToRefreshListView getListView() {
         if (getView() != null) {
@@ -111,5 +117,10 @@ public class MembersFragment extends Fragment {
             mCallbacks.getMembers(mCurrentIndex);
         }
     };
+
+	@Override
+	public void onChange(User obj) {
+		
+	}
 
 }

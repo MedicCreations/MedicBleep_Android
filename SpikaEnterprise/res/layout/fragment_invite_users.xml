@@ -10,10 +10,10 @@
         android:id="@+id/invitedPeople"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textColor="@color/text_time_gray"
-        android:textSize="12sp"
-        tools:text="selected users"/>
+        android:lineSpacingExtra="5dp"
+        android:layout_margin="10dp"
+        android:textColor="@color/text_blue"
+        android:ems="13"/>
 
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/main_list_view"
