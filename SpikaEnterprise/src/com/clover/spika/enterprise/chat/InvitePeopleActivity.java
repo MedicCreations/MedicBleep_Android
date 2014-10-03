@@ -8,7 +8,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -140,6 +143,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		mainList.setOnItemClickListener(this);
 
 		handleIntent(getIntent());
+		
+		setInitialTextToTxtUsers();
 	}
 
 	@Override
@@ -173,6 +178,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainList.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -244,27 +250,20 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	 * @param listener
 	 */
 	public void setSearch(OnSearchListener listener) {
-
-		searchBtn.setVisibility(View.VISIBLE);
+		
 		mSearchListener = listener;
+		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 
-		searchBtn.setOnClickListener(searchOnClickListener);
-
-		searchEt.setOnEditorActionListener(editorActionListener);
-		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
 	}
 
 	/**
 	 * Disable search bar
 	 */
 	public void disableSearch() {
-
-		if (isOpenSearch) {
-			closeSearchAnimation();
-		}
-
-		searchBtn.setVisibility(View.GONE);
-		searchEt.setVisibility(View.GONE);
+		
+		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, screenTitle, 
+				screenWidth, speedSearchAnimation, invitationOptions);
+	
 	}
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
@@ -297,48 +296,13 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	};
 
 	private void openSearchAnimation() {
-		searchBtn.setClickable(false);
-		goBack.setClickable(false);
-		searchEt.setVisibility(View.VISIBLE);
-
-		AnimUtils.translationX(searchEt, screenWidth, 0f, speedSearchAnimation, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				super.onAnimationEnd(animation);
-				searchBtn.setClickable(true);
-				goBack.setClickable(true);
-				closeSearchBtn.setVisibility(View.VISIBLE);
-				showKeyboardForced(searchEt);
-				isOpenSearch = true;
-			}
-		});
-
-		AnimUtils.translationX(invitationOptions, 0, -(screenWidth - invitationOptions.getWidth()), speedSearchAnimation, null);
-		AnimUtils.fadeAnim(goBack, 1, 0, speedSearchAnimation);
-		AnimUtils.translationX(screenTitle, 0, -screenWidth, speedSearchAnimation, null);
+		openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, 
+				screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
 	}
 
 	private void closeSearchAnimation() {
-		searchBtn.setClickable(false);
-		goBack.setClickable(false);
-		hideKeyboard(searchEt);
-		closeSearchBtn.setVisibility(View.GONE);
-
-		AnimUtils.translationX(searchEt, 0f, screenWidth, speedSearchAnimation, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				searchEt.setVisibility(View.GONE);
-				searchEt.setText("");
-				super.onAnimationEnd(animation);
-				searchBtn.setClickable(true);
-				goBack.setClickable(true);
-				isOpenSearch = false;
-			}
-		});
-		AnimUtils.translationX(invitationOptions, -(screenWidth - invitationOptions.getWidth()), 0, speedSearchAnimation, null);
-		AnimUtils.fadeAnim(goBack, 0, 1, speedSearchAnimation);
-		AnimUtils.translationX(screenTitle, -screenWidth, 0, speedSearchAnimation, null);
-
+		closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, 
+				screenWidth, speedSearchAnimation, invitationOptions);
 	}
 
 	@Override
@@ -374,13 +338,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
-					Chat chat = result.getResultData();
-
-					Intent intent = new Intent(InvitePeopleActivity.this, ChatActivity.class);
-					intent.putExtra(Const.CHAT_ID, String.valueOf(chat.getChat_id()));
-					intent.putExtra(Const.CHAT_NAME, chat.getChat_name());
-					intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
-					startActivity(intent);
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);
@@ -418,7 +375,20 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				builder.append(", ");
 			}
 		}
-
-		invitedPeople.setText(builder.toString());
+		
+		String selectedUsers = getString(R.string.selected_users);
+		Spannable span = new SpannableString(selectedUsers + builder.toString());
+		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		
+		invitedPeople.setText(span);
+		
+	}
+	
+	private void setInitialTextToTxtUsers(){
+		String selectedUsers = getString(R.string.selected_users);
+		Spannable span = new SpannableString(selectedUsers);
+		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		
+		invitedPeople.setText(span);
 	}
 }

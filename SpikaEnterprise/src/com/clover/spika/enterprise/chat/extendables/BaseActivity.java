@@ -23,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -302,14 +303,26 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, 
 			TextView title, int width, int animSpeed) {
 
-		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null);
+		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, null);
 	}
 	
 	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
 			TextView title, int width, int animSpeed, ImageButton invite) {
 
+		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, invite, null);
+	}
+	
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
+			TextView title, int width, int animSpeed, LinearLayout layout) {
+
+		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, layout);
+	}
+	
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
+			TextView title, int width, int animSpeed, ImageButton invite, LinearLayout layout) {
+
 		if (isOpenSearch) {
-			closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed);
+			closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, layout);
 		}
 
 		search.setVisibility(View.GONE);
@@ -318,11 +331,22 @@ public class BaseActivity extends SlidingFragmentActivity {
 	
 	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
 			final EditText searchEt, TextView title, int width, int animSpeed) {
-		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed);
+		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
+	}
+	
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, TextView title, int width, int animSpeed, LinearLayout layout) {
+		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
 	}
 	
 	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
 			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed) {
+		openSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
+	}
+	
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed, 
+			final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
 		if(invite != null) invite.setClickable(false);
@@ -340,20 +364,36 @@ public class BaseActivity extends SlidingFragmentActivity {
 				isOpenSearch = true;
 			}
 		});
-		AnimUtils.translationX(search, 0, -(width - search.getWidth()), animSpeed, null);
+		if(layout != null){
+			AnimUtils.translationX(layout, 0, -(width - layout.getWidth()), animSpeed, null);
+		}else{
+			AnimUtils.translationX(search, 0, -(width - search.getWidth()), animSpeed, null);
+		}
 		AnimUtils.fadeAnim(sidebar, 1, 0, animSpeed);
-		if(invite != null) AnimUtils.fadeAnim(invite, 1, 0, animSpeed);
 		AnimUtils.translationX(title, 0, -width, animSpeed, null);
 	}
 	
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
 			final EditText searchEt, TextView title, int width, int animSpeed) {
-		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed);
+		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
+
+	}
+	
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, TextView title, int width, int animSpeed, final LinearLayout layout) {
+		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
+
+	}
+	
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
+			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed) {
+		closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
 
 	}
 
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed) {
+			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed, 
+			final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
 		if(invite != null) invite.setClickable(false);
@@ -372,9 +412,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 				isOpenSearch = false;
 			}
 		});
-		AnimUtils.translationX(search, -(width - search.getWidth()), 0, animSpeed, null);
+		if(layout != null){
+			AnimUtils.translationX(layout, -(width - layout.getWidth()), 0, animSpeed, null);
+		}else{
+			AnimUtils.translationX(search, -(width - search.getWidth()), 0, animSpeed, null);
+		}
+		
 		AnimUtils.fadeAnim(sidebar, 0, 1, animSpeed);
-		if(invite != null) AnimUtils.fadeAnim(invite, 0, 1, animSpeed);
 		AnimUtils.translationX(title, -width, 0, animSpeed, null);
 
 	}

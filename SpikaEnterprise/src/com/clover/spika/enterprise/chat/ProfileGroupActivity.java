@@ -76,13 +76,13 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		
 		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
 				
-		getMembers(0);
+		getMembers(0, false);
 	}
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		getMembers(0);
+		getMembers(0, false);
 	}
 	
 	@Override
@@ -163,7 +163,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	}
 	
 	@Override
-    public void getMembers(int page) {
+    public void getMembers(int page,  final boolean toUpdateInviteMember) {
         api.getChatMembersWithPage(this, chatId, page, true, new ApiCallback<UsersList>() {
             @Override
             public void onApiResponse(Result<UsersList> result) {

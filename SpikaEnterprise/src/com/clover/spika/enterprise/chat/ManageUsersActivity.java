@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -29,9 +31,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener,
@@ -99,7 +98,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			@Override
 			public void onClick(View v) {
 				closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn,
-						mTitleTextView, screenWidth, speedSearchAnimation);
+						mTitleTextView, screenWidth, speedSearchAnimation, (LinearLayout) findViewById(R.id.invitationOptions));
 			}
 		});
 		
@@ -118,7 +117,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		if (intent != null && intent.getExtras() != null) {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			getUsers(0, null, true, false);
-			getMembers(0);
+			getMembers(0, false);
 		}
 	}
 
@@ -134,7 +133,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 						mPagerAdapter.setInviteUsers(result.getResultData().getUserList(), toClear);
 						if(toUpdateMember){
 							mPagerAdapter.resetMembers();
-							getMembers(0);
+							getMembers(0, false);
 						}
 					}
 				}
@@ -155,13 +154,16 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	}
 
     @Override
-    public void getMembers(int currentIndex) {
+    public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
     	api.getChatMembersWithPage(this, chatId, currentIndex, true, new ApiCallback<UsersList>() {
             @Override
             public void onApiResponse(Result<UsersList> result) {
                 if (result.isSuccess()) {
                     mPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
                     mPagerAdapter.setMembers(result.getResultData().getMembersList());
+                    if(toUpdateInviteMember){
+						getUsers(0, null, true, false);
+					}
                 }
             }
         });
@@ -176,14 +178,10 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
             // invite users selected
             mTitleTextView.setText(getString(R.string.invite));
             setSearch(mSearchListener);
-            ((LayoutParams)mInviteBtn.getLayoutParams()).addRule(RelativeLayout.LEFT_OF, searchBtn.getId());
-            ((LayoutParams)mInviteBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
         } else if (1 == position) {
             // remove users selected
             mTitleTextView.setText(getString(R.string.remove));
             disableSearch();
-            ((LayoutParams)mInviteBtn.getLayoutParams()).addRule(RelativeLayout.LEFT_OF, 0);
-            ((LayoutParams)mInviteBtn.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
     }
 
@@ -276,7 +274,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	
 	public void disableSearch(){
 		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn,
-				mTitleTextView, screenWidth, speedSearchAnimation, mInviteBtn);
+				mTitleTextView, screenWidth, speedSearchAnimation, mInviteBtn, 
+				(LinearLayout) findViewById(R.id.invitationOptions));
 	}
 	
 	private OnClickListener searchOnClickListener = new OnClickListener() {
@@ -285,7 +284,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
 				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, 
-						searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation);
+						searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation, 
+						(LinearLayout) findViewById(R.id.invitationOptions));
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -318,8 +318,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt,
-					mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation);
+			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn,
+					mTitleTextView, screenWidth, speedSearchAnimation, (LinearLayout) findViewById(R.id.invitationOptions));
 			return;
 		}
 
