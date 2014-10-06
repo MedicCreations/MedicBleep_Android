@@ -121,8 +121,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.addPhoto:
-			CreateRoomActivity.start(1, "Sport", getActivity());
-//			showDialog();
+//			CreateRoomActivity.start(1, "Sport", getActivity());
+			showDialog();
 			break;
 
 		case R.id.switchPasscode:

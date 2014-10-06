@@ -15,12 +15,9 @@ public class ChooseCategoryActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_choose_category);
-		
-		CategoryFragment frag = new CategoryFragment();
-		Bundle bundle = new Bundle();
-		bundle.putBoolean(Const.IS_CHOOSE_CATEGORY, true);
-		frag.setArguments(bundle);
-		
+
+        CategoryFragment frag = CategoryFragment.newInstance(CategoryFragment.UseType.CHOOSE_CATEGORY);
+
 		FragmentTransaction fTrans = getSupportFragmentManager().beginTransaction();
 		fTrans.add(R.id.flForChooseCategoryFragment, frag, "fragment_choose_category");
 		fTrans.commit();

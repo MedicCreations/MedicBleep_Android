@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	RobotoThinButton lobby;
 	RobotoThinButton users;
 	RobotoThinButton groups;
-	RobotoThinButton createRoom;
+	RobotoThinButton rooms;
 	RobotoThinButton information;
 	RobotoThinButton logout;
 
@@ -39,8 +38,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	ProfileFragment profileFragment;
 	LobbyFragment lobbyFragment;
 	UsersFragment usersFragment;
-	CategoryFragment categoryFragment;
-	CreateRoomFragment createRoomFragment;
 	InformationFragment informationFragment;
 
 	public SidebarFragment() {
@@ -76,8 +73,8 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(this);
 		
-		createRoom = (RobotoThinButton) view.findViewById(R.id.create_room);
-		createRoom.setOnClickListener(this);
+		rooms = (RobotoThinButton) view.findViewById(R.id.rooms);
+		rooms.setOnClickListener(this);
 		
 		information = (RobotoThinButton) view.findViewById(R.id.information);
 		information.setOnClickListener(this);
@@ -105,8 +102,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-
-		Intent intent = new Intent();
 
 		switch (view.getId()) {
 
@@ -145,28 +140,18 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			break;
 
+        case R.id.rooms:
 		case R.id.groups:
 
-			if (categoryFragment == null) {
-				categoryFragment = new CategoryFragment();
-			}
+			CategoryFragment categoryFragment = CategoryFragment.newInstance(
+                    view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP
+            );
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
 			switchFragment(categoryFragment);
 
 			break;
 
-		case R.id.create_room:
-
-			if (createRoomFragment == null) {
-				createRoomFragment = new CreateRoomFragment();
-			}
-
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.create_room));
-			switchFragment(createRoomFragment);
-
-			break;	
-			
 		case R.id.information:
 
 			if (informationFragment == null) {
@@ -176,7 +161,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information));
 			switchFragment(informationFragment);
 
-			break;	
+			break;
 			
 		case R.id.logout:
 

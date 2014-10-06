@@ -1,9 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.RoomsActivity;
 import com.clover.spika.enterprise.chat.adapters.CategoryAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.CategoryApi;
@@ -22,18 +21,32 @@ import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.CategoryList;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CategoryFragment extends CustomFragment implements OnItemClickListener {
+
+    private static final String ARG_USE_TYPE = "com.clover.spika.enterprise.chat.arg_use_type";
+
+    public static enum UseType { CHOOSE_CATEGORY, ROOM, GROUP }
+
+    public static CategoryFragment newInstance(@NonNull UseType useType) {
+        CategoryFragment fragment = new CategoryFragment();
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(ARG_USE_TYPE, useType);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
 	TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public CategoryAdapter adapter;
-	
-	private boolean mIsToChooseCategoryForRoom = false;
+
+    private UseType mUseType;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -45,8 +58,8 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_category_list, container, false);
-		
-		if(getArguments() != null) mIsToChooseCategoryForRoom = getArguments().getBoolean(Const.IS_CHOOSE_CATEGORY, false);
+
+        unpackArguments();
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
@@ -61,9 +74,13 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 		return rootView;
 	}
 
+    private void unpackArguments() {
+        mUseType = (UseType) getArguments().getSerializable(ARG_USE_TYPE);
+    }
+
 	private void setData(List<Category> data) {
 		List<Category> allData = new ArrayList<Category>();
-		if(mIsToChooseCategoryForRoom){
+		if(UseType.CHOOSE_CATEGORY.equals(mUseType)){
 			allData.add(new Category(0, getString(R.string.none)));
 		}else{
 			allData.add(new Category(0, getString(R.string.all)));
@@ -105,14 +122,23 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 		if (position != -1 && position != adapter.getCount()) {
 			Category category = adapter.getItem(position);
-			if(mIsToChooseCategoryForRoom){
-				if(getActivity() instanceof ChooseCategoryActivity){
-					((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(category.getId(), category.getName());
-				}
-			}else{
-				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
-			}
-			
+
+            switch (mUseType) {
+                case CHOOSE_CATEGORY:
+                    if(getActivity() instanceof ChooseCategoryActivity){
+                        ((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(category.getId(), category.getName());
+                    }
+                    break;
+
+                case ROOM:
+                    RoomsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+                    break;
+
+                case GROUP:
+                    GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+                    break;
+            }
+
 		}
 	}
 }
