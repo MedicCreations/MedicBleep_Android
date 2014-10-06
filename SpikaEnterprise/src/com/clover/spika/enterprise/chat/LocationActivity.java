@@ -190,8 +190,11 @@ public class LocationActivity extends BaseActivity {
 	}
 	
 	private void getRoute(double latitude, double longintude){
+		
+		String url = "http://maps.google.com/maps?daddr="+latitude+","+longintude+"&hl=zh&t=m&dirflg=d";
+		
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-				Uri.parse("geo:0,0?q=" + latitude + "," + longintude));
+				Uri.parse(url));
     	startActivity(intent);
 	}
 
