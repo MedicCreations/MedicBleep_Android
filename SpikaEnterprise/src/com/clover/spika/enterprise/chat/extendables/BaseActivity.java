@@ -176,7 +176,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@SuppressLint("InflateParams")
 			protected void onPostExecute(Integer result) {
-				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
+				
+				final ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
 				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, null);
 
 				view.setOnClickListener(new View.OnClickListener() {
@@ -201,7 +202,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 				params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 
 				contentRoot.addView(view, params);
-				contentRoot.invalidate();
 
 				final Handler handler = new Handler();
 
@@ -241,7 +241,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 					@Override
 					public void onAnimationEnd(Animation animation) {						
-						((ViewGroup) findViewById(android.R.id.content)).removeView(view);
+						contentRoot.removeView(view);
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
