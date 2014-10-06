@@ -126,12 +126,13 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
             switch (mUseType) {
                 case CHOOSE_CATEGORY:
                     if(getActivity() instanceof ChooseCategoryActivity){
-                        ((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(category.getId(), category.getName());
+                        ((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()),
+                        		category.getName());
                     }
                     break;
 
                 case ROOM:
-                    RoomsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+                    RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
                     break;
 
                 case GROUP:

@@ -71,7 +71,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	
 	List<User> usersToAdd = new ArrayList<User>();
 	
-	private int mCategoryId = 0;
+	private String mCategoryId = "0";
 	private String mCategoryName = "";
 	private TextView mTvCategoryName;
 	
@@ -98,7 +98,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
 		
-		if(getArguments() != null) mCategoryId = getArguments().getInt(Const.CATEGORY_ID, 0);
+		if(getArguments() != null) mCategoryId = getArguments().getString(Const.CATEGORY_ID, "0");
 		if(getArguments() != null) mCategoryName = getArguments().getString(Const.CATEGORY_NAME, getString(R.string.select_category));
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
@@ -395,14 +395,16 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	}
 	
 	private void setCategory(String catName){
-		mTvCategoryName.setText(catName);
+		if(!mCategoryId.equals("0")){
+			mTvCategoryName.setText(catName);
+		}
 	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(data != null){
-			mCategoryId = data.getIntExtra(Const.CATEGORY_ID, 0);
+			mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
 			setCategory(data.getStringExtra(Const.CATEGORY_NAME));
 		}
 	}

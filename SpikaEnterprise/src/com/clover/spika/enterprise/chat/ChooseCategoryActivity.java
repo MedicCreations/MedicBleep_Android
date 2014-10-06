@@ -35,7 +35,7 @@ public class ChooseCategoryActivity extends BaseActivity {
 		});
 	}
 	
-	public void returnCategoryIdToActivity(int categoryId, String categoryName){
+	public void returnCategoryIdToActivity(String categoryId, String categoryName){
 		setResult(RESULT_OK, new Intent()
 								.putExtra(Const.CATEGORY_ID, categoryId)
 								.putExtra(Const.CATEGORY_NAME, categoryName));

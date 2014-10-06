@@ -41,14 +41,14 @@ public class CreateRoomActivity extends BaseActivity {
 	/* Fragment currently in use */
 	TextView screenTitle;
 	
-	public static void start(int categoryId, String categoryName, Context c){
+	public static void start(String categoryId, String categoryName, Context c){
 		c.startActivity(new Intent(c, CreateRoomActivity.class)
 					.putExtra(Const.CATEGORY_NAME, categoryName)
 					.putExtra(Const.CATEGORY_ID, categoryId));
 	}
 	
 	public static void start(Context c){
-		start(0, "", c);
+		start("0", "", c);
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
