@@ -153,6 +153,10 @@
             android:name="com.clover.spika.enterprise.chat.ChooseCategoryActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.RoomsActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
