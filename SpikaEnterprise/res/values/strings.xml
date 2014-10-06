@@ -56,7 +56,7 @@
     <string name="blocked_text_1">You Have Been Blocked</string>
     <string name="blocked_text_2">Write an explanation in textfield below.</string>
     <string name="send">Send</string>
-    <string name="create_room">Create Room</string>
+    <string name="create_room">Create room</string>
     <string name="create">Create</string>
     <string name="searchUsers">Search users</string>
     <string name="enableEditPhoto">Do you want to enable editing Photo?</string>
@@ -180,5 +180,6 @@
         <string name="select_category">Select category</string>
         <string name="choose_category">Choose category</string>
         <string name="none">None</string>
+        <string name="information">Information</string>
 
 </resources>

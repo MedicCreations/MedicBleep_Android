@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;

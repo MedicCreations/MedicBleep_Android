@@ -10,7 +10,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +26,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
+import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
@@ -69,13 +68,11 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private RobotoThinEditText roomName;
 	private ImageButton btnSearch;
 	private EditText etSearch;
-	private FrameLayout layoutForChooseCategory;
 	
 	List<User> usersToAdd = new ArrayList<User>();
 	
-	LobbyFragment lobbyFragment;
-	
-	private int mCategoryId = 0;
+	private String mCategoryId = "0";
+	private String mCategoryName = "";
 	private TextView mTvCategoryName;
 	
 
@@ -92,7 +89,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public void onResume() {
 		super.onResume();
 		onClosed();
-		((MainActivity) getActivity()).enableCreateRoom();
+		((CreateRoomActivity) getActivity()).enableCreateRoom();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,13 +97,16 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
+		
+		if(getArguments() != null) mCategoryId = getArguments().getString(Const.CATEGORY_ID, "0");
+		if(getArguments() != null) mCategoryName = getArguments().getString(Const.CATEGORY_NAME, getString(R.string.select_category));
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
 		txtUsers = (TextView) rootView.findViewById(R.id.txtUserNames);
 		txtUsers.setMovementMethod(new ScrollingMovementMethod());
-		layoutForChooseCategory = (FrameLayout) rootView.findViewById(R.id.flForChooseCategoryFragment);
 		mTvCategoryName = (TextView) rootView.findViewById(R.id.tvCategory);
+		setCategory(mCategoryName);
 		imgRoom = (ImageView) rootView.findViewById(R.id.img_room);
 		imgRoom.setOnClickListener(this);
 		
@@ -139,7 +139,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		
 		setInitialTextToTxtUsers();
 		
-		((MainActivity) getActivity()).setCreateRoom(this);
+		((CreateRoomActivity) getActivity()).setCreateRoom(this);
 		
 		rootView.findViewById(R.id.layoutCategory).setOnClickListener(new OnClickListener() {
 			
@@ -155,19 +155,19 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	@Override
 	public void onPause() {
 		super.onPause();
-		((MainActivity) getActivity()).disableCreateRoom();
+		((CreateRoomActivity) getActivity()).disableCreateRoom();
 	}
 	
 	@Override
 	public void onClosed() {
 		super.onClosed();
-		if (getActivity() instanceof MainActivity) {
+		if (getActivity() instanceof CreateRoomActivity) {
 			
 			room_file_id = Helper.getRoomFileId(getActivity());
 			room_thumb_id = Helper.getRoomThumbId(getActivity());
 			
 			if (room_file_id != ""){
-				((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), room_thumb_id, imgRoom);
+				((CreateRoomActivity) getActivity()).getImageLoader().displayImage(getActivity(), room_thumb_id, imgRoom);
 			}	
 		}
 	}
@@ -334,20 +334,13 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 					
 					startActivity(intent);
 					
-					if (lobbyFragment == null) {
-						lobbyFragment = new LobbyFragment();
-					}
-
-					((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.lobby));
-					
-					MainActivity base = (MainActivity) getActivity();
-					base.switchContent(lobbyFragment);
-					
 					Helper.setRoomFileId(getActivity(), "");
 					Helper.setRoomThumbId(getActivity(), "");
 					usersToAdd.clear();
 					etSearch.setText("");
 					roomName.setText("");
+					
+					getActivity().finish();
 				}
 			}
 		});
@@ -402,14 +395,16 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	}
 	
 	private void setCategory(String catName){
-		mTvCategoryName.setText(catName);
+		if(!mCategoryId.equals("0")){
+			mTvCategoryName.setText(catName);
+		}
 	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if(data != null){
-			mCategoryId = data.getIntExtra(Const.CATEGORY_ID, 0);
+			mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
 			setCategory(data.getStringExtra(Const.CATEGORY_NAME));
 		}
 	}

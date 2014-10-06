@@ -148,6 +148,21 @@
                 android:text="@string/rooms"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
+             
+             <com.clover.spika.enterprise.chat.views.RobotoThinButton
+                android:id="@+id/information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_groups"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/information"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
 
             <com.clover.spika.enterprise.chat.views.RobotoThinButton
                 android:id="@+id/logout"

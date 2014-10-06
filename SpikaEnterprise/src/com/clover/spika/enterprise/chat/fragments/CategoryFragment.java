@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.RoomsActivity;
 import com.clover.spika.enterprise.chat.adapters.CategoryAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.CategoryApi;
@@ -121,14 +122,24 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 		if (position != -1 && position != adapter.getCount()) {
 			Category category = adapter.getItem(position);
-			if(UseType.CHOOSE_CATEGORY.equals(mUseType)){
-				if(getActivity() instanceof ChooseCategoryActivity){
-					((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(category.getId(), category.getName());
-				}
-			}else{
-				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
-			}
-			
+
+            switch (mUseType) {
+                case CHOOSE_CATEGORY:
+                    if(getActivity() instanceof ChooseCategoryActivity){
+                        ((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()),
+                        		category.getName());
+                    }
+                    break;
+
+                case ROOM:
+                    RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
+                    break;
+
+                case GROUP:
+                    GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+                    break;
+            }
+
 		}
 	}
 }

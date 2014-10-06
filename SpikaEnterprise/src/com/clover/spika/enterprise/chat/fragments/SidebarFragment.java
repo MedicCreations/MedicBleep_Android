@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	RobotoThinButton users;
 	RobotoThinButton groups;
 	RobotoThinButton rooms;
+	RobotoThinButton information;
 	RobotoThinButton logout;
 
 	String image;
@@ -38,6 +38,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	ProfileFragment profileFragment;
 	LobbyFragment lobbyFragment;
 	UsersFragment usersFragment;
+	InformationFragment informationFragment;
 
 	public SidebarFragment() {
 	}
@@ -74,6 +75,9 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 		
 		rooms = (RobotoThinButton) view.findViewById(R.id.rooms);
 		rooms.setOnClickListener(this);
+		
+		information = (RobotoThinButton) view.findViewById(R.id.information);
+		information.setOnClickListener(this);
 
 		logout = (RobotoThinButton) view.findViewById(R.id.logout);
 		logout.setOnClickListener(this);
@@ -98,8 +102,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-
-		Intent intent = new Intent();
 
 		switch (view.getId()) {
 
@@ -150,6 +152,17 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			break;
 
+		case R.id.information:
+
+			if (informationFragment == null) {
+				informationFragment = new InformationFragment();
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information));
+			switchFragment(informationFragment);
+
+			break;
+			
 		case R.id.logout:
 
 			new UserApi().logout(getActivity(), new ApiCallback<BaseModel>() {
