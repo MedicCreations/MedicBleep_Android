@@ -133,7 +133,7 @@ public class InviteUserAdapter extends BaseAdapter {
 			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
-		imageLoader.displayImage(getContext(), user.getImage_thumb(), holder.profileImg);
+		imageLoader.displayImage(getContext(), user.getImageThumb(), holder.profileImg);
 		holder.personName.setText(user.getFirstName() + " " + user.getLastName());
 		
 		if(showCheckBox){

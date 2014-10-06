@@ -124,6 +124,8 @@ public class Const {
 	public static final String SCREEN_TITLE = "ScreenTitle";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
+	public static final String CATEGORY_ID = "category_id";
+	
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;
 	public static final int MSG_TYPE_VIDEO = 3;
@@ -178,12 +180,15 @@ public class Const {
 	public static final String F_GET_THREADS = "/message/child/list";
 	public static final String F_CREATE_ROOM = "/chat/create";
 	public static final String F_UPDATE_CHAT = "/chat/update";
+	public static final String F_GET_CATEGORIES = "/category/list";
+    public static final String F_USER_PROFILE = "/user/profile";
 
 	public static final int API_SUCCESS = 2000;
 
 	// Error constants
 	public static final int E_INVALID_TOKEN = 1000;
 	public static final int E_EXPIRED_TOKEN = 1001;
+	public static final int E_NOT_CHAT_MEMBER = 1005;
 	public static final int E_CHAT_INACTIVE = 1006;
 	public static final int E_CHAT_DELETED = 1007;
 	public static final int E_SOMETHING_WENT_WRONG = 1111;

@@ -16,7 +16,6 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
@@ -39,7 +38,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	ProfileFragment profileFragment;
 	LobbyFragment lobbyFragment;
 	UsersFragment usersFragment;
-	GroupsFragment groupsFragment;
+	CategoryFragment categoryFragment;
 	CreateRoomFragment createRoomFragment;
 
 	public SidebarFragment() {
@@ -108,12 +107,10 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.profile:
 
-			intent.putExtra(Const.USER_IMAGE_NAME, Helper.getUserImage(getActivity()));
-			intent.putExtra(Const.FIRSTNAME, Helper.getUserFirstName(getActivity()));
-			intent.putExtra(Const.LASTNAME, Helper.getUserLastName(getActivity()));
-
 			if (profileFragment == null) {
-				profileFragment = new ProfileFragment(intent);
+				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()),
+                        Helper.getUserFirstName(getActivity()),
+                        Helper.getUserLastName(getActivity()));
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
@@ -145,12 +142,12 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.groups:
 
-			if (groupsFragment == null) {
-				groupsFragment = new GroupsFragment();
+			if (categoryFragment == null) {
+				categoryFragment = new CategoryFragment();
 			}
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.groups));
-			switchFragment(groupsFragment);
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
+			switchFragment(categoryFragment);
 
 			break;
 

@@ -85,7 +85,7 @@ public class UserAdapter extends BaseAdapter {
 			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
-		imageLoader.displayImage(getContext(), getItem(position).getImage_thumb(), holder.profileImg);
+		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.profileImg);
 		holder.personName.setText(getItem(position).getFirstName() + " " + getItem(position).getLastName());
 
 		if (getItem(position).isSelected()){

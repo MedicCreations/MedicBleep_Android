@@ -114,7 +114,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 
         if (position != -1 && position != adapter.getCount()) {
             User user = adapter.getItem(position);
-            ProfileOtherActivity.openOtherProfile(getActivity(), user.getImage(), user.getFirstName() + " " + user.getLastName());
+            ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
         }
     }
 
@@ -168,7 +168,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
     	
     	if(adapter.getSelected().size() == 0){
 			AppDialog dialog = new AppDialog(getActivity(), false);
-			dialog.setInfo("You didn't select any users");
+			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
     	

@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,34 +16,43 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.views.DetailsScrollView;
 
 public class ProfileFragment extends CustomFragment implements OnClickListener {
 
-	public Switch mSwitchPasscodeEnabled;
-	public ImageView profileImage;
-
-	int width = 0;
-	int padding = 0;
+	private Switch mSwitchPasscodeEnabled;
+	private ImageView profileImage;
+    private DetailsScrollView mDetailScrollView;
 
 	String imageId;
 	String firstname;
 	String lastname;
 
-	public ProfileFragment(Intent intent) {
-		setData(intent);
-	}
+    public static ProfileFragment newInstance(String imageId, String firstName, String lastName) {
+        ProfileFragment fragment = new ProfileFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(Const.USER_IMAGE_NAME, imageId);
+        arguments.putString(Const.FIRSTNAME, firstName);
+        arguments.putString(Const.LASTNAME, lastName);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
+	public ProfileFragment() { }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		width = getResources().getDisplayMetrics().widthPixels;
-		padding = (int) (width / 9);
+        setData(getArguments());
 	}
 
 	@Override
@@ -60,17 +70,33 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
-		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
 
 		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
 
+        mDetailScrollView = (DetailsScrollView) rootView.findViewById(R.id.scrollViewDetails);
+
 		return rootView;
 	}
 
-	@Override
+    @Override
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        view.findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
+        new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
+            @Override
+            public void onApiResponse(Result<UserWrapper> result) {
+                if (result.isSuccess()) {
+                    view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+                    mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+                }
+            }
+        });
+    }
+
+    @Override
 	public void onClosed() {
 		if (getActivity() instanceof MainActivity) {
 
@@ -82,11 +108,11 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		}
 	}
 
-	public void setData(Intent intent) {
-		if (intent != null && intent.getExtras() != null) {
-			imageId = intent.getExtras().getString(Const.USER_IMAGE_NAME);
-			firstname = intent.getExtras().getString(Const.FIRSTNAME);
-			lastname = intent.getExtras().getString(Const.LASTNAME);
+	public void setData(Bundle bundle) {
+		if (bundle != null) {
+			imageId = bundle.getString(Const.USER_IMAGE_NAME);
+			firstname = bundle.getString(Const.FIRSTNAME);
+			lastname = bundle.getString(Const.LASTNAME);
 		}
 	}
 

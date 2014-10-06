@@ -506,7 +506,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                 hideSettings();
 
             } else if (id == R.id.partnerIcon) {
-                ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
 
             } else if (id == R.id.goBack) {
                 finish();
@@ -530,7 +530,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
                     if (position == SETTINGS_POSITION_FIRST) {
                     	if (chatType == Const.C_PRIVATE) {
-                    		ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, chatImage, chatName);
+                    		ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
                     	} 
                     	else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
                     		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
@@ -608,6 +608,12 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected abstract String getRootId();
 
     protected abstract String getMessageId();
+
+    /**
+     * Required to return user id when chat with a single user is opened.
+     * This method can return any value when chat involves more than two people.
+     */
+    protected abstract String getUserId();
 
     public static interface OnTempFileCreatedListener {
         void onTempFileCreated(String path, String name);

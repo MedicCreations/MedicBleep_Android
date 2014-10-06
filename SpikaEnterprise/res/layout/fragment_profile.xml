@@ -3,16 +3,17 @@
     android:id="@+id/wholeScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_blue" >
+    android:background="@color/default_blue">
 
     <com.clover.spika.enterprise.chat.views.RoundImageView
         android:id="@+id/profileImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:background="@drawable/circle_with_white_border"
-        tools:src="@drawable/@drawable/default_user_image" />
+        android:scaleType="center"
+        tools:src="@drawable/white_circle" />
 
     <ImageView
         android:id="@+id/addPhoto"
@@ -20,8 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/profileImage"
         android:layout_alignTop="@id/profileImage"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="-25dp"
         android:background="@drawable/add_photo"
         android:contentDescription="@null" />
 
@@ -30,36 +30,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/profileImage"
-        android:layout_margin="20dp"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="45sp"
         tools:text="John Doe" />
 
-    <Switch
-        android:id="@+id/switchPasscode"
+    <FrameLayout
+        android:id="@+id/frameLayoutPasscode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profileName">
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/labelEnablePasscode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:text="@string/enable_passcode_label"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <Switch
+            android:id="@+id/switchPasscode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:layout_margin="20dp"
+            android:checked="true"
+            android:textColor="@android:color/white"
+            android:textOff="Off"
+            android:textOn="On"
+            android:thumb="@drawable/spikaenterpriseswitch_switch_inner_holo_light"
+            android:track="@drawable/spikaenterpriseswitch_switch_track_holo_light" />
+
+    </FrameLayout>
+
+    <com.clover.spika.enterprise.chat.views.DetailsScrollView
+        android:id="@+id/scrollViewDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/frameLayoutPasscode"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:divider="@android:color/transparent" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="20dp"
-        android:checked="true"
-        android:textOff="Off"
-        android:textOn="On"
-        android:thumb="@drawable/spikaenterpriseswitch_switch_inner_holo_light"
-        android:track="@drawable/spikaenterpriseswitch_switch_track_holo_light" />
-
-    <com.clover.spika.enterprise.chat.views.RobotoThinTextView
-        android:id="@+id/labelEnablePasscode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="20dp"
-        android:layout_toLeftOf="@id/switchPasscode"
-        android:gravity="center"
-        android:text="@string/enable_passcode_label"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
 </RelativeLayout>

@@ -31,6 +31,7 @@ public class ChatActivity extends BaseChatActivity {
 	public MessagesAdapter adapter;
 
 	private int totalItems = 0;
+    private String mUserId;
 
 	private boolean isRunning = false;
 	private boolean isResume = false;
@@ -52,7 +53,7 @@ public class ChatActivity extends BaseChatActivity {
                     if (message.getType() != Const.MSG_TYPE_DELETED) {
                         int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
                         ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                                message.getChat_id(), message.getId(), chatImage, chatName);
+                                message.getChat_id(), message.getId(), chatImage, chatName, mUserId);
                     }
                 }
             }
@@ -141,6 +142,9 @@ public class ChatActivity extends BaseChatActivity {
 									adapter.addItems(result.getResultData().getMessagesList(), true);
 									adapter.setSeenBy(result.getResultData().getSeen_by());
 									adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
+									if(adapter.getCount() > 0){
+										chatListView.setSelectionFromTop(adapter.getCount(), 0);
+									}
 								} else {
 									AppDialog dialog = new AppDialog(ChatActivity.this, false);
 
@@ -193,7 +197,7 @@ public class ChatActivity extends BaseChatActivity {
                         if (result.hasResultData()) {
                             dialog.setFailed(result.getResultData().getMessage());
                         } else {
-                            dialog.setFailed("");
+                            dialog.setFailed(Helper.errorDescriptions(getApplicationContext(), result.getResultData().getCode()));
                         }
                     }
                 }
@@ -212,6 +216,11 @@ public class ChatActivity extends BaseChatActivity {
     @Override
     protected String getMessageId() {
         return null;
+    }
+
+    @Override
+    protected String getUserId() {
+        return mUserId;
     }
 
     public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
@@ -285,6 +294,8 @@ public class ChatActivity extends BaseChatActivity {
 				if (result.isSuccess()) {
 
 					Chat chat = result.getResultData();
+
+                    mUserId = chat.getUser().getId();
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 					adapter.setSeenBy(chat.getSeen_by());

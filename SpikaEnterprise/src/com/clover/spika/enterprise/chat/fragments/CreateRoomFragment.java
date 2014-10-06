@@ -271,7 +271,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		
 		if (usersToAdd.isEmpty()){
 			AppDialog dialog = new AppDialog(getActivity(), false);
-			dialog.setInfo("You didn't select any users");
+			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 		

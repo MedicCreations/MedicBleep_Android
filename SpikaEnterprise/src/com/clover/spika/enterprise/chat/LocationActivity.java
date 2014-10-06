@@ -1,8 +1,10 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -84,8 +86,16 @@ public class LocationActivity extends BaseActivity {
 
 			latitude = extras.getDouble(Const.LATITUDE);
 			longitude = extras.getDouble(Const.LONGITUDE);
+			
+			sendLocation.setImageResource(android.R.drawable.ic_menu_directions);
 
-			sendLocation.setVisibility(View.INVISIBLE);
+			sendLocation.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					getRoute(latitude, longitude);
+				}
+			});
 
 			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
 			markerOfUser = new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue));
@@ -177,6 +187,12 @@ public class LocationActivity extends BaseActivity {
 				}
 			}
 		});
+	}
+	
+	private void getRoute(double latitude, double longintude){
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+				Uri.parse("geo:0,0?q=" + latitude + "," + longintude));
+    	startActivity(intent);
 	}
 
 	@Override

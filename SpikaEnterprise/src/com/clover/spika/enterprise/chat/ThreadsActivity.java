@@ -21,14 +21,16 @@ import com.clover.spika.enterprise.chat.utils.Const;
 public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
         ApiCallback<Integer> {
 
+    public static final String EXTRA_USER_ID = "com.clover.spika.enterprise.extra_user_id";
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
     public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.extra_message_id";
     public static final String EXTRA_PHOTO_THUMB = "com.clover.spika.enterprise.extra_photo_thumb";
     public static final String EXTRA_CHAT_NAME = "com.clover.spika.enterprise.extra_chat_name";
 
-    public static void start(Activity activity, String root, String chatId, String messageId, String photoThumb, String chatName) {
+    public static void start(Activity activity, String root, String chatId, String messageId, String photoThumb, String chatName, String userId) {
         Intent threadIntent = new Intent(activity, ThreadsActivity.class);
+        threadIntent.putExtra(EXTRA_USER_ID, userId);
         threadIntent.putExtra(EXTRA_ROOT_ID, root);
         threadIntent.putExtra(EXTRA_CHAT_ID, chatId);
         threadIntent.putExtra(EXTRA_MESSAGE_ID, messageId);
@@ -41,12 +43,14 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
     private String mRootId;
     private String mMessageId;
+    private String mUserId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getIntent().getExtras() != null) {
+            mUserId = getIntent().getStringExtra(EXTRA_USER_ID);
             mRootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
             chatId = getIntent().getStringExtra(EXTRA_CHAT_ID);
             mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
@@ -146,6 +150,11 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     @Override
     protected String getMessageId() {
         return this.mMessageId;
+    }
+
+    @Override
+    protected String getUserId() {
+        return mUserId;
     }
 
     @Override
