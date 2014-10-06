@@ -295,7 +295,7 @@ public class ChatActivity extends BaseChatActivity {
 
 					Chat chat = result.getResultData();
 
-                    mUserId = chat.getUser().getId();
+                    mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 					adapter.setSeenBy(chat.getSeen_by());
