@@ -135,7 +135,7 @@
                 android:textSize="25sp" />
             
              <com.clover.spika.enterprise.chat.views.RobotoThinButton
-                android:id="@+id/create_room"
+                android:id="@+id/rooms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
@@ -145,7 +145,7 @@
                 android:drawablePadding="10dp"
                 android:gravity="left"
                 android:padding="10dp"
-                android:text="@string/create_room"
+                android:text="@string/rooms"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 

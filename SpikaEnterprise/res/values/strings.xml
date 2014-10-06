@@ -97,6 +97,7 @@
     <string name="lobby">Lobby</string>
     <string name="users">Users</string>
     <string name="groups">Groups</string>
+    <string name="rooms">Rooms</string>
     <string name="pick_category">Pick category</string>
     <string name="title_lobby">Lobby</string>
     <string name="invite">Invite</string>
