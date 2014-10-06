@@ -349,7 +349,8 @@ public class ChatApi {
     }
     
     
-    public void createRoom(final String name, final String image, final String image_thumb, final String users_to_add, Context context, final ApiCallback<Chat> listener) {
+    public void createRoom(final String name, final String image, final String image_thumb, final String users_to_add, 
+    		final String categoryId, Context context, final ApiCallback<Chat> listener) {
         new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
             @Override
@@ -359,6 +360,7 @@ public class ChatApi {
                 requestParams.put(Const.IMAGE, image);
                 requestParams.put(Const.IMAGE_THUMB, image_thumb);
                 requestParams.put(Const.USERS_TO_ADD, users_to_add);
+                requestParams.put(Const.CATEGORY_ID, categoryId);
 
                 try {
                     JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_CREATE_ROOM, requestParams,

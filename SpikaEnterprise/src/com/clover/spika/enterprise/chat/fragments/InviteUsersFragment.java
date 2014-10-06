@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +95,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 
             noItems = (TextView) view.findViewById(R.id.noItems);
             txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
+            txtUsers.setMovementMethod(new ScrollingMovementMethod());
             
             mainListView = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
             mainListView.setAdapter(adapter);
