@@ -54,7 +54,7 @@ public class GcmIntentService extends IntentService {
 				String chatImage = "";
 				String chatType = "";
 				String type = "";
-				String isActive = "";
+				int isActive = 0;
 				String adminId = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
@@ -86,7 +86,7 @@ public class GcmIntentService extends IntentService {
 				}
 				
 				if (extras.containsKey(Const.IS_ACTIVE)) {
-					isActive = extras.getString(Const.IS_ACTIVE);
+					isActive = extras.getString(Const.IS_ACTIVE).equals("1") ? 1 : 0;
 				}
 				
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;

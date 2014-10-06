@@ -84,13 +84,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				String chatImage = intent.getExtras().getString(Const.IMAGE);
 				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
-				String isActive = intent.getExtras().getString(Const.IS_ACTIVE);
+				int isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
 				String adminId = intent.getExtras().getString(Const.ADMIN_ID);
 				String type = intent.getExtras().getString(Const.TYPE);
-			
-				int isActiveInt = isActive.equals("1") ? 1 : 0;
-				
-				pushCall(message, chatId, chatName, chatImage, pushType, type, adminId, isActiveInt);				
+							
+				pushCall(message, chatId, chatName, chatImage, pushType, type, adminId, isActive);				
 			}
 		};
 		// end: handle notifications
