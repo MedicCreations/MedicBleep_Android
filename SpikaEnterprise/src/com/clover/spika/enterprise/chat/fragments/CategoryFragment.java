@@ -46,7 +46,7 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 		View rootView = inflater.inflate(R.layout.fragment_category_list, container, false);
 		
-		mIsToChooseCategoryForRoom = getArguments().getBoolean(Const.IS_CHOOSE_CATEGORY, false);
+		if(getArguments() != null) mIsToChooseCategoryForRoom = getArguments().getBoolean(Const.IS_CHOOSE_CATEGORY, false);
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
