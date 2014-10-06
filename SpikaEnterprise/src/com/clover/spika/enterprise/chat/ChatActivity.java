@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -127,9 +128,9 @@ public class ChatActivity extends BaseChatActivity {
 				chatImage = intent.getExtras().getString(Const.IMAGE);
 
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
-				String userId = intent.getExtras().getString(Const.USER_ID);
+				mUserId = intent.getExtras().getString(Const.USER_ID);
 
-				new ChatApi().startChat(isGroup, userId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
+				new ChatApi().startChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
 						new ApiCallback<Chat>() {
 
 							@Override
@@ -300,7 +301,9 @@ public class ChatActivity extends BaseChatActivity {
 
 					Chat chat = result.getResultData();
 
-                    mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
+                    if (TextUtils.isEmpty(mUserId)) {
+                        mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
+                    }
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 					adapter.setSeenBy(chat.getSeen_by());
