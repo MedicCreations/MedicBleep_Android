@@ -107,6 +107,7 @@ public class Const {
 	public static final String IS_ACTIVE = "is_active";
 	public static final String USER_IDS = "user_ids";
 	public static final String ADMIN_ID = "admin_id";
+	public static final String IS_CHOOSE_CATEGORY = "isChooseCategory";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -125,6 +126,7 @@ public class Const {
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 
 	public static final String CATEGORY_ID = "category_id";
+	public static final String CATEGORY_NAME = "category_name";
 	
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;

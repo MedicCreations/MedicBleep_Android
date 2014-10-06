@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.CategoryAdapter;
@@ -21,6 +22,7 @@ import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.CategoryList;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -30,6 +32,8 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 	PullToRefreshListView mainListView;
 	public CategoryAdapter adapter;
+	
+	private boolean mIsToChooseCategoryForRoom = false;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -41,6 +45,8 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_category_list, container, false);
+		
+		mIsToChooseCategoryForRoom = getArguments().getBoolean(Const.IS_CHOOSE_CATEGORY, false);
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
@@ -57,7 +63,11 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 	private void setData(List<Category> data) {
 		List<Category> allData = new ArrayList<Category>();
-		allData.add(new Category(0, getString(R.string.all)));
+		if(mIsToChooseCategoryForRoom){
+			allData.add(new Category(0, getString(R.string.none)));
+		}else{
+			allData.add(new Category(0, getString(R.string.all)));
+		}
 		allData.addAll(data);
 		
 		mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
@@ -95,8 +105,13 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 		if (position != -1 && position != adapter.getCount()) {
 			Category category = adapter.getItem(position);
-
-			GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+			if(mIsToChooseCategoryForRoom){
+				if(getActivity() instanceof ChooseCategoryActivity){
+					((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(category.getId(), category.getName());
+				}
+			}else{
+				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+			}
 			
 		}
 	}
