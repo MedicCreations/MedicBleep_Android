@@ -176,7 +176,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@SuppressLint("InflateParams")
 			protected void onPostExecute(Integer result) {
-				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content).getRootView());
+				ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
 				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, null);
 
 				view.setOnClickListener(new View.OnClickListener() {
@@ -197,34 +197,21 @@ public class BaseActivity extends SlidingFragmentActivity {
 				TextView text = (TextView) view.findViewById(R.id.msgPop);
 				text.setText(msg);
 
-				int pix = 0;
-				int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-				if (resourceId > 0) {
-					pix = getResources().getDimensionPixelSize(resourceId);
-				}
-
-				final RelativeLayout notificationLayout = (RelativeLayout) view.findViewById(R.id.notificationLayout);
-
-				View paddingTopView = (View) view.findViewById(R.id.paddingTopView);
-				RelativeLayout.LayoutParams paramsV = (RelativeLayout.LayoutParams) paddingTopView.getLayoutParams();
-				paramsV.height = pix;
-				paddingTopView.setLayoutParams(paramsV);
-
 				final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 				params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 
 				contentRoot.addView(view, params);
+				contentRoot.invalidate();
 
 				final Handler handler = new Handler();
 
 				final Animation notAnimIn = AnimationUtils.loadAnimation(context, R.anim.in_app_notification_anim_in);
 				final Animation notAnimOut = AnimationUtils.loadAnimation(context, R.anim.in_app_notification_anim_out);
-
+				
 				notAnimIn.setAnimationListener(new AnimationListener() {
 
 					@Override
 					public void onAnimationStart(Animation animation) {
-						notificationLayout.setVisibility(View.VISIBLE);
 					}
 
 					@Override
@@ -253,8 +240,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 					}
 
 					@Override
-					public void onAnimationEnd(Animation animation) {
-						((ViewGroup) findViewById(android.R.id.content).getRootView()).removeView(view);
+					public void onAnimationEnd(Animation animation) {						
+						((ViewGroup) findViewById(android.R.id.content)).removeView(view);
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
@@ -263,7 +250,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						}
 					}
 				});
-
+				
 				view.startAnimation(notAnimIn);
 			};
 		}.execute();
