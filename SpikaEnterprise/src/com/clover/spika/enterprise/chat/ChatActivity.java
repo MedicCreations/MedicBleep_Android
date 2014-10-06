@@ -108,7 +108,12 @@ public class ChatActivity extends BaseChatActivity {
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
-				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
+				if (intent.getExtras().containsKey(Const.ADMIN_ID)) {
+					isAdmin = Helper.getUserId(this).equals(intent.getExtras().getString(Const.ADMIN_ID, "")) ? true : false;
+				} 
+				else {
+					isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
+				}				
 				isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
 				if (isActive == 0){
 					etMessage.setFocusable(false);
