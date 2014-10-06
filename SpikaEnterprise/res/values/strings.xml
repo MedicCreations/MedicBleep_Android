@@ -176,5 +176,8 @@
         <item>Phone Number</item>
         <item>Email</item>
     </string-array>
+        <string name="select_category">Select category</string>
+        <string name="choose_category">Choose category</string>
+        <string name="none">None</string>
 
 </resources>

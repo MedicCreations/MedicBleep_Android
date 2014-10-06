@@ -1,7 +1,9 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -252,5 +254,5 @@ public class MainActivity extends BaseActivity {
 
 		finish();
 	}
-
+	
 }

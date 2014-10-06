@@ -1,11 +1,15 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +19,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
@@ -42,9 +48,6 @@ import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener, OnChangeListener<User> {
 
 	private TextView noItems;
@@ -65,10 +68,14 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private RobotoThinEditText roomName;
 	private ImageButton btnSearch;
 	private EditText etSearch;
+	private FrameLayout layoutForChooseCategory;
 	
 	List<User> usersToAdd = new ArrayList<User>();
 	
 	LobbyFragment lobbyFragment;
+	
+	private int mCategoryId = 0;
+	private TextView mTvCategoryName;
 	
 
 	@Override
@@ -96,6 +103,8 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
 		txtUsers = (TextView) rootView.findViewById(R.id.txtUserNames);
+		layoutForChooseCategory = (FrameLayout) rootView.findViewById(R.id.flForChooseCategoryFragment);
+		mTvCategoryName = (TextView) rootView.findViewById(R.id.tvCategory);
 		imgRoom = (ImageView) rootView.findViewById(R.id.img_room);
 		imgRoom.setOnClickListener(this);
 		
@@ -129,6 +138,14 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		setInitialTextToTxtUsers();
 		
 		((MainActivity) getActivity()).setCreateRoom(this);
+		
+		rootView.findViewById(R.id.layoutCategory).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				openChooseCategory();
+			}
+		});
 		
 		return rootView;
 	}
@@ -295,7 +312,8 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			}
 		}
 		
-		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add.toString(), getActivity(), new ApiCallback<Chat>() {
+		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add.toString(), String.valueOf(mCategoryId),
+				getActivity(), new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
@@ -375,6 +393,23 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		
 		txtUsers.setText(span);
+	}
+	
+	private void openChooseCategory(){
+		startActivityForResult(new Intent(getActivity(), ChooseCategoryActivity.class), 11);
+	}
+	
+	private void setCategory(String catName){
+		mTvCategoryName.setText(catName);
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(data != null){
+			mCategoryId = data.getIntExtra(Const.CATEGORY_ID, 0);
+			setCategory(data.getStringExtra(Const.CATEGORY_NAME));
+		}
 	}
 	
 }
