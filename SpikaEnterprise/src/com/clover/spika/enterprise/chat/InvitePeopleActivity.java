@@ -1,13 +1,15 @@
 package com.clover.spika.enterprise.chat;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,7 +24,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
-import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -36,9 +37,6 @@ import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<User> {
 
@@ -134,6 +132,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
 
 		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
+		invitedPeople.setMovementMethod(new ScrollingMovementMethod());
 
 		adapter = new InviteUserAdapter(this, new ArrayList<User>(), this);
 

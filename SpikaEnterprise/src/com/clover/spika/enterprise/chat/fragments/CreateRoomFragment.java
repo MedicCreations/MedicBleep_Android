@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -103,6 +104,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
 		txtUsers = (TextView) rootView.findViewById(R.id.txtUserNames);
+		txtUsers.setMovementMethod(new ScrollingMovementMethod());
 		layoutForChooseCategory = (FrameLayout) rootView.findViewById(R.id.flForChooseCategoryFragment);
 		mTvCategoryName = (TextView) rootView.findViewById(R.id.tvCategory);
 		imgRoom = (ImageView) rootView.findViewById(R.id.img_room);

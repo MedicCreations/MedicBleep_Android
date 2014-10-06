@@ -91,6 +91,9 @@
         android:layout_below="@+id/aboveSelectedUserLayout"
         android:padding="10dp"
         android:ems="13"
+        android:gravity="bottom"
+        android:maxLines="4"
+        android:scrollbars="vertical"
         android:background="@color/white"
         android:lineSpacingExtra="5dp"
         android:textColor="@color/text_blue" />
