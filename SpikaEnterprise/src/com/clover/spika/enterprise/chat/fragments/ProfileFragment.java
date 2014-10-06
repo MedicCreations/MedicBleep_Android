@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
@@ -120,7 +121,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.addPhoto:
-			showDialog();
+			CreateRoomActivity.start(1, "Sport", getActivity());
+//			showDialog();
 			break;
 
 		case R.id.switchPasscode:
