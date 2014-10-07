@@ -1,5 +1,13 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -10,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -20,15 +27,16 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CameraCropActivity;
 import com.clover.spika.enterprise.chat.CameraFullPhotoActivity;
-import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.InvitePeopleActivity;
 import com.clover.spika.enterprise.chat.LocationActivity;
+import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -47,15 +55,6 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
-import com.clover.spika.enterprise.chat.views.RoundImageView;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -79,7 +78,7 @@ public abstract class BaseChatActivity extends BaseActivity {
     private ImageButton footerMore;
     private RelativeLayout rlDrawer;
     private RelativeLayout chatLayout;
-    private RoundImageView partnerIcon;
+    private ImageView partnerIcon;
     private RobotoThinTextView screenTitle;
     protected EditText etMessage;
     protected ListView chatListView;
@@ -114,7 +113,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
         chatListView = (ListView) findViewById(R.id.main_list_view);
 
-        partnerIcon = (RoundImageView) findViewById(R.id.partnerIcon);
+        partnerIcon = (ImageView) findViewById(R.id.partnerIcon);
         screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
         ImageButton goBack = (ImageButton) findViewById(R.id.goBack);
         goBack.setOnClickListener(thisClickListener);
