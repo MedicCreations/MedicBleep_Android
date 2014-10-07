@@ -67,6 +67,10 @@ public class ImageLoader {
 
 	public void displayImage(Context ctx, String url, ImageView imageView) {
 
+		if(url.equals("") || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)){
+			imageView.setImageResource(defaultImageId);
+			return;
+		}
 		// Store image and url in Map
 		imageViews.put(imageView, url);
 

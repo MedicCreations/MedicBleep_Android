@@ -183,6 +183,7 @@ public class Const {
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
     public static final String F_USER_PROFILE = "/user/profile";
+    public static final String F_USER_GET_ROOMS = "/room/list";
 
 	public static final int API_SUCCESS = 2000;
 
@@ -213,4 +214,7 @@ public class Const {
 	}
 	
 	public static final String UPDATE_PICTURE = "update_picture";
+	public static final String DEFAULT_IMAGE_USER = "default_user_image";
+	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
+	
 }

@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,11 +19,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
+import com.clover.spika.enterprise.chat.adapters.RoomsAdapter;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
-import com.clover.spika.enterprise.chat.models.Group;
+import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.RoomsList;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -38,7 +44,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
     private TextView noItems;
 
     private PullToRefreshListView mainListView;
-    public GroupAdapter adapter;
+    public RoomsAdapter adapter;
 
     private ImageButton searchBtn;
     private EditText searchEt;
@@ -59,7 +65,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rooms);
 
-        adapter = new GroupAdapter(this, new ArrayList<Group>());
+        adapter = new RoomsAdapter(this, new ArrayList<Chat>());
 
         mCurrentIndex = 0;
 
@@ -120,7 +126,23 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    	position = position - 1;
 
+		if (position != -1 && position != adapter.getCount()) {
+			Chat room = adapter.getItem(position);
+			
+			boolean isAdmin = false;
+			if(Helper.getUserId(this).equals(room.getAdminId())) isAdmin = true;
+
+			Intent intent = new Intent(this, ChatActivity.class);
+			intent.putExtra(Const.CHAT_ID, String.valueOf(room.getChat_id()));
+			intent.putExtra(Const.CHAT_NAME, room.getChat_name());
+			intent.putExtra(Const.TYPE, room.getType());
+			intent.putExtra(Const.IS_ACTIVE, room.isActive());
+			intent.putExtra(Const.IMAGE, room.getImageThumb());
+			intent.putExtra(Const.IS_ADMIN, isAdmin);
+			startActivity(intent);
+		}
     }
 
     PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
@@ -189,9 +211,58 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 
 		finish();
 	}
+	
+	private void setData(List<Chat> data, boolean toClearPrevious) {
+		// -2 is because of header and footer view
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+		if(toClearPrevious) currentCount = data.size();
+
+		if (toClearPrevious)
+			adapter.clearItems();
+		adapter.addItems(data);
+		if (toClearPrevious)
+			mainListView.getRefreshableView().setSelection(0);
+
+		mainListView.onRefreshComplete();
+
+		if (adapter.getCount() == 0) {
+			noItems.setVisibility(View.VISIBLE);
+		} else {
+			noItems.setVisibility(View.GONE);
+		}
+
+		if (currentCount >= mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+		}
+	}
 
     private void getRooms(int page, String search, final boolean toClear) {
+    	RoomsApi roomApi = new RoomsApi();
+		if (search == null) {
+			roomApi.getRoomsWithPage(mCurrentIndex, mCategory, this, true, new ApiCallback<RoomsList>() {
 
+				@Override
+				public void onApiResponse(Result<RoomsList> result) {
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getRoomsList(), toClear);
+					}
+				}
+			});
+		} else {
+			roomApi.getRoomsByName(mCurrentIndex, mCategory, search, this, true, new ApiCallback<RoomsList>() {
+
+				@Override
+				public void onApiResponse(Result<RoomsList> result) {
+					if (result.isSuccess()) {
+						mTotalCount = result.getResultData().getTotalCount();
+						setData(result.getResultData().getRoomsList(), toClear);
+					}
+				}
+			});
+		}
     }
     
     @Override

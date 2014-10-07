@@ -27,6 +27,18 @@ public class Chat extends BaseModel {
 
     @SerializedName("user")
     private User user;
+    
+    @SerializedName("image_thumb")
+    private String imageThumb;
+    
+    @SerializedName("admin_id")
+    private String adminId;
+    
+    @SerializedName("is_active")
+    private int isActive;
+    
+    @SerializedName("type")
+    private String type;
 
 	private boolean isNewMsg = false;
 	private boolean isRefresh = false;
@@ -138,8 +150,40 @@ public class Chat extends BaseModel {
     public User getUser() {
         return user;
     }
+    
+    public String getImageThumb() {
+		return imageThumb;
+	}
 
-    @Override
+	public void setImageThumb(String imageThumb) {
+		this.imageThumb = imageThumb;
+	}
+	
+	public String getAdminId() {
+		return adminId;
+	}
+
+	public void setAdminId(String adminId) {
+		this.adminId = adminId;
+	}
+	
+	public int isActive() {
+		return isActive;
+	}
+
+	public void setActive(int isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
