@@ -86,7 +86,7 @@ public class PhotoActivity extends BaseActivity {
 		int height = displaymetrics.heightPixels;
 
 		// 90% of width
-		int height_cut = (int) ((float) height * (1f - (40f / 100f)));
+		int height_cut = (int) ((float) height * (1f - (20f / 100f)));
 
 		// Image container
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, height_cut);
