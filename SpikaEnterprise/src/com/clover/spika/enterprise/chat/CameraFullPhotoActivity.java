@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -421,9 +420,6 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
         int dstWidth = (int) (curWidth * resizeCoefficient);
         int dstHeight = (int) (curHeight * resizeCoefficient);
-
-        Log.d("COMPRESSION", "curWidth: " + curWidth + "; curHeight: " + curHeight + " | resizeCoefficient: " + resizeCoefficient
-                + ", dstWidth: " + dstWidth + ", dstHeight: " + dstHeight);
 
         mBitmap = Bitmap.createScaledBitmap(mBitmap, dstWidth, dstHeight, false);
     }

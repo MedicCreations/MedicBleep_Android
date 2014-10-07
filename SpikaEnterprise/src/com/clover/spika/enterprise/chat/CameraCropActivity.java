@@ -19,7 +19,6 @@ import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -44,7 +43,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.CroppedImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -67,8 +65,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private int mode = NONE;
 
     // thumbnail width and height
-    private static final int WIDTH = 100;
-    private static final int HEIGHT = 100;
+    private static final int THUMB_WIDTH = 100;
+    private static final int THUMB_HEIGHT = 100;
+    // compressed max size
+    private static final double MAX_SIZE = 640;
 
 	// Remember some things for zooming
 	private PointF start = new PointF();
@@ -96,16 +96,16 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private LinearLayout btnSend;
 	private LinearLayout btnCancel;
 
-	private boolean mIsOverJellyBean = false;
+	private boolean mIsOverJellyBean;
+    private boolean mCompressImages;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
 
-		if (Build.VERSION.SDK_INT > 18) {
-			mIsOverJellyBean = true;
-		}
+        mIsOverJellyBean = Build.VERSION.SDK_INT > 18;
+        mCompressImages = getResources().getBoolean(R.bool.send_compressed_images);
 
 		return_flag = false;
 
@@ -569,7 +569,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void createThumb(String path, Bitmap b) {
-		int width = WIDTH, height = HEIGHT;
+		int width = THUMB_WIDTH, height = THUMB_HEIGHT;
 		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
 
 		saveBitmapToFile(sb, path);
@@ -591,20 +591,53 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		if (id == R.id.btnSend) {
 			btnSend.setClickable(false);
 
-			Bitmap resizedBitmap = getBitmapFromView(mImageView);
-			ByteArrayOutputStream bs = new ByteArrayOutputStream();
-			resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-			if (saveBitmapToFile(resizedBitmap, mFilePath) == true) {
-				createThumb(mFileThumbPath, resizedBitmap);
-				fileUploadAsync(mFilePath, mFileThumbPath);
-			} else {
-				AppDialog dialog = new AppDialog(this, true);
-				dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
-			}
+            if (mCompressImages) {
+                AppDialog compressionConfirmationDialog = new AppDialog(this, false);
+                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question));
+                compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick(View v) {
+                        prepareFileForUpload(compressFileBeforePrepare(getBitmapFromView(mImageView)));
+                    }
+                });
+                compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+                    @Override
+                    public void onNegativeButtonClick(View v) {
+                        prepareFileForUpload(getBitmapFromView(mImageView));
+                    }
+                });
+            } else {
+                prepareFileForUpload(getBitmapFromView(mImageView));
+            }
 		} else if (id == R.id.btnCancel) {
 			finish();
 		}
 	}
+
+    Bitmap compressFileBeforePrepare(Bitmap bmp) {
+        int curWidth = bmp.getWidth();
+        int curHeight = bmp.getHeight();
+
+        int sizeToManipulate = curWidth > curHeight ? curWidth : curHeight;
+        double resizeCoefficient = MAX_SIZE / sizeToManipulate;
+
+        int dstWidth = (int) (curWidth * resizeCoefficient);
+        int dstHeight = (int) (curHeight * resizeCoefficient);
+
+        return Bitmap.createScaledBitmap(bmp, dstWidth, dstHeight, false);
+    }
+
+    void prepareFileForUpload(Bitmap bmp) {
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+        if (saveBitmapToFile(bmp, mFilePath)) {
+            createThumb(mFileThumbPath, bmp);
+            fileUploadAsync(mFilePath, mFileThumbPath);
+        } else {
+            AppDialog dialog = new AppDialog(this, true);
+            dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
+        }
+    }
 
 	private void fileUploadAsync(String filePath, final String thumbPath) {
 
