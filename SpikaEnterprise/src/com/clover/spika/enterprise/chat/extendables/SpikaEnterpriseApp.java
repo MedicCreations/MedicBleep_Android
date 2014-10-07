@@ -1,9 +1,11 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import com.clover.spika.enterprise.chat.utils.Preferences;
-
 import android.app.Application;
 import android.content.Context;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class SpikaEnterpriseApp extends Application {
 
@@ -15,6 +17,7 @@ public class SpikaEnterpriseApp extends Application {
 		super.onCreate();
 
 		mInstance = this;
+        JNAesCrypto.isEncryptionEnabled = getApplicationContext().getResources().getBoolean(R.bool.enable_global_encryption);
 
 		this.setAppContext(getApplicationContext());
 	}
