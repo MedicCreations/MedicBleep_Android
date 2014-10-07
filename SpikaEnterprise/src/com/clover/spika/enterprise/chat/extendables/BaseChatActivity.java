@@ -442,39 +442,39 @@ public abstract class BaseChatActivity extends BaseActivity {
             	dialog.show();
             	
             } else if (id == R.id.btnGallery) {
-            	final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
-            	dialog.setYesNo(getResources().getString(R.string.enableEditPhoto));
-            	dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
-					
-					@Override
-					public void onPositiveButtonClick(View v) {
-						Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
-		                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-		                intent.putExtra(Const.FROM_WAll, true);
-		                intent.putExtra(Const.CHAT_ID, chatId);
-		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-		                startActivity(intent);
-		                dialog.dismiss();
-					}
-				});
+            	final AppDialog cropImageConfirmationDialog = new AppDialog(BaseChatActivity.this, false);
+            	cropImageConfirmationDialog.setYesNo(getString(R.string.enableEditPhoto),
+                                                     getString(R.string.choiceCroppedImage),
+                                                     getString(R.string.choiceFullSizeImage));
+            	cropImageConfirmationDialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick(View v) {
+                        Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+                        intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+                        intent.putExtra(Const.FROM_WAll, true);
+                        intent.putExtra(Const.CHAT_ID, chatId);
+                        intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                        intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+                        startActivity(intent);
+                        cropImageConfirmationDialog.dismiss();
+                    }
+                });
             	
-            	dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
-					
-					@Override
-					public void onNegativeButtonClick(View v) {
-						Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
-		                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
-		                intent.putExtra(Const.FROM_WAll, true);
-		                intent.putExtra(Const.CHAT_ID, chatId);
-		                intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-		                intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-		                startActivity(intent);
-		                dialog.dismiss();
-					}
-				});
+            	cropImageConfirmationDialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+                    @Override
+                    public void onNegativeButtonClick(View v) {
+                        Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
+                        intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+                        intent.putExtra(Const.FROM_WAll, true);
+                        intent.putExtra(Const.CHAT_ID, chatId);
+                        intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+                        intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+                        startActivity(intent);
+                        cropImageConfirmationDialog.dismiss();
+                    }
+                });
             	
-            	dialog.show();
+            	cropImageConfirmationDialog.show();
 
             } else if (id == R.id.btnVideo) {
                 AppDialog dialog = new AppDialog(BaseChatActivity.this, false);

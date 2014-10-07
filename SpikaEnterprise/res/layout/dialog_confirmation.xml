@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     android:background="@color/transparent">
 
     <RelativeLayout
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:minWidth="250dp">
 
         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/infoText"
@@ -35,7 +37,7 @@
             android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/layout_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,22 +45,26 @@
                 android:orientation="vertical">
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/text_no"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@android:string/no"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:textColor="@color/text_blue"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="@android:string/no" />
 
                 <View
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="1dp"
+                    android:layout_alignLeft="@id/text_no"
+                    android:layout_alignRight="@id/text_no"
+                    android:layout_below="@id/text_no"
                     android:background="@color/text_blue" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/layout_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -66,19 +72,24 @@
                 android:orientation="vertical">
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/text_yes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:text="@android:string/yes"
                     android:textColor="@color/text_blue"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:text="@android:string/yes" />
 
                 <View
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="1dp"
+                    android:layout_alignLeft="@id/text_yes"
+                    android:layout_alignRight="@id/text_yes"
+                    android:layout_below="@id/text_yes"
                     android:background="@color/text_blue" />
-            </LinearLayout>
+
+            </RelativeLayout>
 
         </LinearLayout>
 
