@@ -5,6 +5,11 @@
         before sending it -->
     <bool name="send_compressed_images">true</bool>
 
+    <!-- when enabled, give the user the opportunity to decide if he or she
+        wants to sent a full sized photo or do a crop of a given photo;
+        by default, user can only send cropped images -->
+    <bool name="enable_full_size_and_crop_image_choice">true</bool>
+
     <!-- when true, global encryption will be enabled; this means that all data
         transmitted by this app will be encrypted -->
     <bool name="enable_global_encryption">true</bool>
