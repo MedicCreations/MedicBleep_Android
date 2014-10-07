@@ -61,6 +61,7 @@
     <string name="searchUsers">Search users</string>
     <string name="enterRoomName">Enter room name</string>
     <string name="enableEditPhoto">Do you want to use full size or cropped image?</string>
+    <string name="compression_confirmation_question">Do you want to send compressed image?</string>
     <string name="choiceFullSizeImage">Full size</string>
     <string name="choiceCroppedImage">Cropped</string>
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- when true, application will ask the user if he/she wants to compress the image
+        before sending it -->
+    <bool name="send_compressed_images">true</bool>
+    
+</resources>
