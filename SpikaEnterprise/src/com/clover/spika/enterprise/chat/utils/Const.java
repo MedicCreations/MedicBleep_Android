@@ -126,6 +126,7 @@ public class Const {
 
 	public static final String CATEGORY_ID = "category_id";
 	public static final String CATEGORY_NAME = "category_name";
+	public static final String URL = "url";
 	
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;
@@ -184,6 +185,9 @@ public class Const {
 	public static final String F_GET_CATEGORIES = "/category/list";
     public static final String F_USER_PROFILE = "/user/profile";
     public static final String F_USER_GET_ROOMS = "/room/list";
+    public static final String F_USER_INFORMATION = "/user/information";
+    public static final String F_GROUP_MEMBERS = "/groups/members";
+    public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
 
 	public static final int API_SUCCESS = 2000;
 

@@ -46,6 +46,21 @@ public class User {
     private List<Map<String, String>> details;
 
 	private boolean isSelected = false;
+	
+	public User(String id, String userId, String firstName, String lastName, String type, String image,
+			String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected) {
+		super();
+		this.id = id;
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.type = type;
+		this.image = image;
+		this.imageThumb = imageThumb;
+		this.isMember = isMember;
+		this.details = details;
+		this.isSelected = isSelected;
+	}
 
 	public String getId() {
 		if(id == null || id.equals("")){

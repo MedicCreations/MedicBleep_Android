@@ -10,6 +10,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,33 +28,36 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
+import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteUsersOrGroupsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
+import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
+import com.clover.spika.enterprise.chat.models.UserOrGroup;
+import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnClickListener, OnCreateRoomListener, OnChangeListener<User> {
+public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener,
+				OnClickListener, OnCreateRoomListener, OnChangeListener<UserOrGroup>, OnGroupClickedListener {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public InviteUserAdapter adapter;
+	public InviteUsersOrGroupsAdapter adapter;
 	
 	private TextView txtUsers;
 
@@ -69,7 +73,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private ImageButton btnSearch;
 	private EditText etSearch;
 	
-	List<User> usersToAdd = new ArrayList<User>();
+	List<UserOrGroup> usersToAdd = new ArrayList<UserOrGroup>();
 	
 	private String mCategoryId = "0";
 	private String mCategoryName = "";
@@ -80,7 +84,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
+		adapter = new InviteUsersOrGroupsAdapter(getActivity(), new ArrayList<UserOrGroup>(), this, this);
 
 		mCurrentIndex = 0;
 	}
@@ -187,13 +191,13 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		}
 	};
 
-	private void setData(List<User> data, boolean toClearPrevious) {
+	private void setData(List<UserOrGroup> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
-			adapter.setData(data);
+			adapter.addData(data);
 		else
 			adapter.addData(data);
 		if (toClearPrevious)
@@ -215,32 +219,18 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {
-		UsersApi api = new UsersApi();
-		if (search == null) {
-			api.getUsersWithPage(getActivity(), mCurrentIndex, null, true, new ApiCallback<UsersList>() {
-
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
-				}
-			});
-		} else {
-			api.getUsersByName(mCurrentIndex, null, search, getActivity(), true, new ApiCallback<UsersList>() {
-
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
-				}
-			});
-		}
+		RoomsApi api = new RoomsApi();
+		api.getUsersAndGroupsForRoomsByName(mCurrentIndex, search, getActivity(), true, new ApiCallback<UsersAndGroupsList>() {
+			
+			@Override
+			public void onApiResponse(Result<UsersAndGroupsList> result) {
+				mTotalCount = result.getResultData().getTotalCount();
+				setData(result.getResultData().getUsersAndGroupsList(), toClear);
+			}
+		});
+		
 	}
-
+	
 	@Override
 	public void onSearch(String data) {
 		mCurrentIndex = 0;
@@ -300,9 +290,10 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		
 		users_to_add.append(my_user_id + ",");
 
-		List<String> usersId = adapter.getSelected();
+		List<String> usersId = adapter.getUsersSelected();
+		List<String> groupsId = adapter.getGroupsSelected();
 
-		if (usersId.isEmpty()) {
+		if (usersId.isEmpty() && groupsId.isEmpty()) {
 			return;
 		}
 
@@ -314,45 +305,57 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			}
 		}
 		
-		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add.toString(), String.valueOf(mCategoryId),
-				getActivity(), new ApiCallback<Chat>() {
+		StringBuilder group_to_add = new StringBuilder();
+		
+		for (int i = 0; i < groupsId.size(); i++) {
+			group_to_add.append(groupsId.get(i));
 
-			@Override
-			public void onApiResponse(Result<Chat> result) {
-				if (result.isSuccess()) {
-					
-					String chat_name = result.getResultData().getChat().getChat_name();
-					String chat_id = result.getResultData().getChat().getChat_id();
-					String chat_image = room_file_id;
-					
-					Intent intent = new Intent(getActivity(), ChatActivity.class);
-					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
-					intent.putExtra(Const.CHAT_ID, chat_id);
-					intent.putExtra(Const.CHAT_NAME, chat_name);
-					intent.putExtra(Const.IMAGE, chat_image);
-					intent.putExtra(Const.IS_ACTIVE, 1);
-					
-					startActivity(intent);
-					
-					Helper.setRoomFileId(getActivity(), "");
-					Helper.setRoomThumbId(getActivity(), "");
-					usersToAdd.clear();
-					etSearch.setText("");
-					roomName.setText("");
-					
-					getActivity().finish();
-				}
+			if (i != (groupsId.size() - 1)) {
+				group_to_add.append(",");
 			}
-		});
+		}
+		
+		Log.e("LOG", users_to_add+" :-: "+group_to_add);
+		
+//		new ChatApi().createRoom(name, room_file_id, room_thumb_id, users_to_add.toString(), String.valueOf(mCategoryId),
+//				getActivity(), new ApiCallback<Chat>() {
+//
+//			@Override
+//			public void onApiResponse(Result<Chat> result) {
+//				if (result.isSuccess()) {
+//					
+//					String chat_name = result.getResultData().getChat().getChat_name();
+//					String chat_id = result.getResultData().getChat().getChat_id();
+//					String chat_image = room_file_id;
+//					
+//					Intent intent = new Intent(getActivity(), ChatActivity.class);
+//					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
+//					intent.putExtra(Const.CHAT_ID, chat_id);
+//					intent.putExtra(Const.CHAT_NAME, chat_name);
+//					intent.putExtra(Const.IMAGE, chat_image);
+//					intent.putExtra(Const.IS_ACTIVE, 1);
+//					
+//					startActivity(intent);
+//					
+//					Helper.setRoomFileId(getActivity(), "");
+//					Helper.setRoomThumbId(getActivity(), "");
+//					usersToAdd.clear();
+//					etSearch.setText("");
+//					roomName.setText("");
+//					
+//					getActivity().finish();
+//				}
+//			}
+//		});
 		
 	}
 
 	@Override
-	public void onChange(User obj) {
+	public void onChange(UserOrGroup obj) {
 		boolean isFound = false;
 		int j = 0;
 
-		for (User user : usersToAdd) {
+		for (UserOrGroup user : usersToAdd) {
 			if (user.getId().equals(obj.getId())) {
 				isFound = true;
 				break;
@@ -368,7 +371,11 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < usersToAdd.size(); i++) {
-			builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+			if(!TextUtils.isEmpty(usersToAdd.get(i).getGroupName())){
+				builder.append(usersToAdd.get(i).getGroupName());
+			}else{
+				builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+			}
 			if (i != (usersToAdd.size() - 1)) {
 				builder.append(", ");
 			}
@@ -407,6 +414,11 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
 			setCategory(data.getStringExtra(Const.CATEGORY_NAME));
 		}
+	}
+	
+	@Override
+	public void onGroupClicked(String groupId, String groupName) {
+		DeselectUsersInGroupActivity.startActivity(groupName, groupId, getActivity());
 	}
 	
 }
