@@ -591,7 +591,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		if (id == R.id.btnSend) {
 			btnSend.setClickable(false);
 
-            if (mCompressImages) {
+            if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
                 AppDialog compressionConfirmationDialog = new AppDialog(this, false);
                 compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question));
                 compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
@@ -675,10 +675,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
 							finish();
 						}
-					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
+					} else if (getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
 						// send message
 						sendMessage(fileId, result.getResultData().getFileId());
-					} else {
+					} else if (getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// update user
 						updateUser(fileId, result.getResultData().getFileId());
 					}
