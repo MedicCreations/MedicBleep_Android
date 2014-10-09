@@ -121,7 +121,7 @@ public class GroupsApi {
 		}.execute();
 	}
 	
-	public void getGroupMembers(final String groupId, Context ctx, boolean showProgressBar,
+	public void getGroupMembers(final String page, final String groupId, Context ctx, boolean showProgressBar,
 			final ApiCallback<GroupMembersList> listener) {
 		new BaseAsyncTask<Void, Void, GroupMembersList>(ctx, showProgressBar) {
 
@@ -132,6 +132,7 @@ public class GroupsApi {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.GROUP_ID, groupId);
+				getParams.put(Const.PAGE, page);
 
 				try {
 

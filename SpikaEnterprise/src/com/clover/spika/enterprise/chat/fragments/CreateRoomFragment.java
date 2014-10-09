@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
@@ -33,7 +33,6 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUsersOrGroupsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
@@ -41,7 +40,6 @@ import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
-import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserOrGroup;
 import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
@@ -53,6 +51,9 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class CreateRoomFragment extends CustomFragment implements OnItemClickListener, OnSearchListener,
 				OnClickListener, OnCreateRoomListener, OnChangeListener<UserOrGroup>, OnGroupClickedListener {
+	
+	private static final int FROM_CATEGORY = 11;
+	private static final int FROM_GROUP_MEMBERS = 12;
 
 	private TextView noItems;
 
@@ -74,6 +75,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private EditText etSearch;
 	
 	List<UserOrGroup> usersToAdd = new ArrayList<UserOrGroup>();
+	SparseArray<List<String>> usersFromGroups = new SparseArray<List<String>>();
 	
 	private String mCategoryId = "0";
 	private String mCategoryName = "";
@@ -197,7 +199,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		if(toClearPrevious) currentCount = data.size();
 
 		if (toClearPrevious)
-			adapter.addData(data);
+			adapter.setData(data);
 		else
 			adapter.addData(data);
 		if (toClearPrevious)
@@ -267,6 +269,9 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		dialog.choseCamGalleryRoom();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener#onCreateRoom()
+	 */
 	@Override
 	public void onCreateRoom() {
 		
@@ -290,8 +295,15 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		
 		users_to_add.append(my_user_id + ",");
 
-		List<String> usersId = adapter.getUsersSelected();
+		List<String> usersId = new ArrayList<String>();
+		usersId.addAll(adapter.getUsersSelected());
 		List<String> groupsId = adapter.getGroupsSelected();
+		for(int i = 0; i < usersFromGroups.size(); i ++){
+			usersId.addAll(usersFromGroups.valueAt(i));
+			if(groupsId.contains(String.valueOf(usersFromGroups.keyAt(i)))){
+				groupsId.remove(String.valueOf(usersFromGroups.keyAt(i)));
+			}
+		}
 
 		if (usersId.isEmpty() && groupsId.isEmpty()) {
 			return;
@@ -314,6 +326,8 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 				group_to_add.append(",");
 			}
 		}
+		
+		
 		
 		Log.e("LOG", users_to_add+" :-: "+group_to_add);
 		
@@ -357,14 +371,19 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		for (UserOrGroup user : usersToAdd) {
 			if (user.getId().equals(obj.getId())) {
-				isFound = true;
-				break;
+				if(user.getIs_group() == obj.getIs_group()){
+					isFound = true;
+					break;
+				}
 			}
 			j++;
 		}
 
 		if (isFound) {
 			usersToAdd.remove(j);
+			if(obj.getIs_group()){
+				usersFromGroups.remove(Integer.parseInt(obj.getId()));
+			}
 		} else {
 			usersToAdd.add(obj);
 		}
@@ -398,7 +417,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	}
 	
 	private void openChooseCategory(){
-		startActivityForResult(new Intent(getActivity(), ChooseCategoryActivity.class), 11);
+		startActivityForResult(new Intent(getActivity(), ChooseCategoryActivity.class), FROM_CATEGORY);
 	}
 	
 	private void setCategory(String catName){
@@ -410,15 +429,86 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(data != null){
-			mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
-			setCategory(data.getStringExtra(Const.CATEGORY_NAME));
+		if(requestCode == FROM_CATEGORY){
+			if(data != null){
+				mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
+				setCategory(data.getStringExtra(Const.CATEGORY_NAME));
+			}
+		}else if (requestCode == FROM_GROUP_MEMBERS){
+			if(data != null){
+				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
+				String groupId = data.getStringExtra(Const.GROUP_ID);
+				
+				if(dataS.length < 1){
+					removeGroup(groupId);
+				}else{
+					addGroup(groupId, dataS);
+				}
+				
+			}
+		}
+		
+	}
+	
+	private void addGroup(String groupId, String[] users){
+		List<String> list = new ArrayList<String>();
+		for(String item : users){
+			list.add(item);
+		}
+		usersFromGroups.remove(Integer.parseInt(groupId));
+		
+		usersFromGroups.put(Integer.parseInt(groupId), list);
+		
+		adapter.addGroup(groupId);
+		adapter.notifyDataSetChanged();
+		
+		UserOrGroup item = getGroupById(groupId);
+		if(item != null){
+			if(!checkIfItemInUserAdd(item)) onChange(item);
 		}
 	}
 	
+	private void removeGroup(String groupId){
+		usersFromGroups.remove(Integer.parseInt(groupId));
+		adapter.removeGroup(groupId);
+		adapter.notifyDataSetChanged();
+		
+		UserOrGroup item = getGroupById(groupId);
+		if(item != null) {
+			if(checkIfItemInUserAdd(item)) onChange(item);
+		}
+	}
+	
+	private boolean checkIfItemInUserAdd(UserOrGroup item){
+		for(UserOrGroup item2 : usersToAdd){
+			if(item2.getIs_group() && item2.getId().equals(item.getId())){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private UserOrGroup getGroupById(String id){
+		for(UserOrGroup item : adapter.getData()){
+			if(item.getIs_group() && item.getId().equals(id)){
+				return item;
+			}
+		}
+		return null;
+	}
+	
 	@Override
-	public void onGroupClicked(String groupId, String groupName) {
-		DeselectUsersInGroupActivity.startActivity(groupName, groupId, getActivity());
+	public void onGroupClicked(String groupId, String groupName, boolean isChecked) {
+		ArrayList<String> ids = null;
+		if(usersFromGroups.get(Integer.parseInt(groupId)) != null){
+			List<String> idsList = usersFromGroups.get(Integer.parseInt(groupId));
+			ids = new ArrayList<String>();
+			for(String item : idsList){
+				ids.add(item);
+			}
+		}
+		DeselectUsersInGroupActivity.startActivity(groupName, groupId, isChecked,
+				ids, getActivity(), FROM_GROUP_MEMBERS, this);
 	}
 	
 }

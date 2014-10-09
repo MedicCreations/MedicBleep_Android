@@ -1,12 +1,13 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
@@ -21,6 +22,7 @@ public class InformationFragment extends CustomFragment {
 	private WebView mWebView;
 	private String mUrl;
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -28,6 +30,8 @@ public class InformationFragment extends CustomFragment {
 		
 		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
 		mWebView.setWebViewClient(new WebViewClient());
+		mWebView.setWebChromeClient(new WebChromeClient());
+		mWebView.getSettings().setJavaScriptEnabled(true);
 		
 		return rootView;
 	}

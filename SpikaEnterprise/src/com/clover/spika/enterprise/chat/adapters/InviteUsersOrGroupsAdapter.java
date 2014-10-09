@@ -55,7 +55,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 
 		for (String selectedId : userIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId())) {
+				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIsUser()) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -63,7 +63,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		
 		for (String selectedId : groupIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId())) {
+				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIs_group()) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -77,7 +77,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		
 		for (String selectedId : userIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId())) {
+				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIsUser()) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -85,7 +85,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		
 		for (String selectedId : groupIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId())) {
+				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIs_group()) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -159,7 +159,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				if((getItem(position).getIs_group())){
 					if(groupClickedListener != null) groupClickedListener.onGroupClicked(getItem(position).getId(), 
-													getItem(position).getGroupName());
+													getItem(position).getGroupName(), getItem(position).isSelected());
 				}
 			}
 		});
@@ -210,6 +210,28 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 			return;
 		}
 		userIds.remove(item.getId());
+	}
+	
+	public void removeGroup(String id){
+		for(int i = 0; i < data.size(); i++){
+			if(data.get(i).getId().equals(id)){
+				if(data.get(i).getIs_group()){
+					data.get(i).setSelected(false);
+				}
+			}
+		}
+		if(groupIds.contains(id)) groupIds.remove(id);
+	}
+	
+	public void addGroup(String id){
+		for(int i = 0; i < data.size(); i++){
+			if(data.get(i).getId().equals(id)){
+				if(data.get(i).getIs_group()){
+					data.get(i).setSelected(true);
+				}
+			}
+		}
+		if(!groupIds.contains(id)) groupIds.add(id);
 	}
 
 	public List<String> getSelected() {
