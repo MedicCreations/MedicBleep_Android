@@ -1,21 +1,22 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.Information;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 public class UserApi {
 
@@ -189,6 +190,45 @@ public class UserApi {
                         }
                     } else {
                         result = new Result<UserWrapper>(Result.ApiResponseState.FAILURE);
+                    }
+                    callback.onApiResponse(result);
+                }
+            }
+        }.execute();
+    }
+    
+    public void getInformation(final Context context, final ApiCallback<Information> callback) {
+        new BaseAsyncTask<Void, Void, Information>(context, false) {
+            @Override
+            protected Information doInBackground(Void... params) {
+                JSONObject jsonObject = new JSONObject();
+
+                HashMap<String, String> getParams = new HashMap<String, String>();
+
+                try {
+                    jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, getParams,
+                            SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
+                    return new Gson().fromJson(jsonObject.toString(), Information.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Information infomration) {
+                super.onPostExecute(infomration);
+                if (callback != null) {
+                    Result<Information> result;
+                    if (infomration != null) {
+                        if (infomration.getCode() == Const.API_SUCCESS) {
+                            result = new Result<Information>(infomration, Result.ApiResponseState.SUCCESS);
+                        } else {
+                            result = new Result<Information>(Result.ApiResponseState.FAILURE);
+                        }
+                    } else {
+                        result = new Result<Information>(Result.ApiResponseState.FAILURE);
                     }
                     callback.onApiResponse(result);
                 }

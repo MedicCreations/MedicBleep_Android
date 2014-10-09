@@ -10,6 +10,7 @@ import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.GroupMembersList;
 import com.clover.spika.enterprise.chat.models.GroupsList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
@@ -112,6 +113,57 @@ public class GroupsApi {
 
 					} else {
 						result = new Result<GroupsList>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+	
+	public void getGroupMembers(final String page, final String groupId, Context ctx, boolean showProgressBar,
+			final ApiCallback<GroupMembersList> listener) {
+		new BaseAsyncTask<Void, Void, GroupMembersList>(ctx, showProgressBar) {
+
+			@Override
+			protected GroupMembersList doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> getParams = new HashMap<String, String>();
+				getParams.put(Const.GROUP_ID, groupId);
+				getParams.put(Const.PAGE, page);
+
+				try {
+
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GROUP_MEMBERS, getParams,
+							SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(), GroupMembersList.class);
+			}
+
+			@Override
+			protected void onPostExecute(GroupMembersList groups) {
+				super.onPostExecute(groups);
+
+				if (listener != null) {
+					Result<GroupMembersList> result;
+
+					if (groups != null) {
+						if (groups.getCode() == Const.API_SUCCESS) {
+							result = new Result<GroupMembersList>(Result.ApiResponseState.SUCCESS);
+							result.setResultData(groups);
+						} else {
+							result = new Result<GroupMembersList>(Result.ApiResponseState.FAILURE);
+							result.setResultData(groups);
+						}
+
+					} else {
+						result = new Result<GroupMembersList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);
