@@ -67,7 +67,7 @@ public class Utils {
 	 */
 	public static String handleFileEncryption(String filePath, Context ctx) {
 		try {
-			if (JNAesCrypto.isEncrypted) {
+			if (JNAesCrypto.isEncryptionEnabled) {
 				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
 				tempOut.createNewFile();
 
@@ -95,7 +95,7 @@ public class Utils {
 	 */
 	public static String handleFileDecryption(String filePath, Context ctx) {
 		try {
-			if (JNAesCrypto.isEncrypted) {
+			if (JNAesCrypto.isEncryptionEnabled) {
 				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
 				tempOut.createNewFile();
 

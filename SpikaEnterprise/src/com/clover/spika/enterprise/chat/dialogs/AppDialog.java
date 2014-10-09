@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -70,7 +69,15 @@ public class AppDialog extends Dialog {
 	}
 
     public void setYesNo(String message) {
+        setYesNo(message, null, null);
+    }
+
+    public void setYesNo(String message, String yesText, String noText) {
         this.setContentView(R.layout.dialog_confirmation);
+
+        TextView yesTextView = (TextView) findViewById(R.id.text_yes);
+        yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
+
         View btnYes = findViewById(R.id.layout_yes);
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +88,10 @@ public class AppDialog extends Dialog {
                 dismiss();
             }
         });
+
+        TextView noTextView = (TextView) findViewById(R.id.text_no);
+        noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
+
         View btnNo = findViewById(R.id.layout_no);
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override

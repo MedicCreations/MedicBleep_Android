@@ -59,8 +59,11 @@
     <string name="create_room">Create room</string>
     <string name="create">Create</string>
     <string name="searchUsers">Search users</string>
-    <string name="enableEditPhoto">Do you want to enable editing Photo?</string>
     <string name="enterRoomName">Enter room name</string>
+    <string name="enableEditPhoto">Do you want to use full size or cropped image?</string>
+    <string name="compression_confirmation_question">Do you want to send compressed image?</string>
+    <string name="choiceFullSizeImage">Full size</string>
+    <string name="choiceCroppedImage">Cropped</string>
 
     <!-- Error strings -->
     <string name="e_no_network_connection">You have no internet connection.</string>

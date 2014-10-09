@@ -1,12 +1,5 @@
 package com.clover.spika.enterprise.chat.security;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,15 +10,22 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public class JNAesCrypto {
 
-	public static final boolean isEncrypted = true;
+	public static boolean isEncryptionEnabled; // value set at SpikaEnterpriseApp
 	private static JNCryptor cryptor = new AES256JNCryptor(Const.S_ITERATIONS);
 
 	// *******encrypt string and return string
 	public static String encryptJN(String textToEncrypt) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return textToEncrypt;
 		}
 
@@ -49,7 +49,7 @@ public class JNAesCrypto {
 	 */
 	public static String encryptJN(Bitmap bitmap) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return null;
 		}
 
@@ -68,7 +68,7 @@ public class JNAesCrypto {
 	// *******encrypt byte array and return byte array
 	public static byte[] encryptJN(byte[] clearData) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return clearData;
 		}
 
@@ -123,7 +123,7 @@ public class JNAesCrypto {
 	 */
 	public static String encryptJNSTR(byte[] clearData) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return null;
 		}
 
@@ -137,7 +137,7 @@ public class JNAesCrypto {
 	// *******decrypt string and return string
 	public static String decryptJN(String encrypted) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return encrypted;
 		}
 
@@ -153,7 +153,7 @@ public class JNAesCrypto {
 	// *******decrypt string and return bitmap
 	public static Bitmap decryptBitmapJN(String encrypted, String filePath) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			byte[] textText = Utils.getByteArrayFromFile(filePath);
 			return BitmapFactory.decodeByteArray(textText, 0, textText.length);
 		}
@@ -167,7 +167,7 @@ public class JNAesCrypto {
 	// *******decrypt byte array and return byte array
 	public static byte[] decryptJN(byte[] encrypted) throws Exception {
 
-		if (!isEncrypted) {
+		if (!isEncryptionEnabled) {
 			return encrypted;
 		}
 

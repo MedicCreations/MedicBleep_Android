@@ -241,7 +241,6 @@ public class ChatActivity extends BaseChatActivity {
 					callNewMsgs();
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					Logger.d("ovo je result: " + result.toString());
 					dialog.setFailed(result.getResultData());
 				}
 			}

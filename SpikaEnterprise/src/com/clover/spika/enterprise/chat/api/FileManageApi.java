@@ -262,7 +262,7 @@ public class FileManageApi {
 				try {
 					is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
 
-					if (JNAesCrypto.isEncrypted) {
+					if (JNAesCrypto.isEncryptionEnabled) {
 						JNAesCrypto.decryptIs(is, downloadedFile, context);
 					} else {
 						OutputStream os = new FileOutputStream(downloadedFile.getAbsolutePath());

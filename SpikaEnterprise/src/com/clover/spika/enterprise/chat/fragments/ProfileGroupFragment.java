@@ -22,9 +22,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 	public ImageView profileImage;
 
-	int width = 0;
-	int padding = 0;
-
 	String imageId;
 	String chatName;
 	String chatId;
@@ -37,9 +34,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		width = getResources().getDisplayMetrics().widthPixels;
-		padding = (int) (width / 9);
 	}
 
 	@Override
@@ -57,10 +51,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		
 		((TextView) rootView.findViewById(R.id.profileName)).setText(chatName);
 
-		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		profileImage.getLayoutParams().width = width - Helper.dpToPx(getActivity(), padding);
-		profileImage.getLayoutParams().height = width - Helper.dpToPx(getActivity(), padding);
-		
+		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);		
 		Helper.setRoomThumbId(getActivity(), imageId);
 		ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
 		
