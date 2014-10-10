@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:padding="30dp"
     android:background="@color/transparent">
 
     <RelativeLayout
@@ -30,7 +30,7 @@
 
         <LinearLayout
             android:id="@+id/controlLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
@@ -41,13 +41,16 @@
                 android:id="@+id/layout_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="10dp"
+                android:gravity="right"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                     android:id="@+id/text_no"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:textColor="@color/text_blue"
@@ -68,7 +71,8 @@
                 android:id="@+id/layout_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
