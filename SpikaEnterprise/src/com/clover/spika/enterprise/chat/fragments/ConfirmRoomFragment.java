@@ -99,6 +99,11 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		}
 
 		adapter.setData(data);
+		
+		for(int i = 0; i < data.size(); i++){
+			adapter.setId(data.get(i).getId());
+		}
+		
 		mainListView.onRefreshComplete();
 
 		if (adapter.getCount() == 0) {
