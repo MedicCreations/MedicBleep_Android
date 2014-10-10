@@ -184,5 +184,6 @@
         <string name="choose_category">Choose category</string>
         <string name="none">None</string>
         <string name="information">Information</string>
+        <string name="next">Next</string>
 
 </resources>
