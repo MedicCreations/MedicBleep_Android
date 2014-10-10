@@ -139,7 +139,8 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 			intent.putExtra(Const.CHAT_NAME, room.getChat_name());
 			intent.putExtra(Const.TYPE, room.getType());
 			intent.putExtra(Const.IS_ACTIVE, room.isActive());
-			intent.putExtra(Const.IMAGE, room.getImageThumb());
+			intent.putExtra(Const.IMAGE, room.getImage());
+			intent.putExtra(Const.IMAGE_THUMB, room.getImageThumb());
 			intent.putExtra(Const.IS_ADMIN, isAdmin);
 			startActivity(intent);
 		}

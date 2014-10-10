@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -28,7 +30,6 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
-import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUsersOrGroupsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -132,8 +133,9 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-					((MainActivity) getActivity()).hideKeyboard(etSearch);
-						onSearch(etSearch.getText().toString());
+					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+					onSearch(etSearch.getText().toString());
 				}
 				return false;
 			}

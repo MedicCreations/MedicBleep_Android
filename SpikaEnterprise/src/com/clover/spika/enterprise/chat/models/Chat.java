@@ -31,6 +31,9 @@ public class Chat extends BaseModel {
     @SerializedName("image_thumb")
     private String imageThumb;
     
+    @SerializedName("image")
+    private String image;
+    
     @SerializedName("admin_id")
     private String adminId;
     
@@ -157,6 +160,14 @@ public class Chat extends BaseModel {
 
 	public void setImageThumb(String imageThumb) {
 		this.imageThumb = imageThumb;
+	}
+	
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 	
 	public String getAdminId() {

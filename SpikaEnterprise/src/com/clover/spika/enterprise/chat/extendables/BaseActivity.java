@@ -83,12 +83,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
 				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				String chatImage = intent.getExtras().getString(Const.IMAGE);
+				String chatThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
 				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
 				int isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
 				String adminId = intent.getExtras().getString(Const.ADMIN_ID);
 				String type = intent.getExtras().getString(Const.TYPE);
 							
-				pushCall(message, chatId, chatName, chatImage, pushType, type, adminId, isActive);				
+				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive);				
 			}
 		};
 		// end: handle notifications
@@ -128,9 +129,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {		
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {		
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-			showPopUp(msg, chatIdPush, chatName, chatImage, type, adminId, isActive);
+			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
 		}
 	}
 
@@ -142,7 +143,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * @param chatName
 	 * @param chatImage
 	 */
-	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String type, final String adminId, final int isActive) {
+	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId, final int isActive) {
 		
 		String userId = Helper.getUserId(BaseActivity.this);
 		final boolean isAdmin = userId.equals(adminId) ? true : false;
@@ -153,6 +154,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 			push.setMessage(msg);
 			push.setChatName(chatName);
 			push.setChatImage(chatImage);
+			push.setChatThumb(chatThumb);
 			push.setType(type);
 			push.setAdminId(adminId);
 			push.setIsActive(isActive);
@@ -186,6 +188,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						intent.putExtra(Const.CHAT_ID, chatId);
 						intent.putExtra(Const.CHAT_NAME, chatName);
 						intent.putExtra(Const.IMAGE, chatImage);
+						intent.putExtra(Const.IMAGE_THUMB, chatThumb);
 						intent.putExtra(Const.TYPE, type);
 						intent.putExtra(Const.IS_ADMIN, isAdmin);
 						intent.putExtra(Const.IS_ACTIVE, isActive);						
@@ -243,7 +246,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive());
 							qPush.remove(0);
 						}
 					}

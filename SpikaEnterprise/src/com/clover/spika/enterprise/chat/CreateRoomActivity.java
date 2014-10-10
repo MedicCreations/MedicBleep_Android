@@ -162,12 +162,14 @@ public class CreateRoomActivity extends BaseActivity {
 					String chat_name = result.getResultData().getChat().getChat_name();
 					String chat_id = result.getResultData().getChat().getChat_id();
 					String chat_image = room_file_id;
+					String chat_image_thumb = room_thumb_id;
 					
 					Intent intent = new Intent(CreateRoomActivity.this, ChatActivity.class);
 					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
 					intent.putExtra(Const.CHAT_ID, chat_id);
 					intent.putExtra(Const.CHAT_NAME, chat_name);
 					intent.putExtra(Const.IMAGE, chat_image);
+					intent.putExtra(Const.IMAGE_THUMB, chat_image_thumb);
 					intent.putExtra(Const.IS_ACTIVE, 1);
 					
 					startActivity(intent);

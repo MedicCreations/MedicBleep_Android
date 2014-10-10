@@ -25,6 +25,10 @@ public class ChatsLobby {
 	@Expose
 	private String image;
 	
+	@SerializedName("image_thumb")
+	@Expose
+	private String imageThumb;
+	
 	@SerializedName("admin_id")
 	@Expose
 	private String adminId;
@@ -63,6 +67,14 @@ public class ChatsLobby {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+	
+	public String getImageThumb() {
+		return imageThumb;
+	}
+
+	public void setImageThumb(String imageThumb) {
+		this.imageThumb = imageThumb;
 	}
 
 	public String getType() {

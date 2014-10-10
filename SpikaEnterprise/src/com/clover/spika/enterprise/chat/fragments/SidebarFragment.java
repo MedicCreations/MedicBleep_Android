@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
@@ -105,20 +106,9 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		switch (view.getId()) {
 
-		case R.id.profile:
-
-			if (profileFragment == null) {
-				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()),
-                        Helper.getUserFirstName(getActivity()),
-                        Helper.getUserLastName(getActivity()));
-			}
-
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
-			switchFragment(profileFragment);
-
-			break;
-
 		case R.id.lobby:
+			
+			Logger.d("huhuhuhuhuh");
 
 			if (lobbyFragment == null) {
 				lobbyFragment = new LobbyFragment();
@@ -160,6 +150,19 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information));
 			switchFragment(informationFragment);
+
+			break;
+			
+		case R.id.profile:
+
+			if (profileFragment == null) {
+				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()),
+                        Helper.getUserFirstName(getActivity()),
+                        Helper.getUserLastName(getActivity()));
+			}
+
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
+			switchFragment(profileFragment);
 
 			break;
 			

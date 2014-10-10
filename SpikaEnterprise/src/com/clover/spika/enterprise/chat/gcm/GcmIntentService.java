@@ -51,6 +51,7 @@ public class GcmIntentService extends IntentService {
 				String chatId = "";
 				String firstName = "";
 				String chatName = "";
+				String chatThumb = "";
 				String chatImage = "";
 				String chatType = "";
 				String type = "";
@@ -70,7 +71,11 @@ public class GcmIntentService extends IntentService {
 				}
 
 				if (extras.containsKey(Const.PUSH_CHAT_THUMB)) {
-					chatImage = extras.getString(Const.PUSH_CHAT_THUMB);
+					chatThumb = extras.getString(Const.PUSH_CHAT_THUMB);
+				}
+				
+				if (extras.containsKey(Const.PUSH_CHAT_IMAGE)) {
+					chatImage = extras.getString(Const.PUSH_CHAT_IMAGE);
 				}
 
 				if (extras.containsKey(Const.PUSH_CHAT_TYPE)) {
@@ -102,6 +107,7 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.CHAT_ID, chatId);
 					inBroadcast.putExtra(Const.CHAT_NAME, chatName);
 					inBroadcast.putExtra(Const.IMAGE, chatImage);
+					inBroadcast.putExtra(Const.IMAGE_THUMB, chatThumb);
 					inBroadcast.putExtra(Const.PUSH_TYPE, type);
 					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
 					inBroadcast.putExtra(Const.TYPE, chatType);
@@ -121,6 +127,7 @@ public class GcmIntentService extends IntentService {
 					pushIntent.putExtra(Const.CHAT_ID, chatId);
 					pushIntent.putExtra(Const.CHAT_NAME, chatName);
 					pushIntent.putExtra(Const.IMAGE, chatImage);
+					pushIntent.putExtra(Const.IMAGE_THUMB, chatThumb);
 					pushIntent.putExtra(Const.PUSH_TYPE, type);
 					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
 					pushIntent.putExtra(Const.TYPE, chatType);

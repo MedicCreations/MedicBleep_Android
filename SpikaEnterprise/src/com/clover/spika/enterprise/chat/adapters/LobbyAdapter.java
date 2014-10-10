@@ -89,7 +89,7 @@ public class LobbyAdapter extends BaseAdapter {
             holder.itemLayout.setBackgroundColor(Color.WHITE);
         }
 
-        imageLoader.displayImage(getContext(), getItem(position).getImage(), holder.lobbyImage);
+        imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.lobbyImage);
         holder.lobbyName.setText(getItem(position).getChatName());
         
         if(Integer.parseInt(getItem(position).getUnread()) > 0){

@@ -56,7 +56,7 @@
                 android:contentDescription="@null"
                 android:padding="10dp"
                 android:scaleType="centerInside"
-                android:src="@android:drawable/ic_input_add" />
+                android:src="@android:drawable/ic_menu_add" />
 
             <ImageButton
                 android:id="@+id/searchBtn"

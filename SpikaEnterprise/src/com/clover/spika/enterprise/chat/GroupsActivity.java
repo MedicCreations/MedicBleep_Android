@@ -209,6 +209,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 			intent.putExtra(Const.FIRSTNAME, group.getGroupName());
 			intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM));
 			intent.putExtra(Const.IMAGE, group.getImage());
+			intent.putExtra(Const.IMAGE_THUMB, group.getImage_thumb());
 			intent.putExtra(Const.IS_GROUP, true);
 			intent.putExtra(Const.IS_ADMIN, false);
 			startActivity(intent);

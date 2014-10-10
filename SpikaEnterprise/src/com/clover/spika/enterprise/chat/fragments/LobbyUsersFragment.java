@@ -150,6 +150,7 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 			intent.putExtra(Const.CHAT_NAME, user.getChatName());
 			intent.putExtra(Const.IMAGE, user.getImage());
+			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
 			intent.putExtra(Const.TYPE, user.getType());
 			intent.putExtra(Const.IS_ACTIVE, user.isActive());
 			startActivity(intent);

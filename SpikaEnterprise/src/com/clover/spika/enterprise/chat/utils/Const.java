@@ -90,6 +90,7 @@ public class Const {
 	public static final String FILE_ID = "file_id";
 	public static final String THUMB_ID = "thumb_id";
 	public static final String PUSH_CHAT_THUMB = "chat_thumb";
+	public static final String PUSH_CHAT_IMAGE = "chat_image";
 	public static final String PUSH_CHAT_TYPE = "chat_type";
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";

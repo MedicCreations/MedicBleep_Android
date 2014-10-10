@@ -147,7 +147,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		
 		if(user.getIs_group()){
 			holder.personName.setText(user.getGroupName());
-			holder.personName.setTextColor(Color.GREEN);
+			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
 		}else{
 			holder.personName.setText(user.getFirstName() + " " + user.getLastName());
 			holder.personName.setTextColor(Color.BLACK);

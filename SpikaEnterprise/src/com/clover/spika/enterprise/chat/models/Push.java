@@ -6,6 +6,7 @@ public class Push {
 	private String message;
 	private String chatName;
 	private String chatImage;
+	private String chatThumb;
 	private String type;
 	private String adminId;
 	private int isActive;
@@ -45,6 +46,14 @@ public class Push {
 		this.chatImage = chatImage;
 	}
 	
+	public String getChatThumb() {
+		return chatThumb;
+	}
+	
+	public void setChatThumb(String chatThumb) {
+		this.chatThumb = chatThumb;
+	}
+	
 	public String getType() {
 		return type;
 	}
@@ -68,4 +77,5 @@ public class Push {
 	public void setIsActive(int isActive) {
 		this.isActive = isActive;
 	}
+
 }

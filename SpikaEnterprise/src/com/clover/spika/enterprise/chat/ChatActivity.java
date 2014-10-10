@@ -109,6 +109,7 @@ public class ChatActivity extends BaseChatActivity {
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
 				chatName = intent.getExtras().getString(Const.CHAT_NAME);
 				chatImage = intent.getExtras().getString(Const.IMAGE);
+				chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
 				if (intent.getExtras().containsKey(Const.ADMIN_ID)) {
 					isAdmin = Helper.getUserId(this).equals(intent.getExtras().getString(Const.ADMIN_ID, "")) ? true : false;
 				} 
@@ -126,6 +127,7 @@ public class ChatActivity extends BaseChatActivity {
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
 				chatImage = intent.getExtras().getString(Const.IMAGE);
+				chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
 
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
 				mUserId = intent.getExtras().getString(Const.USER_ID);
@@ -242,6 +244,12 @@ public class ChatActivity extends BaseChatActivity {
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
 					dialog.setFailed(result.getResultData());
+					if (result.getResultData() == Const.E_CHAT_INACTIVE){
+						isActive = 0;
+						etMessage.setText("");
+						hideKeyboard(etMessage);
+						etMessage.setFocusable(false);
+					}
 				}
 			}
 		});

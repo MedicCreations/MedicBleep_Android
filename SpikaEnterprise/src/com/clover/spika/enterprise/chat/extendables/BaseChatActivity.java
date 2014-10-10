@@ -45,6 +45,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SettingsItem;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
@@ -66,6 +67,7 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected static final int SETTINGS_POSITION_FOURTH = 3;
 
     protected String chatImage = null;
+    protected String chatImageThumb = null;
     protected String chatId = null;
     protected boolean isAdmin = false;
     protected int isActive = 1;
@@ -349,18 +351,18 @@ public abstract class BaseChatActivity extends BaseActivity {
         if (!TextUtils.isEmpty(chatImage)) {
             partnerIcon.setVisibility(View.VISIBLE);
             partnerIcon.setOnClickListener(thisClickListener);
-            imageLoader.displayImage(this, chatImage, partnerIcon);
+            imageLoader.displayImage(this, chatImageThumb, partnerIcon);
         } else {
             partnerIcon.setVisibility(View.INVISIBLE);
             partnerIcon.setOnClickListener(null);
         }
     }
 
-    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {
+    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {
         if (chatIdPush.equals(chatId)) {
             onChatPushUpdated();
         } else {
-            showPopUp(msg, chatIdPush, chatName, chatImage, type, adminId, isActive);
+            showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
         }
     }
 
@@ -383,8 +385,8 @@ public abstract class BaseChatActivity extends BaseActivity {
     }
 
     @Override
-    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String pushType, String type, String adminId, int isActive) {    	
-        getFromPush(msg, chatIdPush, chatName, chatImage, pushType, type, adminId, isActive);
+    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {    	
+        getFromPush(msg, chatIdPush, chatName, chatImage, chatThumb, pushType, type, adminId, isActive);
     }
 
     @Override
@@ -400,6 +402,8 @@ public abstract class BaseChatActivity extends BaseActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
+            
+            Logger.d("hohohoho "+ isActive);
             
             if (id == R.id.bntFile) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
