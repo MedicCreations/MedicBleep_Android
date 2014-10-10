@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.RoomsList;
 import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
@@ -165,6 +166,57 @@ public class RoomsApi {
 
 					} else {
 						result = new Result<UsersAndGroupsList>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+	
+	public void getDistinctUser(final String userIds, final String groupIds, Context ctx,
+			boolean showProgressBar, final ApiCallback<ConfirmUsersList> listener) {
+		new BaseAsyncTask<Void, Void, ConfirmUsersList>(ctx, showProgressBar) {
+
+			@Override
+			protected ConfirmUsersList doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> getParams = new HashMap<String, String>();
+				getParams.put(Const.USER_IDS, userIds);
+				getParams.put(Const.GROUP_IDS, groupIds);
+
+				try {
+
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp
+							.getSharedPreferences(getContext()).getToken());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(), ConfirmUsersList.class);
+			}
+
+			@Override
+			protected void onPostExecute(ConfirmUsersList users) {
+				super.onPostExecute(users);
+
+				if (listener != null) {
+					Result<ConfirmUsersList> result;
+
+					if (users != null) {
+						if (users.getCode() == Const.API_SUCCESS) {
+							result = new Result<ConfirmUsersList>(Result.ApiResponseState.SUCCESS);
+							result.setResultData(users);
+						} else {
+							result = new Result<ConfirmUsersList>(Result.ApiResponseState.FAILURE);
+							result.setResultData(users);
+						}
+
+					} else {
+						result = new Result<ConfirmUsersList>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(result);

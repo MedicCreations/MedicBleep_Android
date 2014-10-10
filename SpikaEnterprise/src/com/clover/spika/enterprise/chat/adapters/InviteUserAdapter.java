@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 
 public class InviteUserAdapter extends BaseAdapter {
@@ -143,7 +144,7 @@ public class InviteUserAdapter extends BaseAdapter {
 				holder.isSelected.setChecked(false);
 			}
 
-			if (user.isMember()) {
+			if (user.isMember() || user.getId() == Helper.getUserId(mContext)) {
 				holder.isSelected.setClickable(false);
 	            holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
 			} else {

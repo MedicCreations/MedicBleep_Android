@@ -108,6 +108,7 @@ public class Const {
 	public static final String IS_ACTIVE = "is_active";
 	public static final String USER_IDS = "user_ids";
 	public static final String ADMIN_ID = "admin_id";
+	public static final String GROUP_IDS = "group_ids";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -189,6 +190,7 @@ public class Const {
     public static final String F_USER_INFORMATION = "/user/information";
     public static final String F_GROUP_MEMBERS = "/groups/members";
     public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
+    public static final String F_GET_DISTINC_USER = "/room/add/users";
 
 	public static final int API_SUCCESS = 2000;
 
