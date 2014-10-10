@@ -175,7 +175,7 @@ public class InviteUserAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private void setId(String id) {
+	public void setId(String id) {
 		userIds.add(id);
 	}
 

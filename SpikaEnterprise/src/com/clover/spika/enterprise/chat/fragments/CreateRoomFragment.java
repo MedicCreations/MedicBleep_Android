@@ -448,7 +448,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		if (usersId.isEmpty() && groupsId.isEmpty()) {
 			return;
 		}
-
+		
 		for (int i = 0; i < usersId.size(); i++) {
 			users_to_add.append(usersId.get(i));
 
@@ -467,7 +467,12 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			}
 		}
 		
-		((CreateRoomActivity)getActivity()).setConfirmScreen(users_to_add.toString(), group_to_add.toString());
+		String userToAdd = users_to_add.toString();
+		if(userToAdd.charAt(userToAdd.length()-1) == ','){
+			userToAdd = userToAdd.substring(0, userToAdd.length()-1);
+		}
+		
+		((CreateRoomActivity)getActivity()).setConfirmScreen(userToAdd, group_to_add.toString());
 		
 	}
 	
