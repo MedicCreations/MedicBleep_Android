@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
@@ -28,8 +31,9 @@ public class InformationFragment extends CustomFragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_information, container, false);
 		
+		
 		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
-		mWebView.setWebViewClient(new WebViewClient());
+		mWebView.setWebViewClient(new CustomWebViewClient());
 		mWebView.setWebChromeClient(new WebChromeClient());
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		
@@ -60,6 +64,33 @@ public class InformationFragment extends CustomFragment {
 	
 	private void setUrl(){
 		mWebView.loadUrl(mUrl);
+	}
+	
+	class CustomWebViewClient extends WebViewClient{
+		
+		@Override
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			return super.shouldOverrideUrlLoading(view, url);
+		}
+		
+		@Override
+		public void onPageFinished(WebView view, String url) {
+			if(getActivity() instanceof MainActivity) ((MainActivity)getActivity()).showSmallLoading(View.GONE);
+			super.onPageFinished(view, url);
+		}
+		
+		@Override
+		public void onPageStarted(WebView view, String url, Bitmap favicon) {
+			if(getActivity() instanceof MainActivity) ((MainActivity)getActivity()).showSmallLoading(View.VISIBLE);
+			super.onPageStarted(view, url, favicon);
+		}
+		
+	}
+	
+	@Override
+	public void onDetach() {
+		if(getActivity() instanceof MainActivity) ((MainActivity)getActivity()).showSmallLoading(View.GONE);
+		super.onDetach();
 	}
 
 }

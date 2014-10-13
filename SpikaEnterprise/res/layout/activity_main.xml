@@ -79,6 +79,15 @@
             android:singleLine="true"
             android:textColor="@color/white"
             android:visibility="gone" />
+        
+        <ProgressBar android:id="@+id/loadingPB"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:visibility="invisible"/>
     </RelativeLayout>
 
     <FrameLayout

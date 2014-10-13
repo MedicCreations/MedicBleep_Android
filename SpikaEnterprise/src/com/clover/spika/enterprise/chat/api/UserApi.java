@@ -198,7 +198,7 @@ public class UserApi {
     }
     
     public void getInformation(final Context context, final ApiCallback<Information> callback) {
-        new BaseAsyncTask<Void, Void, Information>(context, false) {
+        new BaseAsyncTask<Void, Void, Information>(context, true) {
             @Override
             protected Information doInBackground(Void... params) {
                 JSONObject jsonObject = new JSONObject();
