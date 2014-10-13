@@ -124,7 +124,8 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.NewPasscodeActivity"
             android:label="NewPasscodeActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ProfileOtherActivity"
             android:launchMode="singleTop"

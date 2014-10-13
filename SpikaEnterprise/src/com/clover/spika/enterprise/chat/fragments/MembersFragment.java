@@ -4,20 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.listeners.OnUserClickedListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class MembersFragment extends CustomFragment {
+public class MembersFragment extends CustomFragment implements OnUserClickedListener<User>{
 
     public interface Callbacks {
         void getMembers(int index, final boolean toUpdateInviteMember);
@@ -67,6 +71,7 @@ public class MembersFragment extends CustomFragment {
 
         if (getListView() != null) {
             mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>());
+            mUserAdapter.setOnUserClickListener(this);
 
             getListView().setAdapter(mUserAdapter);
         }
@@ -116,5 +121,18 @@ public class MembersFragment extends CustomFragment {
             mCallbacks.getMembers(mCurrentIndex, false);
         }
     };
+
+	@Override
+	public void onUserClicked(User user) {
+		Intent intent = new Intent(getActivity(), ChatActivity.class);
+		intent.putExtra(Const.USER_ID, user.getId());
+		intent.putExtra(Const.FIRSTNAME, user.getFirstName());
+		intent.putExtra(Const.LASTNAME, user.getLastName());
+		intent.putExtra(Const.IMAGE, user.getImage());
+		intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
+		intent.putExtra(Const.TYPE, String.valueOf(Const.C_PRIVATE));
+		intent.putExtra(Const.IS_ADMIN, false);
+		startActivity(intent);
+	}
 
 }

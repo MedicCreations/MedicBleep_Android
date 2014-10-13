@@ -299,6 +299,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="left"
+                android:scaleType="centerCrop"
                 android:contentDescription="@null" />
 
             <RelativeLayout

@@ -2,19 +2,19 @@ package com.clover.spika.enterprise.chat.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -26,6 +26,10 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	String chatName;
 	String chatId;
 	boolean isAdmin;
+	
+	private ImageLoader imageLoader;
+	
+	private ProgressBar pbLoading;
 
 	public ProfileGroupFragment(Intent intent) {
 		setData(intent);
@@ -50,10 +54,22 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		}
 		
 		((TextView) rootView.findViewById(R.id.profileName)).setText(chatName);
+		
+		pbLoading = (ProgressBar) rootView.findViewById(R.id.loadingPB);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);		
 		Helper.setRoomThumbId(getActivity(), imageId);
-		ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
+		
+		imageLoader = new ImageLoader(getActivity());
+		imageLoader.setDefaultImage(R.drawable.default_group_image);
+		
+		imageLoader.displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+			
+			@Override
+			public void onFinish() {
+				pbLoading.setVisibility(View.GONE);
+			}
+		});
 		
 		return rootView;
 	}
@@ -89,7 +105,13 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		super.onResume();
 		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
 			imageId = Helper.getRoomThumbId(getActivity());
-			ImageLoader.getInstance().displayImage(getActivity(), imageId, profileImage);
+			imageLoader.displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+				
+				@Override
+				public void onFinish() {
+					pbLoading.setVisibility(View.GONE);
+				}
+			});
 		}
 	}
 }

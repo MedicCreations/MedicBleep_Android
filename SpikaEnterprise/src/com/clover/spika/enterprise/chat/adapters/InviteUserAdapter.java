@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
+import com.clover.spika.enterprise.chat.listeners.OnUserClickedListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
@@ -30,6 +31,7 @@ public class InviteUserAdapter extends BaseAdapter {
 	private ImageLoader imageLoader;
 
 	private OnChangeListener<User> listener;
+	private OnUserClickedListener<User> listenerOnUserClick;
 	private boolean showCheckBox = true;
 
 	public InviteUserAdapter(Context context, Collection<User> users, OnChangeListener<User> listener) {
@@ -51,6 +53,10 @@ public class InviteUserAdapter extends BaseAdapter {
 
 		listener = null;
 		showCheckBox = false;
+	}
+	
+	public void setOnUserClickListener(OnUserClickedListener<User> lis){
+		listenerOnUserClick = lis;
 	}
 
 	public Context getContext() {
@@ -170,6 +176,16 @@ public class InviteUserAdapter extends BaseAdapter {
 			}
 		}else{
 			holder.isSelected.setVisibility(View.GONE);
+		}
+		
+		if(listenerOnUserClick != null && !Helper.getUserId(mContext).equals(user.getId())){
+			convertView.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					listenerOnUserClick.onUserClicked(getItem(position));
+				}
+			});
 		}
 
 		return convertView;

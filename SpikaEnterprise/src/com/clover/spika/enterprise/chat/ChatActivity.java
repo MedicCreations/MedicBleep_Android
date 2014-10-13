@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,9 +23,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
-
-import java.util.ArrayList;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -54,7 +53,7 @@ public class ChatActivity extends BaseChatActivity {
                     if (message.getType() != Const.MSG_TYPE_DELETED) {
                         int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
                         ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                                message.getChat_id(), message.getId(), chatImage, chatName, mUserId);
+                                message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
                     }
                 }
             }

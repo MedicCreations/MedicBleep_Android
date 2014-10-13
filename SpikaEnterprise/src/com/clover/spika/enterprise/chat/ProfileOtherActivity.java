@@ -11,6 +11,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -43,7 +44,8 @@ public class ProfileOtherActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_other_profile);
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = new ImageLoader(this);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -73,7 +75,13 @@ public class ProfileOtherActivity extends BaseActivity {
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
-			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage);
+			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage, new OnImageDisplayFinishListener() {
+				
+				@Override
+				public void onFinish() {
+					findViewById(R.id.loadingPB).setVisibility(View.GONE);
+				}
+			});
 			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 
             mUserId = getIntent().getExtras().getString(Const.USER_ID);

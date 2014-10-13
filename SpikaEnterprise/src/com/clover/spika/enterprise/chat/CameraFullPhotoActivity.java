@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -30,12 +37,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 public class CameraFullPhotoActivity extends BaseActivity implements OnClickListener {
 
@@ -366,8 +367,17 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
     private void createThumb(String path, Bitmap b) {
         int width = THUMB_WIDTH, height = THUMB_HEIGHT;
+        Log.d("LOG", "original: "+b.getWidth()+" : "+b.getHeight());
+        
+        if(b.getWidth() > b.getHeight()){
+        	height = (int) ((double)THUMB_WIDTH / (double)((double)b.getWidth() /(double) b.getHeight()));
+        }else if(b.getWidth() < b.getHeight()){
+        	width = (int) ((double)THUMB_HEIGHT / (double)((double)b.getHeight() / (double)b.getWidth()));
+        }
+        
+		Log.d("LOG", "scaled to be: "+width+" : "+height);
         Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
-
+        Log.d("LOG", "scaled: "+sb.getWidth()+" : "+sb.getHeight());
         saveBitmapToFile(sb, path);
     }
 

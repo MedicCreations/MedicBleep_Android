@@ -43,7 +43,7 @@ public class RoundCornersImageView extends ImageView {
 	    if (drawable == null) {
 	        return;
 	    }
-
+	    
 	    if (getWidth() == 0 || getHeight() == 0) {
 	        return; 
 	    }
@@ -60,13 +60,26 @@ public class RoundCornersImageView extends ImageView {
 
 	public Bitmap getCroppedBitmap(Bitmap bmp, int radius) {
 	    Bitmap sbmp;
-	    if(bmp.getWidth() != radius || bmp.getHeight() != radius)
-	        sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
+	    int left = 0;
+	    int top = 0;
+	    if(bmp.getWidth() != radius || bmp.getHeight() != radius){
+	    	if(bmp.getWidth() > bmp.getHeight()){
+	    		double height = (double)radius / ((double)bmp.getWidth() / (double)bmp.getHeight()); 
+	    		sbmp = Bitmap.createScaledBitmap(bmp, radius, (int) height, false);
+	    		top = radius - sbmp.getHeight();
+	    	}else if(bmp.getWidth() < bmp.getHeight()){
+	    		double width = (double)radius / ((double)bmp.getHeight() / (double)bmp.getWidth()); 
+	    		sbmp = Bitmap.createScaledBitmap(bmp, (int) width, radius, false);
+	    		left = radius - sbmp.getWidth();
+	    	}else{
+	    		sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
+	    	}
+	    }
 		else
 			sbmp = bmp;
 		Bitmap output = Bitmap.createBitmap(sbmp.getWidth(), sbmp.getHeight(), Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
-
+		
 		final Paint paint = new Paint();
 		final Rect rect = new Rect(0, 0, sbmp.getWidth(), sbmp.getHeight());
 

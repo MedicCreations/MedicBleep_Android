@@ -26,15 +26,18 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     public static final String EXTRA_CHAT_ID = "com.clover.spika.enterprise.extra_chat_id";
     public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.extra_message_id";
     public static final String EXTRA_PHOTO_THUMB = "com.clover.spika.enterprise.extra_photo_thumb";
+    public static final String EXTRA_PHOTO = "com.clover.spika.enterprise.extra_photo";
     public static final String EXTRA_CHAT_NAME = "com.clover.spika.enterprise.extra_chat_name";
 
-    public static void start(Activity activity, String root, String chatId, String messageId, String photoThumb, String chatName, String userId) {
+    public static void start(Activity activity, String root, String chatId, String messageId, String photoThumb,
+    		String photo, String chatName, String userId) {
         Intent threadIntent = new Intent(activity, ThreadsActivity.class);
         threadIntent.putExtra(EXTRA_USER_ID, userId);
         threadIntent.putExtra(EXTRA_ROOT_ID, root);
         threadIntent.putExtra(EXTRA_CHAT_ID, chatId);
         threadIntent.putExtra(EXTRA_MESSAGE_ID, messageId);
         threadIntent.putExtra(EXTRA_PHOTO_THUMB, photoThumb);
+        threadIntent.putExtra(EXTRA_PHOTO, photo);
         threadIntent.putExtra(EXTRA_CHAT_NAME, chatName);
         activity.startActivity(threadIntent);
     }
@@ -54,7 +57,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             mRootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
             chatId = getIntent().getStringExtra(EXTRA_CHAT_ID);
             mMessageId = getIntent().getStringExtra(EXTRA_MESSAGE_ID);
-            chatImage = getIntent().getStringExtra(EXTRA_PHOTO_THUMB);
+            chatImageThumb = getIntent().getStringExtra(EXTRA_PHOTO_THUMB);
+            chatImage = getIntent().getStringExtra(EXTRA_PHOTO);
             chatName = getIntent().getStringExtra(EXTRA_CHAT_NAME);
             setTitle(chatName);
 

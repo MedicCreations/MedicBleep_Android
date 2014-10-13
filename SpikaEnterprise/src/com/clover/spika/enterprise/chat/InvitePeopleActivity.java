@@ -337,6 +337,15 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
+					Intent intent = new Intent(InvitePeopleActivity.this, ChatActivity.class);
+					intent.putExtra(Const.CHAT_ID, String.valueOf(result.getResultData().getChat_id()));
+					intent.putExtra(Const.CHAT_NAME, result.getResultData().getChat_name());
+					intent.putExtra(Const.IMAGE, result.getResultData().getImage());
+					intent.putExtra(Const.IMAGE_THUMB, result.getResultData().getImageThumb());
+					intent.putExtra(Const.TYPE, result.getResultData().getType());
+					intent.putExtra(Const.IS_ACTIVE, result.getResultData().isActive());
+					intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					startActivity(intent);
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);

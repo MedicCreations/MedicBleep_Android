@@ -1,19 +1,5 @@
 package com.clover.spika.enterprise.chat.lazy;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.widget.ImageView;
-
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Utils;
-
-import org.apache.http.util.ByteArrayBuffer;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +10,21 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.http.util.ByteArrayBuffer;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Handler;
+import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ImageLoader {
 
@@ -55,8 +56,9 @@ public class ImageLoader {
 	Handler handler = new Handler();
 
 	private int defaultImageId = -1;
+	private OnImageDisplayFinishListener mListener;
 
-	private ImageLoader(Context context) {
+	public ImageLoader(Context context) {
 
 		fileCache = new FileCache(context);
 
@@ -64,11 +66,19 @@ public class ImageLoader {
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
 	}
-
+	
 	public void displayImage(Context ctx, String url, ImageView imageView) {
 
-		if(url.equals("") || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)){
+		displayImage(ctx, url, imageView, null);
+	}
+	
+	public void displayImage(Context ctx, String url, ImageView imageView, OnImageDisplayFinishListener lis) {
+
+		mListener = lis;
+		
+		if(url == null || url.equals("") || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)){
 			imageView.setImageResource(defaultImageId);
+			if(mListener != null) mListener.onFinish();
 			return;
 		}
 		// Store image and url in Map
@@ -82,6 +92,7 @@ public class ImageLoader {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
 			imageView.setImageBitmap(bitmap);
+			if(mListener != null) mListener.onFinish();
 		} else {
 			// queue Photo to download from url
 			queuePhoto(ctx, url, imageView);
@@ -247,6 +258,7 @@ public class ImageLoader {
 			// Show bitmap on UI
 			if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
+				if(mListener != null) mListener.onFinish();
 			}
 		}
 	}

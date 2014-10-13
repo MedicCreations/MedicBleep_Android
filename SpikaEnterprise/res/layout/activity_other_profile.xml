@@ -3,13 +3,13 @@
     android:id="@+id/wholeScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_blue">
+    android:background="@color/default_blue" >
 
     <RelativeLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
-        android:background="@color/default_blue">
+        android:background="@color/default_blue" >
 
         <ImageButton
             android:id="@+id/goBack"
@@ -35,7 +35,7 @@
         android:id="@+id/mainHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/actionBarLayout">
+        android:layout_below="@id/actionBarLayout" >
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/profileImage"
@@ -56,6 +56,14 @@
             android:textColor="@android:color/white"
             android:textSize="45sp"
             tools:text="John Doe" />
+
+        <ProgressBar
+            android:id="@+id/loadingPB"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="115dp"
+            android:visibility="visible" />
     </RelativeLayout>
 
     <com.clover.spika.enterprise.chat.views.DetailsScrollView
@@ -65,7 +73,7 @@
         android:layout_below="@id/mainHolder"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:divider="@android:color/transparent"/>
+        android:divider="@android:color/transparent" />
 
     <ProgressBar
         android:id="@+id/progressBarDetails"
@@ -75,6 +83,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="80dp"
         android:visibility="invisible"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
 </RelativeLayout>
