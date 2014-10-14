@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class UserApi {
 
@@ -34,7 +35,9 @@ public class UserApi {
 
 				try {
 					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -80,7 +83,9 @@ public class UserApi {
 				try {
 					jsonObject = NetworkManagement
 							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -124,7 +129,9 @@ public class UserApi {
 				try {
 					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
 					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -170,6 +177,8 @@ public class UserApi {
                     jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams,
                             SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
                     return new Gson().fromJson(jsonObject.toString(), UserWrapper.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -209,6 +218,8 @@ public class UserApi {
                     jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, getParams,
                             SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
                     return new Gson().fromJson(jsonObject.toString(), Information.class);
+                } catch (JsonSyntaxException e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

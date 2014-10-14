@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
 import java.util.HashMap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +16,7 @@ import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class UsersApi {
 
@@ -35,7 +37,9 @@ public class UsersApi {
 
 				try {
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ALL_CHARACTERS, requestParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (IOException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -87,7 +91,9 @@ public class UsersApi {
 				try {
 
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ALL_CHARACTERS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -136,7 +142,9 @@ public class UsersApi {
 
 				try {
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_CHAT_MEMBERS, requestParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (IOException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -187,7 +195,9 @@ public class UsersApi {
 
 				try {
 					jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();

@@ -23,10 +23,10 @@
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_centerInParent="true"
             android:layout_toLeftOf="@+id/sendVideo"
             android:layout_toRightOf="@+id/goBack"
+            android:gravity="center"
             android:text="@string/video"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
@@ -43,12 +43,20 @@
             android:src="@android:drawable/ic_menu_send" />
     </RelativeLayout>
 
-    <VideoView
-        android:id="@+id/videoView"
+    <RelativeLayout
+        android:id="@+id/wrraper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_margin="20dp" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/soundControler"
+        android:layout_below="@id/topLayout" >
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="20dp" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/soundControler"

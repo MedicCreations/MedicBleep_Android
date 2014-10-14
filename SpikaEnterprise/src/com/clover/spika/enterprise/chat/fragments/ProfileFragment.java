@@ -92,6 +92,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
                 if (result.isSuccess()) {
                     view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+                }else{
+                	view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                 }
             }
         });
