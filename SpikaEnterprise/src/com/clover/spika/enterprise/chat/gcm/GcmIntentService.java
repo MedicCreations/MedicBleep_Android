@@ -101,7 +101,7 @@ public class GcmIntentService extends IntentService {
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
 								
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
-
+					
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
 					inBroadcast.putExtra(Const.CHAT_ID, chatId);
