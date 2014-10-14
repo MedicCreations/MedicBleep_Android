@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -78,6 +79,10 @@ public class ChatActivity extends BaseChatActivity {
 	protected void onResume() {
 		super.onResume();
 
+		//if activity restart after calling camera intent (SAMSUNG DEVICES)
+		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
+		SpikaEnterpriseApp.getInstance().setVideoPath(null);
+		
 		loadImage();
 
 		if (isResume) {

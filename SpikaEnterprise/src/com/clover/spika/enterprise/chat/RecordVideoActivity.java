@@ -27,6 +27,7 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -40,7 +41,6 @@ public class RecordVideoActivity extends BaseActivity {
 	private ImageButton goBack;
 	private ImageButton sendVideo;
 
-	private String mFilePath = null;
 	private String chatId;
 
 	private VideoView mVideoView;
@@ -56,6 +56,8 @@ public class RecordVideoActivity extends BaseActivity {
 	private Runnable mRunnForProgressBar;
 
 	private long mDurationOfVideo = 0;
+	
+	private String mFilePath = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -121,7 +123,13 @@ public class RecordVideoActivity extends BaseActivity {
 
 		Bundle extras = getIntent().getExtras();
 		chatId = extras.getString(Const.CHAT_ID);
-		gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
+		
+		//if activity restart after calling camera intent (SAMSUNG DEVICES)
+		if(!SpikaEnterpriseApp.getInstance().checkForRestartVideoActivity()){
+			gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
+		}else{
+			mFilePath = SpikaEnterpriseApp.getInstance().videoPath();
+		}
 
 	}
 
@@ -173,6 +181,7 @@ public class RecordVideoActivity extends BaseActivity {
     }
 
 	private void gotoGalleryOrCamera(int chooseWhereToGo) {
+		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(true);
 		switch (chooseWhereToGo) {
 		case Const.VIDEO_INTENT_INT:
 
@@ -222,7 +231,7 @@ public class RecordVideoActivity extends BaseActivity {
 			break;
 		}
 	}
-
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		try {
@@ -233,6 +242,8 @@ public class RecordVideoActivity extends BaseActivity {
             } else {
                 mFilePath = selectedVideoUri.toString();
             }
+            
+            SpikaEnterpriseApp.getInstance().setVideoPath(mFilePath);
 
             super.onActivityResult(requestCode, resultCode, data);
 		} catch (Exception e) {

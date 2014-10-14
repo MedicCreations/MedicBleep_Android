@@ -11,6 +11,8 @@ public class SpikaEnterpriseApp extends Application {
 
 	private static SpikaEnterpriseApp mInstance;
 	private static Context mAppContext;
+	private boolean mCheckForRestartVideoActivity = false;
+	private String mFilePathForVideo = null;
 
 	@Override
 	public void onCreate() {
@@ -36,6 +38,22 @@ public class SpikaEnterpriseApp extends Application {
 
 	public void setAppContext(Context mAppContext) {
 		SpikaEnterpriseApp.mAppContext = mAppContext;
+	}
+	
+	public boolean checkForRestartVideoActivity(){
+		return mCheckForRestartVideoActivity;
+	}
+	
+	public void setCheckForRestartVideoActivity(boolean check){
+		mCheckForRestartVideoActivity = check;
+	}
+	
+	public String videoPath(){
+		return mFilePathForVideo;
+	}
+	
+	public void setVideoPath(String path){
+		mFilePathForVideo = path;
 	}
 
 }
