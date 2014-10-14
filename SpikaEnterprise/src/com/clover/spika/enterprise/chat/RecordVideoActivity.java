@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URI;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -27,10 +31,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URI;
 
 public class RecordVideoActivity extends BaseActivity {
 
@@ -193,7 +193,12 @@ public class RecordVideoActivity extends BaseActivity {
 					mFilePath = video.getPath();
 
 					cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-					cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
+					
+					//----> don't know why, but on older devices don't work with EXTRA_OUTPUT
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
+		            } 
+					
 					startActivityForResult(cameraIntent, RESULT_FROM_CAMERA);
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -345,5 +350,5 @@ public class RecordVideoActivity extends BaseActivity {
         }
         return name;
     }
-
+	
 }
