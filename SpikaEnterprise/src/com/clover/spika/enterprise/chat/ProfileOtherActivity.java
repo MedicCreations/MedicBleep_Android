@@ -68,6 +68,8 @@ public class ProfileOtherActivity extends BaseActivity {
                 if (result.isSuccess()) {
                     findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+                }else{
+                	findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                 }
             }
         });

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -113,5 +114,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 				}
 			});
 		}
+		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 	}
 }

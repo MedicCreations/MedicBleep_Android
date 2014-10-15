@@ -169,6 +169,9 @@
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CameraActivityForSamsung"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

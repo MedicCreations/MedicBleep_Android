@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.File;
+
 import android.app.Application;
 import android.content.Context;
 
@@ -13,6 +15,7 @@ public class SpikaEnterpriseApp extends Application {
 	private static Context mAppContext;
 	private boolean mCheckForRestartVideoActivity = false;
 	private String mFilePathForVideo = null;
+	private String mSamsungPath = null;
 
 	@Override
 	public void onCreate() {
@@ -54,6 +57,22 @@ public class SpikaEnterpriseApp extends Application {
 	
 	public void setVideoPath(String path){
 		mFilePathForVideo = path;
+	}
+	
+	public String samsungImagePath(){
+		return mSamsungPath;
+	}
+	
+	public void setSamsungImagePath(String path){
+		mSamsungPath = path;
+	}
+	
+	public void deleteSamsungPathImage(){
+		if(mSamsungPath != null && !mSamsungPath.equals("-1")){
+			File f = new File(mSamsungPath);
+			if(f.exists()) f.delete();
+		}
+		setSamsungImagePath(null);
 	}
 
 }

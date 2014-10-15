@@ -82,6 +82,7 @@ public class ChatActivity extends BaseChatActivity {
 		//if activity restart after calling camera intent (SAMSUNG DEVICES)
 		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
 		SpikaEnterpriseApp.getInstance().setVideoPath(null);
+		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 		
 		loadImage();
 

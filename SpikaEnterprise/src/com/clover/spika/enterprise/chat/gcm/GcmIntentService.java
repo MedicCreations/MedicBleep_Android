@@ -13,7 +13,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.PowerManager;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SplashActivity;
@@ -99,8 +99,12 @@ public class GcmIntentService extends IntentService {
 				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 				List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
+				
+				boolean isScreenOn = true;
+				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+				isScreenOn = pm.isScreenOn();
 								
-				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat")) {
+				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat") && isScreenOn) {
 
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
@@ -115,6 +119,7 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.ADMIN_ID, adminId);
 
 					sendBroadcast(inBroadcast);
+					
 				} else {
 
 					if (Integer.parseInt(type) == Const.PUSH_TYPE_SEEN) {

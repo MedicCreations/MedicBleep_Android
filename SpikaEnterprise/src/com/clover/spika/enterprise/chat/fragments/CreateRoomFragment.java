@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
@@ -95,6 +96,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public void onResume() {
 		super.onResume();
 		onClosed();
+		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 	}
 
 	@SuppressWarnings("unchecked")

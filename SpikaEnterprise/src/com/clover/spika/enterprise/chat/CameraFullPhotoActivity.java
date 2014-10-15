@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -33,6 +32,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -67,6 +67,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
     private boolean mIsOverJellyBean;
     private boolean mCompressImages;
+    private boolean mIsSamsung = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,12 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
         btnSend.setOnClickListener(this);
         btnCancel = (LinearLayout) findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(this);
+        
+        if(android.os.Build.MANUFACTURER.contains("samsung")){
+			mIsSamsung = true;
+		}else{
+			mIsSamsung = false;
+		}
 
         getImageIntents();
     }
@@ -136,10 +143,14 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
                 File file = new File(_path);
                 Uri outputFileUri = Uri.fromFile(file);
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-                startActivityForResult(intent, CAMERA);
+                
+                if(mIsSamsung){
+					CameraActivityForSamsung.start(_path, this);
+				}else{
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+					startActivityForResult(intent, CAMERA);
+				}
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -206,10 +217,16 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
     }
 
     protected void onPhotoTaken(String path) {
-
-        String fileName = Uri.parse(path).getLastPathSegment();
-        mFilePath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName;
-        mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+    	
+    	if(mIsSamsung){
+			String fileName = Uri.parse(path).getLastPathSegment();
+			mFilePath = path;
+			mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		}else{
+			String fileName = Uri.parse(path).getLastPathSegment();
+	        mFilePath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName;
+	        mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		}
 
         if (!path.equals(mFilePath)) {
             try {
@@ -367,7 +384,6 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
     private void createThumb(String path, Bitmap b) {
         int width = THUMB_WIDTH, height = THUMB_HEIGHT;
-        Log.d("LOG", "original: "+b.getWidth()+" : "+b.getHeight());
         
         if(b.getWidth() > b.getHeight()){
         	height = (int) ((double)THUMB_WIDTH / (double)((double)b.getWidth() /(double) b.getHeight()));
@@ -375,15 +391,21 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
         	width = (int) ((double)THUMB_HEIGHT / (double)((double)b.getHeight() / (double)b.getWidth()));
         }
         
-		Log.d("LOG", "scaled to be: "+width+" : "+height);
         Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
-        Log.d("LOG", "scaled: "+sb.getWidth()+" : "+sb.getHeight());
         saveBitmapToFile(sb, path);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        
+        if(mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null){
+			if(SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")){
+				finish();
+			}else{
+				onPhotoTaken(SpikaEnterpriseApp.getInstance().samsungImagePath());
+			}
+		}
 
         if (return_flag) {
             finish();
@@ -399,7 +421,8 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
             if (mCompressImages) {
                 AppDialog compressionConfirmationDialog = new AppDialog(this, false);
-                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question));
+                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question),
+                		getString(R.string.yes), getString(R.string.no));
                 compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
                     @Override
                     public void onPositiveButtonClick(View v) {
@@ -537,9 +560,9 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mFilePath != null) {
-            new File(mFilePath).delete();
-        }
+        if (mFilePath != null && !mIsSamsung) {
+			new File(mFilePath).delete();
+		}
     }
 
 

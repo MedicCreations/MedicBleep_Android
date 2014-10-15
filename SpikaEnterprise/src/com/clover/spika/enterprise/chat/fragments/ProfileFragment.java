@@ -21,6 +21,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -60,6 +61,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	public void onResume() {
 		super.onResume();
 		onClosed();
+		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 	}
 
 	@Override

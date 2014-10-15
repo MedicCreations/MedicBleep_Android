@@ -45,6 +45,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -98,6 +99,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	private boolean mIsOverJellyBean;
     private boolean mCompressImages;
+    private boolean mIsSamsung = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		btnSend.setOnClickListener(this);
 		btnCancel = (LinearLayout) findViewById(R.id.btnCancel);
 		btnCancel.setOnClickListener(this);
+		
+		if(android.os.Build.MANUFACTURER.contains("samsung")){
+			mIsSamsung = true;
+		}else{
+			mIsSamsung = false;
+		}
 
 		getImageIntents();
 	}
@@ -167,10 +175,14 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 				File file = new File(_path);
 				Uri outputFileUri = Uri.fromFile(file);
-
-				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-				startActivityForResult(intent, CAMERA);
+				
+				if(mIsSamsung){
+					CameraActivityForSamsung.start(_path, this);
+				}else{
+					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+					startActivityForResult(intent, CAMERA);
+				}
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -397,7 +409,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					dialog.setFailed(getResources().getString(R.string.e_something_went_wrong_while_taking_a_picture));
 				}
 				break;
-
+				
 			default:
 				finish();
 				break;
@@ -410,10 +422,16 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	protected void onPhotoTaken(String path) {
-
-		String fileName = Uri.parse(path).getLastPathSegment();
-		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
-		mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		
+		if(mIsSamsung){
+			String fileName = Uri.parse(path).getLastPathSegment();
+			mFilePath = path;
+			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		}else{
+			String fileName = Uri.parse(path).getLastPathSegment();
+			mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
+			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		}
 
 		if (!path.equals(mFilePath)) {
 			try {
@@ -422,8 +440,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				e.printStackTrace();
 			}
 		}
-
-		new BaseAsyncTask<String, Void, byte[]>(this, true) {
+		
+		BaseAsyncTask<String, Void, byte[]> task = new BaseAsyncTask<String, Void, byte[]>(this, true) {
 
 			@Override
 			protected byte[] doInBackground(String... params) {
@@ -543,7 +561,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				}
 
 			}
-		}.execute(mFilePath);
+		};
+		task.execute(mFilePath);
+		
 	}
 
 	private boolean saveBitmapToFile(Bitmap bitmap, String path) {
@@ -578,6 +598,14 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		if(mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null){
+			if(SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")){
+				finish();
+			}else{
+				onPhotoTaken(SpikaEnterpriseApp.getInstance().samsungImagePath());
+			}
+		}
 
 		if (return_flag) {
 			finish();
@@ -593,7 +621,8 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
             if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
                 AppDialog compressionConfirmationDialog = new AppDialog(this, false);
-                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question));
+                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question),
+                		getString(R.string.yes), getString(R.string.no));
                 compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
                     @Override
                     public void onPositiveButtonClick(View v) {
@@ -753,7 +782,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (mFilePath != null) {
+		if (mFilePath != null && !mIsSamsung) {
 			new File(mFilePath).delete();
 		}
 	}

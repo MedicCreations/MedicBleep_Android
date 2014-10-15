@@ -412,7 +412,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 
             } else if (id == R.id.btnPhoto) {
             	final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
-            	dialog.setYesNo(getResources().getString(R.string.enableEditPhoto));
+            	dialog.setYesNo(getString(R.string.enableEditPhoto),
+                        getString(R.string.choiceCroppedImage),
+                        getString(R.string.choiceFullSizeImage));
             	dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 					
 					@Override
