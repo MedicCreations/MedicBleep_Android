@@ -37,6 +37,7 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -129,6 +130,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {		
+		
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
 			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
 		}

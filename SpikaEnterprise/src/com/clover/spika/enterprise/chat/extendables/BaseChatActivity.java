@@ -362,7 +362,9 @@ public abstract class BaseChatActivity extends BaseActivity {
         if (chatIdPush.equals(chatId)) {
             onChatPushUpdated();
         } else {
-            showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
+        	if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
+        		showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
+        	}
         }
     }
 
