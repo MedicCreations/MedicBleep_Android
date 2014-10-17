@@ -186,6 +186,9 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()){
+					if(getActivity() instanceof ManageUsersActivity) {
+						((ManageUsersActivity)getActivity()).setNewChat(result.getResultData().getChat());
+					}
 					mCurrentIndex = 0;
 					mCallbacks.getUsers(mCurrentIndex, null, true, true);
 					setInitialTextToTxtUsers();

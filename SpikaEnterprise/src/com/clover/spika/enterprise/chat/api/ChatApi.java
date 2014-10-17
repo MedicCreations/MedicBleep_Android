@@ -465,11 +465,11 @@ public class ChatApi {
 		}.execute();
 	}
     
-    public void leaveChat(final String chatId, final String userIds, Context context, final ApiCallback<BaseModel> listener) {
-        new BaseAsyncTask<Void, Void, BaseModel>(context, true) {
+    public void leaveChat(final String chatId, final String userIds, Context context, final ApiCallback<Chat> listener) {
+        new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
             @Override
-            protected BaseModel doInBackground(Void... params) {
+            protected Chat doInBackground(Void... params) {
                 HashMap<String, String> requestParams = new HashMap<String, String>();
                 requestParams.put(Const.CHAT_ID, chatId);
                 requestParams.put(Const.USER_IDS, userIds);
@@ -479,7 +479,7 @@ public class ChatApi {
                 	JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, 
                 			SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
-					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
+					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
                 } catch (ClientProtocolException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -491,20 +491,22 @@ public class ChatApi {
             }
 
             @Override
-            protected void onPostExecute(BaseModel model) {
+            protected void onPostExecute(Chat model) {
                 super.onPostExecute(model);
                 
                 if (listener != null) {
-					Result<BaseModel> apiResult;
+					Result<Chat> apiResult;
 
 					if (model != null) {
 						if (model.getCode() == Const.API_SUCCESS) {
-							apiResult = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+							apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
+							apiResult.setResultData(model);
 						} else {
-							apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+							apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+							apiResult.setResultData(model);
 						}
 					} else {
-						apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
 					}
 
 					listener.onApiResponse(apiResult);

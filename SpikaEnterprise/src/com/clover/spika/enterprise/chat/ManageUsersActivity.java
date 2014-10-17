@@ -17,8 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UsersApi;
@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
 import com.clover.spika.enterprise.chat.listeners.OnInviteClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
@@ -61,6 +62,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	
 	private ToggleButton inviteTab;
 	private ToggleButton removeTab;
+	
+	private Chat chatModelNew = null;
 
     public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
@@ -85,7 +88,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
             }
         });
 
@@ -327,6 +330,10 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		}
 	};
 	
+	public void setNewChat(Chat chat){
+		chatModelNew = chat;
+	}
+	
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
@@ -334,8 +341,21 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 					mTitleTextView, screenWidth, speedSearchAnimation, (LinearLayout) findViewById(R.id.invitationOptions));
 			return;
 		}
-
+		if(chatModelNew != null){
+			Intent intent = new Intent(ManageUsersActivity.this, ChatActivity.class);
+			intent.putExtra(Const.CHAT_ID, String.valueOf(chatModelNew.getChat_id()));
+			intent.putExtra(Const.CHAT_NAME, chatModelNew.getChat_name());
+			intent.putExtra(Const.IMAGE, chatModelNew.getImage());
+			intent.putExtra(Const.IMAGE_THUMB, chatModelNew.getImageThumb());
+			intent.putExtra(Const.TYPE, chatModelNew.getType());
+			intent.putExtra(Const.IS_ACTIVE, chatModelNew.isActive());
+			intent.putExtra(Const.ADMIN_ID, chatModelNew.getAdminId());
+			intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			startActivity(intent);
+		}
+		
 		finish();
+		
 	}
 
 	@Override

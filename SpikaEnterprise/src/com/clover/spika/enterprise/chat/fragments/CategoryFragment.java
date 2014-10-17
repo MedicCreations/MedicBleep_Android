@@ -109,7 +109,9 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 					setData(result.getResultData().getCategoryList());
 				}else{
 					AppDialog dialog = new AppDialog(getActivity(), false);
-					dialog.setInfo(result.getResultData().getMessage());
+					if(result.getResultData() != null && result.getResultData().getMessage() != null)
+						dialog.setInfo(result.getResultData().getMessage());
+					else dialog.setInfo(getString(R.string.e_something_went_wrong));
 				}
 			}
 		});

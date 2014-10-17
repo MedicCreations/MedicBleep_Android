@@ -560,7 +560,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                     	}
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
-                            InvitePeopleActivity.startActivity(chatId, chatType, BaseChatActivity.this);
+                            InvitePeopleActivity.startActivity(chatId, chatType, isAdmin, BaseChatActivity.this);
                         } else if (chatType == Const.C_ROOM_ADMIN_ACTIVE){
                             ManageUsersActivity.startActivity(chatId, BaseChatActivity.this);
                         }

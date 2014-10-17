@@ -11,6 +11,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,6 +64,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	EditText searchEt;
 	ImageButton closeSearchBtn;
 	boolean isOpenSearch = false;
+	private boolean isAdmin = false;
 
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
@@ -72,10 +74,11 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	List<User> usersToAdd = new ArrayList<User>();
 
-	public static void startActivity(String chatId, int type, Context context) {
+	public static void startActivity(String chatId, int type, boolean isAdmin, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.TYPE, type);
+		intent.putExtra(Const.IS_ADMIN, isAdmin);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
@@ -156,6 +159,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		if (intent != null && intent.getExtras() != null) {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatType = intent.getExtras().getInt(Const.TYPE);
+			isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN);
 			getUsers(0, mSearchData, false);
 		}
 	}
@@ -342,8 +346,13 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 					intent.putExtra(Const.CHAT_NAME, result.getResultData().getChat_name());
 					intent.putExtra(Const.IMAGE, result.getResultData().getImage());
 					intent.putExtra(Const.IMAGE_THUMB, result.getResultData().getImageThumb());
-					intent.putExtra(Const.TYPE, result.getResultData().getType());
+					if(chatType == Const.C_PRIVATE){
+						intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
+					}else{
+						intent.putExtra(Const.TYPE, result.getResultData().getType());
+					}
 					intent.putExtra(Const.IS_ACTIVE, result.getResultData().isActive());
+					intent.putExtra(Const.IS_ADMIN, isAdmin);
 					intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 					startActivity(intent);
 					finish();

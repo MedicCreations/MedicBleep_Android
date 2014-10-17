@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import com.clover.spika.enterprise.chat.models.Message;
 
-public class MessageSorting implements Comparator<Message> {
+public class MessageSortingByCreated implements Comparator<Message> {
 
 	@Override
 	public int compare(Message lhs, Message rhs) {

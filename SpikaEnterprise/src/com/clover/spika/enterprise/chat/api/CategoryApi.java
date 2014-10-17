@@ -14,6 +14,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class CategoryApi {
 
@@ -30,11 +31,14 @@ public class CategoryApi {
 
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null,
 							SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (JSONException e) {
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				if(jsonObject == null) return null;
 				return new Gson().fromJson(jsonObject.toString(), CategoryList.class);
 			}
 

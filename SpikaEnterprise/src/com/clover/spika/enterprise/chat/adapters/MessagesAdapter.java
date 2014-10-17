@@ -37,7 +37,7 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.MessageSorting;
+import com.clover.spika.enterprise.chat.utils.MessageSortingById;
 
 public class MessagesAdapter extends BaseAdapter {
 
@@ -449,7 +449,7 @@ public class MessagesAdapter extends BaseAdapter {
 			data.addAll(newItems);
 		}
 
-		Collections.sort(data, new MessageSorting());
+		Collections.sort(data, new MessageSortingById());
 		addSeparatorDate();
 		this.notifyDataSetChanged();
 	}

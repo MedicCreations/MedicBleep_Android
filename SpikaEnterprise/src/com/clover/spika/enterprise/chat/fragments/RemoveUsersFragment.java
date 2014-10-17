@@ -1,18 +1,20 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 
@@ -55,11 +57,14 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		//remove last comma
 		String ids = idsBuilder.substring(0, idsBuilder.length()-1);
 		
-		new ChatApi().leaveChat(chatId, ids, getActivity(), new ApiCallback<BaseModel>() {
+		new ChatApi().leaveChat(chatId, ids, getActivity(), new ApiCallback<Chat>() {
 			
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
+			public void onApiResponse(Result<Chat> result) {
 				if(result.isSuccess()){
+					if(getActivity() instanceof ManageUsersActivity) {
+						((ManageUsersActivity)getActivity()).setNewChat(result.getResultData().getChat());
+					}
 					mCurrentIndex = 0;
 					mUserAdapter.clearData();
 					mUserAdapter.resetSelected();
@@ -67,6 +72,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 				}
 			}
 		});
+		
 	}
 
 	@Override
