@@ -23,6 +23,7 @@ import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -98,6 +99,11 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			data.get(i).setSelected(true);
 		}
 
+		for(int i = 0; i < data.size(); i++){
+			if(data.get(i).getId().equals(Helper.getUserId(getActivity()))){
+				data.remove(i);
+			}
+		}
 		adapter.setData(data);
 		
 		for(int i = 0; i < data.size(); i++){

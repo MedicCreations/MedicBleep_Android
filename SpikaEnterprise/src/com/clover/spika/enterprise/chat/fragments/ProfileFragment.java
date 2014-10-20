@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -34,6 +35,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 	private Switch mSwitchPasscodeEnabled;
 	private ImageView profileImage;
     private DetailsScrollView mDetailScrollView;
+    private FrameLayout mLoadingLayout;
 
 	String imageId;
 	String firstname;
@@ -79,6 +81,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
 
         mDetailScrollView = (DetailsScrollView) rootView.findViewById(R.id.scrollViewDetails);
+        mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
 
 		return rootView;
 	}
@@ -109,7 +112,14 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 				imageId = Helper.getUserImage(getActivity());
 			}
 
-			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), imageId, profileImage);
+			mLoadingLayout.setVisibility(View.VISIBLE);
+			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+				
+				@Override
+				public void onFinish() {
+					mLoadingLayout.setVisibility(View.GONE);
+				}
+			});
 		}
 	}
 

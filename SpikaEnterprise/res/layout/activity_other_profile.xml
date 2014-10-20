@@ -57,13 +57,21 @@
             android:textSize="45sp"
             tools:text="John Doe" />
 
-        <ProgressBar
-            android:id="@+id/loadingPB"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <FrameLayout
+            android:id="@+id/loadingLayout"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="115dp"
-            android:visibility="visible" />
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape_rounded_trans_black" >
+
+            <ProgressBar
+                android:id="@+id/loadingPB"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+        </FrameLayout>
     </RelativeLayout>
 
     <com.clover.spika.enterprise.chat.views.DetailsScrollView

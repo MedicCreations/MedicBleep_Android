@@ -81,7 +81,7 @@ public class ProfileOtherActivity extends BaseActivity {
 				
 				@Override
 				public void onFinish() {
-					findViewById(R.id.loadingPB).setVisibility(View.GONE);
+					findViewById(R.id.loadingLayout).setVisibility(View.GONE);
 				}
 			});
 			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));

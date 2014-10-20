@@ -399,7 +399,7 @@ public abstract class BaseChatActivity extends BaseActivity {
             super.onBackPressed();
         }
     }
-
+    
     View.OnClickListener thisClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -506,7 +506,15 @@ public abstract class BaseChatActivity extends BaseActivity {
                 hideSettings();
 
             } else if (id == R.id.partnerIcon) {
-                ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
+            	if (chatType == Const.C_PRIVATE) {
+            		ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
+            	} 
+            	else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
+            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
+            	}
+            	else {
+            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true);
+            	}
 
             } else if (id == R.id.goBack) {
                 finish();

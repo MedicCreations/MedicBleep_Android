@@ -15,6 +15,8 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -271,7 +273,7 @@ public class ChatActivity extends BaseChatActivity {
     }
 
     public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
-
+    	
 		if (!isRunning) {
 			isRunning = true;
 
@@ -398,19 +400,37 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void deleteChat() {
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, this, new ApiCallback<BaseModel>() {
-
+		final AppDialog dialog = new AppDialog(this, false);
+		dialog.setYesNo(getString(R.string.are_you_sure_), getString(R.string.yes), getString(R.string.no));
+		dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+			
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
-					AppDialog dialog = new AppDialog(ChatActivity.this, true);
-					dialog.setSucceed();
-				} else {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(null);
-				}
+			public void onPositiveButtonClick(View v) {
+				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
+
+					@Override
+					public void onApiResponse(Result<BaseModel> result) {
+						if (result.isSuccess()) {
+							dialog.dismiss();
+							AppDialog dialogSS = new AppDialog(ChatActivity.this, true);
+							dialogSS.setSucceed();
+						} else {
+							AppDialog dialogSS = new AppDialog(ChatActivity.this, false);
+							dialogSS.setFailed(null);
+						}
+					}
+				});
 			}
 		});
+		
+		dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+			
+			@Override
+			public void onNegativeButtonClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
 	}
 
 	@Override

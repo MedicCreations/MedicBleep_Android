@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
@@ -30,7 +30,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	
 	private ImageLoader imageLoader;
 	
-	private ProgressBar pbLoading;
+	private FrameLayout loadingLayout;
 
 	public ProfileGroupFragment(Intent intent) {
 		setData(intent);
@@ -56,7 +56,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		
 		((TextView) rootView.findViewById(R.id.profileName)).setText(chatName);
 		
-		pbLoading = (ProgressBar) rootView.findViewById(R.id.loadingPB);
+		loadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);		
 		Helper.setRoomThumbId(getActivity(), imageId);
@@ -68,7 +68,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			
 			@Override
 			public void onFinish() {
-				pbLoading.setVisibility(View.GONE);
+				loadingLayout.setVisibility(View.GONE);
 			}
 		});
 		
@@ -105,12 +105,13 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	public void onResume() {
 		super.onResume();
 		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
+			loadingLayout.setVisibility(View.VISIBLE);
 			imageId = Helper.getRoomThumbId(getActivity());
 			imageLoader.displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
 				
 				@Override
 				public void onFinish() {
-					pbLoading.setVisibility(View.GONE);
+					loadingLayout.setVisibility(View.GONE);
 				}
 			});
 		}
