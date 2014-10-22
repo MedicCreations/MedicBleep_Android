@@ -207,7 +207,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 			Intent intent = new Intent(this, ChatActivity.class);
 			intent.putExtra(Const.USER_ID, String.valueOf(group.getId()));
 			intent.putExtra(Const.FIRSTNAME, group.getGroupName());
-			intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM));
+			intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
 			intent.putExtra(Const.IMAGE, group.getImage());
 			intent.putExtra(Const.IMAGE_THUMB, group.getImage_thumb());
 			intent.putExtra(Const.IS_GROUP, true);

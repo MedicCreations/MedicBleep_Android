@@ -14,4 +14,8 @@
         transmitted by this app will be encrypted -->
     <bool name="enable_global_encryption">true</bool>
     
+    <!-- when true, user can pick categorie;
+    	if it's false, categorie is hidden, value is 0 -->
+    <bool name="enable_categories">true</bool>
+    
 </resources>

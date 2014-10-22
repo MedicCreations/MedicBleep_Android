@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.RoomsActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -133,12 +135,23 @@ public class SidebarFragment extends Fragment implements OnClickListener {
         case R.id.rooms:
 		case R.id.groups:
 
-			CategoryFragment categoryFragment = CategoryFragment.newInstance(
-                    view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP
-            );
+			boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
+			
+			if (isCategoriesEnabled){
+				CategoryFragment categoryFragment = CategoryFragment.newInstance(
+	                    view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP
+	            );
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
-			switchFragment(categoryFragment);
+				((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
+				switchFragment(categoryFragment);
+			} else {
+				if (view.getId() == R.id.rooms){
+					RoomsActivity.startActivity(String.valueOf(0), getString(R.string.all), getActivity());
+				} else if (view.getId() == R.id.groups){
+					GroupsActivity.startActivity(String.valueOf(0), getActivity());
+				}
+			}
+			
 
 			break;
 

@@ -24,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -104,6 +105,17 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
+		
+		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
+		
+		if (!isCategoriesEnabled){
+			
+			RelativeLayout categoryLayout = (RelativeLayout) rootView.findViewById(R.id.layoutCategory);
+			categoryLayout.setVisibility(View.GONE);
+			View viewAboveCategory = (View) rootView.findViewById(R.id.aboveCategoryLayout);
+			viewAboveCategory.setVisibility(View.GONE);
+			
+		}
 		
 		if(getArguments() != null) mCategoryId = getArguments().getString(Const.CATEGORY_ID, "0");
 		if(getArguments() != null) mCategoryName = getArguments().getString(Const.CATEGORY_NAME, getString(R.string.select_category));

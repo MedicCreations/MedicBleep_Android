@@ -24,6 +24,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -148,7 +149,10 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		}
 		
 		Log.d("LOG", "on created on usersId");
-
+		
+		String myUserId = Helper.getUserId(getActivity());
+		users_to_add.append(myUserId + ",");
+		
 		for (int i = 0; i < usersId.size(); i++) {
 			users_to_add.append(usersId.get(i));
 
