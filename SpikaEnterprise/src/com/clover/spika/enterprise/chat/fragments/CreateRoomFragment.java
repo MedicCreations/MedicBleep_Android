@@ -118,6 +118,17 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 		imgRoom.setOnClickListener(this);
 		
 		roomName = (RobotoThinEditText) rootView.findViewById(R.id.et_room_name);
+		roomName.setOnEditorActionListener(new OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || actionId == EditorInfo.IME_ACTION_DONE) {
+					InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(roomName.getWindowToken(), 0);
+				}
+				return false;
+			}
+		});
 		
 		mainListView = (PullToRefreshListView) rootView.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
@@ -325,7 +336,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	}
 	
 	private void setCategory(String catName){
-		if(!mCategoryId.equals("0")){
+		if(mCategoryId != null && !mCategoryId.equals("0")){
 			mTvCategoryName.setText(catName);
 		}
 	}
