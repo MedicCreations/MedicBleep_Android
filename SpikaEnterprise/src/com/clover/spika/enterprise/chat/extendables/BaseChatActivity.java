@@ -248,7 +248,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                     }
 
                 } else if (fileUri.getScheme().equals("file")) {
-
+                	
                     File file = new File(URI.create(fileUri.toString()));
                     fileName = file.getName();
                     filePath = file.getAbsolutePath();

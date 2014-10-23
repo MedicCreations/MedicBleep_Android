@@ -217,6 +217,7 @@ public class ChatActivity extends BaseChatActivity {
                     }
                 }
             });
+        } else if (result == RESULT_CANCELED){
         } else {
             AppDialog dialog = new AppDialog(this, false);
             dialog.setFailed(getResources().getString(R.string.e_while_encrypting));
