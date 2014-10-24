@@ -405,8 +405,6 @@ public abstract class BaseChatActivity extends BaseActivity {
         public void onClick(View v) {
             int id = v.getId();
             
-            Logger.d("hohohoho "+ isActive);
-            
             if (id == R.id.bntFile) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("*/*");

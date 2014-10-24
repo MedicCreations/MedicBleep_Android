@@ -110,6 +110,8 @@ public class Const {
 	public static final String USER_IDS = "user_ids";
 	public static final String ADMIN_ID = "admin_id";
 	public static final String GROUP_IDS = "group_ids";
+	public static final String APP_VERSION = "app_version";
+	public static final String PLATFORM = "platform";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";

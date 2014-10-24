@@ -82,7 +82,10 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httppost.setHeader("token", token);
 		}
-
+		
+		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
+		httppost.setHeader(Const.PLATFORM, "android");
+		
 		// form parameters
 		if (postParams != null && !postParams.isEmpty()) {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -124,6 +127,9 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httpGet.setHeader("token", token);
 		}
+		
+		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
+		httpGet.setHeader(Const.PLATFORM, "android");
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();
@@ -173,6 +179,9 @@ public class NetworkManagement {
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
 		httppost.setHeader(TOKEN, prefs.getToken());
+		
+		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
+		httppost.setHeader(Const.PLATFORM, "android");
 
 		if (postParams.size() > 0) {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -220,6 +229,9 @@ public class NetworkManagement {
 
 		httpGet.setHeader("Encoding", "UTF-8");
 		httpGet.setHeader(TOKEN, prefs.getToken());
+		
+		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
+		httpGet.setHeader(Const.PLATFORM, "android");
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();

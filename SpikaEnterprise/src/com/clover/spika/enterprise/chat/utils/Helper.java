@@ -134,6 +134,26 @@ public class Helper {
 
 		return false;
 	}
+	
+	
+	/**
+	 * Get current App version
+	 */
+	public static String getAppVersion() {
+		Context cntx = SpikaEnterpriseApp.getAppContext();
+		try {
+			PackageInfo packageInfo = cntx.getPackageManager().getPackageInfo(cntx.getPackageName(), 0);
+			String currentVersion = packageInfo.versionName;
+			return currentVersion;
+		} catch (NameNotFoundException e) {
+			Logger.i("Could not get package name for app version checkup.");
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+	
 
 	/**
 	 * Update app version
