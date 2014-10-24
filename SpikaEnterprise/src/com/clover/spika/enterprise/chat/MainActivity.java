@@ -37,6 +37,9 @@ public class MainActivity extends BaseActivity {
 	/* create room */
 	TextView createRoomBtn;
 	
+	/* edit profile */
+	TextView editProfileBtn;
+	
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
@@ -101,6 +104,7 @@ public class MainActivity extends BaseActivity {
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		createRoomBtn = (TextView) findViewById(R.id.createRoom);
+		editProfileBtn = (TextView) findViewById(R.id.editProfile);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
@@ -198,6 +202,27 @@ public class MainActivity extends BaseActivity {
 		createRoomBtn.setVisibility(View.VISIBLE);
 		
 	}
+	
+	
+	/**
+	 * enabled edit profile btn
+	 */
+	public void enableEnableProfile(){
+		
+		editProfileBtn.setVisibility(View.VISIBLE);
+		
+	}
+	
+	
+	/**
+	 * disable edit profile btn
+	 */
+	public void disableEditProfile(){
+		
+		editProfileBtn.setVisibility(View.INVISIBLE);
+		
+	}
+	
 	
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {

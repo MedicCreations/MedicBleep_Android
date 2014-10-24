@@ -188,7 +188,8 @@
         
         <!-- NEW STRINGS -->
          <string name="yes">Yes</string>
-          <string name="no">No</string>
-          <string name="are_you_sure_">Are you sure?</string>
+         <string name="no">No</string>
+         <string name="are_you_sure_">Are you sure?</string>
+         <string name="edit">Edit</string> 
 
 </resources>
