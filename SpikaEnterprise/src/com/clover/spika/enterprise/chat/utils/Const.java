@@ -112,6 +112,7 @@ public class Const {
 	public static final String GROUP_IDS = "group_ids";
 	public static final String APP_VERSION = "app_version";
 	public static final String PLATFORM = "platform";
+	public static final String GET_DETAIL_VALUES = "get_detail_values";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -128,6 +129,7 @@ public class Const {
 	public static final String LASTNAME = "lastname";
 	public static final String SCREEN_TITLE = "ScreenTitle";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
+	public static final String USER_WRAPPER = "user_wrapper";
 
 	public static final String CATEGORY_ID = "category_id";
 	public static final String CATEGORY_NAME = "category_name";

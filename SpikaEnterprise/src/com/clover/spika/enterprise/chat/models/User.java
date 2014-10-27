@@ -3,11 +3,12 @@ package com.clover.spika.enterprise.chat.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class User {
+public class User implements Serializable{
 
 	@SerializedName("id")
 	@Expose

@@ -110,8 +110,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		case R.id.lobby:
 			
-			Logger.d("huhuhuhuhuh");
-
 			if (lobbyFragment == null) {
 				lobbyFragment = new LobbyFragment();
 			}
@@ -152,7 +150,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 				}
 			}
 			
-
 			break;
 
 		case R.id.information:

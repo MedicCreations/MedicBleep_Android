@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
+import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -44,6 +45,7 @@ public class MainActivity extends BaseActivity {
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
 	OnCreateRoomListener mCreateRoomListener;
+	OnEditProfileListener mEditProfileListener;
 
 	/* Main ImageLoader */
 	ImageLoader imageLoader;
@@ -207,9 +209,12 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * enabled edit profile btn
 	 */
-	public void enableEnableProfile(){
+	public void enableEditProfile(OnEditProfileListener listener){
 		
 		editProfileBtn.setVisibility(View.VISIBLE);
+		mEditProfileListener = listener;
+		
+		editProfileBtn.setOnClickListener(editProfileOnClickListener);
 		
 	}
 	
@@ -262,6 +267,20 @@ public class MainActivity extends BaseActivity {
 				if (mCreateRoomListener != null) {
 					
 					mCreateRoomListener.onCreateRoom();
+				
+			}
+		}
+	};
+	
+	
+	private OnClickListener editProfileOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			
+				if (mEditProfileListener != null) {
+					
+					mEditProfileListener.onEditProfile();
 				
 			}
 		}

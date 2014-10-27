@@ -1,14 +1,30 @@
 package com.clover.spika.enterprise.chat.models;
 
+import java.io.Serializable;
+import java.util.List;
+
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserWrapper extends BaseModel {
+@SuppressWarnings("serial")
+public class UserWrapper extends BaseModel implements Serializable{
 
     @SerializedName("user")
     @Expose
     private User user;
+    
+    @SerializedName("detail_values")
+    @Expose
+    private List<UserDetail> userDetailList;
+
+	public List<UserDetail> getUserDetailList() {
+		return userDetailList;
+	}
+
+	public void setUserDetailList(List<UserDetail> userDetailList) {
+		this.userDetailList = userDetailList;
+	}
 
     public User getUser() {
         return user;

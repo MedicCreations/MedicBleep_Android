@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.EditProfileActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
@@ -22,20 +25,24 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.DetailsScrollView;
 
-public class ProfileFragment extends CustomFragment implements OnClickListener {
+public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener {
 
 	private Switch mSwitchPasscodeEnabled;
 	private ImageView profileImage;
     private DetailsScrollView mDetailScrollView;
     private FrameLayout mLoadingLayout;
+    private UserWrapper userWrapper;
 
 	String imageId;
 	String firstname;
@@ -64,6 +71,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 		super.onResume();
 		onClosed();
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		((MainActivity) getActivity()).enableEditProfile(this);
 	}
 
 	@Override
@@ -85,17 +93,27 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 
 		return rootView;
 	}
+	
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		((MainActivity) getActivity()).disableEditProfile();
+	}
 
     @Override
     public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
-        new UserApi().getProfile(getActivity(), Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
+        new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
             @Override
             public void onApiResponse(Result<UserWrapper> result) {
                 if (result.isSuccess()) {
                     view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+                    
+                    userWrapper = result.getResultData();
+                    
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
                 }else{
                 	view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
@@ -203,5 +221,12 @@ public class ProfileFragment extends CustomFragment implements OnClickListener {
 				mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
 			}
 		}
+	}
+
+	@Override
+	public void onEditProfile() {
+		Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+		intent.putExtra(Const.USER_WRAPPER, userWrapper);
+		getActivity().startActivity(intent);
 	}
 }

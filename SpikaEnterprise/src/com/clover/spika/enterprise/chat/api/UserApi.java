@@ -16,6 +16,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -164,7 +165,7 @@ public class UserApi {
 		}.execute();
 	}
 
-    public void getProfile(final Context context, final String userId, final ApiCallback<UserWrapper> callback) {
+    public void getProfile(final Context context, final boolean getDetailValues, final String userId, final ApiCallback<UserWrapper> callback) {
         new BaseAsyncTask<Void, Void, UserWrapper>(context, false) {
             @Override
             protected UserWrapper doInBackground(Void... params) {
@@ -172,6 +173,10 @@ public class UserApi {
 
                 HashMap<String, String> getParams = new HashMap<String, String>();
                 getParams.put(Const.USER_ID, userId);
+                
+                if (getDetailValues){
+                	getParams.put(Const.GET_DETAIL_VALUES, "1");
+                }
 
                 try {
                     jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams,
