@@ -52,6 +52,9 @@ public class SplashActivity extends LoginBaseActivity {
 			protected void onPostExecute(Void result) {
 				if (goToLogin) {
 					Intent intent = new Intent(context, LoginActivity.class);
+					if (extras!=null){
+						intent.putExtras(extras);
+					}
 					startActivity(intent);
 					finish();
 					return;

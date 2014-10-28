@@ -22,11 +22,14 @@ public class LoginActivity extends LoginBaseActivity {
 	private EditText username;
 	private EditText password;
 	private CheckBox rememberMeCheckBox;
+	Bundle extras;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		
+		extras = getIntent().getExtras();
 
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
@@ -89,7 +92,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 			try {
 
-				executeLoginApi(username.getText().toString(), password.getText().toString(), null, true);
+				executeLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
 
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());

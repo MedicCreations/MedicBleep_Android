@@ -14,8 +14,10 @@ import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
@@ -46,9 +48,15 @@ public abstract class LoginBaseActivity extends Activity {
 					startActivity(intent);
 					finish();
 				} else {
-                    String message;
+                    String message = "";
                     if (result.hasResultData()) {
-                        message = result.getResultData().getMessage();
+                    	if (result.getResultData().getCode() == Const.E_INVALID_TOKEN){
+                    		Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                    	} else {
+                    		message = result.getResultData().getMessage();
+                    	}
                     } else {
                         message = getString(R.string.e_something_went_wrong);
                     }
