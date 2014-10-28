@@ -26,6 +26,8 @@
 	       android:padding="10dp"
 	       android:layout_weight="1"
 	       android:layout_gravity="end"
+	       android:focusable="true"
+	       android:focusableInTouchMode="true"
 	       />
         
         

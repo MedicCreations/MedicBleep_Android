@@ -37,15 +37,20 @@
             android:textColor="@color/white"
             android:padding="10dp"
             android:text="@string/save"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:textSize="16sp" />
 
     </RelativeLayout>
+    
+   
 
     <ListView
         android:id="@+id/listUserDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBarLayout"
-        android:background="@android:color/white" />
+        android:background="@android:color/white" 
+        android:descendantFocusability="beforeDescendants"/>
 
 </RelativeLayout>

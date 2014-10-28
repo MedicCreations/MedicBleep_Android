@@ -251,4 +251,52 @@ public class UserApi {
             }
         }.execute();
     }
+    
+    
+    public void updateUserDetails(final String details, final Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, false) {
+			@Override
+			protected BaseModel doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				postParams.put(Const.DETAILS, details);
+
+				try {
+					jsonObject = NetworkManagement
+							.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+			}
+
+			@Override
+			protected void onPostExecute(BaseModel baseModel) {
+				super.onPostExecute(baseModel);
+
+				if (listener != null) {
+					Result<BaseModel> result;
+
+					if (baseModel != null) {
+						if (baseModel.getCode() == Const.API_SUCCESS) {
+							result = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+    
 }
