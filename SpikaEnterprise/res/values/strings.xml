@@ -173,12 +173,32 @@
         <item>mobile_number</item>
         <item>phone_number</item>
         <item>email</item>
+        <item>gender</item>
+        <item>home_address</item>
+        <item>job_address</item>
+        <item>dob</item>
+        <item>language1</item>
+        <item>language2</item>
+        <item>language3</item>
+        <item>fax</item>
+        <item>interests</item>
+        <item>web_site</item>
     </string-array>
     <!-- map values in correct order as keys above -->
     <string-array name="profile_detail_values">
         <item>Mobile Number</item>
         <item>Phone Number</item>
         <item>Email</item>
+        <item>Gender</item>
+        <item>Home address</item>
+        <item>Job address</item>
+        <item>Date of birth</item>
+        <item>First language</item>
+        <item>Second language</item>
+        <item>Third language</item>
+        <item>Fax</item>
+        <item>Interests</item>
+        <item>Web site</item>
     </string-array>
         <string name="select_category">Select category</string>
         <string name="choose_category">Choose category</string>

@@ -22,6 +22,14 @@ public class UserDetail implements Serializable{
 		@SerializedName("keyboard_type")
 		@Expose
 		private int keyboard_type;
+		
+		@SerializedName("value")
+		@Expose
+		private String value;
+		
+		@SerializedName("public_value")
+		@Expose
+		private boolean public_value;
 
 		public int getId() {
 			return id;
@@ -53,6 +61,22 @@ public class UserDetail implements Serializable{
 
 		public void setKeyboardType(int keyboardType) {
 			this.keyboard_type = keyboardType;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+		
+		public boolean isPublicValue() {
+			return public_value;
+		}
+
+		public void setPublicValue(boolean publicValue) {
+			this.public_value = publicValue;
 		}
 
 }

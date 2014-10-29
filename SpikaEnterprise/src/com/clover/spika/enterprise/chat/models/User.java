@@ -140,7 +140,7 @@ public class User implements Serializable{
         // WHOA A CHRISTMAS TREE
         if (getDetails() != null) {
             for (Map<String, String> map : getDetails()) {
-                if (map.containsKey("public") && "1".equals(map.get("public"))) {
+                if (map.containsKey("public") && (map.get("public").equals("true") || "1".equals(map.get("public")))) {
                     for (String key : map.keySet()) {
                         if (!"public".equals(key) && !map.get(key).equals("")) {
                             detailsMap.put(key, map.get(key));

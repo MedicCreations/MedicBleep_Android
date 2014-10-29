@@ -6,16 +6,23 @@ import java.util.Map;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.models.UserDetail;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.Switch;
 
-public class UserDetailsAdapter extends BaseAdapter{
+public class UserDetailsAdapter extends BaseAdapter implements OnCheckedChangeListener, OnFocusChangeListener{
 
 	private Context mContext;
 	private List<UserDetail> mUserDetailValues = new ArrayList<UserDetail>();
@@ -57,6 +64,12 @@ public class UserDetailsAdapter extends BaseAdapter{
 			holder = (ViewHolderDetail) convertView.getTag();
 		}
 		
+		holder.switchDetailPublic.setTag(position);
+		holder.switchDetailPublic.setOnCheckedChangeListener(this);
+		
+		holder.editDetail.setTag(position);
+		holder.editDetail.setOnFocusChangeListener(this);
+		
 		UserDetail userDetail = mUserDetailValues.get(position);
 		
 		for (int i = 0; i < mUserDetails.size(); i++) {
@@ -64,16 +77,21 @@ public class UserDetailsAdapter extends BaseAdapter{
 			Map<String, String> detail = mUserDetails.get(i);
 			if (detail.containsKey(userDetail.getKey()) && !detail.get(userDetail.getKey()).equals("")){
 				holder.editDetail.setText(detail.get(userDetail.getKey()));
-				if (detail.get("public").equals("1")){
+				
+				userDetail.setValue(detail.get(userDetail.getKey()));
+				
+				if (detail.get("public").equals("1") || detail.get("public").equals("true") ){
 					holder.switchDetailPublic.setChecked(true);
+					userDetail.setPublicValue(true);
 				} else {
 					holder.switchDetailPublic.setChecked(false);
+					userDetail.setPublicValue(false);
 				}
 				
 				break;
 			} else {
 				holder.editDetail.setHint(userDetail.getLabel());
-				holder.switchDetailPublic.setChecked(false);
+				holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 			}
 			
 		}
@@ -93,6 +111,40 @@ public class UserDetailsAdapter extends BaseAdapter{
 			
 		}
 
+	}
+	
+	
+	public List<UserDetail> getList() {
+		return mUserDetailValues;
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		
+		int position = (Integer) buttonView.getTag();
+		
+		UserDetail detail = mUserDetailValues.get(position);
+		Logger.d("isChecked: " + isChecked);
+		detail.setPublicValue(isChecked);
+		mUserDetailValues.remove(position);
+		mUserDetailValues.add(position, detail);
+//		notifyDataSetChanged();
+		
+	}
+
+
+	@Override
+	public void onFocusChange(View v, boolean hasFocus) {
+		
+		int position = (Integer) v.getTag();
+		if (!hasFocus){
+			
+			UserDetail detail = mUserDetailValues.get(position);
+			RobotoThinEditText edit = (RobotoThinEditText) v;
+			detail.setValue(edit.getText().toString());
+			mUserDetailValues.remove(position);
+			mUserDetailValues.add(position, detail);
+		}
 	}
 
 }
