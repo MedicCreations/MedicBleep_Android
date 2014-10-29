@@ -16,10 +16,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
@@ -189,6 +191,19 @@ public abstract class BaseChatActivity extends BaseActivity {
             public void onAnimationEnd(Animation animation) {
             }
         });
+        
+        final View activityRootView = findViewById(R.id.mainContent);
+		activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+
+				int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
+
+				if (heightDiff > 200) {
+					chatListView.setSelection(chatListView.getAdapter().getCount()-1);
+				} 
+			}
+		});
     }
 
     @Override
@@ -301,6 +316,14 @@ public abstract class BaseChatActivity extends BaseActivity {
 
                     footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
                     hideKeyboard(etMessage);
+                    
+                    new Handler().postDelayed(new Runnable() {
+						
+						@Override
+						public void run() {
+							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
+						}
+					}, 100);
                 }
             });
             AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
