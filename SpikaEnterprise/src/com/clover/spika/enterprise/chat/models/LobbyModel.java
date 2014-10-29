@@ -17,10 +17,16 @@ public class LobbyModel extends BaseModel {
     @SerializedName("groups")
     @Expose
     private GroupsLobby groupsLobby;
+    
+    @SerializedName("all_chats")
+    @Expose
+    private AllLobby allLobby;
+    
 
     public LobbyModel () {
     	usersLoby = new UsersLobby();
     	groupsLobby = new GroupsLobby();
+    	allLobby = new AllLobby();
     }
     
 	public int getPage() {
@@ -45,6 +51,14 @@ public class LobbyModel extends BaseModel {
 
 	public void setGroupsLobby(GroupsLobby groupsLobby) {
 		this.groupsLobby = groupsLobby;
+	}
+	
+	public AllLobby getAllLobby() {
+		return allLobby;
+	}
+
+	public void setAllLobby(AllLobby allLobby) {
+		this.allLobby = allLobby;
 	}
     
 }

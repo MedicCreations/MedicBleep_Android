@@ -152,6 +152,7 @@ public class Const {
 	public static final int ALL_TYPE = 0;
 	public static final int USERS_TYPE = 1;
 	public static final int GROUPS_TYPE = 2;
+	public static final int ALL_TOGETHER_TYPE = 3;
 	public static final String TYPE = "type";
 
 	// Chat type

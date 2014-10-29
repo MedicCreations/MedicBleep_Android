@@ -10,6 +10,16 @@
         android:background="@color/default_blue"
         android:orientation="horizontal" >
 
+         <ToggleButton
+            android:id="@+id/allTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_toggle_tab"
+            android:textColor="@drawable/selector_tab_toggle"
+            android:textOff="@string/all"
+            android:textOn="@string/all" />
+        
         <ToggleButton
             android:id="@+id/groupsTab"
             android:layout_width="match_parent"

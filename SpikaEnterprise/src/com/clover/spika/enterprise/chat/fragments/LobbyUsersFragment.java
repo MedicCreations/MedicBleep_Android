@@ -15,7 +15,6 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
-import com.clover.spika.enterprise.chat.listeners.LobbyChangedListener;
 import com.clover.spika.enterprise.chat.models.ChatsLobby;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -26,7 +25,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyUsersFragment extends Fragment implements LobbyChangedListener, OnItemClickListener {
+public class LobbyUsersFragment extends Fragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
@@ -38,7 +37,8 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		((LobbyFragment) getParentFragment()).getLobby(this);
+		//((LobbyFragment) getParentFragment()).getLobby(this);
+		getLobby(0, true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,22 +121,6 @@ public class LobbyUsersFragment extends Fragment implements LobbyChangedListener
 				}
 			}
 		});
-	}
-
-	@Override
-	public void onChangeAll(LobbyModel model) {
-		mTotalCount = model.getUsersLoby().getTotalCount();
-		setData(model.getUsersLoby().getChatsList(), true);
-	}
-
-	@Override
-	public void onChangeGroup(LobbyModel model) {
-
-	}
-
-	@Override
-	public void onChangeUser(LobbyModel model) {
-
 	}
 
 	@Override

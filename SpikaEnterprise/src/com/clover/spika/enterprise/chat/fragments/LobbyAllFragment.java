@@ -26,7 +26,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyGroupsFragment extends Fragment implements OnItemClickListener {
+public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
@@ -110,13 +110,13 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.GROUPS_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
+		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getGroupsLobby().getTotalCount();
-					setData(result.getResultData().getGroupsLobby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().getAllLobby().getTotalCount();
+					setData(result.getResultData().getAllLobby().getChatsList(), toClear);
 				}
 			}
 		});
@@ -135,8 +135,10 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 			intent.putExtra(Const.TYPE, user.getType());
 			intent.putExtra(Const.IMAGE, user.getImage());
 			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
-				intent.putExtra(Const.IS_ADMIN, true);
+			if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP){	
+				if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
+					intent.putExtra(Const.IS_ADMIN, true);
+				}
 			}
 			intent.putExtra(Const.IS_ACTIVE, user.isActive());
 			startActivity(intent);
