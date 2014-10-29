@@ -72,29 +72,34 @@ public class UserDetailsAdapter extends BaseAdapter implements OnCheckedChangeLi
 		
 		UserDetail userDetail = mUserDetailValues.get(position);
 		
-		for (int i = 0; i < mUserDetails.size(); i++) {
-			
-			Map<String, String> detail = mUserDetails.get(i);
-			if (detail.containsKey(userDetail.getKey()) && !detail.get(userDetail.getKey()).equals("")){
-				holder.editDetail.setText(detail.get(userDetail.getKey()));
+		if (mUserDetails != null){
+			for (int i = 0; i < mUserDetails.size(); i++) {
 				
-				userDetail.setValue(detail.get(userDetail.getKey()));
-				
-				if (detail.get("public").equals("1") || detail.get("public").equals("true") ){
-					holder.switchDetailPublic.setChecked(true);
-					userDetail.setPublicValue(true);
+				Map<String, String> detail = mUserDetails.get(i);
+				if (detail.containsKey(userDetail.getKey()) && !detail.get(userDetail.getKey()).equals("")){
+					holder.editDetail.setText(detail.get(userDetail.getKey()));
+					
+					userDetail.setValue(detail.get(userDetail.getKey()));
+					
+					if (detail.get("public").equals("1") || detail.get("public").equals("true") ){
+						holder.switchDetailPublic.setChecked(true);
+						userDetail.setPublicValue(true);
+					} else {
+						holder.switchDetailPublic.setChecked(false);
+						userDetail.setPublicValue(false);
+					}
+					
+					break;
 				} else {
-					holder.switchDetailPublic.setChecked(false);
-					userDetail.setPublicValue(false);
+					holder.editDetail.setHint(userDetail.getLabel());
+					holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 				}
-				
-				break;
-			} else {
-				holder.editDetail.setHint(userDetail.getLabel());
-				holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 			}
-			
+		} else {
+			holder.editDetail.setHint(userDetail.getLabel());
+			holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 		}
+		
 		
 		return convertView;
 	}

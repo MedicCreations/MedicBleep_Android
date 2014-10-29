@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +26,6 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -43,6 +40,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
     private DetailsScrollView mDetailScrollView;
     private FrameLayout mLoadingLayout;
     private UserWrapper userWrapper;
+    
+	private boolean isEditable = false;
 
 	String imageId;
 	String firstname;
@@ -71,7 +70,11 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		super.onResume();
 		onClosed();
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
-		((MainActivity) getActivity()).enableEditProfile(this);
+		
+		Logger.d("ovo je editable " + isEditable);
+		if (isEditable){
+			((MainActivity) getActivity()).enableEditProfile(this);
+		}
 	}
 
 	@Override
@@ -106,6 +109,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
         super.onViewCreated(view, savedInstanceState);
 
         view.findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
+        isEditable = false;
         new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
             @Override
             public void onApiResponse(Result<UserWrapper> result) {
@@ -115,6 +119,9 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
                     userWrapper = result.getResultData();
                     
                     mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+                    
+                    isEditable = true;
+                    ((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
                 }else{
                 	view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
                 }

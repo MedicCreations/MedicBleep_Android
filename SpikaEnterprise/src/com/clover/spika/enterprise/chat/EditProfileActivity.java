@@ -28,6 +28,7 @@ public class EditProfileActivity extends BaseActivity implements OnClickListener
 	
 	private ListView listViewDetail;
 	private UserDetailsAdapter adapter;
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +46,6 @@ public class EditProfileActivity extends BaseActivity implements OnClickListener
 		
 		Intent i = getIntent();
 		UserWrapper user = (UserWrapper)i.getSerializableExtra(Const.USER_WRAPPER);
-		
-		Logger.d("etoga " + user.getUser().getDetails().toString());
 		
 		adapter = new UserDetailsAdapter(this, user.getUserDetailList(), user.getUser().getDetails());
 		
