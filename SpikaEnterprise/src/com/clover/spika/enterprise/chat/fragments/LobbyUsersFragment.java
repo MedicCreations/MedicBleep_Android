@@ -37,7 +37,12 @@ public class LobbyUsersFragment extends Fragment implements OnItemClickListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//((LobbyFragment) getParentFragment()).getLobby(this);
+	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 		getLobby(0, true);
 	}
 
