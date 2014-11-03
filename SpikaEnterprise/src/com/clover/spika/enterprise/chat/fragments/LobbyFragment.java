@@ -12,25 +12,17 @@ import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.listeners.LobbyChangedListener;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
-import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.utils.Const;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LobbyFragment extends CustomFragment implements OnPageChangeListener, OnClickListener {
 
 	ViewPager viewPager;
 	ToggleButton groupsTab;
 	ToggleButton usersTab;
+	ToggleButton allTab;
 
 	LobbyModel model;
-	List<LobbyChangedListener> lobbyChangedListener = new ArrayList<LobbyChangedListener>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,8 +36,11 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 
 		viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
 		viewPager.setAdapter(new LobbyFragmentPagerAdapter());
+		viewPager.setOffscreenPageLimit(2);
 		viewPager.setOnPageChangeListener(this);
 
+		allTab = (ToggleButton) rootView.findViewById(R.id.allTab);
+		allTab.setOnClickListener(this);
 		groupsTab = (ToggleButton) rootView.findViewById(R.id.groupsTab);
 		groupsTab.setOnClickListener(this);
 		usersTab = (ToggleButton) rootView.findViewById(R.id.usersTab);
@@ -58,44 +53,12 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	public void onResume() {
 		super.onResume();
 		setTabsStates(viewPager.getCurrentItem());
-		getAllLobby(true, 0);
-	}
 
-	private void setLobbyChangedListener(LobbyChangedListener listener) {
-		if (!this.lobbyChangedListener.contains(listener)) {
-			this.lobbyChangedListener.add(listener);
-		}
-	}
-
-	public void getLobby(LobbyChangedListener listener) {
-		if (listener == null)
-			return;
-
-		setLobbyChangedListener(listener);
-		if (this.model != null) {
-			listener.onChangeAll(this.model);
-		}
-
-	}
-
-	private void getAllLobby(boolean showProgress, int page) {
-		new LobbyApi().getLobbyByType(page, Const.ALL_TYPE, getActivity(), showProgress, new ApiCallback<LobbyModel>() {
-
-			@Override
-			public void onApiResponse(Result<LobbyModel> result) {
-				if (result.isSuccess()) {
-					model = result.getResultData();
-					for (LobbyChangedListener listener : lobbyChangedListener) {
-						listener.onChangeAll(result.getResultData());
-					}
-				}
-			}
-		});
 	}
 
     public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        final int PAGE_COUNT = 2;
+        final int PAGE_COUNT = 3;
 
         public LobbyFragmentPagerAdapter() {
             super(getChildFragmentManager());
@@ -108,7 +71,19 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 
         @Override
         public Fragment getItem(int position) {
-            return position == 0 ? new LobbyUsersFragment() : new LobbyGroupsFragment();
+        	switch (position) {
+			case 0:
+				return new LobbyAllFragment();
+				
+			case 1:
+				return new LobbyUsersFragment();
+				
+			case 2:
+				return new LobbyGroupsFragment();
+
+			default:
+				return null;
+			}
         }
     }
 
@@ -127,10 +102,13 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 
 	@Override
 	public void onClick(View view) {
-		if (view == groupsTab) {
+		if (view == allTab){
 			setTabsStates(0);
 			viewPager.setCurrentItem(0, true);
 		} else if (view == usersTab) {
+			setTabsStates(2);
+			viewPager.setCurrentItem(2, true);
+		} else if (view == groupsTab) {
 			setTabsStates(1);
 			viewPager.setCurrentItem(1, true);
 		}
@@ -138,9 +116,15 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 
 	void setTabsStates(int position) {
 		if (position == 0) {
+			allTab.setChecked(true);
+			groupsTab.setChecked(false);
+			usersTab.setChecked(false);
+		} else if (position == 1) {
+			allTab.setChecked(false);
 			groupsTab.setChecked(true);
 			usersTab.setChecked(false);
-		} else {
+		} else if (position == 2) {
+			allTab.setChecked(false);
 			groupsTab.setChecked(false);
 			usersTab.setChecked(true);
 		}
