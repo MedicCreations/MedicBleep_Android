@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
@@ -114,6 +115,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 					loadingLayout.setVisibility(View.GONE);
 				}
 			});
+			((ProfileGroupActivity)getActivity()).setChangeImage(Helper.getRoomThumbId(getActivity()), Helper.getRoomThumbId(getActivity()));
 		}
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 	}

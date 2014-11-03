@@ -229,5 +229,6 @@ public class Const {
 	public static final String UPDATE_PICTURE = "update_picture";
 	public static final String DEFAULT_IMAGE_USER = "default_user_image";
 	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
+	public static final String FROM_CHAT = "from_chat";
 	
 }
