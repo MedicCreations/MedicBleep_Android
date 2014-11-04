@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ToggleButton;
@@ -33,6 +34,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	UsersApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
+	
+	private boolean fromChatAct = false;
+	private boolean updateImage = false;
+	private String newImage = "";
+	private String newThumbImage = "";
 		
 	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
 
@@ -44,6 +50,20 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+		context.startActivity(intent);
+	}
+	
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat) {
+
+		Intent intent = new Intent(context, ProfileGroupActivity.class);
+
+		intent.putExtra(Const.IMAGE, fileId);
+		intent.putExtra(Const.CHAT_NAME, chatName);
+		intent.putExtra(Const.IS_ADMIN, isAdmin);
+		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.FROM_CHAT, fromChat);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		
 		context.startActivity(intent);
 	}
 	
@@ -74,6 +94,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		membersTab.setOnClickListener(this);
 		
 		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
+		
+		fromChatAct = getIntent().getBooleanExtra(Const.FROM_CHAT, false);
 				
 		getMembers(0, false);
 	}
@@ -173,4 +195,24 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
             }
         });
     }
+	
+	public void setChangeImage(String image, String imageThumb){
+		newImage = image;
+		newThumbImage = imageThumb;
+		updateImage = true;
+	}
+	
+	@Override
+	public void finish() {
+		if(fromChatAct && updateImage && !TextUtils.isEmpty(newImage)){
+			Intent chat = new Intent(this, ChatActivity.class);
+			chat.putExtra(Const.IMAGE, newImage);
+			chat.putExtra(Const.IMAGE_THUMB, newThumbImage);
+			chat.putExtra(Const.UPDATE_PICTURE, true);
+			chat.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(chat);
+		}
+		super.finish();
+	}
+	
 }

@@ -105,7 +105,13 @@ public class ChatActivity extends BaseChatActivity {
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		isResume = false;
-		getIntentData(intent);
+		if(intent.getBooleanExtra(Const.UPDATE_PICTURE, false)){
+			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);
+			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
+			loadImage();
+		}else{
+			getIntentData(intent);
+		}
 	}
 
 	private void getIntentData(Intent intent) {

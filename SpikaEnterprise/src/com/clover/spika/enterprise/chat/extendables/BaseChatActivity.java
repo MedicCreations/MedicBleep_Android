@@ -534,7 +534,7 @@ public abstract class BaseChatActivity extends BaseActivity {
             		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
             	}
             	else {
-            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true);
+            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true);
             	}
 
             } else if (id == R.id.goBack) {
@@ -585,7 +585,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                     		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
                     	}
                     	else {
-                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true);
+                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true);
                     	}
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
