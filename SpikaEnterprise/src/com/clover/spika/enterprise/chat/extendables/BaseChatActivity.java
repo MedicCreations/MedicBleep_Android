@@ -192,7 +192,7 @@ public abstract class BaseChatActivity extends BaseActivity {
             }
         });
         
-        final View activityRootView = findViewById(R.id.mainContent);
+        final View activityRootView = findViewById(android.R.id.content);
 		activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 			@Override
 			public void onGlobalLayout() {
