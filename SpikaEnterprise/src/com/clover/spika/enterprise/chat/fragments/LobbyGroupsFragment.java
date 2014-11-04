@@ -116,7 +116,7 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.GROUPS_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
+		new LobbyApi().getLobbyByType(page, Const.GROUPS_TYPE, getActivity(), false, new ApiCallback<LobbyModel>() {
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
