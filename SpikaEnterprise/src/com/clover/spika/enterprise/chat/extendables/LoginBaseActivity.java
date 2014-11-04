@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
@@ -34,6 +35,9 @@ public abstract class LoginBaseActivity extends Activity {
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {
+					
+					Logger.d("Success");
+					
 					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(),
 							result.getResultData().getLastname());
 
@@ -48,6 +52,8 @@ public abstract class LoginBaseActivity extends Activity {
 					startActivity(intent);
 					finish();
 				} else {
+					
+					Logger.d("Not Success");
                     String message = "";
                     if (result.hasResultData()) {
                     	if (result.getResultData().getCode() == Const.E_INVALID_TOKEN){

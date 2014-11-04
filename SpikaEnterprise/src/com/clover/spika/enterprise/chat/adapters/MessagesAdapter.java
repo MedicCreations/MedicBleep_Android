@@ -215,11 +215,14 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             if (!TextUtils.isEmpty(msg.getChildListText())) {
+            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
                 holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
             } else if (msg.getRootId() > 0) {
+            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
                 holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
             } else {
                 holder.meThreadIndicator.setImageDrawable(null);
+                holder.meThreadIndicator.setVisibility(View.GONE);
             }
 		} else {
 			// Chat member messages, not mine
@@ -320,11 +323,14 @@ public class MessagesAdapter extends BaseAdapter {
             }
 
             if (!TextUtils.isEmpty(msg.getChildListText())) {
+            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
                 holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
             } else if (msg.getRootId() > 0) {
+            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
                 holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
             } else {
                 holder.youThreadIndicator.setImageDrawable(null);
+                holder.meThreadIndicator.setVisibility(View.GONE);
             }
 		}
 
