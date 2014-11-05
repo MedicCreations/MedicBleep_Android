@@ -29,7 +29,7 @@
     <color name="light_light_gray">#eeeeee</color>
 
     <!-- Enterprise style -->
-    <color name="default_blue">#3E92D7</color>
+    <color name="default_blue">#43A5DA</color>
     <color name="default_blue_light">#74B1E2</color>
     <color name="default_blue_light_trans">#803E92D7</color>
     <color name="default_green">#57D171</color>
