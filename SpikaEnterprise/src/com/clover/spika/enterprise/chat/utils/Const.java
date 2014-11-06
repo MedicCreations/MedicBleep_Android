@@ -189,7 +189,7 @@ public class Const {
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
     public static final String F_DELETE_MESSAGE = "/message/delete";
 	public static final String F_GET_THREADS = "/message/child/list";
-	public static final String F_CREATE_ROOM = "/chat/create";
+	public static final String F_CREATE_ROOM = "/room/create";
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
     public static final String F_USER_PROFILE = "/user/profile";

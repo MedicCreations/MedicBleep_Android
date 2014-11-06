@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = ImageLoader.getInstance(this);
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;

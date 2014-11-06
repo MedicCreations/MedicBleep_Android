@@ -58,7 +58,7 @@ public class PhotoActivity extends BaseActivity {
 			new BaseAsyncTask<Void, Void, Bitmap>(this, true) {
 
 				protected Bitmap doInBackground(Void... params) {
-					return ImageLoader.getInstance().getBitmap(context, imageUrl);
+					return ImageLoader.getInstance(PhotoActivity.this).getBitmap(context, imageUrl);
 				}
 
 				@Override

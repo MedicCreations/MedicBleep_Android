@@ -31,10 +31,11 @@ public class ImageLoader {
 	// singleton usage
 	private static ImageLoader sInstance;
 
-    public static ImageLoader getInstance() {
+    public static ImageLoader getInstance(Context initActivityContext) {
         if (sInstance == null) {
             Logger.e("ImageLoader has to be initialized first before instance can be used. " +
                     "Call init method before usage.");
+            init(initActivityContext);
         }
         return sInstance;
     }

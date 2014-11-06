@@ -57,7 +57,7 @@ public class MessagesAdapter extends BaseAdapter {
 		this.ctx = context;
 		this.data = arrayList;
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = ImageLoader.getInstance(context);
 	}
 
 	@Override

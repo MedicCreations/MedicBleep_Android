@@ -53,7 +53,7 @@ public class ThreadsAdapter extends BaseAdapter {
     public ThreadsAdapter(Context context) {
         if (context instanceof Activity) {
             this.mContext = context;
-            this.imageLoader = ImageLoader.getInstance();
+            this.imageLoader = ImageLoader.getInstance(context);
 
             DisplayMetrics dm = new DisplayMetrics();
             ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);

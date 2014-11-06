@@ -39,7 +39,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = ImageLoader.getInstance();
+		imageLoader = ImageLoader.getInstance(context);
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		this.changedListener = listener;

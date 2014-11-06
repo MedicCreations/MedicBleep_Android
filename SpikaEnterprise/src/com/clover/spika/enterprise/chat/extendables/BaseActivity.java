@@ -56,7 +56,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        if (ImageLoader.getInstance() == null) {
+        if (ImageLoader.getInstance(this) == null) {
             ImageLoader.init(this);
         }
 
