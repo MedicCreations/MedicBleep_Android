@@ -1,11 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/light_light_gray" >
-
-    <!-- <RelativeLayout
-        android:id="@+id/room"
+    android:layout_height="wrap_content" >
+    
+    <RelativeLayout
+        android:id="@+id/layoutRoomName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white" >
@@ -35,23 +34,110 @@
         android:id="@+id/belowRoomLine"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/room"
+        android:layout_below="@id/layoutRoomName"
         android:background="@color/chat_menu_gray" />
 
+    
+    <RelativeLayout
+        android:id="@+id/layoutPrivate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/belowRoomLine"
+        android:background="@color/white" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/tvPrivate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/devil_gray"
+            android:text="@string/private_room"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        
+        <Switch 
+            android:id="@+id/switch_private_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            />
+        
+    </RelativeLayout>
+    
     <View
-        android:id="@+id/aboveCategoryLayout"
+        android:id="@+id/belowPrivateLayout"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/belowRoomLine"
-        android:layout_marginTop="5dp"
+        android:layout_below="@id/layoutPrivate"
         android:background="@color/chat_menu_gray" />
+    
+    <RelativeLayout
+        android:id="@+id/layoutPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/belowPrivateLayout"
+        android:background="@color/white" >
 
+        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+            android:id="@+id/etPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:gravity="start"
+            android:background="@android:color/transparent"
+            android:hint="@string/password" />
+        
+    </RelativeLayout>
+    
+    <View
+        android:id="@+id/belowPasswordLayout"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/layoutPassword"
+        android:background="@color/chat_menu_gray" />
+    
+    <RelativeLayout
+        android:id="@+id/layoutPasswordRepeat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/belowPasswordLayout"
+        android:background="@color/white" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+            android:id="@+id/etPasswordRepeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:gravity="start"
+            android:background="@android:color/transparent"
+            android:hint="@string/password_repeat" />
+        
+    </RelativeLayout>
+    
+    <View
+        android:id="@+id/belowPasswordRepeatLayout"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/layoutPasswordRepeat"
+        android:background="@color/chat_menu_gray" />
+    
     <RelativeLayout
         android:id="@+id/layoutCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:layout_below="@id/aboveCategoryLayout" >
+        android:layout_below="@id/belowPasswordRepeatLayout" >
         
         <TextView
             android:id="@+id/tvCategory"
@@ -77,20 +163,12 @@
         android:layout_height="2dp"
         android:layout_below="@id/layoutCategory"
         android:background="@color/chat_menu_gray" />
-    
-     <View
-        android:id="@+id/aboveSelectedUserLayout"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/belowCategoryLayout"
-        android:background="@color/chat_menu_gray" />
 
     <TextView
         android:id="@+id/txtUserNames"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/aboveSelectedUserLayout"
+        android:layout_below="@+id/belowCategoryLayout"
         android:padding="10dp"
         android:ems="13"
         android:gravity="bottom"
@@ -136,28 +214,7 @@
             android:padding="10dp"
             android:scaleType="centerInside"
             android:src="@drawable/icon_search" />
-    </RelativeLayout> -->
-
-    <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
-        android:id="@+id/mainListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/search_layout"
-        android:background="@color/white"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:fadingEdge="none"
-        android:listSelector="@color/transparent"
-        android:scrollbars="none" />
-
-    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-        android:id="@+id/noItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/no_items"
-        android:textColor="@color/default_blue"
-        android:textSize="30sp"
-        android:visibility="gone" />
+    </RelativeLayout>
     
+
 </RelativeLayout>

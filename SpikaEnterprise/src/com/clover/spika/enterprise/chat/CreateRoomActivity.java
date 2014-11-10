@@ -55,6 +55,8 @@ public class CreateRoomActivity extends BaseActivity {
 	private String room_file_id = "";
 	private String room_thumb_id = "";
 	private String categoryId = "0";
+	private String roomIsPrivate = "0";
+	private String roomPassword = "";
 	
 	private boolean isConfirmActive = false;
 	
@@ -118,10 +120,13 @@ public class CreateRoomActivity extends BaseActivity {
 		});
 	}
 	
-	public void setConfirmScreen(String users_to_add, String group_to_add){
+	public void setConfirmScreen(String users_to_add, String group_to_add, String is_private, String password){
 		
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
+		
+		roomIsPrivate = is_private;
+		roomPassword = password;
 		
 		ConfirmRoomFragment fragment = new ConfirmRoomFragment();
 		Bundle bundle = new Bundle();
@@ -152,7 +157,7 @@ public class CreateRoomActivity extends BaseActivity {
 	}
 
 	public void createRoomFinaly(String userIds){
-		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId,
+		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword,
 				this, new ApiCallback<Chat>() {
 
 			@Override

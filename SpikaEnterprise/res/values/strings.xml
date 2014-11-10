@@ -211,5 +211,9 @@
          <string name="no">No</string>
          <string name="are_you_sure_">Are you sure?</string>
          <string name="edit">Edit</string> 
+         <string name="private_room">Private Room</string>
+         <string name="password_repeat">Repeat password</string>
+         <string name="room_name_empty">Room name is empty</string>
+         <string name="password_error">Password error</string>
 
 </resources>

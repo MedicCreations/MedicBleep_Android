@@ -114,6 +114,7 @@ public class Const {
 	public static final String PLATFORM = "platform";
 	public static final String GET_DETAIL_VALUES = "get_detail_values";
 	public static final String DETAILS = "details";
+	public static final String IS_PRIVATE = "is_private";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";

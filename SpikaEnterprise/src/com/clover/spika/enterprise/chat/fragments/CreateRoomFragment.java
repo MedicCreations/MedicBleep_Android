@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -82,6 +83,9 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	private String mCategoryId = "0";
 	private String mCategoryName = "";
 	private TextView mTvCategoryName;
+	private Switch mSwitchPrivate;
+	private RobotoThinEditText mEtPassword;
+	private RobotoThinEditText mEtPasswordRepeat;
 	
 
 	@Override
@@ -106,14 +110,16 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
 		
+		View header = inflater.inflate(R.layout.pull_to_refresh_header_create_room, null);
+		
 		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
 		
 		if (!isCategoriesEnabled){
 			
-			RelativeLayout categoryLayout = (RelativeLayout) rootView.findViewById(R.id.layoutCategory);
+			RelativeLayout categoryLayout = (RelativeLayout) header.findViewById(R.id.layoutCategory);
 			categoryLayout.setVisibility(View.GONE);
-			View viewAboveCategory = (View) rootView.findViewById(R.id.aboveCategoryLayout);
-			viewAboveCategory.setVisibility(View.GONE);
+//			View viewAboveCategory = (View) header.findViewById(R.id.aboveCategoryLayout);
+//			viewAboveCategory.setVisibility(View.GONE);
 			
 		}
 		
@@ -122,14 +128,14 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
-		txtUsers = (TextView) rootView.findViewById(R.id.txtUserNames);
+		txtUsers = (TextView) header.findViewById(R.id.txtUserNames);
 		txtUsers.setMovementMethod(new ScrollingMovementMethod());
-		mTvCategoryName = (TextView) rootView.findViewById(R.id.tvCategory);
+		mTvCategoryName = (TextView) header.findViewById(R.id.tvCategory);
 		setCategory(mCategoryName);
-		imgRoom = (ImageView) rootView.findViewById(R.id.img_room);
+		imgRoom = (ImageView) header.findViewById(R.id.img_room);
 		imgRoom.setOnClickListener(this);
 		
-		roomName = (RobotoThinEditText) rootView.findViewById(R.id.et_room_name);
+		roomName = (RobotoThinEditText) header.findViewById(R.id.et_room_name);
 		roomName.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -142,10 +148,14 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			}
 		});
 		
+		mSwitchPrivate = (Switch) header.findViewById(R.id.switch_private_room);
+		mEtPassword = (RobotoThinEditText) header.findViewById(R.id.etPassword);
+		mEtPasswordRepeat = (RobotoThinEditText) header.findViewById(R.id.etPasswordRepeat);
+		
 		mainListView = (PullToRefreshListView) rootView.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-
+		mainListView.getRefreshableView().addHeaderView(header);
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 		
@@ -441,12 +451,26 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 	@Override
 	public void onNext() {
 		String name = roomName.getText().toString();
+		String password = mEtPassword.getText().toString();
+		String passwordRepeat = mEtPasswordRepeat.getText().toString();
+		String isPrivate = "0";
+		
+		if (mSwitchPrivate.isChecked()){
+			isPrivate = "1";
+		}
+		
 		((CreateRoomActivity)getActivity()).setRoomName(name);
 		((CreateRoomActivity)getActivity()).setCategoryId(mCategoryId);
 		
 		if (name.equals("")){
 			AppDialog dialog = new AppDialog(getActivity(), false);
-			dialog.setInfo("Room name is empty");
+			dialog.setInfo(getActivity().getString(R.string.room_name_empty));
+			return;
+		}
+		
+		if (!password.equals(passwordRepeat)){
+			AppDialog dialog = new AppDialog(getActivity(), false);
+			dialog.setInfo(getActivity().getString(R.string.password_error));
 			return;
 		}
 		
@@ -499,7 +523,7 @@ public class CreateRoomFragment extends CustomFragment implements OnItemClickLis
 			userToAdd = userToAdd.substring(0, userToAdd.length()-1);
 		}
 		
-		((CreateRoomActivity)getActivity()).setConfirmScreen(userToAdd, group_to_add.toString());
+		((CreateRoomActivity)getActivity()).setConfirmScreen(userToAdd, group_to_add.toString(), isPrivate, password);
 		
 	}
 	
