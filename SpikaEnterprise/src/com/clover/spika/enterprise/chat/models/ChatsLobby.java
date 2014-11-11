@@ -36,6 +36,14 @@ public class ChatsLobby {
 	@SerializedName("is_active")
 	@Expose
 	private int isActive;
+	
+	@SerializedName("is_private")
+	@Expose
+	private int isPrivate;
+	
+	@SerializedName("password")
+	@Expose
+	private String password;
 
 	public int getChatId() {
 		return chatId;
@@ -99,6 +107,22 @@ public class ChatsLobby {
 
 	public void setActive(int isActive) {
 		this.isActive = isActive;
+	}
+	
+	public int isPrivate() {
+		return isPrivate;
+	}
+
+	public void setPrivate(int isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

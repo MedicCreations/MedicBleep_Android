@@ -133,6 +133,8 @@ public class ChatActivity extends BaseChatActivity {
 				if (isActive == 0){
 					etMessage.setFocusable(false);
 				}
+				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
+				chatPassword = intent.getExtras().getString(Const.PASSWORD);
 				setTitle(chatName);
 
 				adapter.clearItems();

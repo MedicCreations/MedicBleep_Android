@@ -467,6 +467,52 @@ public class ChatApi {
 		}.execute();
 	}
     
+    
+    
+    public void updateChatAll(final HashMap<String, String> requestParams, boolean showProgressBar, Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, showProgressBar) {
+
+			protected BaseModel doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				try {
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			};
+
+			protected void onPostExecute(BaseModel model) {
+				super.onPostExecute(model);
+
+				if (listener != null) {
+					Result<BaseModel> apiResult;
+
+					if (model != null) {
+						if (model.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						apiResult = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+			};
+		}.execute();
+	}
+    
+    
+    
     public void leaveChat(final String chatId, final String userIds, Context context, final ApiCallback<Chat> listener) {
         new BaseAsyncTask<Void, Void, Chat>(context, true) {
 

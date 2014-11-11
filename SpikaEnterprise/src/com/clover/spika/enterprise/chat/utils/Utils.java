@@ -409,6 +409,11 @@ public class Utils {
 	}
 
 	public static String convertByteArrayToHexString(byte[] arrayBytes) {
+		
+		if (arrayBytes==null){
+			return null;
+		}
+		
 		StringBuffer stringBuffer = new StringBuffer();
 		for (int i = 0; i < arrayBytes.length; i++) {
 			stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16).substring(1));

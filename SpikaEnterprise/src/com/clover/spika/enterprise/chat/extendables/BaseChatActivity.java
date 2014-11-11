@@ -73,6 +73,8 @@ public abstract class BaseChatActivity extends BaseActivity {
     protected String chatId = null;
     protected boolean isAdmin = false;
     protected int isActive = 1;
+    protected int isPrivate = 0;
+    protected String chatPassword = null;
     private int drawerDuration = 300;
     private int drawerHeight = 200;
     protected String chatName = null;
@@ -534,7 +536,7 @@ public abstract class BaseChatActivity extends BaseActivity {
             		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
             	}
             	else {
-            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true);
+            		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword);
             	}
 
             } else if (id == R.id.goBack) {
@@ -585,7 +587,7 @@ public abstract class BaseChatActivity extends BaseActivity {
                     		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
                     	}
                     	else {
-                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true);
+                    		ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword);
                     	}
                     } else if (position == SETTINGS_POSITION_SECOND) {
                         if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {

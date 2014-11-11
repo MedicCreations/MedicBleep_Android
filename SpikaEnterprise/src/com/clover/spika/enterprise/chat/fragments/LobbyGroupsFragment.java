@@ -141,6 +141,8 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 			intent.putExtra(Const.TYPE, user.getType());
 			intent.putExtra(Const.IMAGE, user.getImage());
 			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
+			intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
+			intent.putExtra(Const.PASSWORD, user.getPassword());
 			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
 				intent.putExtra(Const.IS_ADMIN, true);
 			}

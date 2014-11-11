@@ -51,5 +51,74 @@
         android:textColor="@android:color/white"
         android:textSize="45sp"
         tools:text="John Doe" />
+    
+    <RelativeLayout
+        android:id="@+id/layoutPrivate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profileName" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/tvPrivate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:text="@string/private_room"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        
+        <Switch 
+            android:id="@+id/switch_private_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            />
+        
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/layoutPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutPrivate" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/tvPasswordLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:text="@string/password"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
+            android:id="@+id/tvPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="18sp"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:inputType="textPassword"
+            android:text="@string/password"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+           />
+        
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +21,8 @@ import com.clover.spika.enterprise.chat.RecordVideoActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 
 public class AppDialog extends Dialog {
 
@@ -67,6 +73,71 @@ public class AppDialog extends Dialog {
 
 		show();
 	}
+	
+	
+	public void setPasswordInput(String message, String yesText, String noText, final String password) {
+		this.setContentView(R.layout.dialog_input_password);
+
+		final TextView infoText = (TextView) findViewById(R.id.infoText);
+		infoText.setText(message);
+		
+		final RobotoThinEditText etPassword = (RobotoThinEditText) findViewById(R.id.etDialogPassword);
+		
+		TextView yesTextView = (TextView) findViewById(R.id.text_yes);
+        yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
+
+        View btnYes = findViewById(R.id.layout_yes);
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            	
+                if (password!=null){
+                	String enteredPassword = etPassword.getText().toString();
+                	
+                	byte[] digest = null;
+    				try {
+    					digest = MessageDigest.getInstance("MD5").digest(enteredPassword.getBytes("UTF-8"));
+    				} catch (NoSuchAlgorithmException e) {
+    					e.printStackTrace();
+    				} catch (UnsupportedEncodingException e) {
+    					e.printStackTrace();
+    				}
+                    String hashPassword = Utils.convertByteArrayToHexString(digest);
+                    
+                    if (hashPassword.equals(password)){
+                		if (mOnPositiveButtonClick != null) {
+                            mOnPositiveButtonClick.onPositiveButtonClick(v);
+                        }
+                	} else {
+                		infoText.setText(getOwnerActivity().getString(R.string.password_error));
+                		etPassword.setText("");
+                	}
+                } else {
+                    if (mOnPositiveButtonClick != null) {
+                        mOnPositiveButtonClick.onPositiveButtonClick(v);
+                    }
+                    dismiss();
+                }
+            }
+        });
+
+        TextView noTextView = (TextView) findViewById(R.id.text_no);
+        noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
+
+        View btnNo = findViewById(R.id.layout_no);
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnNegativeButtonClick != null) {
+                    mOnNegativeButtonClick.onNegativeButtonClick(v);
+                }
+                dismiss();
+            }
+        });
+
+		show();
+	}
+	
 
     public void setYesNo(String message) {
         setYesNo(message, null, null);
@@ -407,5 +478,5 @@ public class AppDialog extends Dialog {
     public interface OnNegativeButtonCLickListener {
         void onNegativeButtonClick(View v);
     }
-
+    
 }

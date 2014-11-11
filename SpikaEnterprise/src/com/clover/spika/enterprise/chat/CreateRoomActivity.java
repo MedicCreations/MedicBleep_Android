@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +31,7 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class CreateRoomActivity extends BaseActivity {
 
@@ -126,7 +131,20 @@ public class CreateRoomActivity extends BaseActivity {
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
 		
 		roomIsPrivate = is_private;
-		roomPassword = password;
+		
+		byte[] digest = null;
+		try {
+			digest = MessageDigest.getInstance("MD5").digest(password.getBytes("UTF-8"));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String hashPassword = Utils.convertByteArrayToHexString(digest);
+		
+		roomPassword = hashPassword;
 		
 		ConfirmRoomFragment fragment = new ConfirmRoomFragment();
 		Bundle bundle = new Bundle();

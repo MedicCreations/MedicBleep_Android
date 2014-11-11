@@ -30,6 +30,19 @@
             android:text="@string/profile"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/saveRoomProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:text="@string/save"
+            android:textSize="16sp" />
+        
     </RelativeLayout>
 
     <LinearLayout

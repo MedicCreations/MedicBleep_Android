@@ -8,17 +8,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 
 public class ProfileGroupFragment extends CustomFragment implements OnClickListener {
 
@@ -28,6 +34,10 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	String chatName;
 	String chatId;
 	boolean isAdmin;
+	int isPrivate;
+	String chatPassword;
+	
+	RobotoRegularTextView tvPassword;
 	
 	private ImageLoader imageLoader;
 	
@@ -48,11 +58,23 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		View rootView = inflater.inflate(R.layout.fragment_profile_group, container, false);
 
 		View addPhotoButton = rootView.findViewById(R.id.addPhoto);
+		Switch switchIsPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
+		switchIsPrivate.setChecked(isPrivate == 1 ? true : false);
+		
+		tvPassword = (RobotoRegularTextView) rootView.findViewById(R.id.tvPassword);
+
 		if (isAdmin) {
+			
+			if (chatPassword.equals("")){
+				tvPassword.setText("");
+				tvPassword.setHint("Set password");
+			}
+			
 			addPhotoButton.setOnClickListener(this);
-		}
-		else {
+			tvPassword.setOnClickListener(this);
+		} else {
 			addPhotoButton.setVisibility(View.GONE);
+			switchIsPrivate.setEnabled(false);
 		}
 		
 		((TextView) rootView.findViewById(R.id.profileName)).setText(chatName);
@@ -73,6 +95,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			}
 		});
 		
+		
+		
 		return rootView;
 	}
 
@@ -82,6 +106,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			chatName = intent.getExtras().getString(Const.CHAT_NAME);
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN);
+			isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
+			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 		}
 	}
 
@@ -91,6 +117,41 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		case R.id.addPhoto:
 			showDialog();
 			break;
+		case R.id.tvPassword:
+			final AppDialog dialog = new AppDialog(getActivity(), false);
+			
+			if (chatPassword.equals("")){
+				dialog.setPasswordInput(getString(R.string.new_password), getString(R.string.ok), getString(R.string.cancel_big), null);
+				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+					
+					@Override
+					public void onPositiveButtonClick(View v) {
+						RelativeLayout parent = (RelativeLayout) v.getParent().getParent();
+						String newPassword = ((RobotoThinEditText) parent.findViewById(R.id.etDialogPassword)).getText().toString();
+						tvPassword.setText(newPassword);
+						
+					}
+				});
+			} else {
+				dialog.setPasswordInput(getString(R.string.old_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
+				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+					
+					@Override
+					public void onPositiveButtonClick(View v) {
+						dialog.setPasswordInput(getString(R.string.new_password), getString(R.string.ok), getString(R.string.cancel_big), null);
+						dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+							
+							@Override
+							public void onPositiveButtonClick(View v) {
+								RelativeLayout parent = (RelativeLayout) v.getParent().getParent();
+								String newPassword = ((RobotoThinEditText) parent.findViewById(R.id.etDialogPassword)).getText().toString();
+								tvPassword.setText(newPassword);
+								
+							}
+						});
+					}
+				});
+			}
 
 		default:
 			break;

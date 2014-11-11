@@ -214,6 +214,9 @@
          <string name="private_room">Private Room</string>
          <string name="password_repeat">Repeat password</string>
          <string name="room_name_empty">Room name is empty</string>
-         <string name="password_error">Password error</string>
+         <string name="password_error">Wrong password</string>
+         <string name="requires_password">This chat requires password</string>
+         <string name="old_password">Enter current password</string>
+         <string name="new_password">Enter new password</string>
 
 </resources>
