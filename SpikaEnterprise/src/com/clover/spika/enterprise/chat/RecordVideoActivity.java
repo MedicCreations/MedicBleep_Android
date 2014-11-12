@@ -58,6 +58,7 @@ public class RecordVideoActivity extends BaseActivity {
 	private long mDurationOfVideo = 0;
 	
 	private String mFilePath = null;
+	private String mFileName = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,8 @@ public class RecordVideoActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
                 try {
+                	String[] items = mFilePath.split("/");
+            		mFileName = items[items.length - 1];
                     uploadVideo(mFilePath);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -136,7 +139,7 @@ public class RecordVideoActivity extends BaseActivity {
 	private void sendMsg(String fileId) {
         String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
         String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, null, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

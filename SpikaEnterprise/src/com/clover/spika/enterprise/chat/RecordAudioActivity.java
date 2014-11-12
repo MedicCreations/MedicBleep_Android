@@ -42,7 +42,8 @@ public class RecordAudioActivity extends BaseActivity {
 	private static int STOP = 0;
 
 	private boolean mIsRecording;
-	private String sFileName = null;
+	private String mFilePath = null;
+	private String mFileName = null;
 	private ExtAudioRecorder mExtAudioRecorder;
 
 	private Chronometer mRecordTime;
@@ -82,7 +83,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				new FileManageApi().uploadFile(sFileName, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
+				new FileManageApi().uploadFile(mFilePath, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 					@Override
 					public void onApiResponse(Result<UploadFileModel> result) {
@@ -177,7 +178,7 @@ public class RecordAudioActivity extends BaseActivity {
 		setRecordingFile();
 
 		mExtAudioRecorder = ExtAudioRecorder.getInstanse(false);
-		mExtAudioRecorder.setOutputFile(sFileName);
+		mExtAudioRecorder.setOutputFile(mFilePath);
 		mExtAudioRecorder.prepare();
 		mExtAudioRecorder.start();
 	}
@@ -267,7 +268,7 @@ public class RecordAudioActivity extends BaseActivity {
 		if (mIsPlaying == STOP) {
 			mPlayer = new MediaPlayer();
 			try {
-				mPlayer.setDataSource(sFileName);
+				mPlayer.setDataSource(mFilePath);
 				mPlayer.prepare();
 				mPlayer.start();
 				mPbForPlaying.setMax((int) mPlayer.getDuration());
@@ -317,7 +318,9 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	private void setRecordingFile() {
-		sFileName = new File(Utils.getFileDir(this), "voice.wav").getAbsolutePath();
+		mFilePath = new File(Utils.getFileDir(this), "voice.wav").getAbsolutePath();
+		String[] items = mFilePath.split("/");
+		mFileName = items[items.length - 1];
 	}
 
 	public void onPause() {
@@ -378,7 +381,7 @@ public class RecordAudioActivity extends BaseActivity {
         String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
         String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 		new ChatApi().sendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID),
-                null, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+				mFileName, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {

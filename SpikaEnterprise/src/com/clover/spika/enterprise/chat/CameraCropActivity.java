@@ -92,6 +92,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 	private String mFilePath;
 	private String mFileThumbPath;
+	private String mFileName;
 	private String chatId = "";
 
 	private LinearLayout btnSend;
@@ -432,6 +433,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
 			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
 		}
+		
+		String[] items = mFilePath.split("/");
+		mFileName = items[items.length - 1];
 
 		if (!path.equals(mFilePath)) {
 			try {
@@ -669,7 +673,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
     }
 
 	private void fileUploadAsync(String filePath, final String thumbPath) {
-
+		
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
@@ -724,7 +728,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private void sendMessage(final String fileId, final String thumbId) {
         String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
         String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null,
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null,
                 rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
