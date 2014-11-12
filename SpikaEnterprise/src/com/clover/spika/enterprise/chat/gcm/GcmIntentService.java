@@ -73,7 +73,7 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.PUSH_CHAT_THUMB)) {
 					chatThumb = extras.getString(Const.PUSH_CHAT_THUMB);
 				}
-				
+
 				if (extras.containsKey(Const.PUSH_CHAT_IMAGE)) {
 					chatImage = extras.getString(Const.PUSH_CHAT_IMAGE);
 				}
@@ -85,25 +85,25 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.TYPE)) {
 					type = extras.getString(Const.TYPE);
 				}
-				
+
 				if (extras.containsKey(Const.ADMIN_ID)) {
 					adminId = extras.getString(Const.ADMIN_ID);
 				}
-				
+
 				if (extras.containsKey(Const.IS_ACTIVE)) {
 					isActive = extras.getString(Const.IS_ACTIVE).equals("1") ? 1 : 0;
 				}
-				
+
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
 				ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 				List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
 				ComponentName componentInfo = taskInfo.get(0).topActivity;
-				
+
 				boolean isScreenOn = true;
 				PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 				isScreenOn = pm.isScreenOn();
-								
+
 				if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat") && isScreenOn) {
 
 					Intent inBroadcast = new Intent();
@@ -119,7 +119,7 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.ADMIN_ID, adminId);
 
 					sendBroadcast(inBroadcast);
-					
+
 				} else {
 
 					if (Integer.parseInt(type) == Const.PUSH_TYPE_SEEN) {
@@ -145,7 +145,7 @@ public class GcmIntentService extends IntentService {
 
 					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
 						notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis())
-								.setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_SOUND).setAutoCancel(true).setContentText(message)
+								.setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_ALL).setAutoCancel(true).setContentText(message)
 								.setSmallIcon(R.drawable.ic_launcher).build();
 					} else {
 						notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
