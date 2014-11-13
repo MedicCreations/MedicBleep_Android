@@ -88,8 +88,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 				int isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
 				String adminId = intent.getExtras().getString(Const.ADMIN_ID);
 				String type = intent.getExtras().getString(Const.TYPE);
+				String password = intent.getExtras().getString(Const.PASSWORD);
+				int isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 							
-				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive);				
+				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);				
 			}
 		};
 		// end: handle notifications
@@ -129,10 +131,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {		
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive, String password, int isPrivate) {		
 		
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
+			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive, password, isPrivate);
 		}
 	}
 
@@ -144,7 +146,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * @param chatName
 	 * @param chatImage
 	 */
-	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId, final int isActive) {
+	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId, final int isActive, final String password, final int isPrivate) {
 		
 		String userId = Helper.getUserId(BaseActivity.this);
 		final boolean isAdmin = userId.equals(adminId) ? true : false;
@@ -159,6 +161,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 			push.setType(type);
 			push.setAdminId(adminId);
 			push.setIsActive(isActive);
+			push.setPassword(password);
+			push.setIsPrivate(isPrivate);
 
 			qPush.add(push);
 
@@ -192,7 +196,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 						intent.putExtra(Const.IMAGE_THUMB, chatThumb);
 						intent.putExtra(Const.TYPE, type);
 						intent.putExtra(Const.IS_ADMIN, isAdmin);
-						intent.putExtra(Const.IS_ACTIVE, isActive);						
+						intent.putExtra(Const.IS_ACTIVE, isActive);
+						intent.putExtra(Const.PASSWORD, password);
 						startActivity(intent);
 					}
 				});
@@ -247,7 +252,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive(), qPush.get(0).getPassword(), qPush.get(0).getIsPrivate());
 							qPush.remove(0);
 						}
 					}

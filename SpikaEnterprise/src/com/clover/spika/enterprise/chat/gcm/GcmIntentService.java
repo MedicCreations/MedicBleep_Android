@@ -56,7 +56,9 @@ public class GcmIntentService extends IntentService {
 				String chatType = "";
 				String type = "";
 				int isActive = 0;
+				int isPrivate = 0;
 				String adminId = "";
+				String chatPassword = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
@@ -93,6 +95,14 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.IS_ACTIVE)) {
 					isActive = extras.getString(Const.IS_ACTIVE).equals("1") ? 1 : 0;
 				}
+				
+				if (extras.containsKey(Const.IS_PRIVATE)) {
+					isPrivate = extras.getString(Const.IS_PRIVATE).equals("1") ? 1 : 0;
+				}
+				
+				if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
+					chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
+				}
 
 				String message = getResources().getString(R.string.msg_from) + " " + firstName;
 
@@ -117,6 +127,8 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.TYPE, chatType);
 					inBroadcast.putExtra(Const.IS_ACTIVE, isActive);
 					inBroadcast.putExtra(Const.ADMIN_ID, adminId);
+					inBroadcast.putExtra(Const.PASSWORD, chatPassword);
+					inBroadcast.putExtra(Const.IS_PRIVATE, isPrivate);
 
 					sendBroadcast(inBroadcast);
 
@@ -138,6 +150,8 @@ public class GcmIntentService extends IntentService {
 					pushIntent.putExtra(Const.TYPE, chatType);
 					pushIntent.putExtra(Const.IS_ACTIVE, isActive);
 					pushIntent.putExtra(Const.ADMIN_ID, adminId);
+					pushIntent.putExtra(Const.PASSWORD, chatPassword);
+					pushIntent.putExtra(Const.IS_PRIVATE, isPrivate);
 
 					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

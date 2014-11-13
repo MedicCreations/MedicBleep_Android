@@ -10,6 +10,8 @@ public class Push {
 	private String type;
 	private String adminId;
 	private int isActive;
+	private String password;
+	private int isPrivate;
 
 	public Push() {
 	}
@@ -76,6 +78,22 @@ public class Push {
 
 	public void setIsActive(int isActive) {
 		this.isActive = isActive;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public int getIsPrivate() {
+		return isPrivate;
+	}
+
+	public void setIsPrivate(int isPrivate) {
+		this.isPrivate = isPrivate;
 	}
 
 }

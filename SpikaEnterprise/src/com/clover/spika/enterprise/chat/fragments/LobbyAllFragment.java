@@ -15,8 +15,6 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.models.ChatsLobby;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -137,49 +135,21 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 		if (position != -1 && position != adapter.getCount()) {
 			final ChatsLobby user = adapter.getItem(position);
 
-			if (user.getPassword().equals("")) {
-				Intent intent = new Intent(getActivity(), ChatActivity.class);
-				intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
-				intent.putExtra(Const.CHAT_NAME, user.getChatName());
-				intent.putExtra(Const.TYPE, user.getType());
-				intent.putExtra(Const.IMAGE, user.getImage());
-				intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
-				intent.putExtra(Const.PASSWORD, user.getPassword());
-				intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-				if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
-					if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
-						intent.putExtra(Const.IS_ADMIN, true);
-					}
+			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
+			intent.putExtra(Const.CHAT_NAME, user.getChatName());
+			intent.putExtra(Const.TYPE, user.getType());
+			intent.putExtra(Const.IMAGE, user.getImage());
+			intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
+			intent.putExtra(Const.PASSWORD, user.getPassword());
+			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
+			if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
+				if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
+					intent.putExtra(Const.IS_ADMIN, true);
 				}
-				intent.putExtra(Const.IS_ACTIVE, user.isActive());
-				startActivity(intent);
-			} else {
-				AppDialog dialog = new AppDialog(getActivity(), true);
-				dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), user.getPassword());
-				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
-
-					@Override
-					public void onPositiveButtonClick(View v) {
-
-						Intent intent = new Intent(getActivity(), ChatActivity.class);
-						intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
-						intent.putExtra(Const.CHAT_NAME, user.getChatName());
-						intent.putExtra(Const.TYPE, user.getType());
-						intent.putExtra(Const.IMAGE, user.getImage());
-						intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
-						intent.putExtra(Const.PASSWORD, user.getPassword());
-						intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-						if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
-							if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
-								intent.putExtra(Const.IS_ADMIN, true);
-							}
-						}
-						intent.putExtra(Const.IS_ACTIVE, user.isActive());
-						startActivity(intent);
-
-					}
-				});
 			}
+			intent.putExtra(Const.IS_ACTIVE, user.isActive());
+			startActivity(intent);
 
 		}
 	}

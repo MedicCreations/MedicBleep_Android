@@ -61,18 +61,35 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		Switch switchIsPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
 		switchIsPrivate.setChecked(isPrivate == 1 ? true : false);
 		
+		RelativeLayout passwordLayout = (RelativeLayout) rootView.findViewById(R.id.layoutPassword);
+		
 		tvPassword = (RobotoRegularTextView) rootView.findViewById(R.id.tvPassword);
 
 		if (isAdmin) {
 			
-			if (chatPassword.equals("")){
+			if (null != chatPassword){
+				if (chatPassword.equals("")){
+					tvPassword.setText("");
+					tvPassword.setHint("Set password");
+				}
+			} else {
 				tvPassword.setText("");
 				tvPassword.setHint("Set password");
 			}
+				
 			
 			addPhotoButton.setOnClickListener(this);
 			tvPassword.setOnClickListener(this);
 		} else {
+			
+			if (null != chatPassword){
+				if (chatPassword.equals("")){
+					passwordLayout.setVisibility(View.GONE);
+				}
+			} else {
+				passwordLayout.setVisibility(View.GONE);
+			}
+			
 			addPhotoButton.setVisibility(View.GONE);
 			switchIsPrivate.setEnabled(false);
 		}

@@ -136,46 +136,19 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 		if (position != -1 && position != adapter.getCount()) {
 			final ChatsLobby user = adapter.getItem(position);
 			
-			if (user.getPassword().equals("")){
-				Intent intent = new Intent(getActivity(), ChatActivity.class);
-				intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
-				intent.putExtra(Const.CHAT_NAME, user.getChatName());
-				intent.putExtra(Const.TYPE, user.getType());
-				intent.putExtra(Const.IMAGE, user.getImage());
-				intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-				intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
-				intent.putExtra(Const.PASSWORD, user.getPassword());
-				if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
-					intent.putExtra(Const.IS_ADMIN, true);
-				}
-				intent.putExtra(Const.IS_ACTIVE, user.isActive());
-				startActivity(intent);
-			} else {
-				AppDialog dialog = new AppDialog(getActivity(), true);
-				dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), user.getPassword());
-				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
-					
-					@Override
-					public void onPositiveButtonClick(View v) {
-
-						Intent intent = new Intent(getActivity(), ChatActivity.class);
-						intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
-						intent.putExtra(Const.CHAT_NAME, user.getChatName());
-						intent.putExtra(Const.TYPE, user.getType());
-						intent.putExtra(Const.IMAGE, user.getImage());
-						intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-						intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
-						intent.putExtra(Const.PASSWORD, user.getPassword());
-						if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
-							intent.putExtra(Const.IS_ADMIN, true);
-						}
-						intent.putExtra(Const.IS_ACTIVE, user.isActive());
-						startActivity(intent);
-						
-					}
-				});
+			Intent intent = new Intent(getActivity(), ChatActivity.class);
+			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
+			intent.putExtra(Const.CHAT_NAME, user.getChatName());
+			intent.putExtra(Const.TYPE, user.getType());
+			intent.putExtra(Const.IMAGE, user.getImage());
+			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
+			intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
+			intent.putExtra(Const.PASSWORD, user.getPassword());
+			if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
+				intent.putExtra(Const.IS_ADMIN, true);
 			}
-
+			intent.putExtra(Const.IS_ACTIVE, user.isActive());
+			startActivity(intent);
 			
 		}
 	}

@@ -2,6 +2,9 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,6 +29,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -133,10 +137,48 @@ public class ChatActivity extends BaseChatActivity {
 				}
 				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 				chatPassword = intent.getExtras().getString(Const.PASSWORD);
+				
+				Logger.d("ovo je password: " + isPrivate);
+				
 				setTitle(chatName);
 
 				adapter.clearItems();
-				getMessages(true, true, true, false, false, false);
+				
+				if (!chatPassword.equals("")){
+					AppDialog dialog = new AppDialog(this, true);
+					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
+					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+
+						@Override
+						public void onPositiveButtonClick(View v) {
+							getMessages(true, true, true, false, false, false);
+						}
+					});
+					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+						
+						@Override
+						public void onNegativeButtonClick(View v) {
+							finish();
+						}
+					});
+					dialog.setOnCancelListener(new OnCancelListener() {
+						
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							// TODO Auto-generated method stub
+							finish();
+						}
+					});
+//					dialog.setOnDismissListener(new OnDismissListener() {
+//						
+//						@Override
+//						public void onDismiss(DialogInterface dialog) {
+//							finish();
+//						}
+//					});
+				} else {
+					getMessages(true, true, true, false, false, false);
+				}
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
 				chatImage = intent.getExtras().getString(Const.IMAGE);

@@ -383,12 +383,12 @@ public abstract class BaseChatActivity extends BaseActivity {
         }
     }
 
-    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {
+    private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive, String password, int isPrivate) {
         if (chatIdPush.equals(chatId)) {
             onChatPushUpdated();
         } else {
         	if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-        		showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive);
+        		showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive, password, isPrivate);
         	}
         }
     }
@@ -412,8 +412,8 @@ public abstract class BaseChatActivity extends BaseActivity {
     }
 
     @Override
-    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive) {    	
-        getFromPush(msg, chatIdPush, chatName, chatImage, chatThumb, pushType, type, adminId, isActive);
+    public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive, String password, int isPrivate) {    	
+        getFromPush(msg, chatIdPush, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);
     }
 
     @Override
