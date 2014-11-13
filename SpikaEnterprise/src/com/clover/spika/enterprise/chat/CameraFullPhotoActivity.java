@@ -242,7 +242,6 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 //				mBitmap = tempBitmap;
 //				mImageView.setImageBitmap(mBitmap);
 //			} catch (FileNotFoundException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 

@@ -51,7 +51,6 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
-	private boolean isJellyBean = true;
 
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
@@ -75,7 +74,6 @@ public class MessagesAdapter extends BaseAdapter {
 		return 0;
 	}
 
-	@SuppressWarnings("deprecation")
 	@SuppressLint({ "InflateParams", "NewApi" })
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
@@ -92,15 +90,15 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// set items to null
-        holder.loading_bar_img.setBackgroundColor(Color.TRANSPARENT);
+		holder.loading_bar_img.setBackgroundColor(Color.TRANSPARENT);
 
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
 
 		holder.meMsgContent.setVisibility(View.GONE);
-        holder.meMsgContent.setTypeface(null, Typeface.NORMAL);
+		holder.meMsgContent.setTypeface(null, Typeface.NORMAL);
 		holder.youMsgContent.setVisibility(View.GONE);
-        holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
+		holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
 
 		holder.meViewImage.setVisibility(View.GONE);
 		holder.youViewImage.setVisibility(View.GONE);
@@ -208,22 +206,22 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
-                holder.mePersonName.setText("");
-                holder.meMsgContent.setVisibility(View.VISIBLE);
-                holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
-                holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
-            }
+				holder.mePersonName.setText("");
+				holder.meMsgContent.setVisibility(View.VISIBLE);
+				holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
+				holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
+			}
 
-            if (!TextUtils.isEmpty(msg.getChildListText())) {
-            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
-                holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
-            } else if (msg.getRootId() > 0) {
-            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
-                holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
-            } else {
-                holder.meThreadIndicator.setImageDrawable(null);
-                holder.meThreadIndicator.setVisibility(View.GONE);
-            }
+			if (!TextUtils.isEmpty(msg.getChildListText())) {
+				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+			} else if (msg.getRootId() > 0) {
+				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+			} else {
+				holder.meThreadIndicator.setImageDrawable(null);
+				holder.meThreadIndicator.setVisibility(View.GONE);
+			}
 		} else {
 			// Chat member messages, not mine
 
@@ -315,23 +313,23 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 
-			}  else if (msg.getType() == Const.MSG_TYPE_DELETED) {
-                holder.youPersonName.setText("");
-                holder.youMsgContent.setVisibility(View.VISIBLE);
-                holder.youMsgContent.setText(ctx.getString(R.string.message_deleted));
-                holder.youMsgContent.setTypeface(null, Typeface.ITALIC);
-            }
+			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
+				holder.youPersonName.setText("");
+				holder.youMsgContent.setVisibility(View.VISIBLE);
+				holder.youMsgContent.setText(ctx.getString(R.string.message_deleted));
+				holder.youMsgContent.setTypeface(null, Typeface.ITALIC);
+			}
 
-            if (!TextUtils.isEmpty(msg.getChildListText())) {
-            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
-                holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
-            } else if (msg.getRootId() > 0) {
-            	holder.meThreadIndicator.setVisibility(View.VISIBLE);
-                holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
-            } else {
-                holder.youThreadIndicator.setImageDrawable(null);
-                holder.meThreadIndicator.setVisibility(View.GONE);
-            }
+			if (!TextUtils.isEmpty(msg.getChildListText())) {
+				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+			} else if (msg.getRootId() > 0) {
+				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+			} else {
+				holder.youThreadIndicator.setImageDrawable(null);
+				holder.meThreadIndicator.setVisibility(View.GONE);
+			}
 		}
 
 		// Date separator
@@ -352,12 +350,12 @@ public class MessagesAdapter extends BaseAdapter {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
 			}
 		}
-		
-		//Check if last message
-		if(position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)){
+
+		// Check if last message
+		if (position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)) {
 			holder.seenByTv.setText("Seen by " + seenBy);
 			holder.seenByTv.setVisibility(View.VISIBLE);
-		}else{
+		} else {
 			holder.seenByTv.setVisibility(View.GONE);
 		}
 
@@ -414,8 +412,8 @@ public class MessagesAdapter extends BaseAdapter {
 
 		return 0;
 	}
-	
-	public void setSeenBy(String seenBy){
+
+	public void setSeenBy(String seenBy) {
 		this.seenBy = seenBy;
 	}
 
@@ -440,7 +438,7 @@ public class MessagesAdapter extends BaseAdapter {
 				if (!isFound) {
 					msg = newItems.get(i);
 					msg.setMe(isMe(newItems.get(i).getUser_id()));
-                    msg = Message.decryptContent(ctx, newItems.get(i));
+					msg = Message.decryptContent(ctx, newItems.get(i));
 					data.add(msg);
 				}
 			}
@@ -449,7 +447,7 @@ public class MessagesAdapter extends BaseAdapter {
 			for (int i = 0; i < newItems.size(); i++) {
 				msg = newItems.get(i);
 				msg.setMe(isMe(newItems.get(i).getUser_id()));
-                msg = Message.decryptContent(ctx, newItems.get(i));
+				msg = Message.decryptContent(ctx, newItems.get(i));
 				newItems.set(i, msg);
 			}
 			data.addAll(newItems);
@@ -516,7 +514,7 @@ public class MessagesAdapter extends BaseAdapter {
 		public LinearLayout meMsgLayout;
 		public TextView mePersonName;
 		public TextView meMsgContent;
-        public ImageView meThreadIndicator;
+		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
 		// end: me msg
 
@@ -539,14 +537,14 @@ public class MessagesAdapter extends BaseAdapter {
 		public RelativeLayout youFileLayout;
 		public TextView youFileName;
 		public ImageView youDownloadFile;
-		
+
 		public TextView seenByTv;
 
 		// start: message item for you message
 		public LinearLayout youMsgLayout;
 		public TextView youPersonName;
 		public TextView youMsgContent;
-        public ImageView youThreadIndicator;
+		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
 		// end: you msg
 
@@ -569,7 +567,7 @@ public class MessagesAdapter extends BaseAdapter {
 			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
 			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
-            meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
+			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			// end: me msg
 
 			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
@@ -591,7 +589,7 @@ public class MessagesAdapter extends BaseAdapter {
 			youFileLayout = (RelativeLayout) view.findViewById(R.id.youFileLayout);
 			youFileName = (TextView) view.findViewById(R.id.youFileName);
 			youDownloadFile = (ImageView) view.findViewById(R.id.youDownloadFile);
-			
+
 			seenByTv = (TextView) view.findViewById(R.id.tvSeenBy);
 
 			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
@@ -599,7 +597,7 @@ public class MessagesAdapter extends BaseAdapter {
 			youMsgTime = (TextView) view.findViewById(R.id.timeYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
-            youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
+			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
 			// end: you msg
 
 			// start: loading bar

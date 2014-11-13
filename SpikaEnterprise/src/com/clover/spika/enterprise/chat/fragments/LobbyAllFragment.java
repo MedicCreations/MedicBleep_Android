@@ -41,10 +41,9 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		getLobby(0, true);
 	}
@@ -89,7 +88,8 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 			return;
 		}
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -136,8 +136,8 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 
 		if (position != -1 && position != adapter.getCount()) {
 			final ChatsLobby user = adapter.getItem(position);
-			
-			if (user.getPassword().equals("")){
+
+			if (user.getPassword().equals("")) {
 				Intent intent = new Intent(getActivity(), ChatActivity.class);
 				intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
 				intent.putExtra(Const.CHAT_NAME, user.getChatName());
@@ -146,8 +146,8 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 				intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
 				intent.putExtra(Const.PASSWORD, user.getPassword());
 				intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-				if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP){	
-					if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
+				if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
+					if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
 						intent.putExtra(Const.IS_ADMIN, true);
 					}
 				}
@@ -157,7 +157,7 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 				AppDialog dialog = new AppDialog(getActivity(), true);
 				dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), user.getPassword());
 				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
-					
+
 					@Override
 					public void onPositiveButtonClick(View v) {
 
@@ -169,19 +169,18 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 						intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
 						intent.putExtra(Const.PASSWORD, user.getPassword());
 						intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-						if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP){	
-							if (user.getAdminId().equals(Helper.getUserId(getActivity()))){
+						if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
+							if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
 								intent.putExtra(Const.IS_ADMIN, true);
 							}
 						}
 						intent.putExtra(Const.IS_ACTIVE, user.isActive());
 						startActivity(intent);
-						
+
 					}
 				});
 			}
 
-			
 		}
 	}
 }

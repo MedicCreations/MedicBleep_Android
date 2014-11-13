@@ -136,10 +136,8 @@ public class CreateRoomActivity extends BaseActivity {
 		try {
 			digest = MessageDigest.getInstance("MD5").digest(password.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         String hashPassword = Utils.convertByteArrayToHexString(digest);

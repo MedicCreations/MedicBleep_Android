@@ -29,6 +29,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -82,10 +83,10 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httppost.setHeader("token", token);
 		}
-		
+
 		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httppost.setHeader(Const.PLATFORM, "android");
-		
+
 		// form parameters
 		if (postParams != null && !postParams.isEmpty()) {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -127,7 +128,7 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httpGet.setHeader("token", token);
 		}
-		
+
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");
 
@@ -179,7 +180,7 @@ public class NetworkManagement {
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
 		httppost.setHeader(TOKEN, prefs.getToken());
-		
+
 		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httppost.setHeader(Const.PLATFORM, "android");
 
@@ -229,7 +230,7 @@ public class NetworkManagement {
 
 		httpGet.setHeader("Encoding", "UTF-8");
 		httpGet.setHeader(TOKEN, prefs.getToken());
-		
+
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");
 
@@ -293,6 +294,7 @@ public class NetworkManagement {
 	 * HttpClient mini singleton
 	 */
 	public static class HttpSingleton {
+
 		private static HttpClient sInstance = null;
 		private static long sTimestamp = 0L;
 		private static long sHour = 3600L;
@@ -313,12 +315,34 @@ public class NetworkManagement {
 				schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 				final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
 				schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+
 				ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
 
 				sInstance = new DefaultHttpClient(cm, params);
 			}
 
 			return sInstance;
+		}
+
+		private static HttpClient sClosableInstance = null;
+
+		/**
+		 * Does not work needs to studied more
+		 * 
+		 * @return
+		 */
+		public static HttpClient getNewInstance() {
+
+			if (sClosableInstance == null) {
+
+				HttpClientBuilder builder = HttpClientBuilder.create();
+				builder.setUserAgent(Const.HTTP_USER_AGENT);
+				builder.setMaxConnPerRoute(20);
+
+				sClosableInstance = builder.build();
+			}
+
+			return sClosableInstance;
 		}
 	}
 

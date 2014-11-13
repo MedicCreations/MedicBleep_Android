@@ -44,7 +44,6 @@ public class LobbyGroupsFragment extends Fragment implements OnItemClickListener
 	
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		getLobby(0, true);
 	}

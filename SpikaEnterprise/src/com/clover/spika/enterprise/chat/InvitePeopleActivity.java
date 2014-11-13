@@ -366,7 +366,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	@Override
 	public void onChange(User obj) {
-		// TODO Auto-generated method stub
 
 		boolean isFound = false;
 		int j = 0;

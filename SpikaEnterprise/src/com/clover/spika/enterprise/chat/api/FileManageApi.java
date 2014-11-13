@@ -1,5 +1,15 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import org.apache.http.HttpEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,7 +18,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialogWithBar;
@@ -24,17 +33,6 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.gson.Gson;
 
-import org.apache.http.HttpEntity;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-
 public class FileManageApi {
 
 	private AppProgressDialogWithBar progressBar;
@@ -43,15 +41,15 @@ public class FileManageApi {
 		new BaseAsyncTask<Void, Void, UploadFileModel>(ctx, showProgressBar) {
 
 			protected void onPreExecute() {
-                File checkFile = new File(path);
-                if (checkFile.length() > Const.MAX_FILE_SIZE) {
-                    AppDialog largeFileDialog = new AppDialog(ctx, false);
-                    largeFileDialog.setInfo(ctx.getString(R.string.file_size_error));
-                    cancel(true);
-                } else {
-                    progressBar = new AppProgressDialogWithBar(ctx);
-                    progressBar.showProgress();
-                }
+				File checkFile = new File(path);
+				if (checkFile.length() > Const.MAX_FILE_SIZE) {
+					AppDialog largeFileDialog = new AppDialog(ctx, false);
+					largeFileDialog.setInfo(ctx.getString(R.string.file_size_error));
+					cancel(true);
+				} else {
+					progressBar = new AppProgressDialogWithBar(ctx);
+					progressBar.showProgress();
+				}
 
 			}
 
@@ -86,7 +84,7 @@ public class FileManageApi {
 
 						@Override
 						public void onFinish() {
-                            progressBar.dismiss();
+							progressBar.dismiss();
 						}
 					});
 
@@ -104,7 +102,7 @@ public class FileManageApi {
 
 			protected void onPostExecute(UploadFileModel upload) {
 				super.onPostExecute(upload);
-				
+
 				if (listener != null) {
 					Result<UploadFileModel> result;
 
@@ -125,7 +123,7 @@ public class FileManageApi {
 
 					listener.onApiResponse(result);
 				}
-				
+
 				if (progressBar != null && progressBar.isShowing()) {
 					progressBar.dismiss();
 				}
@@ -177,11 +175,11 @@ public class FileManageApi {
 							progressBar.dismiss();
 
 							((Activity) context).runOnUiThread(new Runnable() {
-                                public void run() {
-                                    progressBar = new AppProgressDialogWithBar(ctx);
-                                    progressBar.showDecrypting();
-                                }
-                            });
+								public void run() {
+									progressBar = new AppProgressDialogWithBar(ctx);
+									progressBar.showDecrypting();
+								}
+							});
 						}
 					});
 
@@ -238,6 +236,7 @@ public class FileManageApi {
 				mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 				mBuilder = new NotificationCompat.Builder(context);
 				mBuilder.setAutoCancel(true);
+				mBuilder.setOngoing(true);
 				mBuilder.setContentTitle(context.getResources().getString(R.string.file_download) + ":" + fileName)
 						.setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.ic_launcher);
 
@@ -253,13 +252,14 @@ public class FileManageApi {
 				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS, fileName);
 			};
 
-			protected Void doInBackground(Void... params) {
+			protected Void doInBackground(Void... paramss) {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.FILE_ID, fileId);
 
 				InputStream is;
 				try {
+
 					is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
 
 					if (JNAesCrypto.isEncryptionEnabled) {
@@ -273,7 +273,8 @@ public class FileManageApi {
 					is.close();
 
 				} catch (Exception e) {
-					if(Const.DEBUG_CRYPTO) e.printStackTrace();
+					if (Const.DEBUG_CRYPTO)
+						e.printStackTrace();
 				}
 
 				return null;
@@ -350,15 +351,23 @@ public class FileManageApi {
 					mBuilder.setContentIntent(contentIntent);
 					mBuilder.setContentText(context.getResources().getString(R.string.download_complete));
 					mBuilder.setProgress(0, 0, false);
+					mBuilder.setOngoing(false);
 					mNotifyManager.notify(id, mBuilder.build());
 
-					dialog.fileDownloaded(context.getResources().getString(R.string.download_complete) + "\n" + fileName, intent);
+					try {
+						dialog.fileDownloaded(context.getResources().getString(R.string.download_complete) + "\n" + fileName, intent);
+					} catch (Exception ignore) {
+					}
 				} else {
 					mBuilder.setContentText(context.getResources().getString(R.string.download_failed));
 					mBuilder.setProgress(0, 0, false);
+					mBuilder.setOngoing(false);
 					mNotifyManager.notify(id, mBuilder.build());
 
-					dialog.setFailed(context.getResources().getString(R.string.download_failed));
+					try {
+						dialog.setFailed(context.getResources().getString(R.string.download_failed));
+					} catch (Exception ignore) {
+					}
 				}
 			};
 

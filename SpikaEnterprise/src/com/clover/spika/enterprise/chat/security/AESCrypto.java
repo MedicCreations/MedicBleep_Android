@@ -26,7 +26,6 @@ public class AESCrypto {
 //			secret = new SecretKeySpec(keyFactory.getEncoded(), "AES");
 //		} catch (NoSuchAlgorithmException e) {
 //		} catch (InvalidKeySpecException e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 		

@@ -143,13 +143,30 @@ public class GcmIntentService extends IntentService {
 
 					Notification notification = null;
 
+					int rgbLed = 0x43A5DA;
+					int ledOn = 2000;
+					int ledOff = 5000;
+
 					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-						notification = new Notification.Builder(this).setContentTitle(getResources().getString(R.string.app_name)).setWhen(System.currentTimeMillis())
-								.setContentIntent(contentIntent).setDefaults(Notification.DEFAULT_ALL).setAutoCancel(true).setContentText(message)
-								.setSmallIcon(R.drawable.ic_launcher).build();
+
+						Notification.Builder notifBuilder = new Notification.Builder(this);
+						notifBuilder.setContentTitle(getResources().getString(R.string.app_name));
+						notifBuilder.setWhen(System.currentTimeMillis());
+						notifBuilder.setContentIntent(contentIntent);
+						notifBuilder.setAutoCancel(true);
+						notifBuilder.setContentText(message);
+						notifBuilder.setSmallIcon(R.drawable.ic_launcher);
+
+						notifBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS);
+						notifBuilder.setLights(rgbLed, ledOn, ledOff);
+
+						notification = notifBuilder.build();
 					} else {
 						notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
-						notification.defaults = Notification.DEFAULT_ALL;
+						notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS;
+						notification.ledARGB = rgbLed;
+						notification.ledOnMS = ledOn;
+						notification.ledOffMS = ledOff;
 						notification.flags = Notification.FLAG_AUTO_CANCEL;
 						notification.setLatestEventInfo(this, getResources().getString(R.string.app_name), message, contentIntent);
 					}

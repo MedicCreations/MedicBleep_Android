@@ -34,7 +34,7 @@ public class ChatActivity extends BaseChatActivity {
 	public MessagesAdapter adapter;
 
 	private int totalItems = 0;
-    private String mUserId;
+	private String mUserId;
 
 	private boolean isRunning = false;
 	private boolean isResume = false;
@@ -47,32 +47,31 @@ public class ChatActivity extends BaseChatActivity {
 
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
-        // TODO: elegantnije riješiti click listener
-        chatListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent.getAdapter() != null) {
-                    Message message = (Message) parent.getAdapter().getItem(position);
-                    if (message.getType() != Const.MSG_TYPE_DELETED) {
-                        int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-                        ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId),
-                                message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
-                    }
-                }
-            }
-        });
-        chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent.getAdapter() != null) {
-                    Message message = (Message) parent.getAdapter().getItem(position);
-                    if (message.isMe()) {
-                        deleteMessage(message.getId());
-                    }
-                }
-                return true;
-            }
-        });
+		// TODO: elegantnije riješiti click listener
+		chatListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (parent.getAdapter() != null) {
+					Message message = (Message) parent.getAdapter().getItem(position);
+					if (message.getType() != Const.MSG_TYPE_DELETED) {
+						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
+					}
+				}
+			}
+		});
+		chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				if (parent.getAdapter() != null) {
+					Message message = (Message) parent.getAdapter().getItem(position);
+					if (message.isMe()) {
+						deleteMessage(message.getId());
+					}
+				}
+				return true;
+			}
+		});
 
 		getIntentData(getIntent());
 	}
@@ -81,11 +80,11 @@ public class ChatActivity extends BaseChatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		//if activity restart after calling camera intent (SAMSUNG DEVICES)
+		// if activity restart after calling camera intent (SAMSUNG DEVICES)
 		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
 		SpikaEnterpriseApp.getInstance().setVideoPath(null);
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
-		
+
 		loadImage();
 
 		if (isResume) {
@@ -105,11 +104,11 @@ public class ChatActivity extends BaseChatActivity {
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		isResume = false;
-		if(intent.getBooleanExtra(Const.UPDATE_PICTURE, false)){
+		if (intent.getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 			loadImage();
-		}else{
+		} else {
 			getIntentData(intent);
 		}
 	}
@@ -125,12 +124,11 @@ public class ChatActivity extends BaseChatActivity {
 				chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
 				if (intent.getExtras().containsKey(Const.ADMIN_ID)) {
 					isAdmin = Helper.getUserId(this).equals(intent.getExtras().getString(Const.ADMIN_ID, "")) ? true : false;
-				} 
-				else {
+				} else {
 					isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
-				}				
+				}
 				isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
-				if (isActive == 0){
+				if (isActive == 0) {
 					etMessage.setFocusable(false);
 				}
 				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
@@ -165,7 +163,7 @@ public class ChatActivity extends BaseChatActivity {
 									adapter.addItems(result.getResultData().getMessagesList(), true);
 									adapter.setSeenBy(result.getResultData().getSeen_by());
 									adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
-									if(adapter.getCount() > 0){
+									if (adapter.getCount() > 0) {
 										chatListView.setSelectionFromTop(adapter.getCount(), 0);
 									}
 								} else {
@@ -184,12 +182,20 @@ public class ChatActivity extends BaseChatActivity {
 			}
 
 			if (intent.getExtras().containsKey(Const.TYPE)) {
-				chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
-				if (isAdmin && isActive == 1){
-					chatType = Const.C_ROOM_ADMIN_ACTIVE;	
+
+				try {
+					chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
+				} catch (Exception e) {
+					AppDialog dialog = new AppDialog(this, true);
+					dialog.setFailed(getString(R.string.e_something_went_wrong));
+					return;
 				}
-				if (isAdmin && isActive == 0){
-					chatType = Const.C_ROOM_ADMIN_INACTIVE;	
+
+				if (isAdmin && isActive == 1) {
+					chatType = Const.C_ROOM_ADMIN_ACTIVE;
+				}
+				if (isAdmin && isActive == 0) {
+					chatType = Const.C_ROOM_ADMIN_INACTIVE;
 				}
 				setSettingsItems(chatType);
 			}
@@ -206,48 +212,48 @@ public class ChatActivity extends BaseChatActivity {
 		}
 	}
 
-    @Override
-    protected void onFileSelected(int result, final String fileName, String filePath) {
-        if (result == RESULT_OK) {
-            new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+	@Override
+	protected void onFileSelected(int result, final String fileName, String filePath) {
+		if (result == RESULT_OK) {
+			new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
-                @Override
-                public void onApiResponse(Result<UploadFileModel> result) {
-                    if (result.isSuccess()) {
-                        sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
-                    } else {
-                        AppDialog dialog = new AppDialog(ChatActivity.this, false);
-                        if (result.hasResultData()) {
-                            dialog.setFailed(result.getResultData().getMessage());
-                        } else {
-                            dialog.setFailed(Helper.errorDescriptions(getApplicationContext(), result.getResultData().getCode()));
-                        }
-                    }
-                }
-            });
-        } else if (result == RESULT_CANCELED){
-        } else {
-            AppDialog dialog = new AppDialog(this, false);
-            dialog.setFailed(getResources().getString(R.string.e_while_encrypting));
-        }
-    }
+				@Override
+				public void onApiResponse(Result<UploadFileModel> result) {
+					if (result.isSuccess()) {
+						sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, result.getResultData().getFileId(), null, null, null);
+					} else {
+						AppDialog dialog = new AppDialog(ChatActivity.this, false);
+						if (result.hasResultData()) {
+							dialog.setFailed(result.getResultData().getMessage());
+						} else {
+							dialog.setFailed(Helper.errorDescriptions(getApplicationContext(), result.getResultData().getCode()));
+						}
+					}
+				}
+			});
+		} else if (result == RESULT_CANCELED) {
+		} else {
+			AppDialog dialog = new AppDialog(this, false);
+			dialog.setFailed(getResources().getString(R.string.e_while_encrypting));
+		}
+	}
 
-    @Override
-    protected String getRootId() {
-        return null;
-    }
+	@Override
+	protected String getRootId() {
+		return null;
+	}
 
-    @Override
-    protected String getMessageId() {
-        return null;
-    }
+	@Override
+	protected String getMessageId() {
+		return null;
+	}
 
-    @Override
-    protected String getUserId() {
-        return mUserId;
-    }
+	@Override
+	protected String getUserId() {
+		return mUserId;
+	}
 
-    public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
+	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
 
 			@Override
@@ -260,7 +266,7 @@ public class ChatActivity extends BaseChatActivity {
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
 					dialog.setFailed(result.getResultData());
-					if (result.getResultData() == Const.E_CHAT_INACTIVE){
+					if (result.getResultData() == Const.E_CHAT_INACTIVE) {
 						isActive = 0;
 						etMessage.setText("");
 						hideKeyboard(etMessage);
@@ -276,13 +282,13 @@ public class ChatActivity extends BaseChatActivity {
 		getMessages(false, false, false, true, false, true);
 	}
 
-    @Override
-    protected void onMessageDeleted() {
-        getMessages(false, false, false, true, false, true);
-    }
+	@Override
+	protected void onMessageDeleted() {
+		getMessages(false, false, false, true, false, true);
+	}
 
-    public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
-    	
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
+
 		if (!isRunning) {
 			isRunning = true;
 
@@ -324,9 +330,9 @@ public class ChatActivity extends BaseChatActivity {
 
 					Chat chat = result.getResultData();
 
-                    if (TextUtils.isEmpty(mUserId)) {
-                        mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
-                    }
+					if (TextUtils.isEmpty(mUserId)) {
+						mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
+					}
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
 					adapter.setSeenBy(chat.getSeen_by());
@@ -412,7 +418,7 @@ public class ChatActivity extends BaseChatActivity {
 		final AppDialog dialog = new AppDialog(this, false);
 		dialog.setYesNo(getString(R.string.are_you_sure_), getString(R.string.yes), getString(R.string.no));
 		dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
-			
+
 			@Override
 			public void onPositiveButtonClick(View v) {
 				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
@@ -431,15 +437,15 @@ public class ChatActivity extends BaseChatActivity {
 				});
 			}
 		});
-		
+
 		dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
-			
+
 			@Override
 			public void onNegativeButtonClick(View v) {
 				dialog.dismiss();
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -456,7 +462,7 @@ public class ChatActivity extends BaseChatActivity {
 					dialog.setFailed(null);
 				}
 			}
-		});	
+		});
 	}
 
 }
