@@ -26,12 +26,20 @@ public class ChangePasswordActivity extends BaseActivity {
 
 	String tempPassword;
 
+	boolean isUpdate = false;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_password);
 
-		tempPassword = getIntent().getExtras().getString(Const.TEMP_PASSWORD);
+		Bundle extras = getIntent().getExtras();
+
+		if (extras.containsKey(Const.IS_UPDATE_PASSWORD)) {
+			isUpdate = true;
+		} else {
+			tempPassword = extras.getString(Const.TEMP_PASSWORD);
+		}
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {
@@ -78,12 +86,16 @@ public class ChangePasswordActivity extends BaseActivity {
 			return;
 		}
 
-		new UserApi().updateUserPassword(tempPassword, password, this, new ApiCallback<Login>() {
+		new UserApi().updateUserPassword(isUpdate, tempPassword, password, this, new ApiCallback<Login>() {
 
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {
-					startActivity(new Intent(ChangePasswordActivity.this, MainActivity.class));
+
+					if (!isUpdate) {
+						startActivity(new Intent(ChangePasswordActivity.this, MainActivity.class));
+					}
+
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(ChangePasswordActivity.this, false);

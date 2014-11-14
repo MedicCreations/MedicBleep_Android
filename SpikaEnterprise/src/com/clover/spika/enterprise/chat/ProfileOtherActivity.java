@@ -15,7 +15,7 @@ import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.views.DetailsScrollView;
+import com.clover.spika.enterprise.chat.views.DetailsView;
 
 public class ProfileOtherActivity extends BaseActivity {
 
@@ -23,9 +23,9 @@ public class ProfileOtherActivity extends BaseActivity {
 
 	private ImageView profileImage;
 	private TextView profileName;
-    private DetailsScrollView mDetailScrollView;
+	private DetailsView mDetailScrollView;
 
-    private String mUserId;
+	private String mUserId;
 
 	public static void openOtherProfile(Context context, String userId, String imageFileId, String chatName) {
 
@@ -33,7 +33,7 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		intent.putExtra(Const.IMAGE, imageFileId);
 		intent.putExtra(Const.CHAT_NAME, chatName);
-        intent.putExtra(Const.USER_ID, userId);
+		intent.putExtra(Const.USER_ID, userId);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
@@ -57,28 +57,28 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		profileImage = (ImageView) findViewById(R.id.profileImage);
 		profileName = (TextView) findViewById(R.id.profileName);
-        mDetailScrollView = (DetailsScrollView) findViewById(R.id.scrollViewDetails);
+		mDetailScrollView = (DetailsView) findViewById(R.id.scrollViewDetails);
 
-        getIntentData(getIntent());
+		getIntentData(getIntent());
 
-        findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
-        new UserApi().getProfile(this, false, mUserId, new ApiCallback<UserWrapper>() {
-            @Override
-            public void onApiResponse(Result<UserWrapper> result) {
-                if (result.isSuccess()) {
-                    findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-                    mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
-                }else{
-                	findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-    }
+		findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
+		new UserApi().getProfile(this, false, mUserId, new ApiCallback<UserWrapper>() {
+			@Override
+			public void onApiResponse(Result<UserWrapper> result) {
+				if (result.isSuccess()) {
+					findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+				} else {
+					findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+				}
+			}
+		});
+	}
 
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage, new OnImageDisplayFinishListener() {
-				
+
 				@Override
 				public void onFinish() {
 					findViewById(R.id.loadingLayout).setVisibility(View.GONE);
@@ -86,7 +86,7 @@ public class ProfileOtherActivity extends BaseActivity {
 			});
 			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 
-            mUserId = getIntent().getExtras().getString(Const.USER_ID);
+			mUserId = getIntent().getExtras().getString(Const.USER_ID);
 		}
 	}
 

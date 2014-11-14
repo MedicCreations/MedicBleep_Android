@@ -37,10 +37,10 @@ public class MainActivity extends BaseActivity {
 
 	/* create room */
 	TextView createRoomBtn;
-	
+
 	/* edit profile */
 	TextView editProfileBtn;
-	
+
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity {
 			getWindow().clearFlags(LayoutParams.FLAG_SECURE);
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -166,69 +166,57 @@ public class MainActivity extends BaseActivity {
 	 * 
 	 * @param listener
 	 */
-	public void setSearch(OnSearchListener listener){
+	public void setSearch(OnSearchListener listener) {
 		mSearchListener = listener;
 		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 	}
-	
-	public void disableSearch(){
+
+	public void disableSearch() {
 		disableSearch(searchBtn, searchEt, sidebarBtn, closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation);
 	}
-	
+
 	/**
 	 * set create room btn
 	 */
-	public void setCreateRoom(OnCreateRoomListener listener){
-		
+	public void setCreateRoom(OnCreateRoomListener listener) {
+
 		createRoomBtn.setVisibility(View.VISIBLE);
 		mCreateRoomListener = listener;
-		
+
 		createRoomBtn.setOnClickListener(createRoomOnClickListener);
-		
 	}
-	
+
 	/**
 	 * disable create room btn
 	 */
-	public void disableCreateRoom(){
-		
+	public void disableCreateRoom() {
 		createRoomBtn.setVisibility(View.INVISIBLE);
-		
 	}
-	
+
 	/**
 	 * enabled create room btn
 	 */
-	public void enableCreateRoom(){
-		
+	public void enableCreateRoom() {
 		createRoomBtn.setVisibility(View.VISIBLE);
-		
 	}
-	
-	
+
 	/**
 	 * enabled edit profile btn
 	 */
-	public void enableEditProfile(OnEditProfileListener listener){
-		
+	public void enableEditProfile(OnEditProfileListener listener) {
+
 		editProfileBtn.setVisibility(View.VISIBLE);
 		mEditProfileListener = listener;
-		
+
 		editProfileBtn.setOnClickListener(editProfileOnClickListener);
-		
 	}
-	
-	
+
 	/**
 	 * disable edit profile btn
 	 */
-	public void disableEditProfile(){
-		
+	public void disableEditProfile() {
 		editProfileBtn.setVisibility(View.INVISIBLE);
-		
 	}
-	
-	
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 
@@ -263,29 +251,27 @@ public class MainActivity extends BaseActivity {
 
 		@Override
 		public void onClick(View v) {
-			
-				if (mCreateRoomListener != null) {
-					
-					mCreateRoomListener.onCreateRoom();
-				
+
+			if (mCreateRoomListener != null) {
+
+				mCreateRoomListener.onCreateRoom();
+
 			}
 		}
 	};
-	
-	
+
 	private OnClickListener editProfileOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			
-				if (mEditProfileListener != null) {
-					
-					mEditProfileListener.onEditProfile();
-				
+
+			if (mEditProfileListener != null) {
+
+				mEditProfileListener.onEditProfile();
+
 			}
 		}
 	};
-	
 
 	@Override
 	public void onBackPressed() {
@@ -296,9 +282,9 @@ public class MainActivity extends BaseActivity {
 
 		finish();
 	}
-	
-	public void showSmallLoading(int visible){
+
+	public void showSmallLoading(int visible) {
 		findViewById(R.id.loadingPB).setVisibility(visible);
 	}
-	
+
 }

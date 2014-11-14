@@ -86,7 +86,7 @@
     <string name="e_while_encrypting">Error while encrypting.</string>
     <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
     <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
-    
+
     <!-- new errors -->
     <string name="e_email_missing">Your email is missing</string>
     <string name="e_username_not_exist">This username does not exist</string>
@@ -204,27 +204,29 @@
         <item>Interests</item>
         <item>Web site</item>
     </string-array>
-        <string name="select_category">Select category</string>
-        <string name="choose_category">Choose category</string>
-        <string name="none">None</string>
-        <string name="information">Information</string>
-        <string name="next">Next</string>
-        
-        <!-- NEW STRINGS -->
-         <string name="yes">Yes</string>
-         <string name="no">No</string>
-         <string name="are_you_sure_">Are you sure?</string>
-         <string name="edit">Edit</string> 
-         <string name="private_room">Private Room</string>
-         <string name="password_repeat">Repeat password</string>
-         <string name="room_name_empty">Room name is empty</string>
-         <string name="password_error">Wrong password</string>
-         <string name="requires_password">This chat requires password</string>
-         <string name="old_password">Enter current password</string>
-         <string name="forgot_password">Forgot password?</string>
-         <string name="email_sent">You have got an email with temporary password, please login</string>
-         <string name="login_empty_username">Username should not be empty</string>
-    	 <string name="login_empty_password">Password should not be empty</string>
-    	 <string name="new_passwords_not_identical">Passwords are not identical.</string>
+
+    <string name="select_category">Select category</string>
+    <string name="choose_category">Choose category</string>
+    <string name="none">None</string>
+    <string name="information">Information</string>
+    <string name="next">Next</string>
+
+    <!-- NEW STRINGS -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_">Are you sure?</string>
+    <string name="edit">Edit</string>
+    <string name="private_room">Private Room</string>
+    <string name="password_repeat">Repeat password</string>
+    <string name="room_name_empty">Room name is empty</string>
+    <string name="password_error">Wrong password</string>
+    <string name="requires_password">This chat requires password</string>
+    <string name="old_password">Enter current password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="email_sent">You have got an email with temporary password, please login</string>
+    <string name="login_empty_username">Username should not be empty</string>
+    <string name="login_empty_password">Password should not be empty</string>
+    <string name="new_passwords_not_identical">Passwords are not identical.</string>
+    <string name="update_password">Update Password</string>
 
 </resources>

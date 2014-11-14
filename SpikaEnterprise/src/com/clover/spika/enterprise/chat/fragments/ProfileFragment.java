@@ -3,16 +3,18 @@ package com.clover.spika.enterprise.chat.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.EditProfileActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
@@ -29,40 +31,40 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-import com.clover.spika.enterprise.chat.views.DetailsScrollView;
+import com.clover.spika.enterprise.chat.views.DetailsView;
 
 public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener {
 
 	private Switch mSwitchPasscodeEnabled;
 	private ImageView profileImage;
-    private DetailsScrollView mDetailScrollView;
-    private FrameLayout mLoadingLayout;
-    private UserWrapper userWrapper;
-    
-	private boolean isEditable = false;
+	private Button updatePassword;
+	private DetailsView mDetailScrollView;
+	private FrameLayout mLoadingLayout;
+	private UserWrapper userWrapper;
+	private ProgressBar progressBarDetails;
 
 	String imageId;
 	String firstname;
 	String lastname;
 
-    public static ProfileFragment newInstance(String imageId, String firstName, String lastName) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle arguments = new Bundle();
-        arguments.putString(Const.USER_IMAGE_NAME, imageId);
-        arguments.putString(Const.FIRSTNAME, firstName);
-        arguments.putString(Const.LASTNAME, lastName);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+	public static ProfileFragment newInstance(String imageId, String firstName, String lastName) {
+		ProfileFragment fragment = new ProfileFragment();
+		Bundle arguments = new Bundle();
+		arguments.putString(Const.USER_IMAGE_NAME, imageId);
+		arguments.putString(Const.FIRSTNAME, firstName);
+		arguments.putString(Const.LASTNAME, lastName);
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
-	public ProfileFragment() { }
+	public ProfileFragment() {
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setData(getArguments());
+		setData(getArguments());
 	}
 
 	@Override
@@ -70,11 +72,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		super.onResume();
 		onClosed();
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
-		
-		Logger.d("ovo je editable " + isEditable);
-		if (isEditable){
-			((MainActivity) getActivity()).enableEditProfile(this);
-		}
 	}
 
 	@Override
@@ -91,45 +88,45 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
 
-        mDetailScrollView = (DetailsScrollView) rootView.findViewById(R.id.scrollViewDetails);
-        mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
+		updatePassword = (Button) rootView.findViewById(R.id.updatePassword);
+		updatePassword.setOnClickListener(this);
+
+		mDetailScrollView = (DetailsView) rootView.findViewById(R.id.scrollViewDetails);
+		mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
+
+		progressBarDetails = (ProgressBar) rootView.findViewById(R.id.progressBarDetails);
+		progressBarDetails.setVisibility(View.VISIBLE);
+
+		new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
+			@Override
+			public void onApiResponse(Result<UserWrapper> result) {
+				if (result.isSuccess()) {
+					progressBarDetails.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+
+					userWrapper = result.getResultData();
+
+					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
+
+					((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
+				} else {
+					progressBarDetails.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
+				}
+			}
+		});
 
 		return rootView;
 	}
-	
-	
+
 	@Override
-	public void onPause() {
-		super.onPause();
-		((MainActivity) getActivity()).disableEditProfile();
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableEditProfile();
+		}
 	}
 
-    @Override
-    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        view.findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
-        isEditable = false;
-        new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
-            @Override
-            public void onApiResponse(Result<UserWrapper> result) {
-                if (result.isSuccess()) {
-                    view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-                    
-                    userWrapper = result.getResultData();
-                    
-                    mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
-                    
-                    isEditable = true;
-                    ((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
-                }else{
-                	view.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-    }
-
-    @Override
+	@Override
 	public void onClosed() {
 		if (getActivity() instanceof MainActivity) {
 
@@ -139,7 +136,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 			mLoadingLayout.setVisibility(View.VISIBLE);
 			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
-				
+
 				@Override
 				public void onFinish() {
 					mLoadingLayout.setVisibility(View.GONE);
@@ -169,6 +166,12 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 			 * forwarding current state is enough
 			 */
 			onCheckedChanged(mSwitchPasscodeEnabled.isChecked());
+			break;
+
+		case R.id.updatePassword:
+			Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+			intent.putExtra(Const.IS_UPDATE_PASSWORD, true);
+			getActivity().startActivity(intent);
 			break;
 
 		default:

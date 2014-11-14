@@ -14,21 +14,17 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 
-@SuppressWarnings("UnusedDeclaration")
 public class RoundedImageView extends ImageView {
 
 	public static final String TAG = "RoundedImageView";
 	public static final float DEFAULT_RADIUS = 0f;
 	public static final float DEFAULT_BORDER_WIDTH = 0f;
-	private static final ScaleType[] SCALE_TYPES = { ScaleType.MATRIX,
-			ScaleType.FIT_XY, ScaleType.FIT_START, ScaleType.FIT_CENTER,
-			ScaleType.FIT_END, ScaleType.CENTER, ScaleType.CENTER_CROP,
-			ScaleType.CENTER_INSIDE };
+	private static final ScaleType[] SCALE_TYPES = { ScaleType.MATRIX, ScaleType.FIT_XY, ScaleType.FIT_START, ScaleType.FIT_CENTER, ScaleType.FIT_END, ScaleType.CENTER,
+			ScaleType.CENTER_CROP, ScaleType.CENTER_INSIDE };
 
 	private float cornerRadius = DEFAULT_RADIUS;
 	private float borderWidth = DEFAULT_BORDER_WIDTH;
-	private ColorStateList borderColor = ColorStateList
-			.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
+	private ColorStateList borderColor = ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
 	private boolean isOval = false;
 	private boolean mutateBackground = false;
 
@@ -49,11 +45,9 @@ public class RoundedImageView extends ImageView {
 	public RoundedImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-		TypedArray a = context.obtainStyledAttributes(attrs,
-				R.styleable.RoundedImageView, defStyle, 0);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RoundedImageView, defStyle, 0);
 
-		int index = a
-				.getInt(R.styleable.RoundedImageView_android_scaleType, -1);
+		int index = a.getInt(R.styleable.RoundedImageView_android_scaleType, -1);
 		if (index >= 0) {
 			setScaleType(SCALE_TYPES[index]);
 		} else {
@@ -61,10 +55,8 @@ public class RoundedImageView extends ImageView {
 			setScaleType(ScaleType.FIT_CENTER);
 		}
 
-		cornerRadius = a.getDimensionPixelSize(
-				R.styleable.RoundedImageView_corner_radius, -1);
-		borderWidth = a.getDimensionPixelSize(
-				R.styleable.RoundedImageView_border_width, -1);
+		cornerRadius = a.getDimensionPixelSize(R.styleable.RoundedImageView_corner_radius, -1);
+		borderWidth = a.getDimensionPixelSize(R.styleable.RoundedImageView_border_width, -1);
 
 		// don't allow negative values for radius and border
 		if (cornerRadius < 0) {
@@ -74,15 +66,12 @@ public class RoundedImageView extends ImageView {
 			borderWidth = DEFAULT_BORDER_WIDTH;
 		}
 
-		borderColor = a
-				.getColorStateList(R.styleable.RoundedImageView_border_color);
+		borderColor = a.getColorStateList(R.styleable.RoundedImageView_border_color);
 		if (borderColor == null) {
-			borderColor = ColorStateList
-					.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
+			borderColor = ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
 		}
 
-		mutateBackground = a.getBoolean(
-				R.styleable.RoundedImageView_mutate_background, false);
+		mutateBackground = a.getBoolean(R.styleable.RoundedImageView_mutate_background, false);
 		isOval = a.getBoolean(R.styleable.RoundedImageView_oval, false);
 
 		updateDrawableAttrs();
@@ -208,8 +197,7 @@ public class RoundedImageView extends ImageView {
 	private void updateBackgroundDrawableAttrs(boolean convert) {
 		if (mutateBackground) {
 			if (convert) {
-				mBackgroundDrawable = RoundedDrawable
-						.fromDrawable(mBackgroundDrawable);
+				mBackgroundDrawable = RoundedDrawable.fromDrawable(mBackgroundDrawable);
 			}
 			updateAttrs(mBackgroundDrawable);
 		}
@@ -221,9 +209,7 @@ public class RoundedImageView extends ImageView {
 		}
 
 		if (drawable instanceof RoundedDrawable) {
-			((RoundedDrawable) drawable).setScaleType(mScaleType)
-					.setCornerRadius(cornerRadius).setBorderWidth(borderWidth)
-					.setBorderColor(borderColor).setOval(isOval);
+			((RoundedDrawable) drawable).setScaleType(mScaleType).setCornerRadius(cornerRadius).setBorderWidth(borderWidth).setBorderColor(borderColor).setOval(isOval);
 		} else if (drawable instanceof LayerDrawable) {
 			// loop through layers to and set drawable attrs
 			LayerDrawable ld = ((LayerDrawable) drawable);
@@ -295,8 +281,7 @@ public class RoundedImageView extends ImageView {
 			return;
 		}
 
-		borderColor = (colors != null) ? colors : ColorStateList
-				.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
+		borderColor = (colors != null) ? colors : ColorStateList.valueOf(RoundedDrawable.DEFAULT_BORDER_COLOR);
 		updateDrawableAttrs();
 		updateBackgroundDrawableAttrs(false);
 		if (borderWidth > 0) {

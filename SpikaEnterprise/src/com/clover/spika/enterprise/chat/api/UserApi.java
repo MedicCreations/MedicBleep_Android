@@ -343,7 +343,7 @@ public class UserApi {
 		}.execute();
 	}
 
-	public void updateUserPassword(final String tempPassword, final String newPassword, final Context ctx, final ApiCallback<Login> listener) {
+	public void updateUserPassword(final boolean isUpdate, final String tempPassword, final String newPassword, final Context ctx, final ApiCallback<Login> listener) {
 		new BaseAsyncTask<Void, Void, Login>(ctx, true) {
 			@Override
 			protected Login doInBackground(Void... params) {
@@ -355,11 +355,17 @@ public class UserApi {
 					HashMap<String, String> postParams = new HashMap<String, String>();
 					String hashPassword = Utils.getHexString(newPassword);
 					postParams.put(Const.NEW_PASSWORD, hashPassword);
-					String hashTempPassword = Utils.getHexString(tempPassword);
-					postParams.put(Const.TEMP_PASSWORD, hashTempPassword);
 
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams,
-							SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					if (isUpdate) {
+						jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams,
+								SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					} else {
+						
+						String hashTempPassword = Utils.getHexString(tempPassword);
+						postParams.put(Const.TEMP_PASSWORD, hashTempPassword);
+
+						jsonObject = NetworkManagement.httpPostRequest(Const.F_CHANGE_USER_PASSWORD, postParams, null);
+					}
 
 					return new Gson().fromJson(jsonObject.toString(), Login.class);
 

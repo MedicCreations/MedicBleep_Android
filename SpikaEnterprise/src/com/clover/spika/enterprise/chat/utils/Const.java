@@ -65,6 +65,7 @@ public class Const {
 	public static final String FROM_NOTIFICATION = "FromNotification";
 	public static final String PUSH_INTENT_ACTION = "PushIntentAction";
 	public static final String CHANGE_PASSCODE_INTENT = "ChangePasscodeIntent";
+	public static final String IS_UPDATE_PASSWORD = "IsUpdatePassword";
 
 	// Recording constants
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds
@@ -187,7 +188,8 @@ public class Const {
 	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
-	public static final String F_UPDATE_USER_PASSWORD = "/user/password/change";
+	public static final String F_UPDATE_USER_PASSWORD = "/user/password/update";
+	public static final String F_CHANGE_USER_PASSWORD = "/user/password/change";
 	public static final String F_UPDATE_PUSH_TOKEN = "/user/pushtoken/android/update";
 	public static final String F_LOGOUT_API = "/user/logout";
 	public static final String F_USER_GET_LOBBY = "/lobby/list";

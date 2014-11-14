@@ -74,7 +74,7 @@
         </FrameLayout>
     </RelativeLayout>
 
-    <com.clover.spika.enterprise.chat.views.DetailsScrollView
+    <com.clover.spika.enterprise.chat.views.DetailsView
         android:id="@+id/scrollViewDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

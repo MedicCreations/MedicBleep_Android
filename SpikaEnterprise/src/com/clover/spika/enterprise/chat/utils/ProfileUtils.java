@@ -12,7 +12,7 @@ public class ProfileUtils {
      * @param context context required to fetch resources
      * @return either translated String or the same key if it doesn't exist
      */
-    public static String mapToKey(String key, Context context) {
+	public static String mapToKey(String key, Context context) {
         String[] keys = context.getResources().getStringArray(R.array.profile_detail_keys);
         String[] values = context.getResources().getStringArray(R.array.profile_detail_values);
 

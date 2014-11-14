@@ -10,8 +10,6 @@ import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -19,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
 import android.widget.Switch;
 
 public class UserDetailsAdapter extends BaseAdapter implements OnCheckedChangeListener, OnFocusChangeListener{
