@@ -404,6 +404,8 @@ public class Helper {
 		errors.put(Const.E_EXPIRED_TOKEN, cntx.getResources().getString(R.string.e_expired_token));
 		errors.put(Const.E_CHAT_INACTIVE, cntx.getResources().getString(R.string.e_chat_inactive));
 		errors.put(Const.E_NOT_CHAT_MEMBER, cntx.getResources().getString(R.string.e_not_chat_member));
+		errors.put(Const.E_EMAIL_MISSING, cntx.getResources().getString(R.string.e_email_missing));
+		errors.put(Const.E_USERNAME_NOT_EXIST, cntx.getResources().getString(R.string.e_username_not_exist));
 		errors.put(Const.E_SOMETHING_WENT_WRONG, cntx.getResources().getString(R.string.e_something_went_wrong));
 
 		for (int i = 0; i < errors.size(); i++) {

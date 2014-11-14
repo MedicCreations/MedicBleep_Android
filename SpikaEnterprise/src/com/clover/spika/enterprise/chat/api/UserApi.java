@@ -299,4 +299,51 @@ public class UserApi {
 		}.execute();
 	}
     
+    
+    public void forgotPassword(final String username, final Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, true) {
+			@Override
+			protected BaseModel doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				postParams.put(Const.USERNAME, username);
+
+				try {
+					jsonObject = NetworkManagement
+							.httpPostRequest(Const.F_FORGOT_PASSWORD, postParams, null);
+				} catch (JsonSyntaxException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+			}
+
+			@Override
+			protected void onPostExecute(BaseModel baseModel) {
+				super.onPostExecute(baseModel);
+
+				if (listener != null) {
+					Result<BaseModel> result;
+
+					if (baseModel != null) {
+						if (baseModel.getCode() == Const.API_SUCCESS) {
+							result = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
+						} else {
+							result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						}
+					} else {
+						result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+    
 }

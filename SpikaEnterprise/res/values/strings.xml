@@ -86,6 +86,10 @@
     <string name="e_while_encrypting">Error while encrypting.</string>
     <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
     <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
+    
+    <!-- new errors -->
+    <string name="e_email_missing">Your email is missing</string>
+    <string name="e_username_not_exist">This username does not exist</string>
 
     <!-- Enterprise strings -->
     <string name="spika_big">SPIKA</string>
@@ -218,5 +222,7 @@
          <string name="requires_password">This chat requires password</string>
          <string name="old_password">Enter current password</string>
          <string name="new_password">Enter new password</string>
+         <string name="forgot_password">Forgot password?</string>
+         <string name="email_sent">You have got an email with temporary password, please login</string>
 
 </resources>

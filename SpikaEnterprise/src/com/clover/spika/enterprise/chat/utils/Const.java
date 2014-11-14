@@ -200,15 +200,23 @@ public class Const {
     public static final String F_GROUP_MEMBERS = "/groups/members";
     public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
     public static final String F_GET_DISTINC_USER = "/room/add/users";
+    public static final String F_FORGOT_PASSWORD = "/user/password/forgot";
+    public static final String F_CHANGE_PASSWORD = "/user/password/change";
 
 	public static final int API_SUCCESS = 2000;
-
+	
 	// Error constants
 	public static final int E_INVALID_TOKEN = 1000;
 	public static final int E_EXPIRED_TOKEN = 1001;
 	public static final int E_NOT_CHAT_MEMBER = 1005;
 	public static final int E_CHAT_INACTIVE = 1006;
 	public static final int E_CHAT_DELETED = 1007;
+	public static final int E_PAGE_NOT_FOUND = 1008;
+	public static final int E_NOT_GROUP_ADMIN = 1009;
+	public static final int E_EMAIL_MISSING = 1010;
+	public static final int E_TEMP_PASSWORD_NOT_VALID = 1011;
+	public static final int E_LOGIN_WITH_TEMP_PASS = 1012;
+	public static final int E_USERNAME_NOT_EXIST = 1013;
 	public static final int E_SOMETHING_WENT_WRONG = 1111;
 	public static final int E_FAILED = 999;
 

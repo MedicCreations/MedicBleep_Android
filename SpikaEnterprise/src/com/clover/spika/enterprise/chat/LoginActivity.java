@@ -4,15 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +31,7 @@ public class LoginActivity extends LoginBaseActivity {
 	private EditText password;
 	private CheckBox rememberMeCheckBox;
 	Bundle extras;
+	private RobotoRegularTextView tvForgotPassword;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +42,16 @@ public class LoginActivity extends LoginBaseActivity {
 
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
+		tvForgotPassword = (RobotoRegularTextView) findViewById(R.id.tvForgotPassword);
+		tvForgotPassword.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+				startActivity(intent);
+				
+			}
+		});
 		rememberMeCheckBox = (CheckBox) findViewById(R.id.checkBoxRememberLogin);
 		rememberMeCheckBox.setChecked(SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS));
 		rememberMeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -106,4 +125,5 @@ public class LoginActivity extends LoginBaseActivity {
 
 		}
 	}
+	
 }
