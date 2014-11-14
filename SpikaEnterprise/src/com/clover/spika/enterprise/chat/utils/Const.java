@@ -34,7 +34,7 @@ public class Const {
 
 	// Change this in production to false
 	public static final boolean IS_DEBUG = true;
-	
+
 	public static final boolean DEBUG_CRYPTO = false;
 
 	// Logger const values
@@ -70,8 +70,8 @@ public class Const {
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds
 	public static final long MAX_RECORDING_TIME_VOICE = 180000; // milliseconds
 
-    // File upload constant
-    public static final long MAX_FILE_SIZE = 8 * 1024 * 1024;
+	// File upload constant
+	public static final long MAX_FILE_SIZE = 8 * 1024 * 1024;
 
 	// custom params key
 	public static final String TOKEN = "token";
@@ -114,6 +114,7 @@ public class Const {
 	public static final String PLATFORM = "platform";
 	public static final String GET_DETAIL_VALUES = "get_detail_values";
 	public static final String DETAILS = "details";
+	public static final String NEW_PASSWORD = "new_password";
 	public static final String IS_PRIVATE = "is_private";
 	public static final String PUSH_CHAT_PASSWORD = "chat_password";
 
@@ -137,14 +138,14 @@ public class Const {
 	public static final String CATEGORY_ID = "category_id";
 	public static final String CATEGORY_NAME = "category_name";
 	public static final String URL = "url";
-	
+
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;
 	public static final int MSG_TYPE_VIDEO = 3;
 	public static final int MSG_TYPE_LOCATION = 4;
 	public static final int MSG_TYPE_VOICE = 5;
 	public static final int MSG_TYPE_FILE = 6;
-    public static final int MSG_TYPE_DELETED = 7;
+	public static final int MSG_TYPE_DELETED = 7;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;
@@ -163,13 +164,12 @@ public class Const {
 	public static final int C_ROOM = 3;
 	public static final int C_ROOM_ADMIN_ACTIVE = 4;
 	public static final int C_ROOM_ADMIN_INACTIVE = 5;
-	
-	//update chat type
+
+	// update chat type
 	public static final int UPDATE_CHAT_EDIT = 1;
 	public static final int UPDATE_CHAT_DEACTIVATE = 2;
 	public static final int UPDATE_CHAT_DELETE = 3;
 	public static final int UPDATE_CHAT_ACTIVATE = 4;
-	
 
 	// Api urls
 	public static final String F_LOGIN = "/user/login";
@@ -186,20 +186,21 @@ public class Const {
 	public static final String F_SEND_MESSAGE = "/message/send";
 	public static final String F_USER_UPLOAD_FILE = "/file/upload";
 	public static final String F_UPDATE_USER = "/user/update";
+	public static final String F_UPDATE_USER_PASSWORD = "/user/password/change";
 	public static final String F_UPDATE_PUSH_TOKEN = "/user/pushtoken/android/update";
 	public static final String F_LOGOUT_API = "/user/logout";
 	public static final String F_USER_GET_LOBBY = "/lobby/list";
-    public static final String F_DELETE_MESSAGE = "/message/delete";
+	public static final String F_DELETE_MESSAGE = "/message/delete";
 	public static final String F_GET_THREADS = "/message/child/list";
 	public static final String F_CREATE_ROOM = "/room/create";
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
-    public static final String F_USER_PROFILE = "/user/profile";
-    public static final String F_USER_GET_ROOMS = "/room/list";
-    public static final String F_USER_INFORMATION = "/user/information";
-    public static final String F_GROUP_MEMBERS = "/groups/members";
-    public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
-    public static final String F_GET_DISTINC_USER = "/room/add/users";
+	public static final String F_USER_PROFILE = "/user/profile";
+	public static final String F_USER_GET_ROOMS = "/room/list";
+	public static final String F_USER_INFORMATION = "/user/information";
+	public static final String F_GROUP_MEMBERS = "/groups/members";
+	public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
+	public static final String F_GET_DISTINC_USER = "/room/add/users";
 
 	public static final int API_SUCCESS = 2000;
 
@@ -212,9 +213,9 @@ public class Const {
 	public static final int E_SOMETHING_WENT_WRONG = 1111;
 	public static final int E_FAILED = 999;
 
-    // extras
-    public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
-    public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
+	// extras
+	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
+	public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
 
 	// Get an UUID for this phone
 	public static String getUUID(Context cntx) {
@@ -228,10 +229,10 @@ public class Const {
 		builder.append(S_PASSWORD);
 		return builder.toString().toCharArray();
 	}
-	
+
 	public static final String UPDATE_PICTURE = "update_picture";
 	public static final String DEFAULT_IMAGE_USER = "default_user_image";
 	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
 	public static final String FROM_CHAT = "from_chat";
-	
+
 }

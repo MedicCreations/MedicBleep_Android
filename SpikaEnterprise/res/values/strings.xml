@@ -91,8 +91,12 @@
     <string name="spika_big">SPIKA</string>
     <string name="spika_enterprise">Enterprise Messaging</string>
     <string name="username">Username</string>
+    <string name="new_password">Enter a new password</string>
+    <string name="change_password_title">Change password</string>
+    <string name="re_type_password">Re-type a new password</string>
     <string name="password">Password</string>
     <string name="login_big">LOGIN</string>
+    <string name="confirm_big">CONFIRM</string>
     <string name="hi">Hi!</string>
     <string name="john_doe">Vasilije Dimitrijev</string>
     <string name="profile">Profile</string>
@@ -136,35 +140,31 @@
     <string name="enter_your_passcode">Enter your passcode</string>
     <string name="re_enter_your_passcode">Re-enter your passcode</string>
 
-    
     <string-array name="group_chat_settings_array">
         <item>Show profile</item>
     </string-array>
-    
     <string-array name="private_chat_settings_array">
         <item>Show profile</item>
         <item>Invite</item>
     </string-array>
-    
     <string-array name="room_chat_settings_array">
         <item>Show profile</item>
         <item>Invite</item>
         <item>Leave room</item>
     </string-array>
-    
     <string-array name="room_chat_admin_active_settings_array">
         <item>Show profile</item>
         <item>Manage members</item>
         <item>Deactivate</item>
         <item>Delete</item>
     </string-array>
-    
     <string-array name="room_chat_admin_inactive_settings_array">
         <item>Show profile</item>
         <item>Manage members</item>
         <item>Activate</item>
         <item>Delete</item>
     </string-array>
+
     <string name="selected_users">"Selected: "</string>
     <string name="you_didn_t_select_any_users">You didn\'t select any users</string>
     <string name="all">All</string>
@@ -200,23 +200,26 @@
         <item>Interests</item>
         <item>Web site</item>
     </string-array>
-        <string name="select_category">Select category</string>
-        <string name="choose_category">Choose category</string>
-        <string name="none">None</string>
-        <string name="information">Information</string>
-        <string name="next">Next</string>
-        
-        <!-- NEW STRINGS -->
-         <string name="yes">Yes</string>
-         <string name="no">No</string>
-         <string name="are_you_sure_">Are you sure?</string>
-         <string name="edit">Edit</string> 
-         <string name="private_room">Private Room</string>
-         <string name="password_repeat">Repeat password</string>
-         <string name="room_name_empty">Room name is empty</string>
-         <string name="password_error">Wrong password</string>
-         <string name="requires_password">This chat requires password</string>
-         <string name="old_password">Enter current password</string>
-         <string name="new_password">Enter new password</string>
+
+    <string name="select_category">Select category</string>
+    <string name="choose_category">Choose category</string>
+    <string name="none">None</string>
+    <string name="information">Information</string>
+    <string name="next">Next</string>
+
+    <!-- NEW STRINGS -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_">Are you sure?</string>
+    <string name="edit">Edit</string>
+    <string name="private_room">Private Room</string>
+    <string name="password_repeat">Repeat password</string>
+    <string name="room_name_empty">Room name is empty</string>
+    <string name="password_error">Wrong password</string>
+    <string name="requires_password">This chat requires password</string>
+    <string name="old_password">Enter current password</string>
+    <string name="login_empty_username">Username should not be empty</string>
+    <string name="login_empty_password">Password should not be empty</string>
+    <string name="new_passwords_not_identical">Passwords are not identical.</string>
 
 </resources>
