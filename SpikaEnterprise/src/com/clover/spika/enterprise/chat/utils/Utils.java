@@ -46,6 +46,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Random;
 
@@ -79,7 +82,8 @@ public class Utils {
 				return out.getAbsolutePath();
 			}
 		} catch (Exception e) {
-			if(Const.DEBUG_CRYPTO) e.printStackTrace();
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
 			return null;
 		}
 
@@ -107,7 +111,8 @@ public class Utils {
 				return out.getAbsolutePath();
 			}
 		} catch (Exception e) {
-			if(Const.DEBUG_CRYPTO) e.printStackTrace();
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
 			return null;
 		}
 
@@ -213,7 +218,8 @@ public class Utils {
 			// content=JNAesCrypto.encryptJNChunk(bitmap);
 
 		} catch (Exception e) {
-			if(Const.DEBUG_CRYPTO) e.printStackTrace();
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
 		}
 		byte[] data = content.getBytes();
 		try {
@@ -250,7 +256,8 @@ public class Utils {
 				content = JNAesCrypto.encryptJN(dataInput);
 
 			} catch (Exception e) {
-				if(Const.DEBUG_CRYPTO) e.printStackTrace();
+				if (Const.DEBUG_CRYPTO)
+					e.printStackTrace();
 			}
 		} else {
 			content = dataInput;
@@ -289,7 +296,8 @@ public class Utils {
 			try {
 				content = JNAesCrypto.encryptJN(dataInput);
 			} catch (Exception e) {
-				if(Const.DEBUG_CRYPTO) e.printStackTrace();
+				if (Const.DEBUG_CRYPTO)
+					e.printStackTrace();
 			}
 		} else {
 			content = dataInput;
@@ -391,9 +399,9 @@ public class Utils {
 		return cacheDir;
 	}
 
-    public static File getTempFile(Context context, String name) {
-        return new File(getFileDir(context), TextUtils.isEmpty(name) ? "temp.spika" : name);
-    }
+	public static File getTempFile(Context context, String name) {
+		return new File(getFileDir(context), TextUtils.isEmpty(name) ? "temp.spika" : name);
+	}
 
 	public static void logHeap(String step) {
 		DecimalFormat df = new DecimalFormat();
@@ -408,16 +416,19 @@ public class Utils {
 		Log.d("MEMORY_HANDLING", "debug. =================================END");
 	}
 
-	public static String convertByteArrayToHexString(byte[] arrayBytes) {
-		
-		if (arrayBytes==null){
+	public static String getHexString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+
+		byte[] arrayBytes = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
+
+		if (arrayBytes == null) {
 			return null;
 		}
-		
+
 		StringBuffer stringBuffer = new StringBuffer();
 		for (int i = 0; i < arrayBytes.length; i++) {
 			stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16).substring(1));
 		}
+
 		return stringBuffer.toString();
 	}
 }

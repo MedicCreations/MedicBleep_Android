@@ -1,7 +1,6 @@
 package com.clover.spika.enterprise.chat;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
@@ -43,7 +42,7 @@ public class CreateRoomActivity extends BaseActivity {
 	/* create room */
 	TextView createRoomBtn;
 	TextView nextStepRoomBtn;
-	
+
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	OnSearchListener mSearchListener;
@@ -55,37 +54,35 @@ public class CreateRoomActivity extends BaseActivity {
 
 	/* Fragment currently in use */
 	TextView screenTitle;
-	
+
 	private String roomName = "";
 	private String room_file_id = "";
 	private String room_thumb_id = "";
 	private String categoryId = "0";
 	private String roomIsPrivate = "0";
 	private String roomPassword = "";
-	
+
 	private boolean isConfirmActive = false;
-	
-	public static void start(String categoryId, String categoryName, Context c){
-		c.startActivity(new Intent(c, CreateRoomActivity.class)
-					.putExtra(Const.CATEGORY_NAME, categoryName)
-					.putExtra(Const.CATEGORY_ID, categoryId));
+
+	public static void start(String categoryId, String categoryName, Context c) {
+		c.startActivity(new Intent(c, CreateRoomActivity.class).putExtra(Const.CATEGORY_NAME, categoryName).putExtra(Const.CATEGORY_ID, categoryId));
 	}
-	
-	public static void start(Context c){
+
+	public static void start(Context c) {
 		start("0", "", c);
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.activity_create_room);
-		
+
 		String mcategoryId = getIntent().getStringExtra(Const.CATEGORY_ID);
 		String categoryName = getIntent().getStringExtra(Const.CATEGORY_NAME);
-		if(TextUtils.isEmpty(categoryName)){
+		if (TextUtils.isEmpty(categoryName)) {
 			categoryName = getString(R.string.select_category);
 		}
-		
+
 		CreateRoomFragment fragment = new CreateRoomFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString(Const.CATEGORY_ID, mcategoryId);
@@ -94,7 +91,7 @@ public class CreateRoomActivity extends BaseActivity {
 		getSupportFragmentManager().beginTransaction().add(R.id.mainContent, fragment, CreateRoomFragment.class.getSimpleName()).commit();
 
 		findViewById(R.id.goBack).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				onBackPressed();
@@ -119,31 +116,27 @@ public class CreateRoomActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, 
-						searchEt, screenTitle, screenWidth, speedSearchAnimation);
+				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			}
 		});
 	}
-	
-	public void setConfirmScreen(String users_to_add, String group_to_add, String is_private, String password){
-		
+
+	public void setConfirmScreen(String users_to_add, String group_to_add, String is_private, String password) {
+
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
-		
+
 		roomIsPrivate = is_private;
-		
-		byte[] digest = null;
+
 		try {
-			digest = MessageDigest.getInstance("MD5").digest(password.getBytes("UTF-8"));
+			String hashPassword = Utils.getHexString(password);
+			roomPassword = hashPassword;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-        String hashPassword = Utils.convertByteArrayToHexString(digest);
-		
-		roomPassword = hashPassword;
-		
+
 		ConfirmRoomFragment fragment = new ConfirmRoomFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString(Const.USER_IDS, users_to_add);
@@ -155,11 +148,11 @@ public class CreateRoomActivity extends BaseActivity {
 
 		isConfirmActive = true;
 	}
-	
-	public void setCategoryId(String categoryId){
+
+	public void setCategoryId(String categoryId) {
 		this.categoryId = categoryId;
 	}
-	
+
 	public void setRoomName(String roomName) {
 		this.roomName = roomName;
 	}
@@ -172,19 +165,18 @@ public class CreateRoomActivity extends BaseActivity {
 		this.room_thumb_id = room_thumb_id;
 	}
 
-	public void createRoomFinaly(String userIds){
-		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword,
-				this, new ApiCallback<Chat>() {
+	public void createRoomFinaly(String userIds) {
+		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
-					
+
 					String chat_name = result.getResultData().getChat().getChat_name();
 					String chat_id = result.getResultData().getChat().getChat_id();
 					String chat_image = room_file_id;
 					String chat_image_thumb = room_thumb_id;
-					
+
 					Intent intent = new Intent(CreateRoomActivity.this, ChatActivity.class);
 					intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
 					intent.putExtra(Const.CHAT_ID, chat_id);
@@ -192,12 +184,12 @@ public class CreateRoomActivity extends BaseActivity {
 					intent.putExtra(Const.IMAGE, chat_image);
 					intent.putExtra(Const.IMAGE_THUMB, chat_image_thumb);
 					intent.putExtra(Const.IS_ACTIVE, 1);
-					
+
 					startActivity(intent);
-					
+
 					Helper.setRoomFileId(CreateRoomActivity.this, "");
 					Helper.setRoomThumbId(CreateRoomActivity.this, "");
-					
+
 					finish();
 				}
 			}
@@ -219,44 +211,42 @@ public class CreateRoomActivity extends BaseActivity {
 	 * 
 	 * @param listener
 	 */
-	public void setSearch(OnSearchListener listener){
+	public void setSearch(OnSearchListener listener) {
 		mSearchListener = listener;
 		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 	}
-	
-	public void disableSearch(){
-		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), 
-				closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation);
+
+	public void disableSearch() {
+		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation);
 	}
-	
+
 	/**
 	 * set create room btn
 	 */
-	public void setNext(OnNextStepRoomListener listener){
-		
+	public void setNext(OnNextStepRoomListener listener) {
+
 		nextStepRoomBtn.setVisibility(View.VISIBLE);
 		mNextStepListener = listener;
-		
+
 		nextStepRoomBtn.setOnClickListener(nextStepOnClickListener);
-		
+
 	}
-	
-	public void setCreateRoom(OnCreateRoomListener listener){
-		
+
+	public void setCreateRoom(OnCreateRoomListener listener) {
+
 		createRoomBtn.setVisibility(View.VISIBLE);
 		mCreateRoomListener = listener;
-		
+
 		createRoomBtn.setOnClickListener(createRoomOnClickListener);
-		
+
 	}
-	
+
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), 
-						closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
+				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -284,32 +274,31 @@ public class CreateRoomActivity extends BaseActivity {
 
 		@Override
 		public void onClick(View v) {
-			
-				if (mCreateRoomListener != null) {
-					
-					mCreateRoomListener.onCreateRoom();
-				
+
+			if (mCreateRoomListener != null) {
+
+				mCreateRoomListener.onCreateRoom();
+
 			}
 		}
 	};
-	
+
 	private OnClickListener nextStepOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			
-				if (mNextStepListener != null) {
-					
-					mNextStepListener.onNext();
-				
+
+			if (mNextStepListener != null) {
+
+				mNextStepListener.onNext();
+
 			}
 		}
 	};
-	
 
 	@Override
 	public void onBackPressed() {
-		if(isConfirmActive){
+		if (isConfirmActive) {
 			Fragment fragment = getSupportFragmentManager().findFragmentByTag(ConfirmRoomFragment.class.getSimpleName());
 			getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 			createRoomBtn.setVisibility(View.INVISIBLE);
@@ -318,12 +307,11 @@ public class CreateRoomActivity extends BaseActivity {
 			return;
 		}
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), 
-					closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
+			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			return;
 		}
 
 		finish();
 	}
-	
+
 }

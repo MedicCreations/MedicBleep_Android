@@ -1,32 +1,39 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ChangePasswordActivity extends BaseActivity {
 
-	Button goBack;
+	ImageButton goBack;
 
 	EditText newPassword;
 	EditText confirmNewPassword;
 	Button confirmBtn;
+
+	String tempPassword;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_password);
 
-		goBack = (Button) findViewById(R.id.goBack);
+		tempPassword = getIntent().getExtras().getString(Const.TEMP_PASSWORD);
+
+		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -71,13 +78,13 @@ public class ChangePasswordActivity extends BaseActivity {
 			return;
 		}
 
-		new UserApi().updateUserPassword(password, this, new ApiCallback<BaseModel>() {
+		new UserApi().updateUserPassword(tempPassword, password, this, new ApiCallback<Login>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
+			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {
-					AppDialog dialog = new AppDialog(ChangePasswordActivity.this, true);
-					dialog.setSucceed();
+					startActivity(new Intent(ChangePasswordActivity.this, MainActivity.class));
+					finish();
 				} else {
 					AppDialog dialog = new AppDialog(ChangePasswordActivity.this, false);
 					dialog.setFailed(result.getResultData().getCode());

@@ -115,6 +115,7 @@ public class Const {
 	public static final String GET_DETAIL_VALUES = "get_detail_values";
 	public static final String DETAILS = "details";
 	public static final String NEW_PASSWORD = "new_password";
+	public static final String TEMP_PASSWORD = "temp_password";
 	public static final String IS_PRIVATE = "is_private";
 	public static final String PUSH_CHAT_PASSWORD = "chat_password";
 
@@ -195,18 +196,17 @@ public class Const {
 	public static final String F_CREATE_ROOM = "/room/create";
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
-    public static final String F_USER_PROFILE = "/user/profile";
-    public static final String F_USER_GET_ROOMS = "/room/list";
-    public static final String F_USER_INFORMATION = "/user/information";
-    public static final String F_GROUP_MEMBERS = "/groups/members";
-    public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
-    public static final String F_GET_DISTINC_USER = "/room/add/users";
-    public static final String F_FORGOT_PASSWORD = "/user/password/forgot";
-    public static final String F_CHANGE_PASSWORD = "/user/password/change";
-
+	public static final String F_USER_PROFILE = "/user/profile";
+	public static final String F_USER_GET_ROOMS = "/room/list";
+	public static final String F_USER_INFORMATION = "/user/information";
+	public static final String F_GROUP_MEMBERS = "/groups/members";
+	public static final String F_USERS_AND_GROUPS_FOR_ROOMS = "/room/search/all";
+	public static final String F_GET_DISTINC_USER = "/room/add/users";
+	public static final String F_FORGOT_PASSWORD = "/user/password/forgot";
+	public static final String F_CHANGE_PASSWORD = "/user/password/change";
 
 	public static final int API_SUCCESS = 2000;
-	
+
 	// Error constants
 	public static final int E_INVALID_TOKEN = 1000;
 	public static final int E_EXPIRED_TOKEN = 1001;

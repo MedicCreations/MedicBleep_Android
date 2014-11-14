@@ -5,8 +5,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
+import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -22,22 +22,20 @@ import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public abstract class LoginBaseActivity extends Activity {
 
-	protected void executeLoginApi(String user, String pass, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        byte[] digest = MessageDigest.getInstance("MD5").digest(pass.getBytes("UTF-8"));
-        String hashPassword = Utils.convertByteArrayToHexString(digest);
+	protected void executeLoginApi(String user, final String pass, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+		String hashPassword = Utils.getHexString(pass);
 
 		new LoginApi().loginWithCredentials(user, hashPassword, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
 				if (result.isSuccess()) {
-					
+
 					Logger.d("Success");
-					
+
 					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(),
 							result.getResultData().getLastname());
 
@@ -52,32 +50,39 @@ public abstract class LoginBaseActivity extends Activity {
 					startActivity(intent);
 					finish();
 				} else {
-					
-					Logger.d("Not Success");
-                    String message = "";
-                    if (result.hasResultData()) {
-                    	if (result.getResultData().getCode() == Const.E_INVALID_TOKEN){
-                    		Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                    	} else {
-                    		message = result.getResultData().getMessage();
-                    	}
-                    } else {
-                        message = getString(R.string.e_something_went_wrong);
-                    }
-                    AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
-                    dialog.setFailed(message);
-                    dialog.setOnDismissListener(new OnDismissListener() {
 
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
-                        }
-                    });
-                }
+					Logger.d("Not Success");
+					String message = "";
+					if (result.hasResultData()) {
+						if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
+							Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
+							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							startActivity(intent);
+						} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+							Intent intent = new Intent(LoginBaseActivity.this, ChangePasswordActivity.class);
+							intent.putExtra(Const.TEMP_PASSWORD, pass);
+							startActivity(intent);
+							finish();
+							return;
+						} else {
+							message = result.getResultData().getMessage();
+						}
+					} else {
+						message = getString(R.string.e_something_went_wrong);
+					}
+
+					AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
+					dialog.setFailed(message);
+					dialog.setOnDismissListener(new OnDismissListener() {
+
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
+							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							startActivity(intent);
+						}
+					});
+				}
 			}
 		});
 	}

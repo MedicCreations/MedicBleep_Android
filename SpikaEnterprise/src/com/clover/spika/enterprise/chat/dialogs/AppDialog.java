@@ -1,7 +1,6 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
@@ -29,8 +28,8 @@ public class AppDialog extends Dialog {
 	boolean isFinish = false;
 	boolean checked = false;
 
-    private OnPositiveButtonClickListener mOnPositiveButtonClick;
-    private OnNegativeButtonCLickListener mOnNegativeButtonClick;
+	private OnPositiveButtonClickListener mOnPositiveButtonClick;
+	private OnNegativeButtonCLickListener mOnNegativeButtonClick;
 
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
@@ -39,15 +38,15 @@ public class AppDialog extends Dialog {
 		this.isFinish = isFinish;
 	}
 
-    public void setOnPositiveButtonClick(OnPositiveButtonClickListener mOnPositiveButtonClick) {
-        this.mOnPositiveButtonClick = mOnPositiveButtonClick;
-    }
+	public void setOnPositiveButtonClick(OnPositiveButtonClickListener mOnPositiveButtonClick) {
+		this.mOnPositiveButtonClick = mOnPositiveButtonClick;
+	}
 
-    public void setOnNegativeButtonClick(OnNegativeButtonCLickListener mOnNegativeButtonClick) {
-        this.mOnNegativeButtonClick = mOnNegativeButtonClick;
-    }
+	public void setOnNegativeButtonClick(OnNegativeButtonCLickListener mOnNegativeButtonClick) {
+		this.mOnNegativeButtonClick = mOnNegativeButtonClick;
+	}
 
-    /**
+	/**
 	 * Show info dialog
 	 * 
 	 * @param message
@@ -73,112 +72,109 @@ public class AppDialog extends Dialog {
 
 		show();
 	}
-	
-	
+
 	public void setPasswordInput(String message, String yesText, String noText, final String password) {
 		this.setContentView(R.layout.dialog_input_password);
 
 		final TextView infoText = (TextView) findViewById(R.id.infoText);
 		infoText.setText(message);
-		
+
 		final RobotoThinEditText etPassword = (RobotoThinEditText) findViewById(R.id.etDialogPassword);
-		
+
 		TextView yesTextView = (TextView) findViewById(R.id.text_yes);
-        yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
+		yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
 
-        View btnYes = findViewById(R.id.layout_yes);
-        btnYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            	
-                if (password!=null){
-                	String enteredPassword = etPassword.getText().toString();
-                	
-                	byte[] digest = null;
-    				try {
-    					digest = MessageDigest.getInstance("MD5").digest(enteredPassword.getBytes("UTF-8"));
-    				} catch (NoSuchAlgorithmException e) {
-    					e.printStackTrace();
-    				} catch (UnsupportedEncodingException e) {
-    					e.printStackTrace();
-    				}
-                    String hashPassword = Utils.convertByteArrayToHexString(digest);
-                    
-                    if (hashPassword.equals(password)){
-                		if (mOnPositiveButtonClick != null) {
-                            mOnPositiveButtonClick.onPositiveButtonClick(v);
-                        }
-                	} else {
-                		infoText.setText(getOwnerActivity().getString(R.string.password_error));
-                		etPassword.setText("");
-                	}
-                } else {
-                    if (mOnPositiveButtonClick != null) {
-                        mOnPositiveButtonClick.onPositiveButtonClick(v);
-                    }
-                    dismiss();
-                }
-            }
-        });
+		View btnYes = findViewById(R.id.layout_yes);
+		btnYes.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
 
-        TextView noTextView = (TextView) findViewById(R.id.text_no);
-        noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
+				if (password != null) {
+					String enteredPassword = etPassword.getText().toString();
 
-        View btnNo = findViewById(R.id.layout_no);
-        btnNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnNegativeButtonClick != null) {
-                    mOnNegativeButtonClick.onNegativeButtonClick(v);
-                }
-                dismiss();
-            }
-        });
+					String hashPassword = null;
+					try {
+						hashPassword = Utils.getHexString(enteredPassword);
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+
+					if (!TextUtils.isEmpty(hashPassword) && hashPassword.equals(password)) {
+						if (mOnPositiveButtonClick != null) {
+							mOnPositiveButtonClick.onPositiveButtonClick(v);
+						}
+					} else {
+						infoText.setText(getOwnerActivity().getString(R.string.password_error));
+						etPassword.setText("");
+					}
+				} else {
+					if (mOnPositiveButtonClick != null) {
+						mOnPositiveButtonClick.onPositiveButtonClick(v);
+					}
+					dismiss();
+				}
+			}
+		});
+
+		TextView noTextView = (TextView) findViewById(R.id.text_no);
+		noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
+
+		View btnNo = findViewById(R.id.layout_no);
+		btnNo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mOnNegativeButtonClick != null) {
+					mOnNegativeButtonClick.onNegativeButtonClick(v);
+				}
+				dismiss();
+			}
+		});
 
 		show();
 	}
-	
 
-    public void setYesNo(String message) {
-        setYesNo(message, null, null);
-    }
+	public void setYesNo(String message) {
+		setYesNo(message, null, null);
+	}
 
-    public void setYesNo(String message, String yesText, String noText) {
-        this.setContentView(R.layout.dialog_confirmation);
+	public void setYesNo(String message, String yesText, String noText) {
+		this.setContentView(R.layout.dialog_confirmation);
 
-        TextView yesTextView = (TextView) findViewById(R.id.text_yes);
-        yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
+		TextView yesTextView = (TextView) findViewById(R.id.text_yes);
+		yesTextView.setText(TextUtils.isEmpty(yesText) ? getOwnerActivity().getString(android.R.string.yes) : yesText);
 
-        View btnYes = findViewById(R.id.layout_yes);
-        btnYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnPositiveButtonClick != null) {
-                    mOnPositiveButtonClick.onPositiveButtonClick(v);
-                }
-                dismiss();
-            }
-        });
+		View btnYes = findViewById(R.id.layout_yes);
+		btnYes.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mOnPositiveButtonClick != null) {
+					mOnPositiveButtonClick.onPositiveButtonClick(v);
+				}
+				dismiss();
+			}
+		});
 
-        TextView noTextView = (TextView) findViewById(R.id.text_no);
-        noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
+		TextView noTextView = (TextView) findViewById(R.id.text_no);
+		noTextView.setText(TextUtils.isEmpty(noText) ? getOwnerActivity().getString(android.R.string.no) : noText);
 
-        View btnNo = findViewById(R.id.layout_no);
-        btnNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnNegativeButtonClick != null) {
-                    mOnNegativeButtonClick.onNegativeButtonClick(v);
-                }
-                dismiss();
-            }
-        });
+		View btnNo = findViewById(R.id.layout_no);
+		btnNo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mOnNegativeButtonClick != null) {
+					mOnNegativeButtonClick.onNegativeButtonClick(v);
+				}
+				dismiss();
+			}
+		});
 
-        TextView infoText = (TextView) findViewById(R.id.infoText);
-        infoText.setText(message);
+		TextView infoText = (TextView) findViewById(R.id.infoText);
+		infoText.setText(message);
 
-        show();
-    }
+		show();
+	}
 
 	/**
 	 * Show succeeded dialog
@@ -189,15 +185,38 @@ public class AppDialog extends Dialog {
 		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                dismiss();
+			@Override
+			public void onClick(View v) {
+				dismiss();
 
-                if (isFinish) {
-                    getOwnerActivity().finish();
-                }
-            }
-        });
+				if (isFinish) {
+					getOwnerActivity().finish();
+				}
+			}
+		});
+
+		show();
+	}
+
+	/**
+	 * Show succeeded dialog
+	 */
+	public void setSucceed(final Intent intent) {
+		this.setContentView(R.layout.dialog_succeed);
+
+		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
+		btnOk.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dismiss();
+
+				if (isFinish) {
+					getOwnerActivity().startActivity(intent);
+					getOwnerActivity().finish();
+				}
+			}
+		});
 
 		show();
 	}
@@ -216,20 +235,20 @@ public class AppDialog extends Dialog {
 		LinearLayout btnOk = (LinearLayout) findViewById(R.id.btnOk);
 		btnOk.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                dismiss();
+			@Override
+			public void onClick(View v) {
+				dismiss();
 
-                if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
-                    Intent intent = new Intent(getContext(), LoginActivity.class);
-                    getOwnerActivity().startActivity(intent);
-                    getOwnerActivity().finish();
+				if (errorCode == Const.E_INVALID_TOKEN || errorCode == Const.E_EXPIRED_TOKEN) {
+					Intent intent = new Intent(getContext(), LoginActivity.class);
+					getOwnerActivity().startActivity(intent);
+					getOwnerActivity().finish();
 
-                } else if (isFinish) {
-                    getOwnerActivity().finish();
-                }
-            }
-        });
+				} else if (isFinish) {
+					getOwnerActivity().finish();
+				}
+			}
+		});
 
 		show();
 	}
@@ -272,18 +291,18 @@ public class AppDialog extends Dialog {
 
 		camera.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                dismiss();
+			@Override
+			public void onClick(View v) {
+				dismiss();
 
-                Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
-                recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
-                recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
-                recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
-                recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
-                getContext().startActivity(recordVideoIntent);
-            }
-        });
+				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
+				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.VIDEO_INTENT_INT);
+				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
+				recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
+				recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
+				getContext().startActivity(recordVideoIntent);
+			}
+		});
 
 		gallery.setOnClickListener(new View.OnClickListener() {
 
@@ -294,8 +313,8 @@ public class AppDialog extends Dialog {
 				Intent recordVideoIntent = new Intent(getContext(), RecordVideoActivity.class);
 				recordVideoIntent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT_INT);
 				recordVideoIntent.putExtra(Const.CHAT_ID, chatId);
-                recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
-                recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
+				recordVideoIntent.putExtra(Const.EXTRA_ROOT_ID, rootId);
+				recordVideoIntent.putExtra(Const.EXTRA_MESSAGE_ID, messageId);
 				getContext().startActivity(recordVideoIntent);
 			}
 		});
@@ -340,8 +359,7 @@ public class AppDialog extends Dialog {
 
 		show();
 	}
-	
-	
+
 	/**
 	 * Go to recording screen from gallery or camera on create room
 	 */
@@ -360,7 +378,7 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
-				//getContext().startActivity(intent);
+				// getContext().startActivity(intent);
 				getOwnerActivity().startActivityForResult(intent, 1);
 			}
 		});
@@ -374,15 +392,15 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
-//				getContext().startActivity(intent);
-				Logger.d("activity "+ getOwnerActivity().getLocalClassName());
+				// getContext().startActivity(intent);
+				Logger.d("activity " + getOwnerActivity().getLocalClassName());
 				getOwnerActivity().startActivityForResult(intent, 1);
 			}
 		});
 
 		show();
 	}
-	
+
 	/**
 	 * Go to recording screen from gallery or camera on update room
 	 */
@@ -404,7 +422,7 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.CHAT_ID, chatId);
 				intent.putExtra(Const.CHAT_NAME, chatName);
 				intent.putExtra(Const.UPDATE_PICTURE, true);
-								
+
 				getContext().startActivity(intent);
 			}
 		});
@@ -421,7 +439,7 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.CHAT_ID, chatId);
 				intent.putExtra(Const.CHAT_NAME, chatName);
 				intent.putExtra(Const.UPDATE_PICTURE, true);
-								
+
 				getContext().startActivity(intent);
 			}
 		});
@@ -472,11 +490,12 @@ public class AppDialog extends Dialog {
 		super.onWindowFocusChanged(hasFocus);
 	}
 
-    public interface OnPositiveButtonClickListener {
-        void onPositiveButtonClick(View v);
-    }
-    public interface OnNegativeButtonCLickListener {
-        void onNegativeButtonClick(View v);
-    }
-    
+	public interface OnPositiveButtonClickListener {
+		void onPositiveButtonClick(View v);
+	}
+
+	public interface OnNegativeButtonCLickListener {
+		void onNegativeButtonClick(View v);
+	}
+
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -51,7 +50,6 @@ public class ChatActivity extends BaseChatActivity {
 
 		adapter = new MessagesAdapter(this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
-		// TODO: elegantnije riješiti click listener
 		chatListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -137,14 +135,14 @@ public class ChatActivity extends BaseChatActivity {
 				}
 				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 				chatPassword = intent.getExtras().getString(Const.PASSWORD);
-				
+
 				Logger.d("ovo je password: " + isPrivate);
-				
+
 				setTitle(chatName);
 
 				adapter.clearItems();
-				
-				if (!chatPassword.equals("")){
+
+				if (!chatPassword.equals("")) {
 					AppDialog dialog = new AppDialog(this, true);
 					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
 					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
@@ -155,27 +153,26 @@ public class ChatActivity extends BaseChatActivity {
 						}
 					});
 					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
-						
+
 						@Override
 						public void onNegativeButtonClick(View v) {
 							finish();
 						}
 					});
 					dialog.setOnCancelListener(new OnCancelListener() {
-						
+
 						@Override
 						public void onCancel(DialogInterface dialog) {
-							// TODO Auto-generated method stub
 							finish();
 						}
 					});
-//					dialog.setOnDismissListener(new OnDismissListener() {
-//						
-//						@Override
-//						public void onDismiss(DialogInterface dialog) {
-//							finish();
-//						}
-//					});
+					// dialog.setOnDismissListener(new OnDismissListener() {
+					//
+					// @Override
+					// public void onDismiss(DialogInterface dialog) {
+					// finish();
+					// }
+					// });
 				} else {
 					getMessages(true, true, true, false, false, false);
 				}
