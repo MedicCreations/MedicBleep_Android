@@ -37,7 +37,7 @@ public class LoginActivity extends LoginBaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		
+
 		extras = getIntent().getExtras();
 
 		username = (EditText) findViewById(R.id.username);
@@ -99,11 +99,11 @@ public class LoginActivity extends LoginBaseActivity {
 		password.setError(null);
 
 		if (TextUtils.isEmpty(username.getText().toString())) {
-			username.setError("Username should not be empty");
+			username.setError(getString(R.string.login_empty_username));
 			errorLock = true;
 		}
 		if (TextUtils.isEmpty(password.getText().toString())) {
-			password.setError("Password should not be empty");
+			password.setError(getString(R.string.login_empty_password));
 			errorLock = true;
 		}
 

@@ -346,4 +346,64 @@ public class UserApi {
 		}.execute();
 	}
     
+    
+    public void updateUserPassword(final String newPassword, final Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, true) {
+			@Override
+			protected BaseModel doInBackground(Void... params) {
+
+				JSONObject jsonObject = new JSONObject();
+
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				postParams.put(Const.NEW_PASSWORD, newPassword);
+
+				try {
+					jsonObject = NetworkManagement.httpPostRequest(
+							Const.F_UPDATE_USER_PASSWORD, postParams,
+							SpikaEnterpriseApp.getSharedPreferences(ctx)
+									.getCustomString(Const.TOKEN));
+				} catch (JsonSyntaxException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return new Gson().fromJson(jsonObject.toString(),
+						BaseModel.class);
+			}
+
+			@Override
+			protected void onPostExecute(BaseModel baseModel) {
+				super.onPostExecute(baseModel);
+
+				if (listener != null) {
+					Result<BaseModel> result;
+
+					if (baseModel != null) {
+						if (baseModel.getCode() == Const.API_SUCCESS) {
+							result = new Result<BaseModel>(
+									Result.ApiResponseState.SUCCESS);
+							SpikaEnterpriseApp.getSharedPreferences(
+									getContext()).setCustomString(
+									Const.PASSWORD, newPassword);
+						} else {
+							result = new Result<BaseModel>(
+									Result.ApiResponseState.FAILURE);
+							result.setResultData(baseModel);
+						}
+					} else {
+						result = new Result<BaseModel>(
+								Result.ApiResponseState.FAILURE);
+						baseModel = new BaseModel();
+						baseModel.setCode(Const.E_SOMETHING_WENT_WRONG);
+						result.setResultData(baseModel);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+		}.execute();
+	}
+    
 }
