@@ -48,6 +48,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	private boolean updateImage = false;
 	private String newImage = "";
 	private String newThumbImage = "";
+	private boolean isAdmin = false;
 
 	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
 
@@ -93,14 +94,21 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		});
 
-		findViewById(R.id.saveRoomProfile).setOnClickListener(new OnClickListener() {
+		RobotoRegularTextView tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
+		isAdmin = getIntent().getBooleanExtra(Const.IS_ADMIN, false);
+		if (isAdmin){
+			tvSaveRoom.setVisibility(View.VISIBLE);
+			tvSaveRoom.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				saveSettings();
-			}
-		});
-
+				@Override
+				public void onClick(View v) {
+					saveSettings();
+				}
+			});
+		} else {
+			tvSaveRoom.setVisibility(View.GONE);
+		}
+		
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
 
 		profileFragmentPagerAdapter = new ProfileFragmentPagerAdapter();
@@ -243,7 +251,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		RobotoRegularTextView tvPassword = (RobotoRegularTextView) findViewById(R.id.tvPassword);
 		String newPassword = tvPassword.getText().toString();
 
-		if (!TextUtils.isEmpty(newPassword)) {
+		if (!TextUtils.isEmpty(newPassword) && !newPassword.equals(getString(R.string.password))) {
 			try {
 				String hashPassword = Utils.getHexString(newPassword);
 				requestParams.put(Const.PASSWORD, hashPassword);
