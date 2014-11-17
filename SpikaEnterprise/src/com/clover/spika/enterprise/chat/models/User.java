@@ -46,6 +46,10 @@ public class User implements Serializable {
 	@SerializedName("is_member")
 	@Expose
 	private boolean isMember;
+	
+	@SerializedName("is_admin")
+	@Expose
+	private boolean isAdmin;
 
 	@SerializedName("details")
 	@Expose
@@ -133,6 +137,14 @@ public class User implements Serializable {
 
 	public void setIsMember(boolean isMember) {
 		this.isMember = isMember;
+	}
+	
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 
 	public List<Map<String, String>> getDetails() {
