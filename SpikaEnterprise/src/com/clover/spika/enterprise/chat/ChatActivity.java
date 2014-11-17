@@ -142,7 +142,7 @@ public class ChatActivity extends BaseChatActivity {
 
 				adapter.clearItems();
 
-				if (!chatPassword.equals("")) {
+				if (!TextUtils.isEmpty(chatPassword)) {
 					AppDialog dialog = new AppDialog(this, true);
 					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
 					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {

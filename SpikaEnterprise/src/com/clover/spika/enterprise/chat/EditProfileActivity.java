@@ -2,6 +2,10 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,13 +16,13 @@ import android.widget.ListView;
 import com.clover.spika.enterprise.chat.adapters.UserDetailsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 public class EditProfileActivity extends BaseActivity implements OnClickListener {
@@ -56,30 +60,14 @@ public class EditProfileActivity extends BaseActivity implements OnClickListener
 			finish();
 			break;
 		case R.id.saveProfile:
-			String details = "[";
-			List<UserDetail> list = adapter.getList();
 
-			for (int i = 0; i < list.size(); i++) {
-				UserDetail detail = list.get(i);
-				if (detail.getValue() != null) {
-					details += "{";
-					details += "\"" + detail.getKey() + "\":\"" + detail.getValue() + "\",\"public\":\"" + detail.isPublicValue() + "\"";
-					details += "},";
-				}
-
-			}
-			details = details.substring(0, details.length() - 1);
-			details += "]";
-			Logger.d("ovo je json: " + details);
-
-			new UserApi().updateUserDetails(details, this, new ApiCallback<BaseModel>() {
+			new UserApi().updateUserDetails(adapter.getList(), this, new ApiCallback<BaseModel>() {
 
 				@Override
 				public void onApiResponse(Result<BaseModel> result) {
 					finish();
 				}
 			});
-
 		default:
 			break;
 		}

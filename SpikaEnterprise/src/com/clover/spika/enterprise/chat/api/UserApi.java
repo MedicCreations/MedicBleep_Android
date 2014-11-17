@@ -2,7 +2,9 @@ package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +16,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Information;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -252,26 +255,46 @@ public class UserApi {
 		}.execute();
 	}
 
-	public void updateUserDetails(final String details, final Context ctx, final ApiCallback<BaseModel> listener) {
-		new BaseAsyncTask<Void, Void, BaseModel>(ctx, false) {
+	public void updateUserDetails(final List<UserDetail> list, final Context ctx, final ApiCallback<BaseModel> listener) {
+		new BaseAsyncTask<Void, Void, BaseModel>(ctx, true) {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
+				JSONArray detailsArray = new JSONArray();
+
+				for (UserDetail detail : list) {
+
+					if (detail.getValue() != null) {
+
+						try {
+							JSONObject object = new JSONObject();
+
+							object.put(detail.getKey(), detail.getValue());
+							object.put(Const.PUBLIC, detail.isPublicValue());
+
+							detailsArray.put(object);
+
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 
 				HashMap<String, String> postParams = new HashMap<String, String>();
-				postParams.put(Const.DETAILS, details);
+				postParams.put(Const.DETAILS, detailsArray.toString());
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams,
+							SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+
+					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+
+				return null;
 			}
 
 			@Override
@@ -286,9 +309,13 @@ public class UserApi {
 							result = new Result<BaseModel>(Result.ApiResponseState.SUCCESS);
 						} else {
 							result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+							result.setResultData(baseModel);
 						}
 					} else {
 						result = new Result<BaseModel>(Result.ApiResponseState.FAILURE);
+						baseModel = new BaseModel();
+						baseModel.setCode(Const.E_SOMETHING_WENT_WRONG);
+						result.setResultData(baseModel);
 					}
 
 					listener.onApiResponse(result);
@@ -360,7 +387,7 @@ public class UserApi {
 						jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams,
 								SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
 					} else {
-						
+
 						String hashTempPassword = Utils.getHexString(tempPassword);
 						postParams.put(Const.TEMP_PASSWORD, hashTempPassword);
 
