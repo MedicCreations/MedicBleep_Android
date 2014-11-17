@@ -68,13 +68,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
-		onClosed();
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -97,6 +90,15 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		progressBarDetails = (ProgressBar) rootView.findViewById(R.id.progressBarDetails);
 		progressBarDetails.setVisibility(View.VISIBLE);
 
+		return rootView;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		onClosed();
+		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+
 		new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
 			@Override
 			public void onApiResponse(Result<UserWrapper> result) {
@@ -107,7 +109,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
 
-					if (ProfileFragment.this != null) {
+					if (ProfileFragment.this != null && getActivity() != null) {
 						((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
 					}
 				} else {
@@ -115,8 +117,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 				}
 			}
 		});
-
-		return rootView;
 	}
 
 	@Override

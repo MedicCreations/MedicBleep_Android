@@ -19,22 +19,21 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/etDialogPassword"
             android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:gravity="center"
             android:textColor="@color/green"
             android:textSize="20sp"
-            android:textStyle="bold"
-            tools:text="Stating the obvious" />
+            android:textStyle="bold" />
 
         <com.clover.spika.enterprise.chat.views.RobotoThinEditText
             android:id="@+id/etDialogPassword"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/controlLayout"
             android:layout_centerInParent="true"
+            android:layout_margin="10dp"
             android:gravity="center"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:textColor="@color/black" />
 
         <LinearLayout
@@ -61,9 +60,9 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
+                    android:text="@android:string/cancel"
                     android:textColor="@color/text_blue"
-                    android:textSize="18sp"
-                    tools:text="@android:string/no" />
+                    android:textSize="18sp" />
 
                 <View
                     android:layout_width="0dp"
@@ -88,9 +87,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:text="@android:string/ok"
                     android:textColor="@color/text_blue"
-                    android:textSize="18sp"
-                    tools:text="@android:string/yes" />
+                    android:textSize="18sp" />
 
                 <View
                     android:layout_width="0dp"

@@ -7,4 +7,7 @@ public class CustomFragment extends Fragment {
 	public void onClosed() {
 	}
 
+	public void handlePushNotificationInFragment(String chatId) {
+	}
+
 }

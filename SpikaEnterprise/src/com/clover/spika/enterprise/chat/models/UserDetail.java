@@ -36,6 +36,8 @@ public class UserDetail implements Serializable {
 	@Expose
 	private boolean public_value;
 
+	private int position;
+
 	public int getId() {
 		return id;
 	}
@@ -82,6 +84,14 @@ public class UserDetail implements Serializable {
 
 	public void setPublicValue(boolean publicValue) {
 		this.public_value = publicValue;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 
 }
