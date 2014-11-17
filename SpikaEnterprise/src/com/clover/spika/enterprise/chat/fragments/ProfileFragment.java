@@ -109,7 +109,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
 
-					if (ProfileFragment.this != null) {
+					if (ProfileFragment.this != null && getActivity() != null) {
 						((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
 					}
 				} else {

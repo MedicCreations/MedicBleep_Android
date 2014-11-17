@@ -2,7 +2,6 @@ package com.clover.spika.enterprise.chat.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.ChatsLobby;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -26,7 +26,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyAllFragment extends Fragment implements OnItemClickListener {
+public class LobbyAllFragment extends CustomFragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
@@ -151,6 +151,13 @@ public class LobbyAllFragment extends Fragment implements OnItemClickListener {
 			intent.putExtra(Const.IS_ACTIVE, user.isActive());
 			startActivity(intent);
 
+		}
+	}
+
+	@Override
+	public void handlePushNotificationInFragment(String chatId) {
+		if (adapter != null) {
+			adapter.incrementUnread(chatId);
 		}
 	}
 }

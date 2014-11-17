@@ -1,8 +1,10 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.ChatsLobby;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -22,10 +25,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class LobbyUsersFragment extends Fragment implements OnItemClickListener {
+public class LobbyUsersFragment extends CustomFragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private LobbyAdapter adapter;
@@ -38,7 +38,7 @@ public class LobbyUsersFragment extends Fragment implements OnItemClickListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -86,7 +86,8 @@ public class LobbyUsersFragment extends Fragment implements OnItemClickListener 
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -142,6 +143,13 @@ public class LobbyUsersFragment extends Fragment implements OnItemClickListener 
 			intent.putExtra(Const.TYPE, user.getType());
 			intent.putExtra(Const.IS_ACTIVE, user.isActive());
 			startActivity(intent);
+		}
+	}
+
+	@Override
+	public void handlePushNotificationInFragment(String chatId) {
+		if (adapter != null) {
+			adapter.incrementUnread(chatId);
 		}
 	}
 }

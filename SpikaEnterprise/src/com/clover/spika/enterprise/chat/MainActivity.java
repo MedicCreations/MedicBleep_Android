@@ -287,4 +287,10 @@ public class MainActivity extends BaseActivity {
 		findViewById(R.id.loadingPB).setVisibility(visible);
 	}
 
+	@Override
+	public void lobbyPushHandle(String chatId) {
+		if (mFragment != null && mFragment instanceof LobbyFragment) {
+			((LobbyFragment) mFragment).handlePushNotificationInFragment(chatId);
+		}
+	}
 }

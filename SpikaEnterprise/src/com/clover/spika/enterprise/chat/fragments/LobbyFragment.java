@@ -23,19 +23,17 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	ToggleButton allTab;
 
 	LobbyModel model;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
+	LobbyFragmentPagerAdapter adapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_lobby, container, false);
 
+		adapter = new LobbyFragmentPagerAdapter();
+
 		viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-		viewPager.setAdapter(new LobbyFragmentPagerAdapter());
+		viewPager.setAdapter(adapter);
 		viewPager.setOffscreenPageLimit(2);
 		viewPager.setOnPageChangeListener(this);
 
@@ -53,39 +51,80 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 	public void onResume() {
 		super.onResume();
 		setTabsStates(viewPager.getCurrentItem());
-
 	}
 
-    public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
+	@Override
+	public void handlePushNotificationInFragment(String chatId) {
+		adapter.handlePushNotificationNumber(chatId);
+	}
 
-        final int PAGE_COUNT = 3;
+	public class LobbyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        public LobbyFragmentPagerAdapter() {
-            super(getChildFragmentManager());
-        }
+		final int PAGE_COUNT = 3;
 
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
+		LobbyAllFragment allFragment;
+		LobbyUsersFragment userFragment;
+		LobbyGroupsFragment groupsFragment;
 
-        @Override
-        public Fragment getItem(int position) {
-        	switch (position) {
+		public LobbyFragmentPagerAdapter() {
+			super(getChildFragmentManager());
+		}
+
+		@Override
+		public int getCount() {
+			return PAGE_COUNT;
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			switch (position) {
 			case 0:
-				return new LobbyAllFragment();
-				
+
+				if (allFragment != null) {
+					return allFragment;
+				} else {
+					allFragment = new LobbyAllFragment();
+					return allFragment;
+				}
+
 			case 1:
-				return new LobbyUsersFragment();
-				
+
+				if (userFragment != null) {
+					return userFragment;
+				} else {
+					userFragment = new LobbyUsersFragment();
+					return userFragment;
+				}
+
 			case 2:
-				return new LobbyGroupsFragment();
+
+				if (groupsFragment != null) {
+					return groupsFragment;
+				} else {
+					groupsFragment = new LobbyGroupsFragment();
+					return groupsFragment;
+				}
 
 			default:
 				return null;
 			}
-        }
-    }
+		}
+
+		public void handlePushNotificationNumber(String chatId) {
+
+			if (allFragment != null) {
+				allFragment.handlePushNotificationInFragment(chatId);
+			}
+
+			if (userFragment != null) {
+				userFragment.handlePushNotificationInFragment(chatId);
+			}
+
+			if (groupsFragment != null) {
+				groupsFragment.handlePushNotificationInFragment(chatId);
+			}
+		}
+	}
 
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
@@ -102,7 +141,7 @@ public class LobbyFragment extends CustomFragment implements OnPageChangeListene
 
 	@Override
 	public void onClick(View view) {
-		if (view == allTab){
+		if (view == allTab) {
 			setTabsStates(0);
 			viewPager.setCurrentItem(0, true);
 		} else if (view == usersTab) {

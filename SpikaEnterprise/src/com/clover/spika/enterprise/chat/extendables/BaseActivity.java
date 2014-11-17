@@ -37,7 +37,6 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -56,9 +55,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        if (ImageLoader.getInstance(this) == null) {
-            ImageLoader.init(this);
-        }
+		if (ImageLoader.getInstance(this) == null) {
+			ImageLoader.init(this);
+		}
 
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
@@ -78,7 +77,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				
+
 				String message = intent.getExtras().getString(Const.PUSH_MESSAGE);
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
 				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
@@ -90,8 +89,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 				String type = intent.getExtras().getString(Const.TYPE);
 				String password = intent.getExtras().getString(Const.PASSWORD);
 				int isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
-							
-				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);				
+
+				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);
 			}
 		};
 		// end: handle notifications
@@ -131,11 +130,16 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive, String password, int isPrivate) {		
-		
+	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive,
+			String password, int isPrivate) {
+
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
 			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive, password, isPrivate);
+			lobbyPushHandle(chatIdPush);
 		}
+	}
+
+	public void lobbyPushHandle(String chatId) {
 	}
 
 	/**
@@ -146,11 +150,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * @param chatName
 	 * @param chatImage
 	 */
-	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId, final int isActive, final String password, final int isPrivate) {
-		
+	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId,
+			final int isActive, final String password, final int isPrivate) {
+
 		String userId = Helper.getUserId(BaseActivity.this);
 		final boolean isAdmin = userId.equals(adminId) ? true : false;
-				
+
 		if (isPushShowing) {
 			Push push = new Push();
 			push.setId(chatId);
@@ -181,7 +186,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@SuppressLint("InflateParams")
 			protected void onPostExecute(Integer result) {
-				
+
 				final ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
 				final View view = LayoutInflater.from(context).inflate(R.layout.in_app_notification_layout, null);
 
@@ -214,7 +219,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 				final Animation notAnimIn = AnimationUtils.loadAnimation(context, R.anim.in_app_notification_anim_in);
 				final Animation notAnimOut = AnimationUtils.loadAnimation(context, R.anim.in_app_notification_anim_out);
-				
+
 				notAnimIn.setAnimationListener(new AnimationListener() {
 
 					@Override
@@ -247,17 +252,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 					}
 
 					@Override
-					public void onAnimationEnd(Animation animation) {						
+					public void onAnimationEnd(Animation animation) {
 						contentRoot.removeView(view);
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive(), qPush.get(0).getPassword(), qPush.get(0).getIsPrivate());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush
+									.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive(), qPush.get(0).getPassword(), qPush.get(0).getIsPrivate());
 							qPush.remove(0);
 						}
 					}
 				});
-				
+
 				view.startAnimation(notAnimIn);
 			};
 		}.execute();
@@ -290,8 +296,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		imm.toggleSoftInputFromWindow(et.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
 		et.requestFocus();
 	}
-	
-	/*HANDLING SEARCH LAYOUTS*/
+
+	/* HANDLING SEARCH LAYOUTS */
 	/**
 	 * Set search bar
 	 * 
@@ -310,26 +316,23 @@ public class BaseActivity extends SlidingFragmentActivity {
 	/**
 	 * Disable search bar
 	 */
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, 
-			TextView title, int width, int animSpeed) {
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, TextView title, int width, int animSpeed) {
 
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, null);
 	}
-	
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
-			TextView title, int width, int animSpeed, ImageButton invite) {
+
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, ImageButton invite) {
 
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, invite, null);
 	}
-	
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
-			TextView title, int width, int animSpeed, LinearLayout layout) {
+
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, LinearLayout layout) {
 
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, layout);
 	}
-	
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, 
-			TextView title, int width, int animSpeed, ImageButton invite, LinearLayout layout) {
+
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, ImageButton invite,
+			LinearLayout layout) {
 
 		if (isOpenSearch) {
 			closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, layout);
@@ -338,28 +341,28 @@ public class BaseActivity extends SlidingFragmentActivity {
 		search.setVisibility(View.GONE);
 		searchEt.setVisibility(View.GONE);
 	}
-	
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, TextView title, int width, int animSpeed) {
+
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
+			int animSpeed) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
 	}
-	
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, TextView title, int width, int animSpeed, LinearLayout layout) {
+
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
+			int animSpeed, LinearLayout layout) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
 	}
-	
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed) {
+
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
+			TextView title, int width, int animSpeed) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
 	}
-	
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed, 
-			final LinearLayout layout) {
+
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
+			TextView title, int width, int animSpeed, final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
-		if(invite != null) invite.setClickable(false);
+		if (invite != null)
+			invite.setClickable(false);
 		searchEt.setVisibility(View.VISIBLE);
 
 		AnimUtils.translationX(searchEt, width, 0f, animSpeed, new AnimatorListenerAdapter() {
@@ -368,45 +371,46 @@ public class BaseActivity extends SlidingFragmentActivity {
 				super.onAnimationEnd(animation);
 				search.setClickable(true);
 				sidebar.setClickable(true);
-				if(invite != null) invite.setClickable(true);
+				if (invite != null)
+					invite.setClickable(true);
 				closeSearch.setVisibility(View.VISIBLE);
 				showKeyboardForced(searchEt);
 				isOpenSearch = true;
 			}
 		});
-		if(layout != null){
+		if (layout != null) {
 			AnimUtils.translationX(layout, 0, -(width - layout.getWidth()), animSpeed, null);
-		}else{
+		} else {
 			AnimUtils.translationX(search, 0, -(width - search.getWidth()), animSpeed, null);
 		}
 		AnimUtils.fadeAnim(sidebar, 1, 0, animSpeed);
 		AnimUtils.translationX(title, 0, -width, animSpeed, null);
 	}
-	
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, TextView title, int width, int animSpeed) {
+
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
+			int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
 
 	}
-	
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, TextView title, int width, int animSpeed, final LinearLayout layout) {
+
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
+			int animSpeed, final LinearLayout layout) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
 
 	}
-	
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed) {
+
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
+			TextView title, int width, int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
 
 	}
 
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, 
-			final EditText searchEt, final ImageButton invite, TextView title, int width, int animSpeed, 
-			final LinearLayout layout) {
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
+			TextView title, int width, int animSpeed, final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
-		if(invite != null) invite.setClickable(false);
+		if (invite != null)
+			invite.setClickable(false);
 		hideKeyboard(searchEt);
 		closeSearch.setVisibility(View.GONE);
 
@@ -415,19 +419,20 @@ public class BaseActivity extends SlidingFragmentActivity {
 			public void onAnimationEnd(Animator animation) {
 				searchEt.setVisibility(View.GONE);
 				searchEt.setText("");
-				if(invite != null) invite.setClickable(true);
+				if (invite != null)
+					invite.setClickable(true);
 				super.onAnimationEnd(animation);
 				search.setClickable(true);
 				sidebar.setClickable(true);
 				isOpenSearch = false;
 			}
 		});
-		if(layout != null){
+		if (layout != null) {
 			AnimUtils.translationX(layout, -(width - layout.getWidth()), 0, animSpeed, null);
-		}else{
+		} else {
 			AnimUtils.translationX(search, -(width - search.getWidth()), 0, animSpeed, null);
 		}
-		
+
 		AnimUtils.fadeAnim(sidebar, 0, 1, animSpeed);
 		AnimUtils.translationX(title, -width, 0, animSpeed, null);
 
