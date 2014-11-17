@@ -17,6 +17,8 @@ import com.clover.spika.enterprise.chat.CameraCropActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordVideoActivity;
+import com.clover.spika.enterprise.chat.models.HelperModel;
+import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
@@ -30,6 +32,8 @@ public class AppDialog extends Dialog {
 
 	private OnPositiveButtonClickListener mOnPositiveButtonClick;
 	private OnNegativeButtonCLickListener mOnNegativeButtonClick;
+	private OnDismissDialogListener mOnDismissDialogListener;
+	private Object dismissObject = null;
 
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
@@ -44,6 +48,14 @@ public class AppDialog extends Dialog {
 
 	public void setOnNegativeButtonClick(OnNegativeButtonCLickListener mOnNegativeButtonClick) {
 		this.mOnNegativeButtonClick = mOnNegativeButtonClick;
+	}
+
+	public void setOnDialogDismissListener(OnDismissDialogListener mOnDismissDialogListener) {
+		this.mOnDismissDialogListener = mOnDismissDialogListener;
+	}
+
+	public void setDismissObject(Object object) {
+		this.dismissObject = object;
 	}
 
 	/**
@@ -128,6 +140,48 @@ public class AppDialog extends Dialog {
 				if (mOnNegativeButtonClick != null) {
 					mOnNegativeButtonClick.onNegativeButtonClick(v);
 				}
+				dismiss();
+			}
+		});
+
+		show();
+	}
+
+	public void setEditDialog(final UserDetail userDetail, OnDismissDialogListener mOnDismissDialogListener) {
+		this.setContentView(R.layout.dialog_edit_profile_item);
+		setOnDialogDismissListener(mOnDismissDialogListener);
+
+		final TextView infoText = (TextView) findViewById(R.id.infoText);
+		infoText.setText(userDetail.getLabel());
+
+		final RobotoThinEditText etValue = (RobotoThinEditText) findViewById(R.id.etDialogPassword);
+
+		if (!TextUtils.isEmpty(userDetail.getValue())) {
+			etValue.setText(userDetail.getValue());
+		}
+
+		View btnYes = findViewById(R.id.layout_yes);
+		btnYes.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				String value = etValue.getText().toString();
+
+				if (!TextUtils.isEmpty(value)) {
+					HelperModel response = new HelperModel();
+					response.setValue(value);
+					response.setPosition(userDetail.getPosition());
+
+					setDismissObject(response);
+					dismiss();
+				}
+			}
+		});
+
+		View btnNo = findViewById(R.id.layout_no);
+		btnNo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				dismiss();
 			}
 		});
@@ -490,12 +544,26 @@ public class AppDialog extends Dialog {
 		super.onWindowFocusChanged(hasFocus);
 	}
 
+	@Override
+	public void dismiss() {
+
+		if (mOnDismissDialogListener != null) {
+			mOnDismissDialogListener.onDismissDialog(dismissObject);
+		}
+
+		super.dismiss();
+	}
+
 	public interface OnPositiveButtonClickListener {
 		void onPositiveButtonClick(View v);
 	}
 
 	public interface OnNegativeButtonCLickListener {
 		void onNegativeButtonClick(View v);
+	}
+
+	public interface OnDismissDialogListener {
+		void onDismissDialog(Object object);
 	}
 
 }
