@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.gcm;
+package com.clover.spika.enterprise.chat.services.gcm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

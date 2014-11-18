@@ -19,7 +19,6 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
@@ -75,10 +74,10 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		groups = (RobotoThinButton) view.findViewById(R.id.groups);
 		groups.setOnClickListener(this);
-		
+
 		rooms = (RobotoThinButton) view.findViewById(R.id.rooms);
 		rooms.setOnClickListener(this);
-		
+
 		information = (RobotoThinButton) view.findViewById(R.id.information);
 		information.setOnClickListener(this);
 
@@ -109,7 +108,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 		switch (view.getId()) {
 
 		case R.id.lobby:
-			
+
 			if (lobbyFragment == null) {
 				lobbyFragment = new LobbyFragment();
 			}
@@ -130,26 +129,24 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			break;
 
-        case R.id.rooms:
+		case R.id.rooms:
 		case R.id.groups:
 
 			boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
-			
-			if (isCategoriesEnabled){
-				CategoryFragment categoryFragment = CategoryFragment.newInstance(
-	                    view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP
-	            );
+
+			if (isCategoriesEnabled) {
+				CategoryFragment categoryFragment = CategoryFragment.newInstance(view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP);
 
 				((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
 				switchFragment(categoryFragment);
 			} else {
-				if (view.getId() == R.id.rooms){
+				if (view.getId() == R.id.rooms) {
 					RoomsActivity.startActivity(String.valueOf(0), getString(R.string.all), getActivity());
-				} else if (view.getId() == R.id.groups){
+				} else if (view.getId() == R.id.groups) {
 					GroupsActivity.startActivity(String.valueOf(0), getActivity());
 				}
 			}
-			
+
 			break;
 
 		case R.id.information:
@@ -162,20 +159,18 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 			switchFragment(informationFragment);
 
 			break;
-			
+
 		case R.id.profile:
 
 			if (profileFragment == null) {
-				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()),
-                        Helper.getUserFirstName(getActivity()),
-                        Helper.getUserLastName(getActivity()));
+				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()), Helper.getUserFirstName(getActivity()), Helper.getUserLastName(getActivity()));
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
 			switchFragment(profileFragment);
 
 			break;
-			
+
 		case R.id.logout:
 
 			new UserApi().logout(getActivity(), new ApiCallback<BaseModel>() {

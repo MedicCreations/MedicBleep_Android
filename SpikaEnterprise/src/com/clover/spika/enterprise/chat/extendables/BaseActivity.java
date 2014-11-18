@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,9 +33,9 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
-import com.clover.spika.enterprise.chat.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
+import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -102,7 +103,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		registerReceiver(myPushRecevier, intentFilter);
+		LocalBroadcastManager.getInstance(this).registerReceiver(myPushRecevier, intentFilter);
 
 		// passcode callback injected methods are important for tracking active
 		// session
@@ -123,7 +124,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		unregisterReceiver(myPushRecevier);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(myPushRecevier);
 
 		// passcode callback injected methods are important for tracking active
 		// session
@@ -390,19 +391,16 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
 			int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
-
 	}
 
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
 			int animSpeed, final LinearLayout layout) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
-
 	}
 
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
 			TextView title, int width, int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
-
 	}
 
 	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
@@ -435,7 +433,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		AnimUtils.fadeAnim(sidebar, 0, 1, animSpeed);
 		AnimUtils.translationX(title, -width, 0, animSpeed, null);
-
 	}
 
 }

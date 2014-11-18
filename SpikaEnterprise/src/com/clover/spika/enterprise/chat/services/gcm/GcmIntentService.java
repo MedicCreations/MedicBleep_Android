@@ -1,4 +1,4 @@
-package com.clover.spika.enterprise.chat.gcm;
+package com.clover.spika.enterprise.chat.services.gcm;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SplashActivity;
@@ -95,11 +96,11 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.IS_ACTIVE)) {
 					isActive = extras.getString(Const.IS_ACTIVE).equals("1") ? 1 : 0;
 				}
-				
+
 				if (extras.containsKey(Const.IS_PRIVATE)) {
 					isPrivate = extras.getString(Const.IS_PRIVATE).equals("1") ? 1 : 0;
 				}
-				
+
 				if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
 					chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
 				}
@@ -130,7 +131,7 @@ public class GcmIntentService extends IntentService {
 					inBroadcast.putExtra(Const.PASSWORD, chatPassword);
 					inBroadcast.putExtra(Const.IS_PRIVATE, isPrivate);
 
-					sendBroadcast(inBroadcast);
+					LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
 
 				} else {
 

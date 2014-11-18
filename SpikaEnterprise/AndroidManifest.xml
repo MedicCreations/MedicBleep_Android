@@ -80,7 +80,7 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <receiver
-            android:name="com.clover.spika.enterprise.chat.gcm.GcmBroadcastReceiver"
+            android:name="com.clover.spika.enterprise.chat.services.gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -89,7 +89,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.clover.spika.enterprise.chat.gcm.GcmIntentService" />
+        <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
 
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
@@ -176,12 +176,14 @@
             android:name="com.clover.spika.enterprise.chat.EditProfileActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-         <activity
+        <activity
             android:name="com.clover.spika.enterprise.chat.ForgotPasswordActivity"
-			android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ChangePasswordActivity"
             android:screenOrientation="portrait" />
+
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
     </application>
 
 </manifest>

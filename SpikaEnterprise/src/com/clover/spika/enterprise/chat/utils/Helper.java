@@ -134,8 +134,7 @@ public class Helper {
 
 		return false;
 	}
-	
-	
+
 	/**
 	 * Get current App version
 	 */
@@ -150,10 +149,8 @@ public class Helper {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
-	
-	
 
 	/**
 	 * Update app version
@@ -259,19 +256,19 @@ public class Helper {
 	public static String getUserId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
 	}
-	
+
 	public static void setRoomFileId(Context ctx, String fileId) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_FILE_ID, fileId);
 	}
-	
+
 	public static String getRoomFileId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_FILE_ID);
 	}
-	
+
 	public static void setRoomThumbId(Context ctx, String thumbId) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_THUMB_ID, thumbId);
 	}
-	
+
 	public static String getRoomThumbId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_THUMB_ID);
 	}
@@ -305,9 +302,9 @@ public class Helper {
 		animation.setOneShot(false);
 
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            loading.setBackground(animation);
+			loading.setBackground(animation);
 		} else {
-            loading.setBackgroundDrawable(animation);
+			loading.setBackgroundDrawable(animation);
 		}
 
 		animation.start();
