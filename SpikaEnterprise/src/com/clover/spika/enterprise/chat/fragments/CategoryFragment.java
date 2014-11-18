@@ -29,24 +29,26 @@ import java.util.List;
 
 public class CategoryFragment extends CustomFragment implements OnItemClickListener {
 
-    private static final String ARG_USE_TYPE = "com.clover.spika.enterprise.chat.arg_use_type";
+	private static final String ARG_USE_TYPE = "com.clover.spika.enterprise.chat.arg_use_type";
 
-    public static enum UseType { CHOOSE_CATEGORY, ROOM, GROUP }
+	public static enum UseType {
+		CHOOSE_CATEGORY, ROOM, GROUP
+	}
 
-    public static CategoryFragment newInstance(@NonNull UseType useType) {
-        CategoryFragment fragment = new CategoryFragment();
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_USE_TYPE, useType);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+	public static CategoryFragment newInstance(@NonNull UseType useType) {
+		CategoryFragment fragment = new CategoryFragment();
+		Bundle arguments = new Bundle();
+		arguments.putSerializable(ARG_USE_TYPE, useType);
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
 	TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public CategoryAdapter adapter;
 
-    private UseType mUseType;
+	private UseType mUseType;
 
 	@Override
 	public void onCreate(Bundle arg0) {
@@ -59,7 +61,7 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 
 		View rootView = inflater.inflate(R.layout.fragment_category_list, container, false);
 
-        unpackArguments();
+		unpackArguments();
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
@@ -68,29 +70,34 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 		mainListView.setOnItemClickListener(this);
 
 		mainListView.setAdapter(adapter);
-		
+
 		getCategory();
 
 		return rootView;
 	}
 
-    private void unpackArguments() {
-        mUseType = (UseType) getArguments().getSerializable(ARG_USE_TYPE);
-    }
+	private void unpackArguments() {
+		mUseType = (UseType) getArguments().getSerializable(ARG_USE_TYPE);
+	}
 
 	private void setData(List<Category> data) {
 		List<Category> allData = new ArrayList<Category>();
-		if(UseType.CHOOSE_CATEGORY.equals(mUseType)){
-			allData.add(new Category(0, getString(R.string.none)));
-		}else{
-			allData.add(new Category(0, getString(R.string.all)));
+
+		if (isAdded()) {
+
+			if (UseType.CHOOSE_CATEGORY.equals(mUseType)) {
+				allData.add(new Category(0, getString(R.string.none)));
+			} else {
+				allData.add(new Category(0, getString(R.string.all)));
+			}
 		}
+
 		allData.addAll(data);
-		
+
 		mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		adapter.setData(allData);
 		adapter.notifyDataSetChanged();
-		
+
 		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
 		} else {
@@ -98,20 +105,21 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 		}
 
 	}
-	
+
 	public void getCategory() {
 		CategoryApi catApi = new CategoryApi();
 		catApi.getCategory(getActivity(), true, new ApiCallback<CategoryList>() {
-			
+
 			@Override
 			public void onApiResponse(Result<CategoryList> result) {
 				if (result.isSuccess()) {
 					setData(result.getResultData().getCategoryList());
-				}else{
+				} else {
 					AppDialog dialog = new AppDialog(getActivity(), false);
-					if(result.getResultData() != null && result.getResultData().getMessage() != null)
+					if (result.getResultData() != null && result.getResultData().getMessage() != null)
 						dialog.setInfo(result.getResultData().getMessage());
-					else dialog.setInfo(getString(R.string.e_something_went_wrong));
+					else
+						dialog.setInfo(getString(R.string.e_something_went_wrong));
 				}
 			}
 		});
@@ -125,22 +133,21 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 		if (position != -1 && position != adapter.getCount()) {
 			Category category = adapter.getItem(position);
 
-            switch (mUseType) {
-                case CHOOSE_CATEGORY:
-                    if(getActivity() instanceof ChooseCategoryActivity){
-                        ((ChooseCategoryActivity)getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()),
-                        		category.getName());
-                    }
-                    break;
+			switch (mUseType) {
+			case CHOOSE_CATEGORY:
+				if (getActivity() instanceof ChooseCategoryActivity) {
+					((ChooseCategoryActivity) getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()), category.getName());
+				}
+				break;
 
-                case ROOM:
-                    RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
-                    break;
+			case ROOM:
+				RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
+				break;
 
-                case GROUP:
-                    GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
-                    break;
-            }
+			case GROUP:
+				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+				break;
+			}
 
 		}
 	}

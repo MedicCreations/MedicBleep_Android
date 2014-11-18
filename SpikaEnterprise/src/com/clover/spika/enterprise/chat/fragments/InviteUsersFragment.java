@@ -34,95 +34,97 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class InviteUsersFragment extends Fragment implements AdapterView.OnItemClickListener, OnChangeListener<User>, 
-													OnSearchManageUsersListener, OnInviteClickListener {
-	
-    public interface Callbacks {
-        void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember);
-    }
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) { }
-    };
-    private Callbacks mCallbacks = sDummyCallbacks;
+public class InviteUsersFragment extends Fragment implements AdapterView.OnItemClickListener, OnChangeListener<User>, OnSearchManageUsersListener, OnInviteClickListener {
 
-    private PullToRefreshListView mainListView;
-    private InviteUserAdapter adapter;
+	public interface Callbacks {
+		void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember);
+	}
 
-    private int mCurrentIndex = 0;
-    private int mTotalCount = 0;
-    private String mSearchData = null;
-    
-    private TextView noItems;
-    private List<User> usersToAdd = new ArrayList<User>();
-    private TextView txtUsers;
+	private static Callbacks sDummyCallbacks = new Callbacks() {
+		@Override
+		public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
+		}
+	};
+	private Callbacks mCallbacks = sDummyCallbacks;
 
-    public static InviteUsersFragment newInstance() {
-        InviteUsersFragment fragment = new InviteUsersFragment();
-        Bundle arguments = new Bundle();
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+	private PullToRefreshListView mainListView;
+	private InviteUserAdapter adapter;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+	private int mCurrentIndex = 0;
+	private int mTotalCount = 0;
+	private String mSearchData = null;
 
-        if (activity instanceof Callbacks) {
-            this.mCallbacks = (Callbacks) activity;
-        } else {
-            throw new IllegalArgumentException(activity.toString() +
-                    " has to implement Callbacks interface in order to inflate this Fragment.");
-        }
-    }
+	private TextView noItems;
+	private List<User> usersToAdd = new ArrayList<User>();
+	private TextView txtUsers;
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.mCallbacks = sDummyCallbacks;
-    }
+	public static InviteUsersFragment newInstance() {
+		InviteUsersFragment fragment = new InviteUsersFragment();
+		Bundle arguments = new Bundle();
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
-    @Nullable @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_invite_users, container, false);
-    }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+		if (activity instanceof Callbacks) {
+			this.mCallbacks = (Callbacks) activity;
+		} else {
+			throw new IllegalArgumentException(activity.toString() + " has to implement Callbacks interface in order to inflate this Fragment.");
+		}
+	}
 
-        if (view != null) {
-            adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mCallbacks = sDummyCallbacks;
+	}
 
-            noItems = (TextView) view.findViewById(R.id.noItems);
-            txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
-            txtUsers.setMovementMethod(new ScrollingMovementMethod());
-            
-            mainListView = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
-            mainListView.setAdapter(adapter);
-            mainListView.setOnRefreshListener(refreshListener2);
-            mainListView.setOnItemClickListener(this);
-            
-            if(getActivity() instanceof ManageUsersActivity){
-            	((ManageUsersActivity)getActivity()).setOnInviteClickListener(this);
-            }
-            
-            setInitialTextToTxtUsers();
-        }
-    }
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_invite_users, container, false);
+	}
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        position = position - 1;
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-        if (position != -1 && position != adapter.getCount()) {
-            User user = adapter.getItem(position);
-            ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
-        }
-    }
+		if (view != null) {
+			adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
 
-    @Override
-    public void onChange(User obj) {
-    	boolean isFound = false;
+			noItems = (TextView) view.findViewById(R.id.noItems);
+			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
+			txtUsers.setMovementMethod(new ScrollingMovementMethod());
+
+			mainListView = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
+			mainListView.setAdapter(adapter);
+			mainListView.setOnRefreshListener(refreshListener2);
+			mainListView.setOnItemClickListener(this);
+
+			if (getActivity() instanceof ManageUsersActivity) {
+				((ManageUsersActivity) getActivity()).setOnInviteClickListener(this);
+			}
+
+			setInitialTextToTxtUsers();
+		}
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		position = position - 1;
+
+		if (position != -1 && position != adapter.getCount()) {
+			User user = adapter.getItem(position);
+			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
+		}
+	}
+
+	@Override
+	public void onChange(User obj) {
+		boolean isFound = false;
 		int j = 0;
 
 		for (User user : usersToAdd) {
@@ -150,11 +152,11 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers + builder.toString());
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
+
 		txtUsers.setText(span);
-    }
-    
-    @Override
+	}
+
+	@Override
 	public void onSearchInInvite(String data) {
 		mCurrentIndex = 0;
 		if (TextUtils.isEmpty(data)) {
@@ -164,30 +166,30 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 		}
 		mCallbacks.getUsers(mCurrentIndex, mSearchData, true, false);
 	}
-    
-    @Override
+
+	@Override
 	public void onInvite(String chatId) {
-    	
-    	if(adapter.getSelected().size() == 0){
+
+		if (adapter.getSelected().size() == 0) {
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
-    	
+
 		StringBuilder idsBuilder = new StringBuilder();
-		for(String item : adapter.getSelected()){
-			idsBuilder.append(item+",");
+		for (String item : adapter.getSelected()) {
+			idsBuilder.append(item + ",");
 		}
-		
-		//remove last comma
-		String ids = idsBuilder.substring(0, idsBuilder.length()-1);
+
+		// remove last comma
+		String ids = idsBuilder.substring(0, idsBuilder.length() - 1);
 		new ChatApi().addUsersToRoom(ids, chatId, getActivity(), new ApiCallback<Chat>() {
-			
+
 			@Override
 			public void onApiResponse(Result<Chat> result) {
-				if (result.isSuccess()){
-					if(getActivity() instanceof ManageUsersActivity) {
-						((ManageUsersActivity)getActivity()).setNewChat(result.getResultData().getChat());
+				if (result.isSuccess()) {
+					if (getActivity() instanceof ManageUsersActivity) {
+						((ManageUsersActivity) getActivity()).setNewChat(result.getResultData().getChat());
 					}
 					mCurrentIndex = 0;
 					mCallbacks.getUsers(mCurrentIndex, null, true, true);
@@ -199,10 +201,11 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 		});
 	}
 
-    public void setData(List<User> data, boolean toClearPrevious) {
+	public void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -218,7 +221,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -226,38 +229,38 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 		}
 	}
 
-    public void setTotalCount(int totalCount) {
-        this.mTotalCount = totalCount;
-    }
+	public void setTotalCount(int totalCount) {
+		this.mTotalCount = totalCount;
+	}
 
-    PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-            // mCurrentIndex--; don't need this for now
-        }
+	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
+		@Override
+		public void onPullDownToRefresh(PullToRefreshBase refreshView) {
+			// mCurrentIndex--; don't need this for now
+		}
 
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-        	mCurrentIndex++;
+		@Override
+		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+			mCurrentIndex++;
 			mCallbacks.getUsers(mCurrentIndex, mSearchData, false, false);
-        }
-    };
-    
-    private void setInitialTextToTxtUsers(){
+		}
+	};
+
+	private void setInitialTextToTxtUsers() {
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers);
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
+
 		txtUsers.setText(span);
 	}
-    
-    @Override
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		((ManageUsersActivity) getActivity()).setSearch(this);
 	}
-    
-    @Override
+
+	@Override
 	public void onPause() {
 		super.onPause();
 		((ManageUsersActivity) getActivity()).disableSearch();

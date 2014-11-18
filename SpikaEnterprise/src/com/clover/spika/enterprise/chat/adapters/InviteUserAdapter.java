@@ -43,7 +43,7 @@ public class InviteUserAdapter extends BaseAdapter {
 
 		this.listener = listener;
 	}
-	
+
 	public InviteUserAdapter(Context context, Collection<User> users) {
 		this.mContext = context;
 		this.data.addAll(users);
@@ -54,8 +54,8 @@ public class InviteUserAdapter extends BaseAdapter {
 		listener = null;
 		showCheckBox = false;
 	}
-	
-	public void setOnUserClickListener(OnUserClickedListener<User> lis){
+
+	public void setOnUserClickListener(OnUserClickedListener<User> lis) {
 		listenerOnUserClick = lis;
 	}
 
@@ -79,7 +79,7 @@ public class InviteUserAdapter extends BaseAdapter {
 
 	public void addData(List<User> list) {
 		data.addAll(list);
-		
+
 		for (String selectedId : userIds) {
 			for (int i = 0; i < data.size(); i++) {
 				if (selectedId.equals(data.get(i).getId())) {
@@ -87,11 +87,11 @@ public class InviteUserAdapter extends BaseAdapter {
 				}
 			}
 		}
-		
+
 		notifyDataSetChanged();
 	}
-	
-	public void clearData(){
+
+	public void clearData() {
 		data.clear();
 		notifyDataSetChanged();
 	}
@@ -141,13 +141,13 @@ public class InviteUserAdapter extends BaseAdapter {
 		}
 
 		imageLoader.displayImage(getContext(), user.getImageThumb(), holder.profileImg);
-		if (user.isAdmin()){
+		if (user.isAdmin()) {
 			holder.personName.setText(user.getFirstName() + " " + user.getLastName() + " (admin)");
 		} else {
 			holder.personName.setText(user.getFirstName() + " " + user.getLastName());
 		}
-		
-		if(showCheckBox){
+
+		if (showCheckBox) {
 			if (user.isSelected() || user.isMember()) {
 				holder.isSelected.setChecked(true);
 			} else {
@@ -156,10 +156,10 @@ public class InviteUserAdapter extends BaseAdapter {
 
 			if (user.isMember() || user.getId() == Helper.getUserId(mContext)) {
 				holder.isSelected.setClickable(false);
-	            holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
+				holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
 			} else {
 				holder.isSelected.setClickable(true);
-	            holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
+				holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
 				holder.isSelected.setOnClickListener(new View.OnClickListener() {
 
 					@Override
@@ -178,13 +178,13 @@ public class InviteUserAdapter extends BaseAdapter {
 					}
 				});
 			}
-		}else{
+		} else {
 			holder.isSelected.setVisibility(View.GONE);
 		}
-		
-		if(listenerOnUserClick != null && !Helper.getUserId(mContext).equals(user.getId())){
+
+		if (listenerOnUserClick != null && !Helper.getUserId(mContext).equals(user.getId())) {
 			convertView.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					listenerOnUserClick.onUserClicked(getItem(position));
@@ -206,7 +206,7 @@ public class InviteUserAdapter extends BaseAdapter {
 	public List<String> getSelected() {
 		return userIds;
 	}
-	
+
 	public void resetSelected() {
 		userIds.clear();
 	}
@@ -229,5 +229,5 @@ public class InviteUserAdapter extends BaseAdapter {
 		}
 
 	}
-	
+
 }

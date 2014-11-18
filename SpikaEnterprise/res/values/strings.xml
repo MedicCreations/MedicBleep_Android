@@ -228,5 +228,10 @@
     <string name="login_empty_password">Password should not be empty</string>
     <string name="new_passwords_not_identical">Passwords are not identical.</string>
     <string name="update_password">Update Password</string>
+    <string name="set_password">Set password</string>
+    <string name="set">Set</string>
+    <string name="set_a_new_admin">Set a new admin</string>
+    <string name="change_category">Change category</string>
+    <string name="change">Change</string>
 
 </resources>

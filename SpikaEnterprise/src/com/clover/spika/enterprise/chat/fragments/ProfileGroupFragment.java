@@ -7,14 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.SetAdminActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
@@ -23,7 +27,6 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 
 public class ProfileGroupFragment extends CustomFragment implements OnClickListener {
@@ -37,11 +40,22 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	int isPrivate;
 	String chatPassword;
 
-	RobotoRegularTextView tvPassword;
+	Button tvPassword;
+	Button tvSetAdmin;
+	Button tvChangeCat;
 
 	private ImageLoader imageLoader;
 
 	private FrameLayout loadingLayout;
+
+	View addPhotoButton;
+	LinearLayout passwordLayout;
+	LinearLayout layoutSetAdmin;
+	LinearLayout layoutChangeCategory;
+	Switch switchIsPrivate;
+
+	public ProfileGroupFragment() {
+	}
 
 	public ProfileGroupFragment(Intent intent) {
 		setData(intent);
@@ -57,41 +71,19 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 		View rootView = inflater.inflate(R.layout.fragment_profile_group, container, false);
 
-		View addPhotoButton = rootView.findViewById(R.id.addPhoto);
-		Switch switchIsPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
+		addPhotoButton = rootView.findViewById(R.id.addPhoto);
+		switchIsPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
 		switchIsPrivate.setChecked(isPrivate == 1 ? true : false);
 
-		RelativeLayout passwordLayout = (RelativeLayout) rootView.findViewById(R.id.layoutPassword);
+		passwordLayout = (LinearLayout) rootView.findViewById(R.id.layoutPassword);
+		layoutSetAdmin = (LinearLayout) rootView.findViewById(R.id.layoutSetAdmin);
+		layoutChangeCategory = (LinearLayout) rootView.findViewById(R.id.layoutChangeCategory);
 
-		tvPassword = (RobotoRegularTextView) rootView.findViewById(R.id.tvPassword);
+		tvPassword = (Button) rootView.findViewById(R.id.tvPassword);
+		tvSetAdmin = (Button) rootView.findViewById(R.id.tvSetAdmin);
+		tvChangeCat = (Button) rootView.findViewById(R.id.tvChangeCat);
 
-		if (isAdmin) {
-
-			if (null != chatPassword) {
-				if (chatPassword.equals("")) {
-					tvPassword.setText("");
-					tvPassword.setHint("Set password");
-				}
-			} else {
-				tvPassword.setText("");
-				tvPassword.setHint("Set password");
-			}
-
-			addPhotoButton.setOnClickListener(this);
-			tvPassword.setOnClickListener(this);
-		} else {
-
-			if (null != chatPassword) {
-				if (chatPassword.equals("")) {
-					passwordLayout.setVisibility(View.GONE);
-				}
-			} else {
-				passwordLayout.setVisibility(View.GONE);
-			}
-
-			addPhotoButton.setVisibility(View.GONE);
-			switchIsPrivate.setEnabled(false);
-		}
+		setVisual();
 
 		((TextView) rootView.findViewById(R.id.profileName)).setText(chatName);
 
@@ -114,6 +106,42 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		return rootView;
 	}
 
+	public void setVisual() {
+		if (isAdmin) {
+
+			if (null != chatPassword) {
+				if (chatPassword.equals("")) {
+					tvPassword.setText("");
+					tvPassword.setHint(getString(R.string.set_password));
+				}
+			} else {
+				tvPassword.setText("");
+				tvPassword.setHint(getString(R.string.set_password));
+			}
+
+			addPhotoButton.setOnClickListener(this);
+			tvPassword.setOnClickListener(this);
+			tvSetAdmin.setOnClickListener(this);
+			tvChangeCat.setOnClickListener(this);
+
+		} else {
+
+			if (null != chatPassword) {
+				if (chatPassword.equals("")) {
+					passwordLayout.setVisibility(View.GONE);
+				}
+			} else {
+				passwordLayout.setVisibility(View.GONE);
+			}
+
+			layoutSetAdmin.setVisibility(View.GONE);
+			layoutChangeCategory.setVisibility(View.GONE);
+
+			addPhotoButton.setVisibility(View.GONE);
+			switchIsPrivate.setEnabled(false);
+		}
+	}
+
 	public void setData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 			imageId = intent.getExtras().getString(Const.IMAGE);
@@ -127,10 +155,15 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 	@Override
 	public void onClick(View view) {
+
+		Intent intent;
+
 		switch (view.getId()) {
+
 		case R.id.addPhoto:
 			showDialog();
 			break;
+
 		case R.id.tvPassword:
 			final AppDialog dialog = new AppDialog(getActivity(), false);
 
@@ -166,6 +199,21 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 					}
 				});
 			}
+			break;
+
+		case R.id.tvSetAdmin:
+
+			intent = new Intent(getActivity(), SetAdminActivity.class);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivityForResult(intent, Const.ADMIN_REQUEST);
+			break;
+
+		case R.id.tvChangeCat:
+
+			intent = new Intent(getActivity(), ChooseCategoryActivity.class);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			startActivity(intent);
+			break;
 
 		default:
 			break;

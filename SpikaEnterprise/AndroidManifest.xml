@@ -184,6 +184,10 @@
             android:screenOrientation="portrait" />
 
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
+
+        <activity
+            android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

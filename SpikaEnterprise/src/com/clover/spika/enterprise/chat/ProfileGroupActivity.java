@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
@@ -96,7 +97,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		RobotoRegularTextView tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
 		isAdmin = getIntent().getBooleanExtra(Const.IS_ADMIN, false);
-		if (isAdmin){
+		if (isAdmin) {
 			tvSaveRoom.setVisibility(View.VISIBLE);
 			tvSaveRoom.setOnClickListener(new OnClickListener() {
 
@@ -108,10 +109,10 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		} else {
 			tvSaveRoom.setVisibility(View.GONE);
 		}
-		
+
 		viewPager = (ViewPager) findViewById(R.id.viewPager);
 
-		profileFragmentPagerAdapter = new ProfileFragmentPagerAdapter();
+		profileFragmentPagerAdapter = new ProfileFragmentPagerAdapter(getIntent());
 		viewPager.setAdapter(profileFragmentPagerAdapter);
 		viewPager.setOnPageChangeListener(this);
 
@@ -143,9 +144,9 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		private List<Fragment> mFragmentList = new ArrayList<Fragment>();
 
-		public ProfileFragmentPagerAdapter() {
+		public ProfileFragmentPagerAdapter(Intent intent) {
 			super(getSupportFragmentManager());
-			mFragmentList.add(new ProfileGroupFragment(getIntent()));
+			mFragmentList.add(new ProfileGroupFragment(intent));
 			mFragmentList.add(MembersFragment.newInstance());
 		}
 
@@ -171,6 +172,15 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof MembersFragment) {
 					((MembersFragment) fragment).setMembers(members);
+				}
+			}
+		}
+
+		public void setAdminData(Intent intent) {
+			for (Fragment fragment : mFragmentList) {
+				if (fragment instanceof ProfileGroupFragment) {
+					((ProfileGroupFragment) fragment).setData(intent);
+					((ProfileGroupFragment) fragment).setVisual();
 				}
 			}
 		}
@@ -248,7 +258,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		Switch switchPrivate = (Switch) findViewById(R.id.switch_private_room);
 
-		RobotoRegularTextView tvPassword = (RobotoRegularTextView) findViewById(R.id.tvPassword);
+		Button tvPassword = (Button) findViewById(R.id.tvPassword);
 		String newPassword = tvPassword.getText().toString();
 
 		if (!TextUtils.isEmpty(newPassword) && !newPassword.equals(getString(R.string.password))) {
@@ -277,7 +287,21 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				}
 			}
 		});
-
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK) {
+			if (data.getExtras() != null && data.getExtras().containsKey(Const.IS_ADMIN)) {
+				isAdmin = data.getExtras().getBoolean(Const.IS_ADMIN);
+
+				Intent intent = getIntent();
+				intent.getExtras().remove(Const.IS_ADMIN);
+				intent.putExtra(Const.IS_ADMIN, isAdmin);
+				profileFragmentPagerAdapter.setAdminData(intent);
+			}
+		}
+	}
 }
