@@ -42,6 +42,12 @@ public class Chat extends BaseModel {
     
     @SerializedName("type")
     private String type;
+    
+    @SerializedName("is_private")
+	private int isPrivate;
+	
+	@SerializedName("password")
+	private String password;
 
 	private boolean isNewMsg = false;
 	private boolean isRefresh = false;
@@ -192,6 +198,22 @@ public class Chat extends BaseModel {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	public int isPrivate() {
+		return isPrivate;
+	}
+
+	public void setPrivate(int isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override

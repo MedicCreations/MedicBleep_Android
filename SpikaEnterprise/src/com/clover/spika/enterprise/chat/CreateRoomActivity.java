@@ -30,6 +30,7 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class CreateRoomActivity extends BaseActivity {
@@ -128,14 +129,20 @@ public class CreateRoomActivity extends BaseActivity {
 
 		roomIsPrivate = is_private;
 
-		try {
-			String hashPassword = Utils.getHexString(password);
-			roomPassword = hashPassword;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		if (!TextUtils.isEmpty(password)){
+			try {
+				String hashPassword = Utils.getHexString(password);
+				roomPassword = hashPassword;
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		} else {
+			roomPassword = "";
 		}
+		
+		
 
 		ConfirmRoomFragment fragment = new ConfirmRoomFragment();
 		Bundle bundle = new Bundle();
@@ -166,6 +173,8 @@ public class CreateRoomActivity extends BaseActivity {
 	}
 
 	public void createRoomFinaly(String userIds) {
+		
+		Logger.d("password: " + roomPassword);
 		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
 
 			@Override

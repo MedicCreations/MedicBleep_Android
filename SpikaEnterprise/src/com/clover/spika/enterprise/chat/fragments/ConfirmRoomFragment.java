@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -138,8 +136,6 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	@Override
 	public void onCreateRoom() {
 		
-		Log.d("LOG", "on created on room");
-		
 		StringBuilder users_to_add = new StringBuilder();
 		List<String> usersId = new ArrayList<String>();
 		usersId.addAll(adapter.getSelected());
@@ -147,8 +143,6 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		if (usersId.isEmpty()) {
 			return;
 		}
-		
-		Log.d("LOG", "on created on usersId");
 		
 		String myUserId = Helper.getUserId(getActivity());
 		users_to_add.append(myUserId + ",");

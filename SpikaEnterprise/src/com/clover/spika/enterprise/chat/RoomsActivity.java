@@ -142,6 +142,8 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 			intent.putExtra(Const.IMAGE, room.getImage());
 			intent.putExtra(Const.IMAGE_THUMB, room.getImageThumb());
 			intent.putExtra(Const.IS_ADMIN, isAdmin);
+			intent.putExtra(Const.IS_PRIVATE, room.isPrivate());
+			intent.putExtra(Const.PASSWORD, room.getPassword());
 			startActivity(intent);
 		}
     }
