@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
@@ -298,9 +299,12 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				isAdmin = data.getExtras().getBoolean(Const.IS_ADMIN);
 
 				Intent intent = getIntent();
+				intent.setAction(Const.IS_ADMIN);
 				intent.getExtras().remove(Const.IS_ADMIN);
 				intent.putExtra(Const.IS_ADMIN, isAdmin);
 				profileFragmentPagerAdapter.setAdminData(intent);
+
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 			}
 		}
 	}

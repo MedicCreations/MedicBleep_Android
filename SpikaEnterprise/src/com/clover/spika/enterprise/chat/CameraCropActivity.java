@@ -65,11 +65,11 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private static final int ZOOM = 2;
 	private int mode = NONE;
 
-    // thumbnail width and height
-    private static final int THUMB_WIDTH = 100;
-    private static final int THUMB_HEIGHT = 100;
-    // compressed max size
-    private static final double MAX_SIZE = 640;
+	// thumbnail width and height
+	private static final int THUMB_WIDTH = 100;
+	private static final int THUMB_HEIGHT = 100;
+	// compressed max size
+	private static final double MAX_SIZE = 640;
 
 	// Remember some things for zooming
 	private PointF start = new PointF();
@@ -99,16 +99,16 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private LinearLayout btnCancel;
 
 	private boolean mIsOverJellyBean;
-    private boolean mCompressImages;
-    private boolean mIsSamsung = false;
+	private boolean mCompressImages;
+	private boolean mIsSamsung = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
 
-        mIsOverJellyBean = Build.VERSION.SDK_INT > 18;
-        mCompressImages = getResources().getBoolean(R.bool.send_compressed_images);
+		mIsOverJellyBean = Build.VERSION.SDK_INT > 18;
+		mCompressImages = getResources().getBoolean(R.bool.send_compressed_images);
 
 		return_flag = false;
 
@@ -119,10 +119,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		btnSend.setOnClickListener(this);
 		btnCancel = (LinearLayout) findViewById(R.id.btnCancel);
 		btnCancel.setOnClickListener(this);
-		
-		if(android.os.Build.MANUFACTURER.contains("samsung")){
+
+		if (android.os.Build.MANUFACTURER.contains("samsung")) {
 			mIsSamsung = true;
-		}else{
+		} else {
 			mIsSamsung = false;
 		}
 
@@ -176,10 +176,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 				File file = new File(_path);
 				Uri outputFileUri = Uri.fromFile(file);
-				
-				if(mIsSamsung){
+
+				if (mIsSamsung) {
 					CameraActivityForSamsung.start(_path, this);
-				}else{
+				} else {
 					Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 					intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 					startActivityForResult(intent, CAMERA);
@@ -371,7 +371,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 
@@ -410,7 +410,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					dialog.setFailed(getResources().getString(R.string.e_something_went_wrong_while_taking_a_picture));
 				}
 				break;
-				
+
 			default:
 				finish();
 				break;
@@ -423,17 +423,17 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	protected void onPhotoTaken(String path) {
-		
-		if(mIsSamsung){
+
+		if (mIsSamsung) {
 			String fileName = Uri.parse(path).getLastPathSegment();
 			mFilePath = path;
 			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
-		}else{
+		} else {
 			String fileName = Uri.parse(path).getLastPathSegment();
 			mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
 			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
 		}
-		
+
 		String[] items = mFilePath.split("/");
 		mFileName = items[items.length - 1];
 
@@ -444,7 +444,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				e.printStackTrace();
 			}
 		}
-		
+
 		BaseAsyncTask<String, Void, byte[]> task = new BaseAsyncTask<String, Void, byte[]>(this, true) {
 
 			@Override
@@ -560,14 +560,18 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 					matrix = translateMatrix;
 				} else {
-					AppDialog dialog = new AppDialog(context, true);
-					dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+					try {
+						AppDialog dialog = new AppDialog(context, true);
+						dialog.setFailed(getResources().getString(R.string.e_while_loading_image_from_gallery));
+					} catch (Exception ignore) {
+						// if activity chrashes dont show failed
+					}
 				}
 
 			}
 		};
 		task.execute(mFilePath);
-		
+
 	}
 
 	private boolean saveBitmapToFile(Bitmap bitmap, String path) {
@@ -595,18 +599,18 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	private void createThumb(String path, Bitmap b) {
 		int width = THUMB_WIDTH, height = THUMB_HEIGHT;
 		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
-		
+
 		saveBitmapToFile(sb, path);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		if(mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null){
-			if(SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")){
+
+		if (mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null) {
+			if (SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")) {
 				finish();
-			}else{
+			} else {
 				onPhotoTaken(SpikaEnterpriseApp.getInstance().samsungImagePath());
 			}
 		}
@@ -623,57 +627,56 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		if (id == R.id.btnSend) {
 			btnSend.setClickable(false);
 
-            if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
-                AppDialog compressionConfirmationDialog = new AppDialog(this, false);
-                compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question),
-                		getString(R.string.yes), getString(R.string.no));
-                compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
-                    @Override
-                    public void onPositiveButtonClick(View v) {
-                        prepareFileForUpload(compressFileBeforePrepare(getBitmapFromView(mImageView)));
-                    }
-                });
-                compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
-                    @Override
-                    public void onNegativeButtonClick(View v) {
-                        prepareFileForUpload(getBitmapFromView(mImageView));
-                    }
-                });
-            } else {
-                prepareFileForUpload(getBitmapFromView(mImageView));
-            }
+			if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+				AppDialog compressionConfirmationDialog = new AppDialog(this, false);
+				compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
+				compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+					@Override
+					public void onPositiveButtonClick(View v) {
+						prepareFileForUpload(compressFileBeforePrepare(getBitmapFromView(mImageView)));
+					}
+				});
+				compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+					@Override
+					public void onNegativeButtonClick(View v) {
+						prepareFileForUpload(getBitmapFromView(mImageView));
+					}
+				});
+			} else {
+				prepareFileForUpload(getBitmapFromView(mImageView));
+			}
 		} else if (id == R.id.btnCancel) {
 			finish();
 		}
 	}
 
-    Bitmap compressFileBeforePrepare(Bitmap bmp) {
-        int curWidth = bmp.getWidth();
-        int curHeight = bmp.getHeight();
+	Bitmap compressFileBeforePrepare(Bitmap bmp) {
+		int curWidth = bmp.getWidth();
+		int curHeight = bmp.getHeight();
 
-        int sizeToManipulate = curWidth > curHeight ? curWidth : curHeight;
-        double resizeCoefficient = MAX_SIZE / sizeToManipulate;
+		int sizeToManipulate = curWidth > curHeight ? curWidth : curHeight;
+		double resizeCoefficient = MAX_SIZE / sizeToManipulate;
 
-        int dstWidth = (int) (curWidth * resizeCoefficient);
-        int dstHeight = (int) (curHeight * resizeCoefficient);
+		int dstWidth = (int) (curWidth * resizeCoefficient);
+		int dstHeight = (int) (curHeight * resizeCoefficient);
 
-        return Bitmap.createScaledBitmap(bmp, dstWidth, dstHeight, false);
-    }
+		return Bitmap.createScaledBitmap(bmp, dstWidth, dstHeight, false);
+	}
 
-    void prepareFileForUpload(Bitmap bmp) {
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bs);
-        if (saveBitmapToFile(bmp, mFilePath)) {
-            createThumb(mFileThumbPath, bmp);
-            fileUploadAsync(mFilePath, mFileThumbPath);
-        } else {
-            AppDialog dialog = new AppDialog(this, true);
-            dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
-        }
-    }
+	void prepareFileForUpload(Bitmap bmp) {
+		ByteArrayOutputStream bs = new ByteArrayOutputStream();
+		bmp.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+		if (saveBitmapToFile(bmp, mFilePath)) {
+			createThumb(mFileThumbPath, bmp);
+			fileUploadAsync(mFilePath, mFileThumbPath);
+		} else {
+			AppDialog dialog = new AppDialog(this, true);
+			dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
+		}
+	}
 
 	private void fileUploadAsync(String filePath, final String thumbPath) {
-		
+
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
@@ -697,13 +700,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
-					
-					if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)){
-						//get fileid and thumbid for create room
+
+					if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)) {
+						// get fileid and thumbid for create room
 						if (getIntent().getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 							updateChatPicture(fileId, result.getResultData().getFileId());
-						} 
-						else {
+						} else {
 							Helper.setRoomFileId(getApplicationContext(), fileId);
 							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
 							finish();
@@ -726,10 +728,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void sendMessage(final String fileId, final String thumbId) {
-        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
-        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null,
-                rootId, messageId, this, new ApiCallback<Integer>() {
+		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
@@ -762,12 +763,12 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 			}
 		});
 	}
-	
+
 	private void updateChatPicture(final String fileId, final String thumbId) {
-		
+
 		String chatId = getIntent().getStringExtra(Const.CHAT_ID);
 		String chatName = getIntent().getStringExtra(Const.CHAT_NAME);
-		
+
 		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName, true, this, new ApiCallback<BaseModel>() {
 
 			@Override
@@ -780,7 +781,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					dialog.setFailed(null);
 				}
 			}
-		});	
+		});
 	}
 
 	@Override

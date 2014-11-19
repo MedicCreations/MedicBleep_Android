@@ -2,10 +2,14 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -76,6 +80,7 @@ public class ChatActivity extends BaseChatActivity {
 		});
 
 		getIntentData(getIntent());
+		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 	}
 
 	@Override
@@ -101,6 +106,33 @@ public class ChatActivity extends BaseChatActivity {
 
 		adapter.notifyDataSetChanged();
 	}
+
+	IntentFilter adminFilter = new IntentFilter(Const.IS_ADMIN);
+	BroadcastReceiver adminBroadCast = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			if (intent.getExtras().containsKey(Const.IS_ADMIN)) {
+
+				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, isAdmin);
+
+				if (isAdmin && isActive == 1) {
+					chatType = Const.C_ROOM_ADMIN_ACTIVE;
+				}
+				if (isAdmin && isActive == 0) {
+					chatType = Const.C_ROOM_ADMIN_INACTIVE;
+				}
+
+				setSettingsItems(chatType);
+			}
+		}
+	};
+
+	protected void onDestroy() {
+		super.onDestroy();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(adminBroadCast);
+	};
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -166,13 +198,6 @@ public class ChatActivity extends BaseChatActivity {
 							finish();
 						}
 					});
-					// dialog.setOnDismissListener(new OnDismissListener() {
-					//
-					// @Override
-					// public void onDismiss(DialogInterface dialog) {
-					// finish();
-					// }
-					// });
 				} else {
 					getMessages(true, true, true, false, false, false);
 				}
@@ -236,6 +261,7 @@ public class ChatActivity extends BaseChatActivity {
 				if (isAdmin && isActive == 0) {
 					chatType = Const.C_ROOM_ADMIN_INACTIVE;
 				}
+
 				setSettingsItems(chatType);
 			}
 
