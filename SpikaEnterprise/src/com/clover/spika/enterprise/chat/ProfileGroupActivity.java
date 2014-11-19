@@ -51,8 +51,10 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	private String newImage = "";
 	private String newThumbImage = "";
 	private boolean isAdmin = false;
+	private String categoryName = null;
+	private String categoryId = null;
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, String categoryId, String categoryName, String chatPassword) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -60,12 +62,16 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		intent.putExtra(Const.CHAT_NAME, chatName);
 		intent.putExtra(Const.IS_ADMIN, isAdmin);
 		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.CATEGORY_ID, categoryId);
+		intent.putExtra(Const.PASSWORD, chatPassword);
+		intent.putExtra(Const.CATEGORY_NAME, categoryName);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
 	}
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate, String chatPassword) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate, String chatPassword,
+			String categoryId, String categoryName) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -76,6 +82,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		intent.putExtra(Const.FROM_CHAT, fromChat);
 		intent.putExtra(Const.IS_PRIVATE, isPrivate);
 		intent.putExtra(Const.PASSWORD, chatPassword);
+		intent.putExtra(Const.CATEGORY_ID, categoryId);
+		intent.putExtra(Const.CATEGORY_NAME, categoryName);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
@@ -123,6 +131,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		membersTab.setOnClickListener(this);
 
 		chatId = getIntent().getExtras().getString(Const.CHAT_ID, "");
+		categoryId = getIntent().getExtras().getString(Const.CATEGORY_ID, null);
+		categoryName = getIntent().getExtras().getString(Const.CATEGORY_NAME, null);
 
 		fromChatAct = getIntent().getBooleanExtra(Const.FROM_CHAT, false);
 
@@ -257,10 +267,10 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		HashMap<String, String> requestParams = new HashMap<String, String>();
 
-		Switch switchPrivate = (Switch) findViewById(R.id.switch_private_room);
+		final Switch switchPrivate = (Switch) findViewById(R.id.switch_private_room);
 
 		Button tvPassword = (Button) findViewById(R.id.tvPassword);
-		String newPassword = tvPassword.getText().toString();
+		final String newPassword = tvPassword.getText().toString();
 
 		if (!TextUtils.isEmpty(newPassword) && !newPassword.equals(getString(R.string.password))) {
 			try {
@@ -281,6 +291,25 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
 				if (result.isSuccess()) {
+
+					Intent intent = new Intent();
+					intent.setAction(Const.IS_ADMIN);
+
+					intent.putExtra(Const.IS_UPDATE_PRIVATE_PASSWORD, true);
+					intent.putExtra(Const.IS_PRIVATE, switchPrivate.isChecked() ? 1 : 0);
+					if (!TextUtils.isEmpty(newPassword) && !newPassword.equals(getString(R.string.password))) {
+						try {
+							String hashPassword = Utils.getHexString(newPassword);
+							intent.putExtra(Const.PASSWORD, hashPassword);
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+					}
+
+					LocalBroadcastManager.getInstance(ProfileGroupActivity.this).sendBroadcast(intent);
+
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(ProfileGroupActivity.this, false);
@@ -300,8 +329,23 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 				Intent intent = getIntent();
 				intent.setAction(Const.IS_ADMIN);
+				intent.putExtra(Const.IS_UPDATE_ADMIN, true);
 				intent.getExtras().remove(Const.IS_ADMIN);
 				intent.putExtra(Const.IS_ADMIN, isAdmin);
+				profileFragmentPagerAdapter.setAdminData(intent);
+
+				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+			} else if (data.getExtras() != null && data.getExtras().containsKey(Const.CATEGORY_ID)) {
+
+				categoryId = data.getExtras().getString(Const.CATEGORY_ID);
+				categoryName = data.getExtras().getString(Const.CATEGORY_NAME);
+
+				Intent intent = getIntent();
+				intent.setAction(Const.IS_ADMIN);
+				intent.putExtra(Const.IS_UPDATE_CATEGORY, true);
+				intent.putExtra(Const.IS_ADMIN, isAdmin);
+				intent.putExtra(Const.CATEGORY_ID, categoryId);
+				intent.putExtra(Const.CATEGORY_NAME, categoryName);
 				profileFragmentPagerAdapter.setAdminData(intent);
 
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

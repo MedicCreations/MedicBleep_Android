@@ -57,6 +57,7 @@ public class GcmIntentService extends IntentService {
 				String chatType = "";
 				String type = "";
 				int isActive = 0;
+				// TODO category id and name from push
 				int isPrivate = 0;
 				String adminId = "";
 				String chatPassword = "";

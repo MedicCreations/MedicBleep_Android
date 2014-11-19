@@ -32,7 +32,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -113,7 +112,7 @@ public class ChatActivity extends BaseChatActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
-			if (intent.getExtras().containsKey(Const.IS_ADMIN)) {
+			if (intent.getExtras().containsKey(Const.IS_UPDATE_ADMIN)) {
 
 				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, isAdmin);
 
@@ -125,7 +124,26 @@ public class ChatActivity extends BaseChatActivity {
 				}
 
 				setSettingsItems(chatType);
+			} else if (intent.getExtras().containsKey(Const.IS_UPDATE_PRIVATE_PASSWORD)) {
+
+				if (intent.getExtras().containsKey(Const.IS_PRIVATE)) {
+					isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
+				}
+
+				if (intent.getExtras().containsKey(Const.PASSWORD)) {
+					chatPassword = intent.getExtras().getString(Const.PASSWORD);
+				}
+			} else if (intent.getExtras().containsKey(Const.IS_UPDATE_CATEGORY)) {
+
+				if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
+					categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
+				}
+
+				if (intent.getExtras().containsKey(Const.CATEGORY_NAME)) {
+					categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
+				}
 			}
+
 		}
 	};
 
@@ -167,9 +185,7 @@ public class ChatActivity extends BaseChatActivity {
 				}
 				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 				chatPassword = intent.getExtras().getString(Const.PASSWORD);
-
-				Logger.d("ovo je password: " + isPrivate);
-
+				
 				setTitle(chatName);
 
 				adapter.clearItems();
@@ -217,7 +233,7 @@ public class ChatActivity extends BaseChatActivity {
 
 								if (result.isSuccess()) {
 
-									chatId = result.getResultData().getChat_id();
+									chatId = String.valueOf(result.getResultData().getChat_id());
 									chatName = result.getResultData().getChat_name();
 
 									setTitle(chatName);
@@ -243,6 +259,14 @@ public class ChatActivity extends BaseChatActivity {
 								setNoItemsVisibility();
 							}
 						});
+			}
+
+			if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
+				categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
+			}
+
+			if (intent.getExtras().containsKey(Const.CATEGORY_NAME)) {
+				categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
 			}
 
 			if (intent.getExtras().containsKey(Const.TYPE)) {

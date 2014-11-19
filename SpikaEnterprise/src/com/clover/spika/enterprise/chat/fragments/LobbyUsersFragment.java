@@ -18,7 +18,7 @@ import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.models.ChatsLobby;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -58,7 +58,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new LobbyAdapter(getActivity(), new ArrayList<ChatsLobby>(), true);
+		adapter = new LobbyAdapter(getActivity(), new ArrayList<Chat>(), true);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
@@ -80,7 +80,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		}
 	};
 
-	private void setData(List<ChatsLobby> data, boolean toClearPrevious) {
+	private void setData(List<Chat> data, boolean toClearPrevious) {
 		if (mainListView == null) {
 			return;
 		}
@@ -133,12 +133,18 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			ChatsLobby user = adapter.getItem(position);
+			Chat user = adapter.getItem(position);
 
 			Intent intent = new Intent(getActivity(), ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChatId()));
-			intent.putExtra(Const.CHAT_NAME, user.getChatName());
+			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChat_id()));
+			intent.putExtra(Const.CHAT_NAME, user.getChat_name());
 			intent.putExtra(Const.IMAGE, user.getImage());
+
+			if (user.getCategory() != null) {
+				intent.putExtra(Const.CATEGORY_ID, user.getCategory().getId());
+				intent.putExtra(Const.CATEGORY_NAME, user.getCategory().getName());
+			}
+
 			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
 			intent.putExtra(Const.TYPE, user.getType());
 			intent.putExtra(Const.IS_ACTIVE, user.isActive());

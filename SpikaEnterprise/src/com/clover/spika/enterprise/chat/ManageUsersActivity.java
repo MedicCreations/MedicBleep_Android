@@ -347,6 +347,12 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			intent.putExtra(Const.CHAT_ID, String.valueOf(chatModelNew.getChat_id()));
 			intent.putExtra(Const.CHAT_NAME, chatModelNew.getChat_name());
 			intent.putExtra(Const.IMAGE, chatModelNew.getImage());
+			
+			if (chatModelNew.getCategory() != null) {
+				intent.putExtra(Const.CATEGORY_ID, chatModelNew.getCategory().getId());
+				intent.putExtra(Const.CATEGORY_NAME, chatModelNew.getCategory().getName());
+			}
+			
 			intent.putExtra(Const.IMAGE_THUMB, chatModelNew.getImageThumb());
 			intent.putExtra(Const.TYPE, chatModelNew.getType());
 			intent.putExtra(Const.IS_ACTIVE, chatModelNew.isActive());

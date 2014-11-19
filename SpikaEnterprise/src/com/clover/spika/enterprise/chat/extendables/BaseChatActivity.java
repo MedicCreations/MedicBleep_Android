@@ -76,6 +76,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private int drawerDuration = 300;
 	private int drawerHeight = 200;
 	protected String chatName = null;
+	protected String categoryName = null;
+	protected String categoryId = null;
 	protected int chatType = 0;
 
 	private ListView settingsListView;
@@ -532,9 +534,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 				if (chatType == Const.C_PRIVATE) {
 					ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
 				} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
-					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
+					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 				} else {
-					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword);
+					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryName);
 				}
 
 			} else if (id == R.id.goBack) {
@@ -582,9 +584,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 					if (chatType == Const.C_PRIVATE) {
 						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
 					} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
-						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false);
+						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 					} else {
-						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword);
+						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryId);
 					}
 				} else if (position == SETTINGS_POSITION_SECOND) {
 					if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {

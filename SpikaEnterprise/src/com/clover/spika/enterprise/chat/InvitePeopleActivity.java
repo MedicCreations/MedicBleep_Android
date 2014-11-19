@@ -145,7 +145,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		mainList.setOnItemClickListener(this);
 
 		handleIntent(getIntent());
-		
+
 		setInitialTextToTxtUsers();
 	}
 
@@ -181,7 +181,8 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainList.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -253,7 +254,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	 * @param listener
 	 */
 	public void setSearch(OnSearchListener listener) {
-		
+
 		mSearchListener = listener;
 		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 
@@ -263,10 +264,9 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	 * Disable search bar
 	 */
 	public void disableSearch() {
-		
-		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, screenTitle, 
-				screenWidth, speedSearchAnimation, invitationOptions);
-	
+
+		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
+
 	}
 
 	private OnClickListener searchOnClickListener = new OnClickListener() {
@@ -299,13 +299,11 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	};
 
 	private void openSearchAnimation() {
-		openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-				screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
+		openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
 	}
 
 	private void closeSearchAnimation() {
-		closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, 
-				screenWidth, speedSearchAnimation, invitationOptions);
+		closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
 	}
 
 	@Override
@@ -346,11 +344,18 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 					intent.putExtra(Const.CHAT_NAME, result.getResultData().getChat_name());
 					intent.putExtra(Const.IMAGE, result.getResultData().getImage());
 					intent.putExtra(Const.IMAGE_THUMB, result.getResultData().getImageThumb());
-					if(chatType == Const.C_PRIVATE){
+
+					if (chatType == Const.C_PRIVATE) {
 						intent.putExtra(Const.TYPE, String.valueOf(Const.C_ROOM_ADMIN_ACTIVE));
-					}else{
+					} else {
 						intent.putExtra(Const.TYPE, result.getResultData().getType());
 					}
+
+					if (result.getResultData().getCategory() != null) {
+						intent.putExtra(Const.CATEGORY_ID, result.getResultData().getCategory().getId());
+						intent.putExtra(Const.CATEGORY_NAME, result.getResultData().getCategory().getName());
+					}
+
 					intent.putExtra(Const.IS_ACTIVE, result.getResultData().isActive());
 					intent.putExtra(Const.IS_ADMIN, isAdmin);
 					intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -391,20 +396,20 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				builder.append(", ");
 			}
 		}
-		
+
 		String selectedUsers = getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers + builder.toString());
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
+
 		invitedPeople.setText(span);
-		
+
 	}
-	
-	private void setInitialTextToTxtUsers(){
+
+	private void setInitialTextToTxtUsers() {
 		String selectedUsers = getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers);
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
+
 		invitedPeople.setText(span);
 	}
 }

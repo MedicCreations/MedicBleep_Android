@@ -66,7 +66,10 @@ public class Const {
 	public static final String FROM_NOTIFICATION = "FromNotification";
 	public static final String PUSH_INTENT_ACTION = "PushIntentAction";
 	public static final String CHANGE_PASSCODE_INTENT = "ChangePasscodeIntent";
+	public static final String IS_UPDATE_ADMIN = "IsUpdateAdmin";
+	public static final String IS_UPDATE_PRIVATE_PASSWORD = "IsUpdatePrivatePassword";
 	public static final String IS_UPDATE_PASSWORD = "IsUpdatePassword";
+	public static final String IS_UPDATE_CATEGORY = "IsUpdateCategory";
 
 	// Recording constants
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds

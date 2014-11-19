@@ -50,7 +50,7 @@ public class ChooseCategoryActivity extends BaseActivity {
 		});
 	}
 
-	public void returnCategoryIdToActivity(String categoryId, String categoryName) {
+	public void returnCategoryIdToActivity(final String categoryId, final String categoryName) {
 
 		if (chatId != null) {
 			HashMap<String, String> params = new HashMap<String, String>();
@@ -61,6 +61,10 @@ public class ChooseCategoryActivity extends BaseActivity {
 				@Override
 				public void onApiResponse(Result<BaseModel> result) {
 					if (result.isSuccess()) {
+						Intent data = new Intent();
+						data.putExtra(Const.CATEGORY_ID, categoryId);
+						data.putExtra(Const.CATEGORY_NAME, categoryName);
+						setResult(RESULT_OK, data);
 						finish();
 					} else {
 						AppDialog dialog = new AppDialog(ChooseCategoryActivity.this, false);

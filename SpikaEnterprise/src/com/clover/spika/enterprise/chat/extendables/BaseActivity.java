@@ -202,6 +202,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					public void onClick(View v) {
 						Intent intent = new Intent(context, ChatActivity.class);
 						intent.putExtra(Const.CHAT_ID, chatId);
+						// TODO category id and name from notification
 						intent.putExtra(Const.CHAT_NAME, chatName);
 						intent.putExtra(Const.IMAGE, chatImage);
 						intent.putExtra(Const.IMAGE_THUMB, chatThumb);

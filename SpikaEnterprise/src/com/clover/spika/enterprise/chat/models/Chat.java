@@ -1,9 +1,10 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
+
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class Chat extends BaseModel {
 
@@ -11,7 +12,7 @@ public class Chat extends BaseModel {
 	private Chat chat;
 
 	@SerializedName("chat_id")
-	private String chat_id;
+	private long chat_id;
 
 	@SerializedName("chat_name")
 	private String chat_name;
@@ -25,29 +26,37 @@ public class Chat extends BaseModel {
 	@SerializedName("messages")
 	private List<Message> messages;
 
-    @SerializedName("user")
-    private User user;
-    
-    @SerializedName("image_thumb")
-    private String imageThumb;
-    
-    @SerializedName("image")
-    private String image;
-    
-    @SerializedName("admin_id")
-    private String adminId;
-    
-    @SerializedName("is_active")
-    private int isActive;
-    
-    @SerializedName("type")
-    private String type;
-    
-    @SerializedName("is_private")
+	@SerializedName("user")
+	private User user;
+
+	@SerializedName("image_thumb")
+	private String imageThumb;
+
+	@SerializedName("image")
+	private String image;
+
+	@SerializedName("admin_id")
+	private String adminId;
+
+	@SerializedName("is_active")
+	private int isActive;
+
+	@SerializedName("type")
+	private String type;
+
+	@SerializedName("is_private")
 	private int isPrivate;
-	
+
 	@SerializedName("password")
 	private String password;
+
+	@SerializedName("unread")
+	@Expose
+	private String unread;
+
+	@SerializedName("category")
+	@Expose
+	private Category category;
 
 	private boolean isNewMsg = false;
 	private boolean isRefresh = false;
@@ -104,11 +113,11 @@ public class Chat extends BaseModel {
 		this.adapterCount = adapterCount;
 	}
 
-	public String getChat_id() {
+	public long getChat_id() {
 		return chat_id;
 	}
 
-	public void setChat_id(String chat_id) {
+	public void setChat_id(long chat_id) {
 		this.chat_id = chat_id;
 	}
 
@@ -152,22 +161,22 @@ public class Chat extends BaseModel {
 		this.chat = chat;
 	}
 
-    public List<Message> getMessages() {
-        return messages;
-    }
+	public List<Message> getMessages() {
+		return messages;
+	}
 
-    public User getUser() {
-        return user;
-    }
-    
-    public String getImageThumb() {
+	public User getUser() {
+		return user;
+	}
+
+	public String getImageThumb() {
 		return imageThumb;
 	}
 
 	public void setImageThumb(String imageThumb) {
 		this.imageThumb = imageThumb;
 	}
-	
+
 	public String getImage() {
 		return image;
 	}
@@ -175,7 +184,7 @@ public class Chat extends BaseModel {
 	public void setImage(String image) {
 		this.image = image;
 	}
-	
+
 	public String getAdminId() {
 		return adminId;
 	}
@@ -183,7 +192,7 @@ public class Chat extends BaseModel {
 	public void setAdminId(String adminId) {
 		this.adminId = adminId;
 	}
-	
+
 	public int isActive() {
 		return isActive;
 	}
@@ -199,7 +208,7 @@ public class Chat extends BaseModel {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	public int isPrivate() {
 		return isPrivate;
 	}
@@ -207,7 +216,7 @@ public class Chat extends BaseModel {
 	public void setPrivate(int isPrivate) {
 		this.isPrivate = isPrivate;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -217,68 +226,84 @@ public class Chat extends BaseModel {
 	}
 
 	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
 
-        Chat chat1 = (Chat) o;
+		Chat chat1 = (Chat) o;
 
-        if (adapterCount != chat1.adapterCount) return false;
-        if (isClear != chat1.isClear) return false;
-        if (isNewMsg != chat1.isNewMsg) return false;
-        if (isPagging != chat1.isPagging) return false;
-        if (isRefresh != chat1.isRefresh) return false;
-        if (isSend != chat1.isSend) return false;
-        if (chat != null ? !chat.equals(chat1.chat) : chat1.chat != null) return false;
-        if (chat_id != null ? !chat_id.equals(chat1.chat_id) : chat1.chat_id != null) return false;
-        if (chat_name != null ? !chat_name.equals(chat1.chat_name) : chat1.chat_name != null)
-            return false;
-        if (messages != null ? !messages.equals(chat1.messages) : chat1.messages != null)
-            return false;
-        if (seen_by != null ? !seen_by.equals(chat1.seen_by) : chat1.seen_by != null) return false;
-        if (total_count != null ? !total_count.equals(chat1.total_count) : chat1.total_count != null)
-            return false;
-        if (user != null ? !user.equals(chat1.user) : chat1.user != null) return false;
+		if (adapterCount != chat1.adapterCount)
+			return false;
+		if (isClear != chat1.isClear)
+			return false;
+		if (isNewMsg != chat1.isNewMsg)
+			return false;
+		if (isPagging != chat1.isPagging)
+			return false;
+		if (isRefresh != chat1.isRefresh)
+			return false;
+		if (isSend != chat1.isSend)
+			return false;
+		if (chat != null ? !chat.equals(chat1.chat) : chat1.chat != null)
+			return false;
+		if (chat_id != chat1.chat_id)
+			return false;
+		if (chat_name != null ? !chat_name.equals(chat1.chat_name) : chat1.chat_name != null)
+			return false;
+		if (messages != null ? !messages.equals(chat1.messages) : chat1.messages != null)
+			return false;
+		if (seen_by != null ? !seen_by.equals(chat1.seen_by) : chat1.seen_by != null)
+			return false;
+		if (total_count != null ? !total_count.equals(chat1.total_count) : chat1.total_count != null)
+			return false;
+		if (user != null ? !user.equals(chat1.user) : chat1.user != null)
+			return false;
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (chat != null ? chat.hashCode() : 0);
-        result = 31 * result + (chat_id != null ? chat_id.hashCode() : 0);
-        result = 31 * result + (chat_name != null ? chat_name.hashCode() : 0);
-        result = 31 * result + (seen_by != null ? seen_by.hashCode() : 0);
-        result = 31 * result + (total_count != null ? total_count.hashCode() : 0);
-        result = 31 * result + (messages != null ? messages.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        result = 31 * result + (isNewMsg ? 1 : 0);
-        result = 31 * result + (isRefresh ? 1 : 0);
-        result = 31 * result + (isClear ? 1 : 0);
-        result = 31 * result + (isSend ? 1 : 0);
-        result = 31 * result + (isPagging ? 1 : 0);
-        result = 31 * result + adapterCount;
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (chat != null ? chat.hashCode() : 0);
+		result = 31 * result + (chat_name != null ? chat_name.hashCode() : 0);
+		result = 31 * result + (seen_by != null ? seen_by.hashCode() : 0);
+		result = 31 * result + (total_count != null ? total_count.hashCode() : 0);
+		result = 31 * result + (messages != null ? messages.hashCode() : 0);
+		result = 31 * result + (user != null ? user.hashCode() : 0);
+		result = 31 * result + (isNewMsg ? 1 : 0);
+		result = 31 * result + (isRefresh ? 1 : 0);
+		result = 31 * result + (isClear ? 1 : 0);
+		result = 31 * result + (isSend ? 1 : 0);
+		result = 31 * result + (isPagging ? 1 : 0);
+		result = 31 * result + adapterCount;
+		return result;
+	}
 
-    @Override
-    public String toString() {
-        return "Chat{" +
-                "chat=" + chat +
-                ", chat_id='" + chat_id + '\'' +
-                ", chat_name='" + chat_name + '\'' +
-                ", seen_by='" + seen_by + '\'' +
-                ", total_count='" + total_count + '\'' +
-                ", messages=" + messages +
-                ", user=" + user +
-                ", isNewMsg=" + isNewMsg +
-                ", isRefresh=" + isRefresh +
-                ", isClear=" + isClear +
-                ", isSend=" + isSend +
-                ", isPagging=" + isPagging +
-                ", adapterCount=" + adapterCount +
-                "} " + super.toString();
-    }
+	@Override
+	public String toString() {
+		return "Chat{" + "chat=" + chat + ", chat_id='" + chat_id + '\'' + ", chat_name='" + chat_name + '\'' + ", seen_by='" + seen_by + '\'' + ", total_count='" + total_count
+				+ '\'' + ", messages=" + messages + ", user=" + user + ", isNewMsg=" + isNewMsg + ", isRefresh=" + isRefresh + ", isClear=" + isClear + ", isSend=" + isSend
+				+ ", isPagging=" + isPagging + ", adapterCount=" + adapterCount + "} " + super.toString();
+	}
+
+	public String getUnread() {
+		return unread;
+	}
+
+	public void setUnread(String unread) {
+		this.unread = unread;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
 }

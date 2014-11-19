@@ -25,6 +25,10 @@ public class Group {
 	@Expose
 	private String image_thumb;
 
+	@SerializedName("category")
+	@Expose
+	private Category category;
+
 	public int getId() {
 		return id;
 	}
@@ -95,5 +99,13 @@ public class Group {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 }

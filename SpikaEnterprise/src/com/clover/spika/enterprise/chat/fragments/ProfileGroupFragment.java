@@ -39,6 +39,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	boolean isAdmin;
 	int isPrivate;
 	String chatPassword;
+	String categoryName = null;
+	String categoryId = null;
 
 	Button tvPassword;
 	Button tvSetAdmin;
@@ -109,36 +111,27 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	public void setVisual() {
 		if (isAdmin) {
 
-			if (null != chatPassword) {
-				if (chatPassword.equals("")) {
-					tvPassword.setText("");
-					tvPassword.setHint(getString(R.string.set_password));
-				}
-			} else {
-				tvPassword.setText("");
-				tvPassword.setHint(getString(R.string.set_password));
-			}
+			tvPassword.setHint(getString(R.string.set_password));
+
+			tvChangeCat.setClickable(true);
 
 			addPhotoButton.setOnClickListener(this);
 			tvPassword.setOnClickListener(this);
 			tvSetAdmin.setOnClickListener(this);
 			tvChangeCat.setOnClickListener(this);
-
 		} else {
 
-			if (null != chatPassword) {
-				if (chatPassword.equals("")) {
-					passwordLayout.setVisibility(View.GONE);
-				}
-			} else {
-				passwordLayout.setVisibility(View.GONE);
-			}
-
+			passwordLayout.setVisibility(View.GONE);
+			tvChangeCat.setClickable(false);
 			layoutSetAdmin.setVisibility(View.GONE);
-			layoutChangeCategory.setVisibility(View.GONE);
-
 			addPhotoButton.setVisibility(View.GONE);
 			switchIsPrivate.setEnabled(false);
+		}
+
+		if (!TextUtils.isEmpty(categoryName)) {
+			tvChangeCat.setText(categoryName);
+		} else {
+			tvChangeCat.setText(getString(R.string.none));
 		}
 	}
 
@@ -150,6 +143,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN);
 			isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
+			categoryName = intent.getExtras().getString(Const.CATEGORY_NAME);
+			categoryId = intent.getExtras().getString(Const.CATEGORY_ID);
 		}
 	}
 
@@ -212,7 +207,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 			intent = new Intent(getActivity(), ChooseCategoryActivity.class);
 			intent.putExtra(Const.CHAT_ID, chatId);
-			startActivity(intent);
+			startActivityForResult(intent, Const.ADMIN_REQUEST);
 			break;
 
 		default:

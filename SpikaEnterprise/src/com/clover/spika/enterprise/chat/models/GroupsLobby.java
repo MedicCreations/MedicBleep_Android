@@ -8,18 +8,18 @@ import com.google.gson.annotations.SerializedName;
 
 public class GroupsLobby {
 
-    @SerializedName("total_count")
-    @Expose
-    private int totalCount;
+	@SerializedName("total_count")
+	@Expose
+	private int totalCount;
 
-    @SerializedName("group_chats")
-    @Expose
-    private List<ChatsLobby> chatsList;
+	@SerializedName("group_chats")
+	@Expose
+	private List<Chat> chatsList;
 
-    public GroupsLobby () {
-    	chatsList = new ArrayList<ChatsLobby>();
-    }
-    
+	public GroupsLobby() {
+		chatsList = new ArrayList<Chat>();
+	}
+
 	public int getTotalCount() {
 		return totalCount;
 	}
@@ -28,11 +28,11 @@ public class GroupsLobby {
 		this.totalCount = totalCount;
 	}
 
-	public List<ChatsLobby> getChatsList() {
+	public List<Chat> getChatsList() {
 		return chatsList;
 	}
 
-	public void setChatsList(List<ChatsLobby> chatsList) {
+	public void setChatsList(List<Chat> chatsList) {
 		this.chatsList = chatsList;
 	}
 

@@ -34,105 +34,105 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class RoomsActivity extends BaseActivity implements AdapterView.OnItemClickListener, OnSearchListener {
 
-    public static void startActivity(String categoryId, String categoryName, @NonNull Context context) {
-        Intent intent = new Intent(context, RoomsActivity.class);
-        intent.putExtra(Const.CATEGORY_ID, categoryId);
-        intent.putExtra(Const.CATEGORY_NAME, categoryName);
-        context.startActivity(intent);
-    }
+	public static void startActivity(String categoryId, String categoryName, @NonNull Context context) {
+		Intent intent = new Intent(context, RoomsActivity.class);
+		intent.putExtra(Const.CATEGORY_ID, categoryId);
+		intent.putExtra(Const.CATEGORY_NAME, categoryName);
+		context.startActivity(intent);
+	}
 
-    private TextView noItems;
+	private TextView noItems;
 
-    private PullToRefreshListView mainListView;
-    public RoomsAdapter adapter;
+	private PullToRefreshListView mainListView;
+	public RoomsAdapter adapter;
 
-    private ImageButton searchBtn;
-    private EditText searchEt;
-    private ImageButton closeSearchBtn;
+	private ImageButton searchBtn;
+	private EditText searchEt;
+	private ImageButton closeSearchBtn;
 
-    private String mCategory = "0";
-    private String mCategoryName = "";
-    private String mSearchData;
+	private String mCategory = "0";
+	private String mCategoryName = "";
+	private String mSearchData;
 
-    private int mCurrentIndex = 0;
-    private int mTotalCount = 0;
-    private int screenWidth;
-    private int speedSearchAnimation = 300;
-    private OnSearchListener mSearchListener;
+	private int mCurrentIndex = 0;
+	private int mTotalCount = 0;
+	private int screenWidth;
+	private int speedSearchAnimation = 300;
+	private OnSearchListener mSearchListener;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rooms);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_rooms);
 
-        adapter = new RoomsAdapter(this, new ArrayList<Chat>());
+		adapter = new RoomsAdapter(this, new ArrayList<Chat>());
 
-        mCurrentIndex = 0;
+		mCurrentIndex = 0;
 
-        noItems = (TextView) findViewById(R.id.noItems);
-        screenWidth = getResources().getDisplayMetrics().widthPixels;
-        searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-        searchEt = (EditText) findViewById(R.id.searchEt);
-        closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
+		noItems = (TextView) findViewById(R.id.noItems);
+		screenWidth = getResources().getDisplayMetrics().widthPixels;
+		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
+		searchEt = (EditText) findViewById(R.id.searchEt);
+		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
-        mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
-        mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
-        mainListView.setOnItemClickListener(this);
+		mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
+		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
+		mainListView.setOnItemClickListener(this);
 
-        mainListView.setAdapter(adapter);
-        mainListView.setOnRefreshListener(refreshListener2);
+		mainListView.setAdapter(adapter);
+		mainListView.setOnRefreshListener(refreshListener2);
 
-        mCategory = getIntent().getStringExtra(Const.CATEGORY_ID);
-        mCategoryName = getIntent().getStringExtra(Const.CATEGORY_NAME);
+		mCategory = getIntent().getStringExtra(Const.CATEGORY_ID);
+		mCategoryName = getIntent().getStringExtra(Const.CATEGORY_NAME);
 
-        ((TextView)findViewById(R.id.screenTitle)).setText(getString(R.string.rooms));
+		((TextView) findViewById(R.id.screenTitle)).setText(getString(R.string.rooms));
 
-        getRooms(mCurrentIndex, null, false);
+		getRooms(mCurrentIndex, null, false);
 
-        findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 
-        closeSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            	closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), 
-            			closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), 
-            			screenWidth, speedSearchAnimation, (LinearLayout) findViewById(R.id.roomsOptions));
-            }
-        });
-        
-        findViewById(R.id.createRoomBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateRoomActivity.start(mCategory, mCategoryName, RoomsActivity.this);
-            }
-        });
-    }
+		closeSearchBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+						speedSearchAnimation, (LinearLayout) findViewById(R.id.roomsOptions));
+			}
+		});
 
-    @Override
-    public void onSearch(String data) {
-        mCurrentIndex = 0;
-        if (TextUtils.isEmpty(data)) {
-            mSearchData = null;
-        } else {
-            mSearchData = data;
-        }
-        getRooms(mCurrentIndex, mSearchData, true);
-    }
+		findViewById(R.id.createRoomBtn).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				CreateRoomActivity.start(mCategory, mCategoryName, RoomsActivity.this);
+			}
+		});
+	}
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    	position = position - 1;
+	@Override
+	public void onSearch(String data) {
+		mCurrentIndex = 0;
+		if (TextUtils.isEmpty(data)) {
+			mSearchData = null;
+		} else {
+			mSearchData = data;
+		}
+		getRooms(mCurrentIndex, mSearchData, true);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = adapter.getItem(position);
-			
+
 			boolean isAdmin = false;
-			if(Helper.getUserId(this).equals(room.getAdminId())) isAdmin = true;
+			if (Helper.getUserId(this).equals(room.getAdminId()))
+				isAdmin = true;
 
 			Intent intent = new Intent(this, ChatActivity.class);
 			intent.putExtra(Const.CHAT_ID, String.valueOf(room.getChat_id()));
@@ -140,46 +140,50 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 			intent.putExtra(Const.TYPE, room.getType());
 			intent.putExtra(Const.IS_ACTIVE, room.isActive());
 			intent.putExtra(Const.IMAGE, room.getImage());
+
+			if (room.getCategory() != null) {
+				intent.putExtra(Const.CATEGORY_ID, room.getCategory().getId());
+				intent.putExtra(Const.CATEGORY_NAME, room.getCategory().getName());
+			}
+
 			intent.putExtra(Const.IMAGE_THUMB, room.getImageThumb());
 			intent.putExtra(Const.IS_ADMIN, isAdmin);
 			intent.putExtra(Const.IS_PRIVATE, room.isPrivate());
 			intent.putExtra(Const.PASSWORD, room.getPassword());
 			startActivity(intent);
 		}
-    }
+	}
 
-    PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-            // mCurrentIndex--; don't need this for now
-        }
+	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
+		@Override
+		public void onPullDownToRefresh(PullToRefreshBase refreshView) {
+			// mCurrentIndex--; don't need this for now
+		}
 
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-            mCurrentIndex++;
-            getRooms(mCurrentIndex, mSearchData, false);
-        }
-    };
-    
-    public void setSearch(OnSearchListener listener){
+		@Override
+		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+			mCurrentIndex++;
+			getRooms(mCurrentIndex, mSearchData, false);
+		}
+	};
+
+	public void setSearch(OnSearchListener listener) {
 		mSearchListener = listener;
 		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 	}
-	
-	public void disableSearch(){
-		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, 
-				(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation, 
+
+	public void disableSearch() {
+		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, (TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation,
 				(LinearLayout) findViewById(R.id.roomsOptions));
 	}
-	
+
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-						(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation, 
-						(LinearLayout) findViewById(R.id.roomsOptions));
+				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+						speedSearchAnimation, (LinearLayout) findViewById(R.id.roomsOptions));
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -206,19 +210,19 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-					(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation, 
-					(LinearLayout) findViewById(R.id.roomsOptions));
+			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+					speedSearchAnimation, (LinearLayout) findViewById(R.id.roomsOptions));
 			return;
 		}
 
 		finish();
 	}
-	
+
 	private void setData(List<Chat> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.clearItems();
@@ -241,8 +245,8 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 		}
 	}
 
-    private void getRooms(int page, String search, final boolean toClear) {
-    	RoomsApi roomApi = new RoomsApi();
+	private void getRooms(int page, String search, final boolean toClear) {
+		RoomsApi roomApi = new RoomsApi();
 		if (search == null) {
 			roomApi.getRoomsWithPage(mCurrentIndex, mCategory, this, true, new ApiCallback<RoomsList>() {
 
@@ -266,14 +270,14 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 				}
 			});
 		}
-    }
-    
-    @Override
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		setSearch(this);
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();

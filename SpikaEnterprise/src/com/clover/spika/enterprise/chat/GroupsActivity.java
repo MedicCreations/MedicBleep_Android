@@ -40,15 +40,15 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
-	
+
 	private ImageButton searchBtn;
 	private EditText searchEt;
 	private ImageButton closeSearchBtn;
-	
+
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
 	private OnSearchListener mSearchListener;
-	
+
 	private String mCategory = "0";
 
 	public static void startActivity(String categoryId, Context context) {
@@ -67,7 +67,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		adapter = new GroupAdapter(this, new ArrayList<Group>());
 
 		mCurrentIndex = 0;
-		
+
 		noItems = (TextView) findViewById(R.id.noItems);
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
@@ -80,27 +80,27 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		mCategory = getIntent().getStringExtra(Const.CATEGORY_ID);
-		
-		((TextView)findViewById(R.id.screenTitle)).setText(getString(R.string.groups));
+
+		((TextView) findViewById(R.id.screenTitle)).setText(getString(R.string.groups));
 
 		getGroup(mCurrentIndex, null, false);
-		
+
 		findViewById(R.id.goBack).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finish();
 			}
 		});
-		
+
 		closeSearchBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-						(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation);
+				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+						speedSearchAnimation);
 			}
 		});
 
@@ -111,13 +111,13 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		super.onResume();
 		setSearch(this);
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
 		disableSearch();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
 		@Override
@@ -135,7 +135,8 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	private void setData(List<Group> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.clearItems();
@@ -157,7 +158,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
 	}
-	
+
 	public void getGroup(int page, String search, final boolean toClear) {
 		GroupsApi groupApi = new GroupsApi();
 		if (search == null) {
@@ -184,7 +185,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 			});
 		}
 	}
-	
+
 	@Override
 	public void onSearch(String data) {
 		mCurrentIndex = 0;
@@ -209,30 +210,35 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 			intent.putExtra(Const.FIRSTNAME, group.getGroupName());
 			intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
 			intent.putExtra(Const.IMAGE, group.getImage());
+
+			if (group.getCategory() != null) {
+				intent.putExtra(Const.CATEGORY_ID, group.getCategory().getId());
+				intent.putExtra(Const.CATEGORY_NAME, group.getCategory().getName());
+			}
+
 			intent.putExtra(Const.IMAGE_THUMB, group.getImage_thumb());
 			intent.putExtra(Const.IS_GROUP, true);
 			intent.putExtra(Const.IS_ADMIN, false);
 			startActivity(intent);
 		}
 	}
-	
-	public void setSearch(OnSearchListener listener){
+
+	public void setSearch(OnSearchListener listener) {
 		mSearchListener = listener;
 		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
 	}
-	
-	public void disableSearch(){
-		disableSearch(searchBtn, searchEt, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, 
-				(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation);
+
+	public void disableSearch() {
+		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, (TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation);
 	}
-	
+
 	private OnClickListener searchOnClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-						(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation);
+				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+						speedSearchAnimation);
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -259,8 +265,8 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	@Override
 	public void onBackPressed() {
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton)findViewById(R.id.goBack), closeSearchBtn, searchEt, 
-					(TextView) findViewById(R.id.screenTitle), screenWidth, speedSearchAnimation);
+			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, (TextView) findViewById(R.id.screenTitle), screenWidth,
+					speedSearchAnimation);
 			return;
 		}
 

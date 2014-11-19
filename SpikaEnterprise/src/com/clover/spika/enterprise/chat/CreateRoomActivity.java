@@ -129,7 +129,7 @@ public class CreateRoomActivity extends BaseActivity {
 
 		roomIsPrivate = is_private;
 
-		if (!TextUtils.isEmpty(password)){
+		if (!TextUtils.isEmpty(password)) {
 			try {
 				String hashPassword = Utils.getHexString(password);
 				roomPassword = hashPassword;
@@ -141,8 +141,6 @@ public class CreateRoomActivity extends BaseActivity {
 		} else {
 			roomPassword = "";
 		}
-		
-		
 
 		ConfirmRoomFragment fragment = new ConfirmRoomFragment();
 		Bundle bundle = new Bundle();
@@ -173,7 +171,7 @@ public class CreateRoomActivity extends BaseActivity {
 	}
 
 	public void createRoomFinaly(String userIds) {
-		
+
 		Logger.d("password: " + roomPassword);
 		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
 
@@ -182,7 +180,7 @@ public class CreateRoomActivity extends BaseActivity {
 				if (result.isSuccess()) {
 
 					String chat_name = result.getResultData().getChat().getChat_name();
-					String chat_id = result.getResultData().getChat().getChat_id();
+					String chat_id = String.valueOf(result.getResultData().getChat().getChat_id());
 					String chat_image = room_file_id;
 					String chat_image_thumb = room_thumb_id;
 
@@ -191,6 +189,12 @@ public class CreateRoomActivity extends BaseActivity {
 					intent.putExtra(Const.CHAT_ID, chat_id);
 					intent.putExtra(Const.CHAT_NAME, chat_name);
 					intent.putExtra(Const.IMAGE, chat_image);
+
+					if (result.getResultData().getChat().getCategory() != null) {
+						intent.putExtra(Const.CATEGORY_ID, result.getResultData().getChat().getCategory().getId());
+						intent.putExtra(Const.CATEGORY_NAME, result.getResultData().getChat().getCategory().getName());
+					}
+
 					intent.putExtra(Const.IMAGE_THUMB, chat_image_thumb);
 					intent.putExtra(Const.IS_ACTIVE, 1);
 

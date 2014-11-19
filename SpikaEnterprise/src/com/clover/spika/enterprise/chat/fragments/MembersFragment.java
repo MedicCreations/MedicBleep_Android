@@ -21,106 +21,109 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class MembersFragment extends CustomFragment implements OnUserClickedListener<User>{
+public class MembersFragment extends CustomFragment implements OnUserClickedListener<User> {
 
-    public interface Callbacks {
-        void getMembers(int index, final boolean toUpdateInviteMember);
-    }
-    private static Callbacks sDummyCallback = new Callbacks() {
-        @Override public void getMembers(int index, final boolean toUpdateInviteMember) { }
-    };
-    protected Callbacks mCallbacks = sDummyCallback;
+	public interface Callbacks {
+		void getMembers(int index, final boolean toUpdateInviteMember);
+	}
 
-    protected InviteUserAdapter mUserAdapter;
+	private static Callbacks sDummyCallback = new Callbacks() {
+		@Override
+		public void getMembers(int index, final boolean toUpdateInviteMember) {
+		}
+	};
+	protected Callbacks mCallbacks = sDummyCallback;
 
-    protected int mCurrentIndex = 0;
-    protected int mTotalCount = 0;
+	protected InviteUserAdapter mUserAdapter;
 
-    public static MembersFragment newInstance() {
-        MembersFragment fragment = new MembersFragment();
-        Bundle arguments = new Bundle();
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+	protected int mCurrentIndex = 0;
+	protected int mTotalCount = 0;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof Callbacks) {
-            this.mCallbacks = (Callbacks) activity;
-        } else {
-            throw new IllegalArgumentException(activity.toString() +
-                    " has to implement Callbacks interface in order to inflate this Fragment.");
-        }
-    }
+	public static MembersFragment newInstance() {
+		MembersFragment fragment = new MembersFragment();
+		Bundle arguments = new Bundle();
+		fragment.setArguments(arguments);
+		return fragment;
+	}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.mCallbacks = sDummyCallback;
-    }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		if (activity instanceof Callbacks) {
+			this.mCallbacks = (Callbacks) activity;
+		} else {
+			throw new IllegalArgumentException(activity.toString() + " has to implement Callbacks interface in order to inflate this Fragment.");
+		}
+	}
 
-    @Nullable @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_remove_users, container, false);
-    }
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mCallbacks = sDummyCallback;
+	}
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_remove_users, container, false);
+	}
 
-        if (getListView() != null) {
-            mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>());
-            mUserAdapter.setOnUserClickListener(this);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-            getListView().setAdapter(mUserAdapter);
-        }
-    }
+		if (getListView() != null) {
+			mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>());
+			mUserAdapter.setOnUserClickListener(this);
 
-    public void setMembers(List<User> members) {
-        int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
+			getListView().setAdapter(mUserAdapter);
+		}
+	}
 
-        mUserAdapter.addData(members);
+	public void setMembers(List<User> members) {
+		int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
 
-        getListView().setAdapter(mUserAdapter);
-        getListView().setOnRefreshListener(refreshListener2);
+		mUserAdapter.addData(members);
 
-        if (currentCount >= mTotalCount) {
-            getListView().setMode(PullToRefreshBase.Mode.DISABLED);
-        } else if (currentCount < mTotalCount) {
-            getListView().setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-        }
-    }
+		getListView().setAdapter(mUserAdapter);
+		getListView().setOnRefreshListener(refreshListener2);
 
-    public void setTotalCount(int totalCount) {
-        this.mTotalCount = totalCount;
-    }
-    
-    public void resetMembers() {
-        this.mCurrentIndex = 0;
-        mUserAdapter.clearData();
-    }
+		if (currentCount >= mTotalCount) {
+			getListView().setMode(PullToRefreshBase.Mode.DISABLED);
+		} else if (currentCount < mTotalCount) {
+			getListView().setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+		}
+	}
 
-    protected PullToRefreshListView getListView() {
-        if (getView() != null) {
-            return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
-        } else {
-            return null;
-        }
-    }
+	public void setTotalCount(int totalCount) {
+		this.mTotalCount = totalCount;
+	}
 
-    PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
-        @Override
-        public void onPullDownToRefresh(PullToRefreshBase refreshView) {
-            // mCurrentIndex--; don't need this for now
-        }
+	public void resetMembers() {
+		this.mCurrentIndex = 0;
+		mUserAdapter.clearData();
+	}
 
-        @Override
-        public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-            mCurrentIndex++;
-            mCallbacks.getMembers(mCurrentIndex, false);
-        }
-    };
+	protected PullToRefreshListView getListView() {
+		if (getView() != null) {
+			return (PullToRefreshListView) getView().findViewById(R.id.main_list_view);
+		} else {
+			return null;
+		}
+	}
+
+	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
+		@Override
+		public void onPullDownToRefresh(PullToRefreshBase refreshView) {
+			// mCurrentIndex--; don't need this for now
+		}
+
+		@Override
+		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+			mCurrentIndex++;
+			mCallbacks.getMembers(mCurrentIndex, false);
+		}
+	};
 
 	@Override
 	public void onUserClicked(User user) {

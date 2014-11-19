@@ -16,16 +16,16 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.ChatsLobby;
+import com.clover.spika.enterprise.chat.models.Chat;
 
 public class LobbyAdapter extends BaseAdapter {
 
 	private Context mContext;
-	private List<ChatsLobby> data = new ArrayList<ChatsLobby>();
+	private List<Chat> data = new ArrayList<Chat>();
 
 	private ImageLoader imageLoader;
 
-	public LobbyAdapter(Context context, Collection<ChatsLobby> users, boolean isUsers) {
+	public LobbyAdapter(Context context, Collection<Chat> users, boolean isUsers) {
 		this.mContext = context;
 		this.data.addAll(users);
 
@@ -41,12 +41,12 @@ public class LobbyAdapter extends BaseAdapter {
 		return mContext;
 	}
 
-	public void setData(List<ChatsLobby> list) {
+	public void setData(List<Chat> list) {
 		data = list;
 		notifyDataSetChanged();
 	}
 
-	public void addData(List<ChatsLobby> list) {
+	public void addData(List<Chat> list) {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
@@ -57,7 +57,7 @@ public class LobbyAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public ChatsLobby getItem(int position) {
+	public Chat getItem(int position) {
 		return data.get(position);
 	}
 
@@ -78,7 +78,7 @@ public class LobbyAdapter extends BaseAdapter {
 
 		for (int i = 0; i < data.size(); i++) {
 
-			if (data.get(i).getChatId() == finalChatId) {
+			if (data.get(i).getChat_id() == finalChatId) {
 
 				int ureadInt = 0;
 
@@ -120,7 +120,7 @@ public class LobbyAdapter extends BaseAdapter {
 		}
 
 		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.lobbyImage);
-		holder.lobbyName.setText(getItem(position).getChatName());
+		holder.lobbyName.setText(getItem(position).getChat_name());
 
 		if (Integer.parseInt(getItem(position).getUnread()) > 0) {
 			holder.unreadLayout.setVisibility(View.VISIBLE);
