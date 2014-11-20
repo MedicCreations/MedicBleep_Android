@@ -253,13 +253,9 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	@Override
 	public void finish() {
 		if (fromChatAct && updateImage && !TextUtils.isEmpty(newImage)) {
-			Intent chat = new Intent(this, ChatActivity.class);
-			chat.putExtra(Const.IMAGE, newImage);
-			chat.putExtra(Const.IMAGE_THUMB, newThumbImage);
-			chat.putExtra(Const.UPDATE_PICTURE, true);
-			chat.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(chat);
+			ChatActivity.startUpdateImage(this, newImage, newThumbImage);
 		}
+
 		super.finish();
 	}
 

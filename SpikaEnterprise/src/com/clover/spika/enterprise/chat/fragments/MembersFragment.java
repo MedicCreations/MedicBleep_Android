@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnUserClickedListener;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -127,15 +125,7 @@ public class MembersFragment extends CustomFragment implements OnUserClickedList
 
 	@Override
 	public void onUserClicked(User user) {
-		Intent intent = new Intent(getActivity(), ChatActivity.class);
-		intent.putExtra(Const.USER_ID, user.getId());
-		intent.putExtra(Const.FIRSTNAME, user.getFirstName());
-		intent.putExtra(Const.LASTNAME, user.getLastName());
-		intent.putExtra(Const.IMAGE, user.getImage());
-		intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-		intent.putExtra(Const.TYPE, String.valueOf(Const.C_PRIVATE));
-		intent.putExtra(Const.IS_ADMIN, false);
-		startActivity(intent);
+		ChatActivity.startWithUserId(getActivity(), user.getId(), false, user.getFirstName(), user.getLastName());
 	}
 
 }

@@ -28,7 +28,6 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.RoomsList;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -129,28 +128,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = adapter.getItem(position);
-
-			boolean isAdmin = false;
-			if (Helper.getUserId(this).equals(room.getAdminId()))
-				isAdmin = true;
-
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, String.valueOf(room.getChat_id()));
-			intent.putExtra(Const.CHAT_NAME, room.getChat_name());
-			intent.putExtra(Const.TYPE, room.getType());
-			intent.putExtra(Const.IS_ACTIVE, room.isActive());
-			intent.putExtra(Const.IMAGE, room.getImage());
-
-			if (room.getCategory() != null) {
-				intent.putExtra(Const.CATEGORY_ID, room.getCategory().getId());
-				intent.putExtra(Const.CATEGORY_NAME, room.getCategory().getName());
-			}
-
-			intent.putExtra(Const.IMAGE_THUMB, room.getImageThumb());
-			intent.putExtra(Const.IS_ADMIN, isAdmin);
-			intent.putExtra(Const.IS_PRIVATE, room.isPrivate());
-			intent.putExtra(Const.PASSWORD, room.getPassword());
-			startActivity(intent);
+			ChatActivity.startWithChatId(this, String.valueOf(room.getChat_id()), room.getPassword());
 		}
 	}
 

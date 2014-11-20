@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -97,7 +95,8 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	private void setData(List<User> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if(toClearPrevious) currentCount = data.size();
+		if (toClearPrevious)
+			currentCount = data.size();
 
 		if (toClearPrevious)
 			adapter.setData(data);
@@ -113,7 +112,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		if (currentCount >= mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
@@ -166,16 +165,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 		if (position != -1 && position != adapter.getCount()) {
 			User user = adapter.getItem(position);
-
-			Intent intent = new Intent(getActivity(), ChatActivity.class);
-			intent.putExtra(Const.USER_ID, user.getId());
-			intent.putExtra(Const.FIRSTNAME, user.getFirstName());
-			intent.putExtra(Const.LASTNAME, user.getLastName());
-			intent.putExtra(Const.IMAGE, user.getImage());
-			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-			intent.putExtra(Const.TYPE, String.valueOf(Const.C_PRIVATE));
-			intent.putExtra(Const.IS_ADMIN, false);
-			startActivity(intent);
+			ChatActivity.startWithUserId(getActivity(), user.getId(), false, user.getFirstName(), user.getLastName());
 		}
 	}
 }

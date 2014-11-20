@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,21 +133,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat user = adapter.getItem(position);
-
-			Intent intent = new Intent(getActivity(), ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChat_id()));
-			intent.putExtra(Const.CHAT_NAME, user.getChat_name());
-			intent.putExtra(Const.IMAGE, user.getImage());
-
-			if (user.getCategory() != null) {
-				intent.putExtra(Const.CATEGORY_ID, user.getCategory().getId());
-				intent.putExtra(Const.CATEGORY_NAME, user.getCategory().getName());
-			}
-
-			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-			intent.putExtra(Const.TYPE, user.getType());
-			intent.putExtra(Const.IS_ACTIVE, user.isActive());
-			startActivity(intent);
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getChat_id()), user.getPassword());
 		}
 	}
 

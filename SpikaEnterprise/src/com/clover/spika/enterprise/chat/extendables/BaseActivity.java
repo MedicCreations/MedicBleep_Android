@@ -37,7 +37,6 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Push;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -68,9 +67,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		// start: handle notifications
 		if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtras(getIntent().getExtras());
-			startActivity(intent);
+			ChatActivity.startFromNotification(this, getIntent());
 		}
 
 		intentFilter = new IntentFilter(Const.PUSH_INTENT_ACTION);
@@ -159,9 +156,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId,
 			final int isActive, final String password, final int isPrivate) {
 
-		String userId = Helper.getUserId(BaseActivity.this);
-		final boolean isAdmin = userId.equals(adminId) ? true : false;
-
 		if (isPushShowing) {
 			Push push = new Push();
 			push.setId(chatId);
@@ -200,17 +194,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 					@Override
 					public void onClick(View v) {
-						Intent intent = new Intent(context, ChatActivity.class);
-						intent.putExtra(Const.CHAT_ID, chatId);
-						// TODO category id and name from notification
-						intent.putExtra(Const.CHAT_NAME, chatName);
-						intent.putExtra(Const.IMAGE, chatImage);
-						intent.putExtra(Const.IMAGE_THUMB, chatThumb);
-						intent.putExtra(Const.TYPE, type);
-						intent.putExtra(Const.IS_ADMIN, isAdmin);
-						intent.putExtra(Const.IS_ACTIVE, isActive);
-						intent.putExtra(Const.PASSWORD, password);
-						startActivity(intent);
+						ChatActivity.startWithChatId(context, chatId, password);
 					}
 				});
 

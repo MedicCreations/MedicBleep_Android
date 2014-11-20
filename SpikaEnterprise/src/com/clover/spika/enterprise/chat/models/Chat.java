@@ -21,7 +21,7 @@ public class Chat extends BaseModel {
 	private String seen_by;
 
 	@SerializedName("total_count")
-	private String total_count;
+	private int total_count;
 
 	@SerializedName("messages")
 	private List<Message> messages;
@@ -42,7 +42,7 @@ public class Chat extends BaseModel {
 	private int isActive;
 
 	@SerializedName("type")
-	private String type;
+	private int type;
 
 	@SerializedName("is_private")
 	private int isPrivate;
@@ -129,11 +129,11 @@ public class Chat extends BaseModel {
 		this.chat_name = chat_name;
 	}
 
-	public String getTotal_count() {
+	public int getTotal_count() {
 		return total_count;
 	}
 
-	public void setTotal_count(String total_count) {
+	public void setTotal_count(int total_count) {
 		this.total_count = total_count;
 	}
 
@@ -201,11 +201,11 @@ public class Chat extends BaseModel {
 		this.isActive = isActive;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
@@ -258,7 +258,7 @@ public class Chat extends BaseModel {
 			return false;
 		if (seen_by != null ? !seen_by.equals(chat1.seen_by) : chat1.seen_by != null)
 			return false;
-		if (total_count != null ? !total_count.equals(chat1.total_count) : chat1.total_count != null)
+		if (total_count != chat1.total_count)
 			return false;
 		if (user != null ? !user.equals(chat1.user) : chat1.user != null)
 			return false;
@@ -272,7 +272,6 @@ public class Chat extends BaseModel {
 		result = 31 * result + (chat != null ? chat.hashCode() : 0);
 		result = 31 * result + (chat_name != null ? chat_name.hashCode() : 0);
 		result = 31 * result + (seen_by != null ? seen_by.hashCode() : 0);
-		result = 31 * result + (total_count != null ? total_count.hashCode() : 0);
 		result = 31 * result + (messages != null ? messages.hashCode() : 0);
 		result = 31 * result + (user != null ? user.hashCode() : 0);
 		result = 31 * result + (isNewMsg ? 1 : 0);
@@ -282,13 +281,6 @@ public class Chat extends BaseModel {
 		result = 31 * result + (isPagging ? 1 : 0);
 		result = 31 * result + adapterCount;
 		return result;
-	}
-
-	@Override
-	public String toString() {
-		return "Chat{" + "chat=" + chat + ", chat_id='" + chat_id + '\'' + ", chat_name='" + chat_name + '\'' + ", seen_by='" + seen_by + '\'' + ", total_count='" + total_count
-				+ '\'' + ", messages=" + messages + ", user=" + user + ", isNewMsg=" + isNewMsg + ", isRefresh=" + isRefresh + ", isClear=" + isClear + ", isSend=" + isSend
-				+ ", isPagging=" + isPagging + ", adapterCount=" + adapterCount + "} " + super.toString();
 	}
 
 	public String getUnread() {

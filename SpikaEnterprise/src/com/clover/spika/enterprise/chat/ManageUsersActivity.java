@@ -343,22 +343,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			return;
 		}
 		if (chatModelNew != null) {
-			Intent intent = new Intent(ManageUsersActivity.this, ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, String.valueOf(chatModelNew.getChat_id()));
-			intent.putExtra(Const.CHAT_NAME, chatModelNew.getChat_name());
-			intent.putExtra(Const.IMAGE, chatModelNew.getImage());
-			
-			if (chatModelNew.getCategory() != null) {
-				intent.putExtra(Const.CATEGORY_ID, chatModelNew.getCategory().getId());
-				intent.putExtra(Const.CATEGORY_NAME, chatModelNew.getCategory().getName());
-			}
-			
-			intent.putExtra(Const.IMAGE_THUMB, chatModelNew.getImageThumb());
-			intent.putExtra(Const.TYPE, chatModelNew.getType());
-			intent.putExtra(Const.IS_ACTIVE, chatModelNew.isActive());
-			intent.putExtra(Const.ADMIN_ID, chatModelNew.getAdminId());
-			intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-			startActivity(intent);
+			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getChat_id()), chatModelNew.getPassword());
 		}
 
 		finish();

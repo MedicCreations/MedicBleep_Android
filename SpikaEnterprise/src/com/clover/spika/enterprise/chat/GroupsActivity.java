@@ -204,22 +204,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 
 		if (position != -1 && position != adapter.getCount()) {
 			Group group = adapter.getItem(position);
-
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra(Const.USER_ID, String.valueOf(group.getId()));
-			intent.putExtra(Const.FIRSTNAME, group.getGroupName());
-			intent.putExtra(Const.TYPE, String.valueOf(Const.C_GROUP));
-			intent.putExtra(Const.IMAGE, group.getImage());
-
-			if (group.getCategory() != null) {
-				intent.putExtra(Const.CATEGORY_ID, group.getCategory().getId());
-				intent.putExtra(Const.CATEGORY_NAME, group.getCategory().getName());
-			}
-
-			intent.putExtra(Const.IMAGE_THUMB, group.getImage_thumb());
-			intent.putExtra(Const.IS_GROUP, true);
-			intent.putExtra(Const.IS_ADMIN, false);
-			startActivity(intent);
+			ChatActivity.startWithUserId(this, String.valueOf(group.getId()), true, group.getGroupName(), null);
 		}
 	}
 

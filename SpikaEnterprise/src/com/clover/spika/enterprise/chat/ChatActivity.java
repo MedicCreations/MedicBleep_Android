@@ -165,28 +165,82 @@ public class ChatActivity extends BaseChatActivity {
 		}
 	}
 
+	/**
+	 * Used to start chat activity with chat id
+	 * 
+	 * @param context
+	 * @param chatId
+	 * @param password
+	 */
+	public static void startWithChatId(Context context, String chatId, String password) {
+
+		Intent intent = new Intent(context, ChatActivity.class);
+		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.PASSWORD, password);
+		context.startActivity(intent);
+	}
+
+	/**
+	 * Used to start chat activity with user id
+	 * 
+	 * @param context
+	 * @param userId
+	 * @param isGroup
+	 * @param firstname
+	 * @param lastname
+	 */
+	public static void startWithUserId(Context context, String userId, boolean isGroup, String firstname, String lastname) {
+
+		Intent intent = new Intent(context, ChatActivity.class);
+		intent.putExtra(Const.USER_ID, userId);
+		intent.putExtra(Const.FIRSTNAME, firstname);
+		intent.putExtra(Const.LASTNAME, lastname);
+
+		if (isGroup) {
+			intent.putExtra(Const.IS_GROUP, true);
+		}
+
+		context.startActivity(intent);
+	}
+
+	/**
+	 * Used to start chat activity from notification
+	 * 
+	 * @param context
+	 * @param intent
+	 */
+	public static void startFromNotification(Context context, Intent intent) {
+
+		Intent intentFinal = new Intent(context, ChatActivity.class);
+		intentFinal.putExtras(intent.getExtras());
+		context.startActivity(intentFinal);
+	}
+
+	/**
+	 * Start chat activity from update profile picture activity
+	 * 
+	 * @param context
+	 * @param intent
+	 * @param newImage
+	 * @param newThumbImage
+	 */
+	public static void startUpdateImage(Context context, String newImage, String newThumbImage) {
+
+		Intent intentFinal = new Intent(context, ChatActivity.class);
+		intentFinal.putExtra(Const.IMAGE, newImage);
+		intentFinal.putExtra(Const.IMAGE_THUMB, newThumbImage);
+		intentFinal.putExtra(Const.UPDATE_PICTURE, true);
+		intentFinal.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intentFinal);
+	}
+
 	private void getIntentData(Intent intent) {
 		if (intent != null && intent.getExtras() != null) {
 
 			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 				chatId = intent.getExtras().getString(Const.CHAT_ID);
-				chatName = intent.getExtras().getString(Const.CHAT_NAME);
-				chatImage = intent.getExtras().getString(Const.IMAGE);
-				chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
-				if (intent.getExtras().containsKey(Const.ADMIN_ID)) {
-					isAdmin = Helper.getUserId(this).equals(intent.getExtras().getString(Const.ADMIN_ID, "")) ? true : false;
-				} else {
-					isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, false);
-				}
-				isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
-				if (isActive == 0) {
-					etMessage.setFocusable(false);
-				}
-				isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 				chatPassword = intent.getExtras().getString(Const.PASSWORD);
-				
-				setTitle(chatName);
 
 				adapter.clearItems();
 
@@ -219,9 +273,6 @@ public class ChatActivity extends BaseChatActivity {
 				}
 			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
-				chatImage = intent.getExtras().getString(Const.IMAGE);
-				chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
-
 				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
 				mUserId = intent.getExtras().getString(Const.USER_ID);
 
@@ -232,6 +283,8 @@ public class ChatActivity extends BaseChatActivity {
 							public void onApiResponse(Result<Chat> result) {
 
 								if (result.isSuccess()) {
+
+									chatParams(result.getResultData().getChat());
 
 									chatId = String.valueOf(result.getResultData().getChat_id());
 									chatName = result.getResultData().getChat_name();
@@ -260,37 +313,53 @@ public class ChatActivity extends BaseChatActivity {
 							}
 						});
 			}
-
-			if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
-				categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
-			}
-
-			if (intent.getExtras().containsKey(Const.CATEGORY_NAME)) {
-				categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
-			}
-
-			if (intent.getExtras().containsKey(Const.TYPE)) {
-
-				try {
-					chatType = Integer.valueOf(intent.getExtras().getString(Const.TYPE));
-				} catch (Exception e) {
-					AppDialog dialog = new AppDialog(this, true);
-					dialog.setFailed(getString(R.string.e_something_went_wrong));
-					return;
-				}
-
-				if (isAdmin && isActive == 1) {
-					chatType = Const.C_ROOM_ADMIN_ACTIVE;
-				}
-				if (isAdmin && isActive == 0) {
-					chatType = Const.C_ROOM_ADMIN_INACTIVE;
-				}
-
-				setSettingsItems(chatType);
-			}
-
-			loadImage();
 		}
+	}
+
+	private void chatParams(Chat chat) {
+
+		if (chat == null && TextUtils.isEmpty(chatName)) {
+			AppDialog dialog = new AppDialog(this, true);
+			dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
+			return;
+		} else if (chat.getChat_name() == null && !TextUtils.isEmpty(chatName)) {
+			return;
+		}
+
+		chatName = chat.getChat_name();
+		setTitle(chatName);
+		chatImage = chat.getImage();
+		chatImageThumb = chat.getImageThumb();
+
+		if (!TextUtils.isEmpty(chat.getAdminId())) {
+			isAdmin = Helper.getUserId(this).equals(chat.getAdminId()) ? true : false;
+		} else {
+			isAdmin = false;
+		}
+
+		isActive = chat.isActive();
+		if (isActive == 0) {
+			etMessage.setFocusable(false);
+		}
+		isPrivate = chat.isPrivate();
+
+		if (chat.getCategory() != null) {
+			categoryId = String.valueOf(chat.getCategory().getId());
+			categoryName = chat.getCategory().getName();
+		}
+
+		chatType = chat.getType();
+
+		if (isAdmin && isActive == 1) {
+			chatType = Const.C_ROOM_ADMIN_ACTIVE;
+		}
+		if (isAdmin && isActive == 0) {
+			chatType = Const.C_ROOM_ADMIN_INACTIVE;
+		}
+
+		setSettingsItems(chatType);
+
+		loadImage();
 	}
 
 	private void callNewMsgs() {
@@ -419,6 +488,8 @@ public class ChatActivity extends BaseChatActivity {
 
 					Chat chat = result.getResultData();
 
+					chatParams(chat.getChat());
+
 					if (TextUtils.isEmpty(mUserId)) {
 						mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
 					}
@@ -448,9 +519,11 @@ public class ChatActivity extends BaseChatActivity {
 							chatListView.setSelectionFromTop(adapter.getCount(), 0);
 						}
 					}
+				} else {
+					setNoItemsVisibility();
+					AppDialog dialog = new AppDialog(ChatActivity.this, true);
+					dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
 				}
-
-				setNoItemsVisibility();
 			}
 		});
 	}

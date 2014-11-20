@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -134,29 +132,7 @@ public class LobbyAllFragment extends CustomFragment implements OnItemClickListe
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-
-			Intent intent = new Intent(getActivity(), ChatActivity.class);
-			intent.putExtra(Const.CHAT_ID, String.valueOf(user.getChat_id()));
-			intent.putExtra(Const.CHAT_NAME, user.getChat_name());
-			intent.putExtra(Const.TYPE, user.getType());
-			intent.putExtra(Const.IMAGE, user.getImage());
-			
-			if (user.getCategory() != null) {
-				intent.putExtra(Const.CATEGORY_ID, user.getCategory().getId());
-				intent.putExtra(Const.CATEGORY_NAME, user.getCategory().getName());
-			}
-			
-			intent.putExtra(Const.IS_PRIVATE, user.isPrivate());
-			intent.putExtra(Const.PASSWORD, user.getPassword());
-			intent.putExtra(Const.IMAGE_THUMB, user.getImageThumb());
-			if (Integer.valueOf(user.getType()) == Const.C_ROOM || Integer.valueOf(user.getType()) == Const.C_GROUP) {
-				if (user.getAdminId().equals(Helper.getUserId(getActivity()))) {
-					intent.putExtra(Const.IS_ADMIN, true);
-				}
-			}
-			intent.putExtra(Const.IS_ACTIVE, user.isActive());
-			startActivity(intent);
-
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getChat_id()), user.getPassword());
 		}
 	}
 
