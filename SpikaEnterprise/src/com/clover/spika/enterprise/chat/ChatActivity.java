@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -85,6 +86,9 @@ public class ChatActivity extends BaseChatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d("Vida", "OnResume");
+		Log.d("Vida", "ChatId1: " + chatId);
+		Log.d("Vida", "ChatId2: " + getIntent().getExtras().getString(Const.CHAT_ID));
 
 		// if activity restart after calling camera intent (SAMSUNG DEVICES)
 		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
@@ -155,6 +159,8 @@ public class ChatActivity extends BaseChatActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+
+		Log.d("Vida", "GetIntent");
 		isResume = false;
 		if (intent.getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);

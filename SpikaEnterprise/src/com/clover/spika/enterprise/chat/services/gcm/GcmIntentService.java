@@ -51,15 +51,7 @@ public class GcmIntentService extends IntentService {
 
 				String chatId = "";
 				String firstName = "";
-				String chatName = "";
-				String chatThumb = "";
-				String chatImage = "";
-				String chatType = "";
 				String type = "";
-				int isActive = 0;
-				// TODO category id and name from push
-				int isPrivate = 0;
-				String adminId = "";
 				String chatPassword = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
@@ -70,36 +62,8 @@ public class GcmIntentService extends IntentService {
 					firstName = extras.getString(Const.FIRSTNAME);
 				}
 
-				if (extras.containsKey(Const.CHAT_NAME)) {
-					chatName = extras.getString(Const.CHAT_NAME);
-				}
-
-				if (extras.containsKey(Const.PUSH_CHAT_THUMB)) {
-					chatThumb = extras.getString(Const.PUSH_CHAT_THUMB);
-				}
-
-				if (extras.containsKey(Const.PUSH_CHAT_IMAGE)) {
-					chatImage = extras.getString(Const.PUSH_CHAT_IMAGE);
-				}
-
-				if (extras.containsKey(Const.PUSH_CHAT_TYPE)) {
-					chatType = extras.getString(Const.PUSH_CHAT_TYPE);
-				}
-
 				if (extras.containsKey(Const.TYPE)) {
 					type = extras.getString(Const.TYPE);
-				}
-
-				if (extras.containsKey(Const.ADMIN_ID)) {
-					adminId = extras.getString(Const.ADMIN_ID);
-				}
-
-				if (extras.containsKey(Const.IS_ACTIVE)) {
-					isActive = extras.getString(Const.IS_ACTIVE).equals("1") ? 1 : 0;
-				}
-
-				if (extras.containsKey(Const.IS_PRIVATE)) {
-					isPrivate = extras.getString(Const.IS_PRIVATE).equals("1") ? 1 : 0;
 				}
 
 				if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
@@ -121,16 +85,9 @@ public class GcmIntentService extends IntentService {
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
 					inBroadcast.putExtra(Const.CHAT_ID, chatId);
-					inBroadcast.putExtra(Const.CHAT_NAME, chatName);
-					inBroadcast.putExtra(Const.IMAGE, chatImage);
-					inBroadcast.putExtra(Const.IMAGE_THUMB, chatThumb);
 					inBroadcast.putExtra(Const.PUSH_TYPE, type);
 					inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
-					inBroadcast.putExtra(Const.TYPE, chatType);
-					inBroadcast.putExtra(Const.IS_ACTIVE, isActive);
-					inBroadcast.putExtra(Const.ADMIN_ID, adminId);
 					inBroadcast.putExtra(Const.PASSWORD, chatPassword);
-					inBroadcast.putExtra(Const.IS_PRIVATE, isPrivate);
 
 					LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
 
@@ -144,18 +101,13 @@ public class GcmIntentService extends IntentService {
 
 					Intent pushIntent = new Intent(this, SplashActivity.class);
 					pushIntent.putExtra(Const.CHAT_ID, chatId);
-					pushIntent.putExtra(Const.CHAT_NAME, chatName);
-					pushIntent.putExtra(Const.IMAGE, chatImage);
-					pushIntent.putExtra(Const.IMAGE_THUMB, chatThumb);
 					pushIntent.putExtra(Const.PUSH_TYPE, type);
 					pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
-					pushIntent.putExtra(Const.TYPE, chatType);
-					pushIntent.putExtra(Const.IS_ACTIVE, isActive);
-					pushIntent.putExtra(Const.ADMIN_ID, adminId);
 					pushIntent.putExtra(Const.PASSWORD, chatPassword);
-					pushIntent.putExtra(Const.IS_PRIVATE, isPrivate);
+					pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					pushIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-					PendingIntent contentIntent = PendingIntent.getActivity(this, 0, pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					PendingIntent contentIntent = PendingIntent.getActivity(this, getIntId(chatId), pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 					Notification notification = null;
 
@@ -178,6 +130,7 @@ public class GcmIntentService extends IntentService {
 
 						notification = notifBuilder.build();
 					} else {
+
 						notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
 						notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS;
 						notification.ledARGB = rgbLed;

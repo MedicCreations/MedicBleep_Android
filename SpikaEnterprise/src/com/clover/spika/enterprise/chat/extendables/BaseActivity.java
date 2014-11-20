@@ -100,6 +100,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(myPushRecevier, intentFilter);
 
 		// passcode callback injected methods are important for tracking active
@@ -308,17 +309,14 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * Disable search bar
 	 */
 	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, TextView title, int width, int animSpeed) {
-
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, null);
 	}
 
 	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, ImageButton invite) {
-
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, invite, null);
 	}
 
 	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, LinearLayout layout) {
-
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, layout);
 	}
 
