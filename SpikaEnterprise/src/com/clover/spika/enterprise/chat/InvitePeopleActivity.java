@@ -25,7 +25,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
@@ -40,7 +40,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<User> {
 
-	UsersApi api;
+	UserApi api;
 
 	PullToRefreshListView mainList;
 	InviteUserAdapter adapter;
@@ -88,7 +88,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		setContentView(R.layout.activity_invite_people);
 		// setSearch(this);
 
-		api = new UsersApi();
+		api = new UserApi();
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {

@@ -177,8 +177,6 @@ public class Message implements Parcelable {
 	}
 
 	public String getName() {
-		// TODO: genereate "preferences" where user can check to either use
-		// first-last or last-first
 		return firstname + " " + lastname;
 	}
 

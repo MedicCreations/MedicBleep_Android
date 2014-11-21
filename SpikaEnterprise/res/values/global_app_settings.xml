@@ -27,6 +27,6 @@
     <bool name="enable_categories">true</bool>
 
     <!-- Enable polling in the app -->
-    <bool name="enable_polling">false</bool>
+    <bool name="enable_polling">true</bool>
 
 </resources>

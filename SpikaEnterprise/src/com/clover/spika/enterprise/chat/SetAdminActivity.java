@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -37,7 +37,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
-	private UsersApi userApi;
+	private UserApi userApi;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);
 
-		userApi = new UsersApi();
+		userApi = new UserApi();
 		getUsers(true);
 	}
 

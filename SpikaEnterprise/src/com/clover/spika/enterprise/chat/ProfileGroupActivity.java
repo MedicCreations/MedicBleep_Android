@@ -23,7 +23,7 @@ import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -42,7 +42,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	ToggleButton profileTab;
 	ToggleButton membersTab;
 
-	UsersApi api;
+	UserApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
 
@@ -94,7 +94,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
 
-		api = new UsersApi();
+		api = new UserApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 

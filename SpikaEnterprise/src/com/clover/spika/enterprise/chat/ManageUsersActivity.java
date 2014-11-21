@@ -21,7 +21,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
@@ -44,7 +44,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ImageButton closeSearchBtn;
 	private ImageButton mInviteBtn;
 
-	private UsersApi api;
+	private UserApi api;
 	private ManageUsersFragmentAdapter mPagerAdapter;
 	private ViewPager mViewPager;
 
@@ -78,7 +78,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		removeTab = (ToggleButton) findViewById(R.id.removeTab);
 		removeTab.setOnClickListener(this);
 
-		api = new UsersApi();
+		api = new UserApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 

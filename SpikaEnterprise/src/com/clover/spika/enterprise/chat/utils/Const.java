@@ -204,6 +204,7 @@ public class Const {
 	public static final String F_UPDATE_CHAT = "/chat/update";
 	public static final String F_GET_CATEGORIES = "/category/list";
 	public static final String F_USER_PROFILE = "/user/profile";
+	public static final String F_USER_PUSH = "/user/push";
 	public static final String F_USER_GET_ROOMS = "/room/list";
 	public static final String F_USER_INFORMATION = "/user/information";
 	public static final String F_GROUP_MEMBERS = "/groups/members";

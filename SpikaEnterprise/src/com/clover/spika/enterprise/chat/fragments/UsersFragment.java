@@ -14,7 +14,7 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.UserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UsersApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -121,7 +121,9 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {
-		UsersApi api = new UsersApi();
+
+		UserApi api = new UserApi();
+
 		if (search == null) {
 			api.getUsersWithPage(getActivity(), mCurrentIndex, null, true, new ApiCallback<UsersList>() {
 

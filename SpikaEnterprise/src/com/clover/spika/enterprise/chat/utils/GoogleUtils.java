@@ -30,7 +30,9 @@ public class GoogleUtils {
 
 		if (checkPlayServices(ctx)) {
 
-			registerInBackground(ctx);
+			if (!ctx.getResources().getBoolean(R.bool.enable_polling)) {
+				registerInBackground(ctx);
+			}
 
 			regId = getRegistrationId(ctx);
 			Logger.i("PUSH_TOKEN: " + regId);
