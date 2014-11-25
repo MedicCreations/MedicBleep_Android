@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +11,8 @@ import android.view.View;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+
+import java.io.File;
 
 public class CameraActivityForSamsung extends BaseActivity {
 	

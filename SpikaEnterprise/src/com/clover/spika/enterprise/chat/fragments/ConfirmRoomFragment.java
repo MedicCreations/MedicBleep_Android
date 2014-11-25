@@ -1,10 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.util.TextUtils;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +22,11 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import org.apache.http.util.TextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomListener {
 

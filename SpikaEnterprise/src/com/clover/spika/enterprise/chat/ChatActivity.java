@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +30,8 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+
+import java.util.ArrayList;
 
 public class ChatActivity extends BaseChatActivity {
 

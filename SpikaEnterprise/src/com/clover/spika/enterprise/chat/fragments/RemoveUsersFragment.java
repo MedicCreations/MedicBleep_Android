@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +14,8 @@ import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+
+import java.util.ArrayList;
 
 public class RemoveUsersFragment extends MembersFragment implements AdapterView.OnItemClickListener, OnRemoveClickListener {
 

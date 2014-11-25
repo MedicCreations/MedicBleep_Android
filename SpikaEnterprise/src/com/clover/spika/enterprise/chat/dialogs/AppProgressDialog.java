@@ -1,12 +1,12 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
-import com.clover.spika.enterprise.chat.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.R;
 
 /**
  * Shows a dialog while loading something, the three dots are animated

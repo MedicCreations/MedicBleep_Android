@@ -1,13 +1,11 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +14,8 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SplashActivity;
+
+import java.util.List;
 
 public class PushHandle {
 

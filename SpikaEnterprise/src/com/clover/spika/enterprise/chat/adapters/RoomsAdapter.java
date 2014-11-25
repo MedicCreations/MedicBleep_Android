@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -17,6 +14,9 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomsAdapter extends BaseAdapter {
 

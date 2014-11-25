@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +15,8 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import java.io.IOException;
 
 public class GoogleUtils {
 

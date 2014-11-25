@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +15,9 @@ import com.clover.spika.enterprise.chat.listeners.OnUserClickedListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MembersFragment extends CustomFragment implements OnUserClickedListener<User> {
 

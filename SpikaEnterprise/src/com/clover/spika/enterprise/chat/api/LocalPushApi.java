@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.util.HashMap;
-
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -13,6 +9,10 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class LocalPushApi {
 

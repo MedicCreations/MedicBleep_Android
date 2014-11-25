@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +19,9 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<User> {
 

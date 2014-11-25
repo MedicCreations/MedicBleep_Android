@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.services.gcm;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PushHandle;

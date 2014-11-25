@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -24,6 +21,9 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 public class AppDialog extends Dialog {
 

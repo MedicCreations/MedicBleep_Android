@@ -1,8 +1,8 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.util.Comparator;
-
 import com.clover.spika.enterprise.chat.models.Message;
+
+import java.util.Comparator;
 
 public class MessageSortingById implements Comparator<Message> {
 

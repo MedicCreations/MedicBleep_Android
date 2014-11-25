@@ -1,11 +1,11 @@
 package com.clover.spika.enterprise.chat.models;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class UserWrapper extends BaseModel implements Serializable{

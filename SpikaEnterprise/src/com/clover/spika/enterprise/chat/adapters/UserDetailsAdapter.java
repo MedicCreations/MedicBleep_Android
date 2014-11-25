@@ -1,11 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.util.TextUtils;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +15,12 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnDismissDialogListene
 import com.clover.spika.enterprise.chat.models.HelperModel;
 import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.utils.Const;
+
+import org.apache.http.util.TextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class UserDetailsAdapter extends BaseAdapter {
 

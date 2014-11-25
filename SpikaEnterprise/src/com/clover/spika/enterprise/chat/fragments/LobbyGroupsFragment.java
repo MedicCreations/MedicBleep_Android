@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +20,9 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LobbyGroupsFragment extends CustomFragment implements OnItemClickListener {
 

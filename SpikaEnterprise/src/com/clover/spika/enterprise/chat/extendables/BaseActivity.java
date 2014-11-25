@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -40,6 +37,9 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BaseActivity extends SlidingFragmentActivity {
 

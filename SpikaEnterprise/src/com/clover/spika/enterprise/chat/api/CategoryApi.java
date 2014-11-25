@@ -1,10 +1,5 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.io.IOException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -15,6 +10,11 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class CategoryApi {
 

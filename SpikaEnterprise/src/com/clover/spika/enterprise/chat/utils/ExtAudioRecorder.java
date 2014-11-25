@@ -1,13 +1,13 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.AudioSource;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * ExtAudioRecorder

@@ -1,10 +1,10 @@
 package com.clover.spika.enterprise.chat.lazy;
 
-import java.io.File;
+import android.content.Context;
 
 import com.clover.spika.enterprise.chat.utils.Const;
 
-import android.content.Context;
+import java.io.File;
 
 public class FileCache {
 

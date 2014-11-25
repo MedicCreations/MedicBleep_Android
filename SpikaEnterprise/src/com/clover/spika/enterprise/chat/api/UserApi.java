@@ -1,13 +1,5 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -25,6 +17,14 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 public class UserApi {
 

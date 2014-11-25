@@ -16,7 +16,6 @@
 package com.clover.spika.enterprise.chat.cryptor;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.crypto.SecretKey;
 

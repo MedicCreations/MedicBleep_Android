@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat.views;
 
-import static com.clover.spika.enterprise.chat.utils.ProfileUtils.mapToKey;
-
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -12,6 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
+
+import java.util.Map;
+
+import static com.clover.spika.enterprise.chat.utils.ProfileUtils.mapToKey;
 
 public class DetailsView extends LinearLayout {
 

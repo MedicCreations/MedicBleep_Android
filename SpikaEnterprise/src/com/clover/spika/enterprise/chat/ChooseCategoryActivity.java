@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.util.HashMap;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +14,8 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.CategoryFragment;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+
+import java.util.HashMap;
 
 public class ChooseCategoryActivity extends BaseActivity {
 

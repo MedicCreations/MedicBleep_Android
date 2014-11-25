@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URI;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -32,6 +28,10 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URI;
 
 public class RecordVideoActivity extends BaseActivity {
 

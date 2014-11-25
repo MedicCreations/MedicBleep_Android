@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +29,9 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 public class CreateRoomActivity extends BaseActivity {
 

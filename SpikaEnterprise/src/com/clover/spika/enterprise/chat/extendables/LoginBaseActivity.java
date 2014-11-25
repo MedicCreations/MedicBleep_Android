@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
-import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LoginApi;

@@ -1,9 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -21,6 +17,10 @@ import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
 import com.clover.spika.enterprise.chat.models.UserGroupRoom;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 
