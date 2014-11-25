@@ -123,7 +123,7 @@ public class InviteUsersFragment extends Fragment implements AdapterView.OnItemC
 	}
 
 	@Override
-	public void onChange(User obj) {
+	public void onChange(User obj, boolean isFromDetails) {
 		boolean isFound = false;
 		int j = 0;
 

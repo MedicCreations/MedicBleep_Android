@@ -18,24 +18,27 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
-import com.clover.spika.enterprise.chat.models.UserOrGroup;
+import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
+import com.clover.spika.enterprise.chat.models.UserGroupRoom;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 
 public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 
 	private Context mContext;
-	private List<UserOrGroup> data = new ArrayList<UserOrGroup>();
+	private List<UserGroupRoom> data = new ArrayList<UserGroupRoom>();
 	private List<String> userIds = new ArrayList<String>();
 	private List<String> groupIds = new ArrayList<String>();
+	private List<String> roomIds = new ArrayList<String>();
 
 	private ImageLoader imageLoader;
 
-	private OnChangeListener<UserOrGroup> changedListener;
+	private OnChangeListener<UserGroupRoom> changedListener;
 	private OnGroupClickedListener groupClickedListener;
+	private OnRoomClickedListener roomClickedListener;
 	private boolean showCheckBox = true;
 
-	public InviteUsersOrGroupsAdapter(Context context, Collection<UserOrGroup> users, OnChangeListener<UserOrGroup> listener,
-			OnGroupClickedListener listenerGroup) {
+	public InviteUsersOrGroupsAdapter(Context context, Collection<UserGroupRoom> users, OnChangeListener<UserGroupRoom> listener, OnGroupClickedListener listenerGroup,
+			OnRoomClickedListener listenerRoom) {
 		this.mContext = context;
 		this.data.addAll(users);
 
@@ -44,37 +47,27 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 
 		this.changedListener = listener;
 		groupClickedListener = listenerGroup;
+		roomClickedListener = listenerRoom;
 	}
-	
+
 	public Context getContext() {
 		return mContext;
 	}
 
-	public void setData(List<UserOrGroup> list) {
+	public void setData(List<UserGroupRoom> list) {
 		data = list;
-
-		for (String selectedId : userIds) {
-			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIsUser()) {
-					data.get(i).setSelected(true);
-				}
-			}
-		}
-		
-		for (String selectedId : groupIds) {
-			for (int i = 0; i < data.size(); i++) {
-				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIs_group()) {
-					data.get(i).setSelected(true);
-				}
-			}
-		}
-
+		handleHelperArrays();
 		notifyDataSetChanged();
 	}
 
-	public void addData(List<UserOrGroup> list) {
+	public void addData(List<UserGroupRoom> list) {
 		data.addAll(list);
-		
+		handleHelperArrays();
+		notifyDataSetChanged();
+	}
+
+	private void handleHelperArrays() {
+
 		for (String selectedId : userIds) {
 			for (int i = 0; i < data.size(); i++) {
 				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIsUser()) {
@@ -82,7 +75,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 				}
 			}
 		}
-		
+
 		for (String selectedId : groupIds) {
 			for (int i = 0; i < data.size(); i++) {
 				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIs_group()) {
@@ -90,16 +83,22 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 				}
 			}
 		}
-		
-		notifyDataSetChanged();
+
+		for (String selectedId : roomIds) {
+			for (int i = 0; i < data.size(); i++) {
+				if (selectedId.equals(data.get(i).getId()) && data.get(i).getIsRoom()) {
+					data.get(i).setSelected(true);
+				}
+			}
+		}
 	}
-	
-	public void clearData(){
+
+	public void clearData() {
 		data.clear();
 		notifyDataSetChanged();
 	}
 
-	public List<UserOrGroup> getData() {
+	public List<UserGroupRoom> getData() {
 		return data;
 	}
 
@@ -109,7 +108,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public UserOrGroup getItem(int position) {
+	public UserGroupRoom getItem(int position) {
 		return data.get(position);
 	}
 
@@ -135,7 +134,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		// set image to null
 		holder.profileImg.setImageDrawable(null);
 
-		UserOrGroup user = getItem(position);
+		UserGroupRoom item = getItem(position);
 
 		if (position % 2 == 0) {
 			holder.itemLayout.setBackgroundColor(getContext().getResources().getColor(R.color.gray_in_adapter));
@@ -143,29 +142,40 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 			holder.itemLayout.setBackgroundColor(Color.WHITE);
 		}
 
-		imageLoader.displayImage(getContext(), user.getImageThumb(), holder.profileImg);
-		
-		if(user.getIs_group()){
-			holder.personName.setText(user.getGroupName());
+		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.profileImg);
+
+		if (item.getIsRoom()) {
+			holder.personName.setText(item.getRoomName());
+			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_green));
+		} else if (item.getIs_group()) {
+			holder.personName.setText(item.getGroupName());
 			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
-		}else{
-			holder.personName.setText(user.getFirstName() + " " + user.getLastName());
+		} else {
+			holder.personName.setText(item.getFirstName() + " " + item.getLastName());
 			holder.personName.setTextColor(Color.BLACK);
 		}
-		
+
 		holder.personName.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if((getItem(position).getIs_group())){
-					if(groupClickedListener != null) groupClickedListener.onGroupClicked(getItem(position).getId(), 
-													getItem(position).getGroupName(), getItem(position).isSelected());
+
+				if (getItem(position).getIs_group()) {
+
+					if (groupClickedListener != null) {
+						groupClickedListener.onGroupClicked(getItem(position).getId(), getItem(position).getGroupName(), getItem(position).isSelected());
+					}
+				} else if (getItem(position).getIsRoom()) {
+
+					if (roomClickedListener != null) {
+						roomClickedListener.onRoomClicked(getItem(position).getId(), getItem(position).getGroupName(), getItem(position).isSelected());
+					}
 				}
 			}
 		});
-		
-		if(showCheckBox){
-			if (user.isSelected()) {
+
+		if (showCheckBox) {
+			if (item.isSelected()) {
 				holder.isSelected.setChecked(true);
 			} else {
 				holder.isSelected.setChecked(false);
@@ -175,83 +185,174 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 
 				@Override
 				public void onClick(View v) {
+
 					if (data.get(position).isSelected()) {
-						data.get(position).setSelected(false);
-						removeId(data.get(position));
+						removeFromHelperArrays(data.get(position));
 					} else {
-						data.get(position).setSelected(true);
-						setId(data.get(position));
+						addToHelperArrays(data.get(position));
 					}
 
 					if (changedListener != null) {
-						changedListener.onChange(data.get(position));
+						changedListener.onChange(data.get(position), false);
 					}
 				}
 			});
-			
-		}else{
+
+		} else {
 			holder.isSelected.setVisibility(View.GONE);
 		}
 
 		return convertView;
 	}
 
-	private void setId(UserOrGroup item) {
-		if(item.getIs_group()){
-			groupIds.add(item.getId());
-			return;
+	private void addToHelperArrays(UserGroupRoom item) {
+
+		if (item.getIs_group()) {
+			addGroup(item.getId());
+		} else if (item.getIsRoom()) {
+			addRoom(item.getId());
+		} else if (item.getIsUser()) {
+			addUser(item.getId());
 		}
-		userIds.add(item.getId());
 	}
 
-	private void removeId(UserOrGroup item) {
-		if(item.getIs_group()){
-			groupIds.remove(item.getId());
-			return;
+	private void removeFromHelperArrays(UserGroupRoom item) {
+
+		if (item.getIs_group()) {
+			removeGroup(item.getId());
+		} else if (item.getIsRoom()) {
+			removeRoom(item.getId());
+		} else if (item.getIsUser()) {
+			removeUser(item.getId());
 		}
-		userIds.remove(item.getId());
 	}
-	
-	public void removeGroup(String id){
-		for(int i = 0; i < data.size(); i++){
-			if(data.get(i).getId().equals(id)){
-				if(data.get(i).getIs_group()){
-					data.get(i).setSelected(false);
-				}
-			}
-		}
-		if(groupIds.contains(id)) groupIds.remove(id);
-	}
-	
-	public void addGroup(String id){
-		for(int i = 0; i < data.size(); i++){
-			if(data.get(i).getId().equals(id)){
-				if(data.get(i).getIs_group()){
+
+	private void addUser(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIsUser()) {
 					data.get(i).setSelected(true);
 				}
 			}
 		}
-		if(!groupIds.contains(id)) groupIds.add(id);
+		if (!userIds.contains(id)) {
+			userIds.add(id);
+		}
+	}
+
+	private void removeUser(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIsUser()) {
+					data.get(i).setSelected(false);
+				}
+			}
+		}
+
+		if (userIds.contains(id)) {
+			userIds.remove(id);
+		}
+	}
+
+	public void addGroup(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIs_group()) {
+					data.get(i).setSelected(true);
+				}
+			}
+		}
+		if (!groupIds.contains(id)) {
+			groupIds.add(id);
+		}
+	}
+
+	public void removeGroup(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIs_group()) {
+					data.get(i).setSelected(false);
+				}
+			}
+		}
+
+		if (groupIds.contains(id)) {
+			groupIds.remove(id);
+		}
+	}
+
+	public void addRoom(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIsRoom()) {
+					data.get(i).setSelected(true);
+				}
+			}
+		}
+
+		if (!roomIds.contains(id)) {
+			roomIds.add(id);
+		}
+	}
+
+	public void removeRoom(String id) {
+
+		for (int i = 0; i < data.size(); i++) {
+
+			if (data.get(i).getId().equals(id)) {
+
+				if (data.get(i).getIsRoom()) {
+					data.get(i).setSelected(false);
+				}
+			}
+		}
+
+		if (roomIds.contains(id)) {
+			roomIds.remove(id);
+		}
 	}
 
 	public List<String> getSelected() {
+
 		List<String> allList = new ArrayList<String>();
 		allList.addAll(groupIds);
 		allList.addAll(userIds);
+		allList.addAll(roomIds);
+
 		return allList;
 	}
-	
+
 	public List<String> getUsersSelected() {
 		return userIds;
 	}
-	
+
 	public List<String> getGroupsSelected() {
 		return groupIds;
 	}
-	
+
+	public List<String> getRoomsSelected() {
+		return roomIds;
+	}
+
 	public void resetSelected() {
 		userIds.clear();
 		groupIds.clear();
+		roomIds.clear();
 	}
 
 	public class ViewHolderCharacter {
@@ -270,7 +371,6 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 			personName = (TextView) view.findViewById(R.id.personName);
 			isSelected = (RobotoCheckBox) view.findViewById(R.id.isSelected);
 		}
-
 	}
-	
+
 }

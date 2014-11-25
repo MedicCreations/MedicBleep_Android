@@ -27,7 +27,7 @@ public class ChooseCategoryActivity extends BaseActivity {
 
 		Bundle extras = getIntent().getExtras();
 
-		if (extras.containsKey(Const.CHAT_ID)) {
+		if (extras != null && extras.containsKey(Const.CHAT_ID)) {
 			chatId = extras.getString(Const.CHAT_ID);
 		}
 

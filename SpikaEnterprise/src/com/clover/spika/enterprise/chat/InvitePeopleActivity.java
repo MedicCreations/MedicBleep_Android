@@ -348,7 +348,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	}
 
 	@Override
-	public void onChange(User obj) {
+	public void onChange(User obj, boolean isFromDetails) {
 
 		boolean isFound = false;
 		int j = 0;
@@ -390,4 +390,5 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		invitedPeople.setText(span);
 	}
+
 }

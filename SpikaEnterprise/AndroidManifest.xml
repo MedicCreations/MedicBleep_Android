@@ -188,6 +188,9 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

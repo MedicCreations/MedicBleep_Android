@@ -3,6 +3,8 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.util.TextUtils;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +18,6 @@ import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -27,28 +28,29 @@ import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomListener, OnChangeListener<User> {
-	
+public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomListener {
+
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public InviteUserAdapter adapter;
-	
+
 	private ImageView imgRoom;
 	private RobotoRegularTextView roomName;
 
 	List<User> usersToAdd = new ArrayList<User>();
-	
+
 	private String userIds;
 	private String groupIds;
+	private String roomIds;
 	private String roomThumbId;
 	private String roomNameData;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), this);
+		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), null);
 
 	}
 
@@ -62,11 +64,21 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_confirm_users, container, false);
-		
-		if(getArguments() != null) userIds = getArguments().getString(Const.USER_IDS, "");
-		if(getArguments() != null) groupIds = getArguments().getString(Const.GROUP_IDS, "");
-		if(getArguments() != null) roomThumbId = getArguments().getString(Const.ROOM_THUMB_ID, "");
-		if(getArguments() != null) roomNameData = getArguments().getString(Const.NAME, "");
+
+		if (getArguments() != null)
+			userIds = getArguments().getString(Const.USER_IDS, "");
+
+		if (getArguments() != null)
+			groupIds = getArguments().getString(Const.GROUP_IDS, "");
+
+		if (getArguments() != null)
+			roomIds = getArguments().getString(Const.ROOM_IDS, "");
+
+		if (getArguments() != null)
+			roomThumbId = getArguments().getString(Const.ROOM_THUMB_ID, "");
+
+		if (getArguments() != null)
+			roomNameData = getArguments().getString(Const.NAME, "");
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
@@ -75,40 +87,41 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 
 		mainListView.setAdapter(adapter);
-		
+
 		imgRoom = (ImageView) rootView.findViewById(R.id.img_room);
-		
-		if (roomThumbId != ""){
+
+		if (!TextUtils.isEmpty(roomThumbId)) {
 			((CreateRoomActivity) getActivity()).getImageLoader().displayImage(getActivity(), roomThumbId, imgRoom);
 		}
-		
+
 		roomName = (RobotoRegularTextView) rootView.findViewById(R.id.tv_room_name);
 		roomName.setText(roomNameData);
-		
+
 		getUsers();
-		
+
 		((CreateRoomActivity) getActivity()).setCreateRoom(this);
-		
+
 		return rootView;
 	}
-	
+
 	private void setData(List<User> data) {
-		
-		for(int i = 0; i < data.size(); i++){
+
+		for (int i = 0; i < data.size(); i++) {
 			data.get(i).setSelected(true);
 		}
 
-		for(int i = 0; i < data.size(); i++){
-			if(data.get(i).getId().equals(Helper.getUserId(getActivity()))){
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).getId().equals(Helper.getUserId(getActivity()))) {
 				data.remove(i);
 			}
 		}
+
 		adapter.setData(data);
-		
-		for(int i = 0; i < data.size(); i++){
+
+		for (int i = 0; i < data.size(); i++) {
 			adapter.setId(data.get(i).getId());
 		}
-		
+
 		mainListView.onRefreshComplete();
 
 		if (adapter.getCount() == 0) {
@@ -116,37 +129,40 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
 	}
 
 	public void getUsers() {
-		new RoomsApi().getDistinctUser(userIds, groupIds, getActivity(), true, new ApiCallback<ConfirmUsersList>() {
-			
+
+		new RoomsApi().getDistinctUser(userIds, groupIds, roomIds, getActivity(), true, new ApiCallback<ConfirmUsersList>() {
+
 			@Override
 			public void onApiResponse(Result<ConfirmUsersList> result) {
 				setData(result.getResultData().getUserList());
 			}
 		});
-		
 	}
 
-	/* (non-Javadoc)
-	 * @see com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener#onCreateRoom()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener#onCreateRoom
+	 * ()
 	 */
 	@Override
 	public void onCreateRoom() {
-		
+
 		StringBuilder users_to_add = new StringBuilder();
 		List<String> usersId = new ArrayList<String>();
 		usersId.addAll(adapter.getSelected());
-		
+
 		if (usersId.isEmpty()) {
 			return;
 		}
-		
+
 		String myUserId = Helper.getUserId(getActivity());
 		users_to_add.append(myUserId + ",");
-		
+
 		for (int i = 0; i < usersId.size(); i++) {
 			users_to_add.append(usersId.get(i));
 
@@ -154,14 +170,8 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 				users_to_add.append(",");
 			}
 		}
-		
-		((CreateRoomActivity)getActivity()).createRoomFinaly(users_to_add.toString());
-		
-	}
 
-	@Override
-	public void onChange(User obj) {
-		
+		((CreateRoomActivity) getActivity()).createRoomFinaly(users_to_add.toString());
 	}
 
 }

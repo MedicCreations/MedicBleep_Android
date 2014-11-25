@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,7 +36,7 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.DetailsView;
 
-public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener {
+public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener, OnCheckedChangeListener {
 
 	private Switch mSwitchPasscodeEnabled;
 	private ImageView profileImage;
@@ -80,6 +82,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
+		mSwitchPasscodeEnabled.setOnCheckedChangeListener(this);
 
 		updatePassword = (Button) rootView.findViewById(R.id.updatePassword);
 		updatePassword.setOnClickListener(this);
@@ -181,6 +184,11 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		}
 	}
 
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		onCheckedChanged(mSwitchPasscodeEnabled.isChecked());
+	}
+
 	private void showDialog() {
 		AppDialog dialog = new AppDialog(getActivity(), false);
 		dialog.choseCamGalleryProfile();
@@ -241,4 +249,5 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		intent.putExtra(Const.USER_WRAPPER, userWrapper);
 		getActivity().startActivity(intent);
 	}
+
 }

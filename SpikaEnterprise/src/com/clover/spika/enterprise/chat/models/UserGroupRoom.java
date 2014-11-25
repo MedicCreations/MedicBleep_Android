@@ -3,12 +3,12 @@ package com.clover.spika.enterprise.chat.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserOrGroup {
+public class UserGroupRoom {
 
 	@SerializedName("id")
 	@Expose
 	private String id;
-	
+
 	@SerializedName("user_id")
 	@Expose
 	private String userId;
@@ -29,22 +29,30 @@ public class UserOrGroup {
 	@Expose
 	private String imageThumb;
 
-    @SerializedName("groupname")
+	@SerializedName("groupname")
 	@Expose
 	private String groupName;
-    
-    @SerializedName("is_user")
+
+	@SerializedName("name")
+	@Expose
+	private String roomName;
+
+	@SerializedName("is_user")
 	@Expose
 	private int isUser;
-    
-    @SerializedName("is_group")
+
+	@SerializedName("is_group")
 	@Expose
 	private int isGroup;
 
+	@SerializedName("is_room")
+	@Expose
+	private int isRoom;
+
 	private boolean isSelected = false;
-	
-	public UserOrGroup(String id, String userId, String firstName, String lastName, String image, String imageThumb,
-			String groupName, int isUser, int is_group, boolean isSelected) {
+
+	public UserGroupRoom(String id, String userId, String firstName, String lastName, String image, String imageThumb, String groupName, int isUser, int is_group,
+			boolean isSelected) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -59,7 +67,7 @@ public class UserOrGroup {
 	}
 
 	public String getId() {
-		if(id == null || id.equals("")){
+		if (id == null || id.equals("")) {
 			return userId == null ? "" : userId;
 		}
 		return id;
@@ -93,23 +101,23 @@ public class UserOrGroup {
 		this.image = image;
 	}
 
-    public String getImageThumb() {
-        return imageThumb;
-    }
+	public String getImageThumb() {
+		return imageThumb;
+	}
 
-    public void setImageThumb(String imageThumb) {
-        this.imageThumb = imageThumb;
-    }
+	public void setImageThumb(String imageThumb) {
+		this.imageThumb = imageThumb;
+	}
 
-    public boolean isSelected() {
-        return isSelected;
-    }
+	public boolean isSelected() {
+		return isSelected;
+	}
 
-    public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
 
-    public String getGroupName() {
+	public String getGroupName() {
 		return groupName;
 	}
 
@@ -122,8 +130,8 @@ public class UserOrGroup {
 	}
 
 	public void setIsUser(boolean isUser) {
-		if(isUser) {
-			this.isUser = 1; 
+		if (isUser) {
+			this.isUser = 1;
 			return;
 		}
 		this.isUser = 0;
@@ -134,11 +142,33 @@ public class UserOrGroup {
 	}
 
 	public void setIs_group(boolean is_group) {
-		if(is_group) {
-			this.isGroup = 1; 
+		if (is_group) {
+			this.isGroup = 1;
 			return;
 		}
 		this.isGroup = 0;
+	}
+
+	public boolean getIsRoom() {
+		return isRoom == 1 ? true : false;
+	}
+
+	public void setIsRoom(boolean isRoom) {
+
+		if (isRoom) {
+			this.isRoom = 1;
+			return;
+		}
+
+		this.isRoom = 0;
+	}
+
+	public String getRoomName() {
+		return roomName;
+	}
+
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
 	}
 
 }

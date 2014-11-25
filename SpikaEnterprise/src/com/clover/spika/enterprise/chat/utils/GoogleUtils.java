@@ -32,6 +32,8 @@ public class GoogleUtils {
 
 			if (!ctx.getResources().getBoolean(R.bool.enable_polling)) {
 				registerInBackground(ctx);
+			} else {
+				storeRegistrationId(ctx, "");
 			}
 
 			regId = getRegistrationId(ctx);

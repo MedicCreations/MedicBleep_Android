@@ -122,7 +122,7 @@ public class CreateRoomActivity extends BaseActivity {
 		});
 	}
 
-	public void setConfirmScreen(String users_to_add, String group_to_add, String is_private, String password) {
+	public void setConfirmScreen(String users_to_add, String group_to_add, String room_to_add, String is_private, String password) {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
@@ -146,6 +146,7 @@ public class CreateRoomActivity extends BaseActivity {
 		Bundle bundle = new Bundle();
 		bundle.putString(Const.USER_IDS, users_to_add);
 		bundle.putString(Const.GROUP_IDS, group_to_add);
+		bundle.putString(Const.ROOM_IDS, room_to_add);
 		bundle.putString(Const.ROOM_THUMB_ID, room_thumb_id);
 		bundle.putString(Const.NAME, roomName);
 		fragment.setArguments(bundle);

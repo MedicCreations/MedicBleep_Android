@@ -12,30 +12,30 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GroupsApi;
+import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.CreateRoomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
-import com.clover.spika.enterprise.chat.models.GroupMember;
-import com.clover.spika.enterprise.chat.models.GroupMembersList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<User> {
+public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<User> {
 
-	private String groupName;
-	private String groupId;
+	private String roomName;
+	private String roomId;
 	private boolean isChecked = false;
 
 	private List<User> mUsers;
 	private List<String> mUsersToPass = new ArrayList<String>();
 
-	public static void startActivity(String groupName, String groupId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CreateRoomFragment frag) {
-		Intent intent = new Intent(context, DeselectUsersInGroupActivity.class);
-		intent.putExtra(Const.GROUP_ID, groupId);
-		intent.putExtra(Const.GROUP_NAME, groupName);
+	public static void startActivity(String roomName, String roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CreateRoomFragment frag) {
+
+		Intent intent = new Intent(context, DeselectUsersInRoomActivity.class);
+		intent.putExtra(Const.ROOM_ID, roomId);
+		intent.putExtra(Const.ROOM_NAME, roomName);
 		intent.putExtra(Const.IS_ACTIVE, isChecked);
 		intent.putStringArrayListExtra(Const.USER_IDS, ids);
 		frag.startActivityForResult(intent, requestCode);
@@ -44,13 +44,13 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_deselect_users_in_group);
+		setContentView(R.layout.activity_deselect_users_in_room);
 
-		groupName = getIntent().getStringExtra(Const.GROUP_NAME);
-		groupId = getIntent().getStringExtra(Const.GROUP_ID);
+		roomName = getIntent().getStringExtra(Const.ROOM_NAME);
+		roomId = getIntent().getStringExtra(Const.ROOM_ID);
 		isChecked = getIntent().getBooleanExtra(Const.IS_ACTIVE, false);
 
-		((TextView) findViewById(R.id.screenTitle)).setText(groupName);
+		((TextView) findViewById(R.id.screenTitle)).setText(roomName);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -58,62 +58,66 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 			public void onClick(View v) {
 				// finish and pass data to activity
 				String[] array = new String[mUsersToPass.size()];
+
 				int i = 0;
 				for (String itemString : mUsersToPass) {
 					array[i] = itemString;
 					i++;
 				}
-				setResult(RESULT_OK, new Intent().putExtra(Const.USER_IDS, array).putExtra(Const.GROUP_ID, groupId));
+
+				setResult(RESULT_OK, new Intent().putExtra(Const.USER_IDS, array).putExtra(Const.ROOM_ID, roomId));
 				finish();
 			}
 		});
 
-		getUsersFromGroup();
+		getUsersFromRoom();
 	}
 
-	private void getUsersFromGroup() {
-		new GroupsApi().getGroupMembers("-1", groupId, this, true, new ApiCallback<GroupMembersList>() {
+	private void getUsersFromRoom() {
+
+		new UserApi().getChatMembersWithPage(this, roomId, -1, false, new ApiCallback<UsersList>() {
 
 			@Override
-			public void onApiResponse(Result<GroupMembersList> result) {
+			public void onApiResponse(Result<UsersList> result) {
 				if (result.isSuccess()) {
-					List<GroupMember> members = result.getResultData().getMemberList();
-					mUsers = generateUserList(members);
-
+					mUsers = handleResult(result.getResultData().getMembersList());
 					setListView();
 				}
 			}
 		});
+	}
 
+	private List<User> handleResult(List<User> members) {
+
+		List<String> usersIds = getIntent().getStringArrayListExtra(Const.USER_IDS);
+		List<User> list = new ArrayList<User>();
+
+		for (User item : members) {
+
+			if (isChecked) {
+				if (usersIds != null) {
+					if (usersIds.contains(String.valueOf(item.getId()))) {
+						mUsersToPass.add(String.valueOf(item.getId()));
+						item.setSelected(true);
+					} else {
+						item.setSelected(false);
+					}
+				} else {
+					mUsersToPass.add(String.valueOf(item.getId()));
+					item.setSelected(true);
+				}
+			}
+
+			list.add(item);
+		}
+
+		return list;
 	}
 
 	private void setListView() {
 		InviteUserAdapter adapter = new InviteUserAdapter(this, mUsers, this);
 		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		listView.getRefreshableView().setAdapter(adapter);
-	}
-
-	private List<User> generateUserList(List<GroupMember> members) {
-		List<String> usersIds = getIntent().getStringArrayListExtra(Const.USER_IDS);
-		List<User> list = new ArrayList<User>();
-		for (GroupMember item : members) {
-			boolean toCheck = false;
-			if (isChecked) {
-				if (usersIds != null) {
-					if (usersIds.contains(String.valueOf(item.getId()))) {
-						mUsersToPass.add(String.valueOf(item.getId()));
-						toCheck = true;
-					}
-				} else {
-					mUsersToPass.add(String.valueOf(item.getId()));
-					toCheck = true;
-				}
-			}
-			list.add(new User(String.valueOf(item.getId()), String.valueOf(item.getId()), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImage_thumb(),
-					false, null, toCheck));
-		}
-
-		return list;
 	}
 
 	@Override
@@ -135,5 +139,4 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 			mUsersToPass.add(String.valueOf(obj.getId()));
 		}
 	}
-
 }

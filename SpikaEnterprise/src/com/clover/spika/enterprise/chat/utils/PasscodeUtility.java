@@ -8,129 +8,148 @@ import android.text.TextUtils;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 
 public class PasscodeUtility {
-    
-    private static PasscodeUtility sInstance = new PasscodeUtility();
 
-    public static PasscodeUtility getInstance() {
-        return sInstance;
-    }
+	private static PasscodeUtility sInstance = new PasscodeUtility();
 
-    private PasscodeUtility() { }
+	public static PasscodeUtility getInstance() {
+		return sInstance;
+	}
 
-    private boolean isSessionValid = false;
+	private PasscodeUtility() {
+	}
 
-//    private int handlerTimeToLive = 3 * 1000;
-    private int handlerTimeToLive = 500;
-    private Handler mValidationSessionHandler = new Handler();
+	private boolean isSessionValid = false;
+	private boolean isInApp = false;
 
-    private String passcode;
-    private String temporaryPasscode;
+	// private int handlerTimeToLive = 3 * 1000;
+	private int handlerTimeToLive = 500;
+	private Handler mValidationSessionHandler = new Handler();
 
-    /**
-     * Checks if the passcode is enabled for the application.
-     * @param context context of the activity (or application context)
-     * @return true if passcode has been enabled
-     */
-    public boolean isPasscodeEnabled(Context context) {
-        return SpikaEnterpriseApp.getSharedPreferences(context).isPasscodeEnabled();
-    }
+	private String passcode;
+	private String temporaryPasscode;
 
-    /**
-     * Sets the boolean value which is checked for passcode availability
-     * @param context context of the activity (or application context)
-     * @param isPasscodeEnabled sets the internal variable which is later checked for passcode availability
-     */
-    public void setPasscodeEnabled(Context context, boolean isPasscodeEnabled) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new IllegalAccessError("You can only set new values on main thread!");
-        }
+	public boolean isInApp() {
+		return this.isInApp;
+	}
 
-        SpikaEnterpriseApp.getSharedPreferences(context).setPasscodeEnabled(isPasscodeEnabled);
-    }
+	/**
+	 * Checks if the passcode is enabled for the application.
+	 * 
+	 * @param context
+	 *            context of the activity (or application context)
+	 * @return true if passcode has been enabled
+	 */
+	public boolean isPasscodeEnabled(Context context) {
+		return SpikaEnterpriseApp.getSharedPreferences(context).isPasscodeEnabled();
+	}
 
-    /**
-     * @return true if current session is valid. Current session is valid only if passcode was entered
-     * correctly in the near past.
-     */
-    public boolean isSessionValid() {
-        Logger.d("isSessionValid: " + isSessionValid);
-        return isSessionValid;
-    }
+	/**
+	 * Sets the boolean value which is checked for passcode availability
+	 * 
+	 * @param context
+	 *            context of the activity (or application context)
+	 * @param isPasscodeEnabled
+	 *            sets the internal variable which is later checked for passcode
+	 *            availability
+	 */
+	public void setPasscodeEnabled(Context context, boolean isPasscodeEnabled) {
+		if (Looper.myLooper() != Looper.getMainLooper()) {
+			throw new IllegalAccessError("You can only set new values on main thread!");
+		}
 
-    /**
-     * Sets the internal field which is checked for valid session. This method should only be
-     * called from {@link com.clover.spika.enterprise.chat.MainActivity}!
-     * @param isSessionValid set by {@link com.clover.spika.enterprise.chat.MainActivity}
-     */
-    public void setSessionValid(boolean isSessionValid) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new IllegalAccessError("You can only set new values on main thread!");
-        }
+		SpikaEnterpriseApp.getSharedPreferences(context).setPasscodeEnabled(isPasscodeEnabled);
+	}
 
-        Logger.d("setSessionValid: " + isSessionValid);
-        this.isSessionValid = isSessionValid;
-    }
+	/**
+	 * @return true if current session is valid. Current session is valid only
+	 *         if passcode was entered correctly in the near past.
+	 */
+	public boolean isSessionValid() {
+		Logger.d("isSessionValid: " + isSessionValid);
+		return isSessionValid;
+	}
 
-    public boolean validate(Context context, String requestedPasscode) {
-        if (this.passcode == null) {
-            this.passcode = SpikaEnterpriseApp.getSharedPreferences(context).getPasscode();
+	/**
+	 * Sets the internal field which is checked for valid session. This method
+	 * should only be called from
+	 * {@link com.clover.spika.enterprise.chat.MainActivity}!
+	 * 
+	 * @param isSessionValid
+	 *            set by {@link com.clover.spika.enterprise.chat.MainActivity}
+	 */
+	public void setSessionValid(boolean isSessionValid) {
+		if (Looper.myLooper() != Looper.getMainLooper()) {
+			throw new IllegalAccessError("You can only set new values on main thread!");
+		}
 
-            // if, by any chance, passcode length is wrong, react as if entered passcode is false and thus not validated
-            if (this.passcode.length() != 4) return false;
-        }
+		Logger.d("setSessionValid: " + isSessionValid);
+		this.isSessionValid = isSessionValid;
+	}
 
-        return this.passcode.equals(requestedPasscode);
-    }
+	public boolean validate(Context context, String requestedPasscode) {
+		if (this.passcode == null) {
+			this.passcode = SpikaEnterpriseApp.getSharedPreferences(context).getPasscode();
 
-    public void setPasscode(Context context, String requestedPasscode) {
-        if (TextUtils.isEmpty(requestedPasscode)) {
-            SpikaEnterpriseApp.getSharedPreferences(context).removePreference(Const.PREFERENCES_STORED_PASSCODE);
-            return;
-        }
+			// if, by any chance, passcode length is wrong, react as if entered
+			// passcode is false and thus not validated
+			if (this.passcode.length() != 4)
+				return false;
+		}
 
-        if (requestedPasscode.length() == 4) {
-            SpikaEnterpriseApp.getSharedPreferences(context).setPasscode(requestedPasscode);
-        }
-    }
+		return this.passcode.equals(requestedPasscode);
+	}
 
-    /**
-     * @return temporary passcode or empty String if none is set.
-     * Temporary passcode should be stored for a short time only.
-     */
-    public String getTemporaryPasscode() {
-        return temporaryPasscode == null ? "" : temporaryPasscode;
-    }
+	public void setPasscode(Context context, String requestedPasscode) {
+		if (TextUtils.isEmpty(requestedPasscode)) {
+			SpikaEnterpriseApp.getSharedPreferences(context).removePreference(Const.PREFERENCES_STORED_PASSCODE);
+			return;
+		}
 
-    public void setTemporaryPasscode(String tempPasscode) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            throw new IllegalAccessError("You can only set new values on main thread!");
-        }
+		if (requestedPasscode.length() == 4) {
+			SpikaEnterpriseApp.getSharedPreferences(context).setPasscode(requestedPasscode);
+		}
+	}
 
-        this.temporaryPasscode = tempPasscode;
-    }
+	/**
+	 * @return temporary passcode or empty String if none is set. Temporary
+	 *         passcode should be stored for a short time only.
+	 */
+	public String getTemporaryPasscode() {
+		return temporaryPasscode == null ? "" : temporaryPasscode;
+	}
 
-    /**
-     * Starts a handler with short time-to-live set by internal property.
-     * When handler expires, session is automatically considered as expired.
-     * <br /> <br />
-     * NOTE: Should be called from BaseActivity only.
-     */
-    public void onPause() {
-        mValidationSessionHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                PasscodeUtility.getInstance().setSessionValid(false);
-            }
-        }, handlerTimeToLive);
-    }
+	public void setTemporaryPasscode(String tempPasscode) {
+		if (Looper.myLooper() != Looper.getMainLooper()) {
+			throw new IllegalAccessError("You can only set new values on main thread!");
+		}
 
-    /**
-     * Kills a handler waiting for expired session.
-     * <br /> <br />
-     * NOTE: Should be called from BaseActivity only.
-     */
-    public void onResume() {
-        mValidationSessionHandler.removeCallbacksAndMessages(null);
-    }
+		this.temporaryPasscode = tempPasscode;
+	}
+
+	/**
+	 * Starts a handler with short time-to-live set by internal property. When
+	 * handler expires, session is automatically considered as expired. <br />
+	 * <br />
+	 * NOTE: Should be called from BaseActivity only.
+	 */
+	public void onPause() {
+		mValidationSessionHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				PasscodeUtility.getInstance().setSessionValid(false);
+				isInApp = false;
+			}
+		}, handlerTimeToLive);
+	}
+
+	/**
+	 * Kills a handler waiting for expired session. <br />
+	 * <br />
+	 * NOTE: Should be called from BaseActivity only.
+	 */
+	public void onResume() {
+		mValidationSessionHandler.removeCallbacksAndMessages(null);
+		isInApp = true;
+	}
 
 }

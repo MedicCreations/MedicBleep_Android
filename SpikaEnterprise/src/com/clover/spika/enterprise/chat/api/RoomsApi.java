@@ -21,8 +21,7 @@ import com.google.gson.Gson;
 
 public class RoomsApi {
 
-	public void getRoomsWithPage(final int page, final String cat, Context ctx, boolean showProgressBar,
-			final ApiCallback<RoomsList> listener) {
+	public void getRoomsWithPage(final int page, final String cat, Context ctx, boolean showProgressBar, final ApiCallback<RoomsList> listener) {
 		new BaseAsyncTask<Void, Void, RoomsList>(ctx, showProgressBar) {
 
 			@Override
@@ -36,8 +35,7 @@ public class RoomsApi {
 
 				try {
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ROOMS, getParams, SpikaEnterpriseApp
-							.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ROOMS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -71,8 +69,7 @@ public class RoomsApi {
 		}.execute();
 	}
 
-	public void getRoomsByName(final int page, final String cat, final String data, Context ctx,
-			boolean showProgressBar, final ApiCallback<RoomsList> listener) {
+	public void getRoomsByName(final int page, final String cat, final String data, Context ctx, boolean showProgressBar, final ApiCallback<RoomsList> listener) {
 		new BaseAsyncTask<Void, Void, RoomsList>(ctx, showProgressBar) {
 
 			@Override
@@ -87,8 +84,7 @@ public class RoomsApi {
 
 				try {
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ROOMS, getParams, SpikaEnterpriseApp
-							.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_ROOMS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -123,8 +119,7 @@ public class RoomsApi {
 		}.execute();
 	}
 
-	public void getUsersAndGroupsForRoomsByName(final int page, final String data, Context ctx,
-			boolean showProgressBar, final ApiCallback<UsersAndGroupsList> listener) {
+	public void getUsersAndGroupsForRoomsByName(final int page, final String data, Context ctx, boolean showProgressBar, final ApiCallback<UsersAndGroupsList> listener) {
 		new BaseAsyncTask<Void, Void, UsersAndGroupsList>(ctx, showProgressBar) {
 
 			@Override
@@ -134,12 +129,14 @@ public class RoomsApi {
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.PAGE, String.valueOf(page));
-				if(!TextUtils.isEmpty(data)) getParams.put(Const.SEARCH, data);
+
+				if (!TextUtils.isEmpty(data)) {
+					getParams.put(Const.SEARCH, data);
+				}
 
 				try {
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USERS_AND_GROUPS_FOR_ROOMS, getParams, SpikaEnterpriseApp
-							.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USERS_AND_GROUPS_FOR_ROOMS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -173,9 +170,9 @@ public class RoomsApi {
 			}
 		}.execute();
 	}
-	
-	public void getDistinctUser(final String userIds, final String groupIds, Context ctx,
-			boolean showProgressBar, final ApiCallback<ConfirmUsersList> listener) {
+
+	public void getDistinctUser(final String userIds, final String groupIds, final String roomIds, Context ctx, boolean showProgressBar,
+			final ApiCallback<ConfirmUsersList> listener) {
 		new BaseAsyncTask<Void, Void, ConfirmUsersList>(ctx, showProgressBar) {
 
 			@Override
@@ -186,11 +183,10 @@ public class RoomsApi {
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.USER_IDS, userIds);
 				getParams.put(Const.GROUP_IDS, groupIds);
+				getParams.put(Const.ROOM_IDS, roomIds);
 
 				try {
-
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp
-							.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
 				} catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

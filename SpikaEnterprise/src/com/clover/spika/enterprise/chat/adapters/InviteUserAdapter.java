@@ -173,7 +173,7 @@ public class InviteUserAdapter extends BaseAdapter {
 						}
 
 						if (listener != null) {
-							listener.onChange(data.get(position));
+							listener.onChange(data.get(position), false);
 						}
 					}
 				});

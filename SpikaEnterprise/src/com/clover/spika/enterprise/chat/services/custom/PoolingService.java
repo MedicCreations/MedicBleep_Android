@@ -2,20 +2,21 @@ package com.clover.spika.enterprise.chat.services.custom;
 
 import java.util.List;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LocalPushApi;
-import com.clover.spika.enterprise.chat.models.LocalPush;
-import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.utils.PushHandle;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
+
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.LocalPushApi;
+import com.clover.spika.enterprise.chat.models.LocalPush;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.utils.PushHandle;
 
 public class PoolingService extends Service {
 
+	private int serviceTime = 5000;
 	private boolean isServiceStarted = false;
 	private boolean isApiStarted = false;
 
@@ -23,7 +24,7 @@ public class PoolingService extends Service {
 	Runnable runnable = new Runnable() {
 		public void run() {
 			work();
-			handler.postDelayed(this, 5000);
+			handler.postDelayed(this, serviceTime);
 		}
 	};;
 
@@ -50,7 +51,6 @@ public class PoolingService extends Service {
 				}
 
 				isApiStarted = false;
-				Log.d("Vida", "PoolDone");
 			}
 		};
 	}
@@ -60,7 +60,7 @@ public class PoolingService extends Service {
 
 		if (!isServiceStarted) {
 			isServiceStarted = true;
-			handler.postDelayed(runnable, 1000);
+			handler.postDelayed(runnable, serviceTime);
 		}
 
 		return Service.START_STICKY;
@@ -74,7 +74,12 @@ public class PoolingService extends Service {
 			isApiStarted = true;
 		}
 
-		Log.d("Vida", "Pool");
+		if (PasscodeUtility.getInstance().isInApp()) {
+			serviceTime = 5000;
+		} else {
+			serviceTime = 60000;
+		}
+
 		api.getPush(this, listener);
 	}
 

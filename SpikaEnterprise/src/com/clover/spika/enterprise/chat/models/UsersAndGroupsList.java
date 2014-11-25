@@ -18,7 +18,7 @@ public class UsersAndGroupsList extends BaseModel {
 
     @SerializedName("search_result")
     @Expose
-    private List<UserOrGroup> usersAndGroupsList;
+    private List<UserGroupRoom> usersAndGroupsList;
 
 	public int getPage() {
 		return page;
@@ -36,11 +36,11 @@ public class UsersAndGroupsList extends BaseModel {
 		this.totalCount = totalCount;
 	}
 
-	public List<UserOrGroup> getUsersAndGroupsList() {
+	public List<UserGroupRoom> getUsersAndGroupsList() {
 		return usersAndGroupsList;
 	}
 
-	public void setUsersAndGroupsList(List<UserOrGroup> memberList) {
+	public void setUsersAndGroupsList(List<UserGroupRoom> memberList) {
 		this.usersAndGroupsList = memberList;
 	}
 
