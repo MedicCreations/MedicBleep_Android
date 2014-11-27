@@ -41,21 +41,50 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 
 	@Override
 	public void onRemove(String chatId) {
-		if (mUserAdapter.getSelected().size() == 0) {
+
+		if (mUserAdapter.getSelected().size() == 0 && mUserAdapter.getSelectedGroups().size() == 0 && mUserAdapter.getSelectedRooms().size() == 0) {
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 
-		StringBuilder idsBuilder = new StringBuilder();
-		for (String item : mUserAdapter.getSelected()) {
-			idsBuilder.append(item + ",");
+		String ids = "";
+		if (mUserAdapter.getSelected().size() != 0) {
+			// create users ids
+			StringBuilder idsBuilder = new StringBuilder();
+			for (String item : mUserAdapter.getSelected()) {
+				idsBuilder.append(item + ",");
+			}
+
+			// remove last comma
+			ids = idsBuilder.substring(0, idsBuilder.length() - 1);
 		}
 
-		// remove last comma
-		String ids = idsBuilder.substring(0, idsBuilder.length() - 1);
+		String groupIds = "";
+		if (mUserAdapter.getSelectedGroups().size() != 0) {
+			// create group ids
+			StringBuilder idsGroupBuilder = new StringBuilder();
+			for (String item : mUserAdapter.getSelectedGroups()) {
+				idsGroupBuilder.append(item + ",");
+			}
 
-		new ChatApi().leaveChat(chatId, ids, getActivity(), new ApiCallback<Chat>() {
+			// remove last comma
+			groupIds = idsGroupBuilder.substring(0, idsGroupBuilder.length() - 1);
+		}
+
+		String roomIds = "";
+		if (mUserAdapter.getSelectedRooms().size() != 0) {
+			// create group ids
+			StringBuilder idsRoomBuilder = new StringBuilder();
+			for (String item : mUserAdapter.getSelectedRooms()) {
+				idsRoomBuilder.append(item + ",");
+			}
+
+			// remove last comma
+			roomIds = idsRoomBuilder.substring(0, idsRoomBuilder.length() - 1);
+		}
+
+		new ChatApi().leaveChat(chatId, ids, groupIds, roomIds, getActivity(), new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {

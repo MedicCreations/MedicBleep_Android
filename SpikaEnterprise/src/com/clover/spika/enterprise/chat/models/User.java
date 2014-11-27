@@ -46,10 +46,34 @@ public class User implements Serializable {
 	@SerializedName("is_member")
 	@Expose
 	private boolean isMember;
-	
+
 	@SerializedName("is_admin")
 	@Expose
 	private boolean isAdmin;
+
+	@SerializedName("name")
+	@Expose
+	private String name;
+
+	@SerializedName("groupname")
+	@Expose
+	private String groupName;
+
+	@SerializedName("chat_id")
+	@Expose
+	private String chatId;
+
+	@SerializedName("is_user")
+	@Expose
+	private int isUser;
+
+	@SerializedName("is_group")
+	@Expose
+	private int isGroup;
+
+	@SerializedName("is_room")
+	@Expose
+	private int isRoom;
 
 	@SerializedName("details")
 	@Expose
@@ -138,7 +162,7 @@ public class User implements Serializable {
 	public void setIsMember(boolean isMember) {
 		this.isMember = isMember;
 	}
-	
+
 	public boolean isAdmin() {
 		return isAdmin;
 	}
@@ -219,6 +243,74 @@ public class User implements Serializable {
 	public String toString() {
 		return "User{" + "id='" + id + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", type='" + type + '\'' + ", image='" + image + '\''
 				+ ", imageThumb='" + imageThumb + '\'' + ", isMember=" + isMember + ", details=" + details + ", isSelected=" + isSelected + '}';
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getChatId() {
+		return chatId;
+	}
+
+	public void setChatId(String chatId) {
+		this.chatId = chatId;
+	}
+
+	public int getIsUser() {
+		return isUser;
+	}
+
+	public void setIsUser(int isUser) {
+		this.isUser = isUser;
+	}
+
+	public boolean getIsGroup() {
+
+		if (isGroup == 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void setIsGroup(boolean isGroup) {
+
+		if (isGroup) {
+			this.isGroup = 1;
+		} else {
+			this.isGroup = 0;
+		}
+	}
+
+	public boolean getIsRoom() {
+
+		if (isRoom == 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void setIsRoom(boolean isRoom) {
+
+		if (isRoom) {
+			this.isRoom = 1;
+		} else {
+			this.isRoom = 0;
+		}
 	}
 
 }

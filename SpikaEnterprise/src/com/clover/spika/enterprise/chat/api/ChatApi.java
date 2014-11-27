@@ -1,5 +1,12 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -12,13 +19,6 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
-
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 public class ChatApi {
 
@@ -346,8 +346,8 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void createRoom(final String name, final String image, final String image_thumb, final String users_to_add, final String categoryId, final String is_private,
-			final String password, Context context, final ApiCallback<Chat> listener) {
+	public void createRoom(final String name, final String image, final String image_thumb, final String users_to_add, final String group_to_add, final String room_to_add,
+			final String categoryId, final String is_private, final String password, Context context, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
 			@Override
@@ -357,12 +357,15 @@ public class ChatApi {
 				requestParams.put(Const.IMAGE, image);
 				requestParams.put(Const.IMAGE_THUMB, image_thumb);
 				requestParams.put(Const.USERS_TO_ADD, users_to_add);
+				requestParams.put(Const.GROUP_IDS, group_to_add);
+				requestParams.put(Const.ROOM_IDS, room_to_add);
 				requestParams.put(Const.CATEGORY_ID, categoryId);
 				requestParams.put(Const.IS_PRIVATE, is_private);
 				requestParams.put(Const.PASSWORD, password);
 
 				try {
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_CREATE_ROOM, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
@@ -506,7 +509,7 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void leaveChat(final String chatId, final String userIds, Context context, final ApiCallback<Chat> listener) {
+	public void leaveChat(final String chatId, final String userIds, final String groupIds, final String roomIds, Context context, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
 			@Override
@@ -514,6 +517,8 @@ public class ChatApi {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
 				requestParams.put(Const.CHAT_ID, chatId);
 				requestParams.put(Const.USER_IDS, userIds);
+				requestParams.put(Const.GROUP_IDS, groupIds);
+				requestParams.put(Const.ROOM_IDS, roomIds);
 
 				try {
 
@@ -556,25 +561,27 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void addUsersToRoom(final String userToAdd, final String chatId, Context context, final ApiCallback<Chat> listener) {
+	public void addUsersToRoom(final String userToAdd, final String groupIds, final String roomIds, final String chatId, Context context, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
 			@Override
 			protected Chat doInBackground(Void... params) {
+
 				HashMap<String, String> requestParams = new HashMap<String, String>();
 				requestParams.put(Const.USERS_TO_ADD, userToAdd);
 				requestParams.put(Const.CHAT_ID, chatId);
+				requestParams.put(Const.GROUP_IDS, groupIds);
+				requestParams.put(Const.ROOM_IDS, roomIds);
 
 				try {
+
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
-				} catch (ClientProtocolException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
+
 				return null;
 			}
 
@@ -596,6 +603,7 @@ public class ChatApi {
 					} else {
 						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
 					}
+					
 					listener.onApiResponse(apiResult);
 				}
 			}

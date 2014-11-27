@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -18,11 +22,7 @@ import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
 import com.clover.spika.enterprise.chat.models.UserGroupRoom;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-public class InviteUsersOrGroupsAdapter extends BaseAdapter {
+public class InviteUsersGroupsRoomsAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<UserGroupRoom> data = new ArrayList<UserGroupRoom>();
@@ -37,7 +37,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 	private OnRoomClickedListener roomClickedListener;
 	private boolean showCheckBox = true;
 
-	public InviteUsersOrGroupsAdapter(Context context, Collection<UserGroupRoom> users, OnChangeListener<UserGroupRoom> listener, OnGroupClickedListener listenerGroup,
+	public InviteUsersGroupsRoomsAdapter(Context context, Collection<UserGroupRoom> users, OnChangeListener<UserGroupRoom> listener, OnGroupClickedListener listenerGroup,
 			OnRoomClickedListener listenerRoom) {
 		this.mContext = context;
 		this.data.addAll(users);
@@ -181,22 +181,30 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 				holder.isSelected.setChecked(false);
 			}
 
-			holder.isSelected.setOnClickListener(new View.OnClickListener() {
+			if (!item.getIsMember()) {
+				holder.isSelected.setClickable(true);
+				holder.isSelected.setEnabled(true);
+				holder.isSelected.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
+					@Override
+					public void onClick(View v) {
 
-					if (data.get(position).isSelected()) {
-						removeFromHelperArrays(data.get(position));
-					} else {
-						addToHelperArrays(data.get(position));
+						if (data.get(position).isSelected()) {
+							removeFromHelperArrays(data.get(position));
+						} else {
+							addToHelperArrays(data.get(position));
+						}
+
+						if (changedListener != null) {
+							changedListener.onChange(data.get(position), false);
+						}
 					}
-
-					if (changedListener != null) {
-						changedListener.onChange(data.get(position), false);
-					}
-				}
-			});
+				});
+			} else {
+				holder.isSelected.setClickable(false);
+				holder.isSelected.setOnClickListener(null);
+				holder.isSelected.setEnabled(false);
+			}
 
 		} else {
 			holder.isSelected.setVisibility(View.GONE);
@@ -238,6 +246,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 				}
 			}
 		}
+
 		if (!userIds.contains(id)) {
 			userIds.add(id);
 		}
@@ -271,6 +280,7 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 				}
 			}
 		}
+
 		if (!groupIds.contains(id)) {
 			groupIds.add(id);
 		}
@@ -325,16 +335,6 @@ public class InviteUsersOrGroupsAdapter extends BaseAdapter {
 		if (roomIds.contains(id)) {
 			roomIds.remove(id);
 		}
-	}
-
-	public List<String> getSelected() {
-
-		List<String> allList = new ArrayList<String>();
-		allList.addAll(groupIds);
-		allList.addAll(userIds);
-		allList.addAll(roomIds);
-
-		return allList;
 	}
 
 	public List<String> getUsersSelected() {

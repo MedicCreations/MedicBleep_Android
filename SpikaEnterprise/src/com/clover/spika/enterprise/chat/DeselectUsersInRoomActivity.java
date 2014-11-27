@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,16 +14,13 @@ import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.fragments.CreateRoomFragment;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<User> {
 
@@ -31,7 +31,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 	private List<User> mUsers;
 	private List<String> mUsersToPass = new ArrayList<String>();
 
-	public static void startActivity(String roomName, String roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CreateRoomFragment frag) {
+	public static void startActivity(String roomName, String roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
 
 		Intent intent = new Intent(context, DeselectUsersInRoomActivity.class);
 		intent.putExtra(Const.ROOM_ID, roomId);
@@ -75,7 +75,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	private void getUsersFromRoom() {
 
-		new UserApi().getChatMembersWithPage(this, roomId, -1, false, new ApiCallback<UsersList>() {
+		new UserApi().getChatMembersWithPage(this, roomId, -1, false, false, new ApiCallback<UsersList>() {
 
 			@Override
 			public void onApiResponse(Result<UsersList> result) {

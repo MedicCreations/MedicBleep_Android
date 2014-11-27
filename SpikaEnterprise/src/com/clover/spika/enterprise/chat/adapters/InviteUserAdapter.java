@@ -27,6 +27,8 @@ public class InviteUserAdapter extends BaseAdapter {
 	private Context mContext;
 	private List<User> data = new ArrayList<User>();
 	private List<String> userIds = new ArrayList<String>();
+	private List<String> groupIds = new ArrayList<String>();
+	private List<String> roomIds = new ArrayList<String>();
 
 	private ImageLoader imageLoader;
 
@@ -141,13 +143,26 @@ public class InviteUserAdapter extends BaseAdapter {
 		}
 
 		imageLoader.displayImage(getContext(), user.getImageThumb(), holder.profileImg);
-		if (user.isAdmin()) {
-			holder.personName.setText(user.getFirstName() + " " + user.getLastName() + " (admin)");
+
+		if (user.getIsRoom()) {
+			holder.personName.setText(user.getName());
+			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_green));
+		} else if (user.getIsGroup()) {
+			holder.personName.setText(user.getGroupName());
+			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
 		} else {
-			holder.personName.setText(user.getFirstName() + " " + user.getLastName());
+
+			if (user.isAdmin()) {
+				holder.personName.setText(user.getFirstName() + " " + user.getLastName() + " (admin)");
+			} else {
+				holder.personName.setText(user.getFirstName() + " " + user.getLastName());
+			}
+
+			holder.personName.setTextColor(Color.BLACK);
 		}
 
 		if (showCheckBox) {
+
 			if (user.isSelected() || user.isMember()) {
 				holder.isSelected.setChecked(true);
 			} else {
@@ -155,21 +170,46 @@ public class InviteUserAdapter extends BaseAdapter {
 			}
 
 			if (user.isMember() || user.getId() == Helper.getUserId(mContext)) {
+
 				holder.isSelected.setClickable(false);
-				holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
+				// holder.personName.setTextColor(mContext.getResources().getColor(R.color.person_blue));
 			} else {
+
 				holder.isSelected.setClickable(true);
-				holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
+				// holder.personName.setTextColor(mContext.getResources().getColor(android.R.color.black));
 				holder.isSelected.setOnClickListener(new View.OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
+
+						boolean isRemove = false;
+
 						if (data.get(position).isSelected()) {
 							data.get(position).setSelected(false);
-							removeId(data.get(position).getId());
+							isRemove = true;
 						} else {
 							data.get(position).setSelected(true);
-							setId(data.get(position).getId());
+							isRemove = false;
+						}
+
+						if (data.get(position).getIsRoom()) {
+							if (isRemove) {
+								removeRoomId(data.get(position).getId());
+							} else {
+								setRoomId(data.get(position).getId());
+							}
+						} else if (data.get(position).getIsGroup()) {
+							if (isRemove) {
+								removeGroupId(data.get(position).getId());
+							} else {
+								setGroupId(data.get(position).getId());
+							}
+						} else {
+							if (isRemove) {
+								removeId(data.get(position).getId());
+							} else {
+								setId(data.get(position).getId());
+							}
 						}
 
 						if (listener != null) {
@@ -183,6 +223,7 @@ public class InviteUserAdapter extends BaseAdapter {
 		}
 
 		if (listenerOnUserClick != null && !Helper.getUserId(mContext).equals(user.getId())) {
+
 			convertView.setOnClickListener(new View.OnClickListener() {
 
 				@Override
@@ -207,8 +248,34 @@ public class InviteUserAdapter extends BaseAdapter {
 		return userIds;
 	}
 
+	public void setGroupId(String id) {
+		groupIds.add(id);
+	}
+
+	private void removeGroupId(String id) {
+		groupIds.remove(id);
+	}
+
+	public List<String> getSelectedGroups() {
+		return groupIds;
+	}
+
+	public void setRoomId(String id) {
+		roomIds.add(id);
+	}
+
+	private void removeRoomId(String id) {
+		roomIds.remove(id);
+	}
+
+	public List<String> getSelectedRooms() {
+		return roomIds;
+	}
+
 	public void resetSelected() {
 		userIds.clear();
+		groupIds.clear();
+		roomIds.clear();
 	}
 
 	public class ViewHolderCharacter {
@@ -227,7 +294,6 @@ public class InviteUserAdapter extends BaseAdapter {
 			personName = (TextView) view.findViewById(R.id.personName);
 			isSelected = (RobotoCheckBox) view.findViewById(R.id.isSelected);
 		}
-
 	}
 
 }

@@ -11,7 +11,7 @@ import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GroupsApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.fragments.CreateRoomFragment;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GroupMember;
 import com.clover.spika.enterprise.chat.models.GroupMembersList;
@@ -32,7 +32,7 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 	private List<User> mUsers;
 	private List<String> mUsersToPass = new ArrayList<String>();
 
-	public static void startActivity(String groupName, String groupId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CreateRoomFragment frag) {
+	public static void startActivity(String groupName, String groupId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
 		Intent intent = new Intent(context, DeselectUsersInGroupActivity.class);
 		intent.putExtra(Const.GROUP_ID, groupId);
 		intent.putExtra(Const.GROUP_NAME, groupName);

@@ -30,7 +30,7 @@ import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUsersOrGroupsAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteUsersGroupsRoomsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -63,7 +63,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public InviteUsersOrGroupsAdapter adapter;
+	public InviteUsersGroupsRoomsAdapter adapter;
 
 	private TextView txtUsers;
 
@@ -94,7 +94,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new InviteUsersOrGroupsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this, this);
+		adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this, this);
 
 		mCurrentIndex = 0;
 	}
@@ -258,7 +258,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	public void getUsers(int page, String search, final boolean toClear) {
 		RoomsApi api = new RoomsApi();
-		api.getUsersAndGroupsForRoomsByName(mCurrentIndex, search, getActivity(), true, new ApiCallback<UsersAndGroupsList>() {
+		api.getUsersAndGroupsForRoomsByName(null, mCurrentIndex, search, getActivity(), true, new ApiCallback<UsersAndGroupsList>() {
 
 			@Override
 			public void onApiResponse(Result<UsersAndGroupsList> result) {
@@ -301,10 +301,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	@Override
 	public void onChange(UserGroupRoom obj, boolean isFromDetails) {
 
-		if (isFromDetails) {
-			return;
-		}
-
 		boolean isFound = false;
 		int j = 0;
 
@@ -322,6 +318,11 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		}
 
 		if (isFound) {
+
+			if (isFromDetails) {
+				return;
+			}
+
 			usersToAdd.remove(j);
 		} else {
 			usersToAdd.add(obj);
@@ -491,11 +492,13 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private UserGroupRoom getGroupById(String id) {
+
 		for (UserGroupRoom item : adapter.getData()) {
 			if (item.getId().equals(id)) {
 				return item;
 			}
 		}
+
 		return null;
 	}
 

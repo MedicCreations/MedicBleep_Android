@@ -49,9 +49,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), null);
-
 	}
 
 	@Override
@@ -171,7 +169,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			}
 		}
 
-		((CreateRoomActivity) getActivity()).createRoomFinaly(users_to_add.toString());
+		((CreateRoomActivity) getActivity()).createRoomFinaly(users_to_add.toString(), groupIds, roomIds);
 	}
 
 }

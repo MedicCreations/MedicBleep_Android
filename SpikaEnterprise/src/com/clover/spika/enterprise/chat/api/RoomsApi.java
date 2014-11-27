@@ -119,7 +119,8 @@ public class RoomsApi {
 		}.execute();
 	}
 
-	public void getUsersAndGroupsForRoomsByName(final int page, final String data, Context ctx, boolean showProgressBar, final ApiCallback<UsersAndGroupsList> listener) {
+	public void getUsersAndGroupsForRoomsByName(final String chatId, final int page, final String data, Context ctx, boolean showProgressBar,
+			final ApiCallback<UsersAndGroupsList> listener) {
 		new BaseAsyncTask<Void, Void, UsersAndGroupsList>(ctx, showProgressBar) {
 
 			@Override
@@ -134,15 +135,21 @@ public class RoomsApi {
 					getParams.put(Const.SEARCH, data);
 				}
 
+				if (!TextUtils.isEmpty(chatId)) {
+					getParams.put(Const.CHAT_ID, chatId);
+				}
+
 				try {
 
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_USERS_AND_GROUPS_FOR_ROOMS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+
+					return new Gson().fromJson(jsonObject.toString(), UsersAndGroupsList.class);
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), UsersAndGroupsList.class);
+
+				return null;
 			}
 
 			@Override

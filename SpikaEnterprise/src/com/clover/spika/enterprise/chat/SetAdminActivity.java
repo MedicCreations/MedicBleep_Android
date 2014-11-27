@@ -72,7 +72,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 	}
 
 	private void getUsers(final boolean clearPrevious) {
-		userApi.getChatMembersWithPage(this, chatId, mCurrentIndex, true, new ApiCallback<UsersList>() {
+		userApi.getChatMembersWithPage(this, chatId, mCurrentIndex, true, false, new ApiCallback<UsersList>() {
 			@Override
 			public void onApiResponse(Result<UsersList> result) {
 				if (result.isSuccess()) {

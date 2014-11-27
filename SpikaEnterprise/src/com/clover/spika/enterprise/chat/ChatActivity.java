@@ -178,6 +178,7 @@ public class ChatActivity extends BaseChatActivity {
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.PASSWORD, password);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
 
@@ -196,6 +197,7 @@ public class ChatActivity extends BaseChatActivity {
 		intent.putExtra(Const.USER_ID, userId);
 		intent.putExtra(Const.FIRSTNAME, firstname);
 		intent.putExtra(Const.LASTNAME, lastname);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		if (isGroup) {
 			intent.putExtra(Const.IS_GROUP, true);
@@ -214,6 +216,7 @@ public class ChatActivity extends BaseChatActivity {
 
 		Intent intentFinal = new Intent(context, ChatActivity.class);
 		intentFinal.putExtras(intent.getExtras());
+		intentFinal.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intentFinal);
 	}
 

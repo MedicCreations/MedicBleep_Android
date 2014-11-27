@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
@@ -28,11 +32,10 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.UserGroupRoom;
+import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
 import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener {
 
@@ -45,6 +48,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ImageButton mInviteBtn;
 
 	private UserApi api;
+	private RoomsApi roomsApi;
 	private ManageUsersFragmentAdapter mPagerAdapter;
 	private ViewPager mViewPager;
 
@@ -79,6 +83,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		removeTab.setOnClickListener(this);
 
 		api = new UserApi();
+		roomsApi = new RoomsApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -133,40 +138,38 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
-		if (search == null) {
-			api.getUsersWithPage(this, currentIndex, chatId, true, new ApiCallback<UsersList>() {
 
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
-						mPagerAdapter.setInviteUsers(result.getResultData().getUserList(), toClear);
-						if (toUpdateMember) {
-							mPagerAdapter.resetMembers();
-							getMembers(0, false);
+		roomsApi.getUsersAndGroupsForRoomsByName(chatId, currentIndex, search, this, false, new ApiCallback<UsersAndGroupsList>() {
+
+			@Override
+			public void onApiResponse(Result<UsersAndGroupsList> result) {
+
+				if (result.isSuccess()) {
+
+					mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
+
+					List<UserGroupRoom> finalList = result.getResultData().getUsersAndGroupsList();
+
+					for (int i = 0; i < finalList.size(); i++) {
+						if (finalList.get(i).getIsMember()) {
+							finalList.get(i).setSelected(true);
 						}
 					}
-				}
-			});
-		} else {
-			api.getUsersByName(currentIndex, chatId, search, this, true, new ApiCallback<UsersList>() {
 
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
-						mPagerAdapter.setInviteUsers(result.getResultData().getUserList(), toClear);
+					mPagerAdapter.setInviteUsers(result.getResultData().getUsersAndGroupsList(), toClear);
+
+					if (toUpdateMember) {
+						mPagerAdapter.resetMembers();
+						getMembers(0, false);
 					}
 				}
-			});
-		}
-
+			}
+		});
 	}
 
-	// TODO
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
-		api.getChatMembersWithPage(this, chatId, currentIndex, true, new ApiCallback<UsersList>() {
+		api.getChatMembersWithPage(this, chatId, currentIndex, true, true, new ApiCallback<UsersList>() {
 			@Override
 			public void onApiResponse(Result<UsersList> result) {
 				if (result.isSuccess()) {
@@ -222,7 +225,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			return mFragmentList.size();
 		}
 
-		public void setInviteUsers(List<User> userList, boolean toClear) {
+		public void setInviteUsers(List<UserGroupRoom> userList, boolean toClear) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof InviteUsersFragment) {
 					((InviteUsersFragment) fragment).setData(userList, toClear);
@@ -301,10 +304,13 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
+
 				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation,
 						(LinearLayout) findViewById(R.id.invitationOptions));
 			} else {
+
 				if (mSearchListener != null) {
+
 					String data = searchEt.getText().toString();
 					hideKeyboard(searchEt);
 					if (mViewPager.getCurrentItem() == 0) {

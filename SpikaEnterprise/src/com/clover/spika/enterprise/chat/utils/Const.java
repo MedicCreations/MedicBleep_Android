@@ -86,6 +86,7 @@ public class Const {
 	public static final String CODE = "code";
 	public static final String CHAT_NAME = "chat_name";
 	public static final String CHAT_ID = "chat_id";
+	public static final String USER_GROUP_ROOMS = "user_group_rooms";
 	public static final String USERS_TO_ADD = "users_to_add";
 	public static final String LAST_MSG_ID = "last_msg_id";
 	public static final String FIRST_MSG_ID = "first_msg_id";

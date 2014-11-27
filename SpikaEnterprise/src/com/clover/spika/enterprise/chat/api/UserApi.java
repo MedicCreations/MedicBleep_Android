@@ -547,7 +547,8 @@ public class UserApi {
 		}.execute();
 	}
 
-	public void getChatMembersWithPage(Context ctx, final String chatId, final int page, boolean showProgressBar, final ApiCallback<UsersList> listener) {
+	public void getChatMembersWithPage(Context ctx, final String chatId, final int page, final boolean isUserGroupRooms, boolean showProgressBar,
+			final ApiCallback<UsersList> listener) {
 		new BaseAsyncTask<Void, Void, UsersList>(ctx, showProgressBar) {
 
 			@Override
@@ -558,6 +559,10 @@ public class UserApi {
 				HashMap<String, String> requestParams = new HashMap<String, String>();
 				requestParams.put(Const.PAGE, String.valueOf(page));
 				requestParams.put(Const.CHAT_ID, chatId);
+
+				if (isUserGroupRooms) {
+					requestParams.put(Const.USER_GROUP_ROOMS, "1");
+				}
 
 				try {
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_CHAT_MEMBERS, requestParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
@@ -644,7 +649,6 @@ public class UserApi {
 					}
 
 					listener.onApiResponse(result);
-
 				}
 			}
 		}.execute();

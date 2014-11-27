@@ -37,6 +37,10 @@ public class UserGroupRoom {
 	@Expose
 	private String roomName;
 
+	@SerializedName("is_member")
+	@Expose
+	private boolean isMember;
+
 	@SerializedName("is_user")
 	@Expose
 	private int isUser;
@@ -169,6 +173,14 @@ public class UserGroupRoom {
 
 	public void setRoomName(String roomName) {
 		this.roomName = roomName;
+	}
+
+	public boolean getIsMember() {
+		return isMember;
+	}
+
+	public void setIsMember(boolean isMember) {
+		this.isMember = isMember;
 	}
 
 }

@@ -171,10 +171,10 @@ public class CreateRoomActivity extends BaseActivity {
 		this.room_thumb_id = room_thumb_id;
 	}
 
-	public void createRoomFinaly(String userIds) {
+	public void createRoomFinaly(String userIds, String groupIds, String roomIds) {
 
 		Logger.d("password: " + roomPassword);
-		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
+		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
@@ -258,11 +258,13 @@ public class CreateRoomActivity extends BaseActivity {
 
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+			
 			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 				hideKeyboard(searchEt);
 				if (mSearchListener != null)
 					mSearchListener.onSearch(v.getText().toString());
 			}
+			
 			return false;
 		}
 	};
@@ -273,9 +275,7 @@ public class CreateRoomActivity extends BaseActivity {
 		public void onClick(View v) {
 
 			if (mCreateRoomListener != null) {
-
 				mCreateRoomListener.onCreateRoom();
-
 			}
 		}
 	};
@@ -286,15 +286,14 @@ public class CreateRoomActivity extends BaseActivity {
 		public void onClick(View v) {
 
 			if (mNextStepListener != null) {
-
 				mNextStepListener.onNext();
-
 			}
 		}
 	};
 
 	@Override
 	public void onBackPressed() {
+		
 		if (isConfirmActive) {
 			Fragment fragment = getSupportFragmentManager().findFragmentByTag(ConfirmRoomFragment.class.getSimpleName());
 			getSupportFragmentManager().beginTransaction().remove(fragment).commit();
@@ -303,6 +302,7 @@ public class CreateRoomActivity extends BaseActivity {
 			isConfirmActive = false;
 			return;
 		}
+		
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
 			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			return;
