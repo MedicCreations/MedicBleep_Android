@@ -116,7 +116,9 @@ public class Const {
 	public static final String USER_IDS = "user_ids";
 	public static final String ADMIN_ID = "admin_id";
 	public static final String GROUP_IDS = "group_ids";
+	public static final String GROUP_ALL_IDS = "group_all_ids";
 	public static final String ROOM_IDS = "room_ids";
+	public static final String ROOM_ALL_IDS = "room_all_ids";
 	public static final String APP_VERSION = "app_version";
 	public static final String PLATFORM = "platform";
 	public static final String GET_DETAIL_VALUES = "get_detail_values";

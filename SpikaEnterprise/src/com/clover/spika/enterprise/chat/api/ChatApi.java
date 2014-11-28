@@ -561,7 +561,8 @@ public class ChatApi {
 		}.execute();
 	}
 
-	public void addUsersToRoom(final String userToAdd, final String groupIds, final String roomIds, final String chatId, Context context, final ApiCallback<Chat> listener) {
+	public void addUsersToRoom(final String userToAdd, final String groupIds, final String roomIds, final String groupsAll, final String roomsAll, final String chatId,
+			Context context, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(context, true) {
 
 			@Override
@@ -571,7 +572,9 @@ public class ChatApi {
 				requestParams.put(Const.USERS_TO_ADD, userToAdd);
 				requestParams.put(Const.CHAT_ID, chatId);
 				requestParams.put(Const.GROUP_IDS, groupIds);
+				requestParams.put(Const.GROUP_ALL_IDS, groupsAll);
 				requestParams.put(Const.ROOM_IDS, roomIds);
+				requestParams.put(Const.ROOM_ALL_IDS, roomsAll);
 
 				try {
 
@@ -603,7 +606,7 @@ public class ChatApi {
 					} else {
 						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
 					}
-					
+
 					listener.onApiResponse(apiResult);
 				}
 			}

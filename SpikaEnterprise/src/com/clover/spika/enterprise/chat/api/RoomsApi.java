@@ -178,8 +178,8 @@ public class RoomsApi {
 		}.execute();
 	}
 
-	public void getDistinctUser(final String userIds, final String groupIds, final String roomIds, Context ctx, boolean showProgressBar,
-			final ApiCallback<ConfirmUsersList> listener) {
+	public void getDistinctUser(final String userIds, final String groupIds, final String roomIds, final String groupAllIds, final String roomAllIds, Context ctx,
+			boolean showProgressBar, final ApiCallback<ConfirmUsersList> listener) {
 		new BaseAsyncTask<Void, Void, ConfirmUsersList>(ctx, showProgressBar) {
 
 			@Override
@@ -190,7 +190,9 @@ public class RoomsApi {
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.USER_IDS, userIds);
 				getParams.put(Const.GROUP_IDS, groupIds);
+				getParams.put(Const.GROUP_ALL_IDS, groupAllIds);
 				getParams.put(Const.ROOM_IDS, roomIds);
+				getParams.put(Const.ROOM_ALL_IDS, roomAllIds);
 
 				try {
 					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());

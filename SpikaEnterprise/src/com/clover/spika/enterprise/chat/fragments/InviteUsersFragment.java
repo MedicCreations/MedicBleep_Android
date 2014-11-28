@@ -19,8 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
-import com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity;
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -30,9 +28,7 @@ import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
-import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnInviteClickListener;
-import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -42,7 +38,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
 public class InviteUsersFragment extends CustomFragment implements AdapterView.OnItemClickListener, OnChangeListener<UserGroupRoom>, OnSearchManageUsersListener,
-		OnInviteClickListener, OnGroupClickedListener, OnRoomClickedListener {
+		OnInviteClickListener {
 
 	public interface Callbacks {
 		void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember);
@@ -63,13 +59,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	private String mSearchData = null;
 
 	private TextView noItems;
-	private List<UserGroupRoom> usersToAdd = new ArrayList<UserGroupRoom>();
-	SparseArray<List<String>> usersFromGroups = new SparseArray<List<String>>();
-	SparseArray<List<String>> usersFromRooms = new SparseArray<List<String>>();
 	private TextView txtUsers;
-
-	private static final int FROM_GROUP_MEMBERS = 12;
-	private static final int FROM_ROOM_MEMBERS = 13;
 
 	public static InviteUsersFragment newInstance() {
 		InviteUsersFragment fragment = new InviteUsersFragment();
@@ -106,7 +96,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		super.onViewCreated(view, savedInstanceState);
 
 		if (view != null) {
-			adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this, this);
+			adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this);
 
 			noItems = (TextView) view.findViewById(R.id.noItems);
 			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
@@ -141,7 +131,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		boolean isFound = false;
 		int j = 0;
 
-		for (UserGroupRoom user : usersToAdd) {
+		for (UserGroupRoom user : adapter.getUsersForString()) {
 			if (user.getId().equals(obj.getId())) {
 				isFound = true;
 				break;
@@ -150,32 +140,32 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		}
 
 		if (isFound) {
-			
+
 			if (isFromDetails) {
 				return;
 			}
-			
-			usersToAdd.remove(j);
+
+			adapter.removeFromUsersForString(j);
 		} else {
-			usersToAdd.add(obj);
+			adapter.addUsersForString(obj);
 		}
 
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < usersToAdd.size(); i++) {
+		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (usersToAdd.get(i).getIs_group()) {
-				builder.append(usersToAdd.get(i).getGroupName());
-			} else if (usersToAdd.get(i).getIsRoom()) {
-				builder.append(usersToAdd.get(i).getRoomName());
+			if (adapter.getUsersForString().get(i).getIs_group()) {
+				builder.append(adapter.getUsersForString().get(i).getGroupName());
+			} else if (adapter.getUsersForString().get(i).getIsRoom()) {
+				builder.append(adapter.getUsersForString().get(i).getRoomName());
 			} else {
-				builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+				builder.append(adapter.getUsersForString().get(i).getFirstName() + " " + adapter.getUsersForString().get(i).getLastName());
 			}
 
-			if (i != (usersToAdd.size() - 1)) {
+			if (i != (adapter.getUsersForString().size() - 1)) {
 				builder.append(", ");
 			}
 		}
-
+		
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers + builder.toString());
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -197,18 +187,32 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	@Override
 	public void onInvite(final String chatId) {
 
-		if (adapter.getUsersSelected().size() == 0 && adapter.getGroupsSelected().size() == 0 && adapter.getRoomsSelected().size() == 0) {
+		if (adapter.getUsersSelected().isEmpty() && adapter.getGroupsSelected().isEmpty() && adapter.getRoomsSelected().isEmpty() && adapter.getRoomsAllSelected().isEmpty()
+				&& adapter.getGroupsAllSelected().isEmpty()) {
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 
-		List<String> usersId = adapter.getUsersSelected();
-		List<String> groupsId = adapter.getGroupsSelected();
-		List<String> roomsId = adapter.getRoomsSelected();
+		List<String> usersId = new ArrayList<String>();
+		usersId.addAll(adapter.getUsersSelected());
+
+		List<String> groupsId = new ArrayList<String>();
+		groupsId.addAll(adapter.getGroupsSelected());
+
+		List<String> roomsId = new ArrayList<String>();
+		roomsId.addAll(adapter.getRoomsSelected());
+
+		List<String> allRoomsId = new ArrayList<String>();
+		allRoomsId.addAll(adapter.getRoomsAllSelected());
+
+		List<String> allGroupsId = new ArrayList<String>();
+		allGroupsId.addAll(adapter.getGroupsAllSelected());
+
+		SparseArray<List<String>> usersFromGroups = adapter.getUsersFromGroups();
+		SparseArray<List<String>> usersFromRooms = adapter.getUsersFromRooms();
 
 		for (int i = 0; i < usersFromGroups.size(); i++) {
-
 			List<String> userList = usersFromGroups.valueAt(i);
 			for (String user : userList) {
 				if (!usersId.contains(user)) {
@@ -218,7 +222,6 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		}
 
 		for (int i = 0; i < usersFromRooms.size(); i++) {
-
 			List<String> userList = usersFromRooms.valueAt(i);
 			for (String user : userList) {
 				if (!usersId.contains(user)) {
@@ -236,12 +239,33 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			}
 		}
 
+		// add all room ids
+		StringBuilder rooms_to_add_all = new StringBuilder();
+		for (int i = 0; i < allRoomsId.size(); i++) {
+			rooms_to_add_all.append(allRoomsId.get(i));
+			if (i != (allRoomsId.size() - 1)) {
+				rooms_to_add_all.append(",");
+			}
+		}
+
+		// add all group ids
+		StringBuilder groups_to_add_all = new StringBuilder();
+		for (int i = 0; i < allGroupsId.size(); i++) {
+			groups_to_add_all.append(allGroupsId.get(i));
+			if (i != (allGroupsId.size() - 1)) {
+				groups_to_add_all.append(",");
+			}
+		}
+
 		// add group ids
 		StringBuilder group_to_add = new StringBuilder();
-
 		for (int i = 0; i < groupsId.size(); i++) {
-			group_to_add.append(groupsId.get(i));
 
+			if (allGroupsId.contains(groupsId.get(i))) {
+				continue;
+			}
+
+			group_to_add.append(groupsId.get(i));
 			if (i != (groupsId.size() - 1)) {
 				group_to_add.append(",");
 			}
@@ -249,34 +273,37 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 		// add room ids
 		StringBuilder rooms_to_add = new StringBuilder();
-
 		for (int i = 0; i < roomsId.size(); i++) {
-			rooms_to_add.append(roomsId.get(i));
 
+			if (allRoomsId.contains(roomsId.get(i))) {
+				continue;
+			}
+
+			rooms_to_add.append(roomsId.get(i));
 			if (i != (roomsId.size() - 1)) {
 				rooms_to_add.append(",");
 			}
 		}
 
-		new ChatApi().addUsersToRoom(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(), chatId, getActivity(), new ApiCallback<Chat>() {
+		new ChatApi().addUsersToRoom(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(), groups_to_add_all.toString(), rooms_to_add_all.toString(), chatId,
+				getActivity(), new ApiCallback<Chat>() {
 
-			@Override
-			public void onApiResponse(Result<Chat> result) {
+					@Override
+					public void onApiResponse(Result<Chat> result) {
 
-				if (result.isSuccess()) {
+						if (result.isSuccess()) {
 
-					if (getActivity() instanceof ManageUsersActivity) {
-						((ManageUsersActivity) getActivity()).setNewChat(result.getResultData().getChat());
+							if (getActivity() instanceof ManageUsersActivity) {
+								((ManageUsersActivity) getActivity()).setNewChat(result.getResultData().getChat());
+							}
+
+							mCurrentIndex = 0;
+							mCallbacks.getUsers(mCurrentIndex, null, true, true);
+							setInitialTextToTxtUsers();
+							adapter.resetSelected();
+						}
 					}
-
-					mCurrentIndex = 0;
-					mCallbacks.getUsers(mCurrentIndex, null, true, true);
-					setInitialTextToTxtUsers();
-					adapter.resetSelected();
-					usersToAdd.clear();
-				}
-			}
-		});
+				});
 	}
 
 	public void setData(List<UserGroupRoom> data, boolean toClearPrevious) {
@@ -349,163 +376,38 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	}
 
 	@Override
-	public void onGroupClicked(String groupId, String groupName, boolean isChecked) {
-		ArrayList<String> ids = null;
-
-		if (usersFromGroups.get(Integer.parseInt(groupId)) != null) {
-
-			List<String> idsList = usersFromGroups.get(Integer.parseInt(groupId));
-			ids = new ArrayList<String>();
-
-			for (String item : idsList) {
-				ids.add(item);
-			}
-		}
-
-		DeselectUsersInGroupActivity.startActivity(groupName, groupId, isChecked, ids, getActivity(), FROM_GROUP_MEMBERS, this);
-	}
-
-	@Override
-	public void onRoomClicked(String roomId, String roomName, boolean isChecked) {
-		ArrayList<String> ids = null;
-
-		if (usersFromRooms.get(Integer.parseInt(roomId)) != null) {
-
-			List<String> idsList = usersFromRooms.get(Integer.parseInt(roomId));
-			ids = new ArrayList<String>();
-
-			for (String item : idsList) {
-				ids.add(item);
-			}
-		}
-
-		DeselectUsersInRoomActivity.startActivity(roomName, roomId, isChecked, ids, getActivity(), FROM_ROOM_MEMBERS, this);
-	}
-
-	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == FROM_GROUP_MEMBERS) {
+		if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_GROUP_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String groupId = data.getStringExtra(Const.GROUP_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					removeGroup(groupId, false);
+					adapter.removeFromGroup(groupId, false);
 				} else {
-					addGroup(groupId, dataS, true);
+					adapter.addFromGroup(groupId, dataS, true);
 				}
+
+				adapter.removeAllGroup(groupId);
 			}
-		} else if (requestCode == FROM_ROOM_MEMBERS) {
+		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_ROOM_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String roomId = data.getStringExtra(Const.ROOM_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					removeRoom(roomId, false);
+					adapter.removeFromRoom(roomId, false);
 				} else {
-					addRoom(roomId, dataS, true);
+					adapter.addFromRoom(roomId, dataS, true);
 				}
+
+				adapter.removeAllRoom(roomId);
 			}
 		}
-	}
-
-	private void addGroup(String groupId, String[] users, boolean isFromDetails) {
-
-		List<String> list = new ArrayList<String>();
-
-		for (String item : users) {
-			list.add(item);
-		}
-
-		usersFromGroups.remove(Integer.parseInt(groupId));
-		usersFromGroups.put(Integer.parseInt(groupId), list);
-
-		adapter.addGroup(groupId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(groupId);
-		if (item != null) {
-			if (!checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void addRoom(String roomId, String[] users, boolean isFromDetails) {
-
-		List<String> list = new ArrayList<String>();
-
-		for (String item : users) {
-			list.add(item);
-		}
-
-		usersFromRooms.remove(Integer.parseInt(roomId));
-		usersFromRooms.put(Integer.parseInt(roomId), list);
-
-		adapter.addRoom(roomId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(roomId);
-		if (item != null) {
-			if (!checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void removeGroup(String groupId, boolean isFromDetails) {
-
-		usersFromGroups.remove(Integer.parseInt(groupId));
-		adapter.removeGroup(groupId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(groupId);
-		if (item != null) {
-			if (checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void removeRoom(String roomId, boolean isFromDetails) {
-
-		usersFromRooms.remove(Integer.parseInt(roomId));
-		adapter.removeRoom(roomId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(roomId);
-		if (item != null) {
-			if (checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private UserGroupRoom getGroupById(String id) {
-
-		for (UserGroupRoom item : adapter.getData()) {
-			if (item.getId().equals(id)) {
-				return item;
-			}
-		}
-
-		return null;
-	}
-
-	private boolean checkIfItemInUserAdd(UserGroupRoom item) {
-
-		for (UserGroupRoom item2 : usersToAdd) {
-
-			if (item2.getIs_group() && item2.getId().equals(item.getId())) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 }

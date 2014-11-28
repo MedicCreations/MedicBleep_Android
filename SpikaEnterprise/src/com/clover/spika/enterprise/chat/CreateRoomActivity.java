@@ -122,7 +122,7 @@ public class CreateRoomActivity extends BaseActivity {
 		});
 	}
 
-	public void setConfirmScreen(String users_to_add, String group_to_add, String room_to_add, String is_private, String password) {
+	public void setConfirmScreen(String users_to_add, String group_to_add, String room_to_add, String groupAll, String roomAll, String is_private, String password) {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
@@ -146,7 +146,9 @@ public class CreateRoomActivity extends BaseActivity {
 		Bundle bundle = new Bundle();
 		bundle.putString(Const.USER_IDS, users_to_add);
 		bundle.putString(Const.GROUP_IDS, group_to_add);
+		bundle.putString(Const.GROUP_ALL_IDS, groupAll);
 		bundle.putString(Const.ROOM_IDS, room_to_add);
+		bundle.putString(Const.ROOM_ALL_IDS, roomAll);
 		bundle.putString(Const.ROOM_THUMB_ID, room_thumb_id);
 		bundle.putString(Const.NAME, roomName);
 		fragment.setArguments(bundle);
@@ -258,13 +260,13 @@ public class CreateRoomActivity extends BaseActivity {
 
 		@Override
 		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			
+
 			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 				hideKeyboard(searchEt);
 				if (mSearchListener != null)
 					mSearchListener.onSearch(v.getText().toString());
 			}
-			
+
 			return false;
 		}
 	};
@@ -293,7 +295,7 @@ public class CreateRoomActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		
+
 		if (isConfirmActive) {
 			Fragment fragment = getSupportFragmentManager().findFragmentByTag(ConfirmRoomFragment.class.getSimpleName());
 			getSupportFragmentManager().beginTransaction().remove(fragment).commit();
@@ -302,7 +304,7 @@ public class CreateRoomActivity extends BaseActivity {
 			isConfirmActive = false;
 			return;
 		}
-		
+
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
 			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			return;

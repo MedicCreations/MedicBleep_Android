@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -27,8 +30,6 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
-import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
-import com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteUsersGroupsRoomsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -37,9 +38,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
-import com.clover.spika.enterprise.chat.listeners.OnGroupClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
-import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserGroupRoom;
@@ -50,15 +49,9 @@ import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<UserGroupRoom>,
-		OnGroupClickedListener, OnRoomClickedListener {
+public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<UserGroupRoom> {
 
 	private static final int FROM_CATEGORY = 11;
-	private static final int FROM_GROUP_MEMBERS = 12;
-	private static final int FROM_ROOM_MEMBERS = 13;
 
 	private TextView noItems;
 
@@ -79,10 +72,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private ImageButton btnSearch;
 	private EditText etSearch;
 
-	List<UserGroupRoom> usersToAdd = new ArrayList<UserGroupRoom>();
-	SparseArray<List<String>> usersFromGroups = new SparseArray<List<String>>();
-	SparseArray<List<String>> usersFromRooms = new SparseArray<List<String>>();
-
 	private String mCategoryId = "0";
 	private String mCategoryName = "";
 	private TextView mTvCategoryName;
@@ -94,7 +83,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this, this);
+		adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this);
 
 		mCurrentIndex = 0;
 	}
@@ -304,7 +293,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		boolean isFound = false;
 		int j = 0;
 
-		for (UserGroupRoom user : usersToAdd) {
+		for (UserGroupRoom user : adapter.getUsersForString()) {
 
 			if (user.getId().equals(obj.getId())) {
 
@@ -323,24 +312,24 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 				return;
 			}
 
-			usersToAdd.remove(j);
+			adapter.removeFromUsersForString(j);
 		} else {
-			usersToAdd.add(obj);
+			adapter.addUsersForString(obj);
 		}
 
 		StringBuilder builder = new StringBuilder();
 
-		for (int i = 0; i < usersToAdd.size(); i++) {
+		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (usersToAdd.get(i).getIs_group()) {
-				builder.append(usersToAdd.get(i).getGroupName());
-			} else if (usersToAdd.get(i).getIsRoom()) {
-				builder.append(usersToAdd.get(i).getRoomName());
-			} else if (usersToAdd.get(i).getIsUser()) {
-				builder.append(usersToAdd.get(i).getFirstName() + " " + usersToAdd.get(i).getLastName());
+			if (adapter.getUsersForString().get(i).getIs_group()) {
+				builder.append(adapter.getUsersForString().get(i).getGroupName());
+			} else if (adapter.getUsersForString().get(i).getIsRoom()) {
+				builder.append(adapter.getUsersForString().get(i).getRoomName());
+			} else if (adapter.getUsersForString().get(i).getIsUser()) {
+				builder.append(adapter.getUsersForString().get(i).getFirstName() + " " + adapter.getUsersForString().get(i).getLastName());
 			}
 
-			if (i != (usersToAdd.size() - 1)) {
+			if (i != (adapter.getUsersForString().size() - 1)) {
 				builder.append(", ");
 			}
 		}
@@ -380,165 +369,37 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 				mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
 				setCategory(data.getStringExtra(Const.CATEGORY_NAME));
 			}
-		} else if (requestCode == FROM_GROUP_MEMBERS) {
+		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_GROUP_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String groupId = data.getStringExtra(Const.GROUP_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					removeGroup(groupId, false);
+					adapter.removeFromGroup(groupId, false);
 				} else {
-					addGroup(groupId, dataS, true);
+					adapter.addFromGroup(groupId, dataS, true);
 				}
+
+				adapter.removeAllGroup(groupId);
 			}
-		} else if (requestCode == FROM_ROOM_MEMBERS) {
+		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_ROOM_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String roomId = data.getStringExtra(Const.ROOM_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					removeRoom(roomId, false);
+					adapter.removeFromRoom(roomId, false);
 				} else {
-					addRoom(roomId, dataS, true);
+					adapter.addFromRoom(roomId, dataS, true);
 				}
+
+				adapter.removeAllRoom(roomId);
 			}
 		}
 	}
 
-	private void addGroup(String groupId, String[] users, boolean isFromDetails) {
-
-		List<String> list = new ArrayList<String>();
-
-		for (String item : users) {
-			list.add(item);
-		}
-
-		usersFromGroups.remove(Integer.parseInt(groupId));
-		usersFromGroups.put(Integer.parseInt(groupId), list);
-
-		adapter.addGroup(groupId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(groupId);
-		if (item != null) {
-			if (!checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void addRoom(String roomId, String[] users, boolean isFromDetails) {
-
-		List<String> list = new ArrayList<String>();
-
-		for (String item : users) {
-			list.add(item);
-		}
-
-		usersFromRooms.remove(Integer.parseInt(roomId));
-		usersFromRooms.put(Integer.parseInt(roomId), list);
-
-		adapter.addRoom(roomId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(roomId);
-		if (item != null) {
-			if (!checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void removeGroup(String groupId, boolean isFromDetails) {
-
-		usersFromGroups.remove(Integer.parseInt(groupId));
-		adapter.removeGroup(groupId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(groupId);
-		if (item != null) {
-			if (checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private void removeRoom(String roomId, boolean isFromDetails) {
-
-		usersFromRooms.remove(Integer.parseInt(roomId));
-		adapter.removeRoom(roomId);
-		adapter.notifyDataSetChanged();
-
-		UserGroupRoom item = getGroupById(roomId);
-		if (item != null) {
-			if (checkIfItemInUserAdd(item)) {
-				onChange(item, isFromDetails);
-			}
-		}
-	}
-
-	private boolean checkIfItemInUserAdd(UserGroupRoom item) {
-
-		for (UserGroupRoom item2 : usersToAdd) {
-
-			if (item2.getIs_group() && item2.getId().equals(item.getId())) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private UserGroupRoom getGroupById(String id) {
-
-		for (UserGroupRoom item : adapter.getData()) {
-			if (item.getId().equals(id)) {
-				return item;
-			}
-		}
-
-		return null;
-	}
-
-	@Override
-	public void onGroupClicked(String groupId, String groupName, boolean isChecked) {
-
-		ArrayList<String> ids = null;
-
-		if (usersFromGroups.get(Integer.parseInt(groupId)) != null) {
-
-			List<String> idsList = usersFromGroups.get(Integer.parseInt(groupId));
-			ids = new ArrayList<String>();
-
-			for (String item : idsList) {
-				ids.add(item);
-			}
-		}
-
-		DeselectUsersInGroupActivity.startActivity(groupName, groupId, isChecked, ids, getActivity(), FROM_GROUP_MEMBERS, this);
-	}
-
-	@Override
-	public void onRoomClicked(String roomId, String roomName, boolean isChecked) {
-
-		ArrayList<String> ids = null;
-
-		if (usersFromRooms.get(Integer.parseInt(roomId)) != null) {
-
-			List<String> idsList = usersFromRooms.get(Integer.parseInt(roomId));
-			ids = new ArrayList<String>();
-
-			for (String item : idsList) {
-				ids.add(item);
-			}
-		}
-
-		DeselectUsersInRoomActivity.startActivity(roomName, roomId, isChecked, ids, getActivity(), FROM_ROOM_MEMBERS, this);
-	}
-
-	@Override
 	public void onNext() {
 
 		String name = roomName.getText().toString();
@@ -565,61 +426,90 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 			return;
 		}
 
-		if (usersToAdd.isEmpty()) {
+		if (adapter.getUsersForString().isEmpty()) {
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 
-		List<String> usersId = adapter.getUsersSelected();
-		List<String> groupsId = adapter.getGroupsSelected();
-		List<String> roomsId = adapter.getRoomsSelected();
-
-		// remove group duplicates
-		for (int i = 0; i < usersFromGroups.size(); i++) {
-			usersId.addAll(usersFromGroups.valueAt(i));
-			if (groupsId.contains(String.valueOf(usersFromGroups.keyAt(i)))) {
-				groupsId.remove(String.valueOf(usersFromGroups.keyAt(i)));
-			}
-		}
-
-		if (usersId.isEmpty() && groupsId.isEmpty() && roomsId.isEmpty()) {
+		if (adapter.getUsersSelected().size() == 0 && adapter.getGroupsSelected().size() == 0 && adapter.getRoomsSelected().size() == 0) {
+			AppDialog dialog = new AppDialog(getActivity(), false);
+			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 
-		// remove room duplicates
+		List<String> usersId = new ArrayList<String>();
+		usersId.addAll(adapter.getUsersSelected());
+
+		List<String> groupsId = new ArrayList<String>();
+		groupsId.addAll(adapter.getGroupsSelected());
+
+		List<String> roomsId = new ArrayList<String>();
+		roomsId.addAll(adapter.getRoomsSelected());
+
+		List<String> allRoomsId = new ArrayList<String>();
+		allRoomsId.addAll(adapter.getRoomsAllSelected());
+
+		List<String> allGroupsId = new ArrayList<String>();
+		allGroupsId.addAll(adapter.getGroupsAllSelected());
+
+		SparseArray<List<String>> usersFromGroups = adapter.getUsersFromGroups();
+		SparseArray<List<String>> usersFromRooms = adapter.getUsersFromRooms();
+
+		for (int i = 0; i < usersFromGroups.size(); i++) {
+			List<String> userList = usersFromGroups.valueAt(i);
+			for (String user : userList) {
+				if (!usersId.contains(user)) {
+					usersId.add(user);
+				}
+			}
+		}
+
 		for (int i = 0; i < usersFromRooms.size(); i++) {
-			roomsId.addAll(usersFromRooms.valueAt(i));
-			if (roomsId.contains(String.valueOf(usersFromRooms.keyAt(i)))) {
-				roomsId.remove(String.valueOf(usersFromRooms.keyAt(i)));
+			List<String> userList = usersFromRooms.valueAt(i);
+			for (String user : userList) {
+				if (!usersId.contains(user)) {
+					usersId.add(user);
+				}
 			}
 		}
 
 		// add user ids
 		StringBuilder users_to_add = new StringBuilder();
-		users_to_add.append(Helper.getUserId(getActivity()));
-
-		boolean isIn = false;
 		for (int i = 0; i < usersId.size(); i++) {
-
-			if (!isIn) {
-				users_to_add.append(",");
-				isIn = true;
-			}
-
 			users_to_add.append(usersId.get(i));
-
 			if (i != (usersId.size() - 1)) {
 				users_to_add.append(",");
 			}
 		}
 
+		// add all room ids
+		StringBuilder rooms_to_add_all = new StringBuilder();
+		for (int i = 0; i < allRoomsId.size(); i++) {
+			rooms_to_add_all.append(allRoomsId.get(i));
+			if (i != (allRoomsId.size() - 1)) {
+				rooms_to_add_all.append(",");
+			}
+		}
+
+		// add all group ids
+		StringBuilder groups_to_add_all = new StringBuilder();
+		for (int i = 0; i < allGroupsId.size(); i++) {
+			groups_to_add_all.append(allGroupsId.get(i));
+			if (i != (allGroupsId.size() - 1)) {
+				groups_to_add_all.append(",");
+			}
+		}
+
 		// add group ids
 		StringBuilder group_to_add = new StringBuilder();
-
 		for (int i = 0; i < groupsId.size(); i++) {
-			group_to_add.append(groupsId.get(i));
 
+			if (allGroupsId.contains(groupsId.get(i))) {
+				continue;
+			}
+
+			group_to_add.append(groupsId.get(i));
 			if (i != (groupsId.size() - 1)) {
 				group_to_add.append(",");
 			}
@@ -627,16 +517,20 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		// add room ids
 		StringBuilder rooms_to_add = new StringBuilder();
-
 		for (int i = 0; i < roomsId.size(); i++) {
-			rooms_to_add.append(roomsId.get(i));
 
+			if (allRoomsId.contains(roomsId.get(i))) {
+				continue;
+			}
+
+			rooms_to_add.append(roomsId.get(i));
 			if (i != (roomsId.size() - 1)) {
 				rooms_to_add.append(",");
 			}
 		}
 
-		((CreateRoomActivity) getActivity()).setConfirmScreen(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(), isPrivate, password);
+		((CreateRoomActivity) getActivity()).setConfirmScreen(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(), groups_to_add_all.toString(),
+				rooms_to_add_all.toString(), isPrivate, password);
 	}
 
 	@Override

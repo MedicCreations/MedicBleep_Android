@@ -42,7 +42,9 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 	private String userIds;
 	private String groupIds;
+	private String groupAllIds;
 	private String roomIds;
+	private String roomAllIds;
 	private String roomThumbId;
 	private String roomNameData;
 
@@ -70,7 +72,13 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			groupIds = getArguments().getString(Const.GROUP_IDS, "");
 
 		if (getArguments() != null)
+			groupAllIds = getArguments().getString(Const.GROUP_ALL_IDS, "");
+
+		if (getArguments() != null)
 			roomIds = getArguments().getString(Const.ROOM_IDS, "");
+
+		if (getArguments() != null)
+			roomAllIds = getArguments().getString(Const.ROOM_ALL_IDS, "");
 
 		if (getArguments() != null)
 			roomThumbId = getArguments().getString(Const.ROOM_THUMB_ID, "");
@@ -131,7 +139,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 	public void getUsers() {
 
-		new RoomsApi().getDistinctUser(userIds, groupIds, roomIds, getActivity(), true, new ApiCallback<ConfirmUsersList>() {
+		new RoomsApi().getDistinctUser(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity(), true, new ApiCallback<ConfirmUsersList>() {
 
 			@Override
 			public void onApiResponse(Result<ConfirmUsersList> result) {
@@ -167,6 +175,14 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			if (i != (usersId.size() - 1)) {
 				users_to_add.append(",");
 			}
+		}
+
+		if (!TextUtils.isEmpty(groupAllIds)) {
+			groupIds = groupIds + "," + groupAllIds;
+		}
+
+		if (!TextUtils.isEmpty(roomAllIds)) {
+			roomIds = roomIds + "," + roomAllIds;
 		}
 
 		((CreateRoomActivity) getActivity()).createRoomFinaly(users_to_add.toString(), groupIds, roomIds);
