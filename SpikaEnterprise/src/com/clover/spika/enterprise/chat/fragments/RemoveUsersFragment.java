@@ -84,7 +84,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 			roomIds = idsRoomBuilder.substring(0, idsRoomBuilder.length() - 1);
 		}
 
-		new ChatApi().leaveChat(chatId, ids, groupIds, roomIds, getActivity(), new ApiCallback<Chat>() {
+		new ChatApi().leaveChatAdmin(chatId, ids, groupIds, roomIds, getActivity(), new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {

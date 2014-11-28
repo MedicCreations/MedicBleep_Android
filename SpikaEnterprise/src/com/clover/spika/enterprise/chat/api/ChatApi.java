@@ -261,6 +261,57 @@ public class ChatApi {
 		}.execute();
 	}
 
+	public void leaveChatAdmin(final String chatId, final String userIds, final String groupIds, final String roomIds, Context context, final ApiCallback<Chat> listener) {
+		new BaseAsyncTask<Void, Void, Chat>(context, true) {
+
+			@Override
+			protected Chat doInBackground(Void... params) {
+				HashMap<String, String> requestParams = new HashMap<String, String>();
+				requestParams.put(Const.CHAT_ID, chatId);
+				requestParams.put(Const.USER_IDS, userIds);
+				requestParams.put(Const.GROUP_IDS, groupIds);
+				requestParams.put(Const.ROOM_IDS, roomIds);
+
+				try {
+
+					JSONObject jsonObject = null;
+
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT_ADMIN, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Chat model) {
+				super.onPostExecute(model);
+
+				if (listener != null) {
+					Result<Chat> apiResult;
+
+					if (model != null) {
+						if (model.getCode() == Const.API_SUCCESS) {
+							apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
+							apiResult.setResultData(model);
+						} else {
+							apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+							apiResult.setResultData(model);
+						}
+					} else {
+						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(apiResult);
+				}
+
+			}
+		}.execute();
+	}
+
 	public void getThreads(final String messageId, boolean showProgressBar, Context context, final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(context, showProgressBar) {
 
@@ -506,58 +557,6 @@ public class ChatApi {
 					listener.onApiResponse(apiResult);
 				}
 			};
-		}.execute();
-	}
-
-	public void leaveChat(final String chatId, final String userIds, final String groupIds, final String roomIds, Context context, final ApiCallback<Chat> listener) {
-		new BaseAsyncTask<Void, Void, Chat>(context, true) {
-
-			@Override
-			protected Chat doInBackground(Void... params) {
-				HashMap<String, String> requestParams = new HashMap<String, String>();
-				requestParams.put(Const.CHAT_ID, chatId);
-				requestParams.put(Const.USER_IDS, userIds);
-				requestParams.put(Const.GROUP_IDS, groupIds);
-				requestParams.put(Const.ROOM_IDS, roomIds);
-
-				try {
-
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-
-					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
-				} catch (ClientProtocolException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Chat model) {
-				super.onPostExecute(model);
-
-				if (listener != null) {
-					Result<Chat> apiResult;
-
-					if (model != null) {
-						if (model.getCode() == Const.API_SUCCESS) {
-							apiResult = new Result<Chat>(Result.ApiResponseState.SUCCESS);
-							apiResult.setResultData(model);
-						} else {
-							apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
-							apiResult.setResultData(model);
-						}
-					} else {
-						apiResult = new Result<Chat>(Result.ApiResponseState.FAILURE);
-					}
-
-					listener.onApiResponse(apiResult);
-				}
-
-			}
 		}.execute();
 	}
 
