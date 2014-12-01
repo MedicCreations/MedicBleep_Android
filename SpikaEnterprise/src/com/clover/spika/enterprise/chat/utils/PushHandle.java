@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -12,16 +14,14 @@ import android.content.Intent;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.SplashActivity;
-
-import java.util.List;
 
 public class PushHandle {
 
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	public static void handlePushNotification(String chatId, String firstName, String chatPassword, String type, Context context) {
+	public static void handlePushNotification(final String chatId, String firstName, String chatPassword, String type, Context context) {
 
 		String message = context.getResources().getString(R.string.msg_from) + " " + firstName;
 
@@ -52,7 +52,7 @@ public class PushHandle {
 
 			NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-			Intent pushIntent = new Intent(context, SplashActivity.class);
+			Intent pushIntent = new Intent(context, ChatActivity.class);
 			pushIntent.putExtra(Const.CHAT_ID, chatId);
 			pushIntent.putExtra(Const.PUSH_TYPE, type);
 			pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
@@ -60,7 +60,7 @@ public class PushHandle {
 			pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			pushIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-			PendingIntent contentIntent = PendingIntent.getActivity(context, getIntId(chatId), pushIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent contentIntent = PendingIntent.getActivity(context, Integer.valueOf(chatId), pushIntent, PendingIntent.FLAG_ONE_SHOT);
 
 			Notification notification = null;
 
@@ -93,21 +93,8 @@ public class PushHandle {
 				notification.setLatestEventInfo(context, context.getResources().getString(R.string.app_name), message, contentIntent);
 			}
 
-			mNotificationManager.notify(getIntId(chatId), notification);
+			mNotificationManager.notify(Integer.valueOf(chatId), notification);
 		}
-	}
-
-	private static int getIntId(String groupId) {
-
-		int sum = 0;
-
-		char[] charArray = groupId.toCharArray();
-
-		for (char c : charArray) {
-			sum = sum + Character.getNumericValue(c);
-		}
-
-		return sum;
 	}
 
 }

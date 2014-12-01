@@ -1,12 +1,16 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,6 +22,7 @@ import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -25,13 +30,15 @@ import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
-
-import java.util.ArrayList;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -65,6 +72,7 @@ public class ChatActivity extends BaseChatActivity {
 				}
 			}
 		});
+
 		chatListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -78,8 +86,8 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		});
 
-		getIntentData(getIntent());
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
+		getIntentData(getIntent());
 	}
 
 	@Override
@@ -151,6 +159,30 @@ public class ChatActivity extends BaseChatActivity {
 		super.onDestroy();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(adminBroadCast);
 	};
+
+	protected void kill() {
+
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		startActivity(intent);
+
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				finish();
+			}
+		}, 500);
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (rlDrawer.isSelected()) {
+			forceClose();
+		} else {
+			kill();
+		}
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -238,85 +270,155 @@ public class ChatActivity extends BaseChatActivity {
 		context.startActivity(intentFinal);
 	}
 
-	private void getIntentData(Intent intent) {
+	private void getIntentData(final Intent intent) {
+
 		if (intent != null && intent.getExtras() != null) {
 
-			if (intent.getExtras().containsKey(Const.CHAT_ID)) {
+			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION)) {
+				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 
-				chatId = intent.getExtras().getString(Const.CHAT_ID);
-				chatPassword = intent.getExtras().getString(Const.PASSWORD);
+				try {
 
-				adapter.clearItems();
+					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
 
-				if (!TextUtils.isEmpty(chatPassword)) {
-					AppDialog dialog = new AppDialog(this, true);
-					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
-					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword, this, true,
+							new ApiCallback<Login>() {
+								@Override
+								public void onApiResponse(Result<Login> result) {
+									if (result.isSuccess()) {
 
-						@Override
-						public void onPositiveButtonClick(View v) {
-							getMessages(true, true, true, false, false, false);
-						}
-					});
-					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+										Logger.d("Success");
 
-						@Override
-						public void onNegativeButtonClick(View v) {
-							finish();
-						}
-					});
-					dialog.setOnCancelListener(new OnCancelListener() {
+										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
+												.getResultData().getFirstname(), result.getResultData().getLastname());
 
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							finish();
-						}
-					});
-				} else {
-					getMessages(true, true, true, false, false, false);
-				}
-			} else if (intent.getExtras().containsKey(Const.USER_ID)) {
+										new GoogleUtils().getPushToken(ChatActivity.this);
 
-				boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
-				mUserId = intent.getExtras().getString(Const.USER_ID);
-
-				new ChatApi().startChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
-						new ApiCallback<Chat>() {
-
-							@Override
-							public void onApiResponse(Result<Chat> result) {
-
-								if (result.isSuccess()) {
-
-									chatParams(result.getResultData().getChat());
-
-									chatId = String.valueOf(result.getResultData().getChat_id());
-									chatName = result.getResultData().getChat_name();
-
-									setTitle(chatName);
-
-									adapter.clearItems();
-									totalItems = Integer.valueOf(result.getResultData().getTotal_count());
-									adapter.addItems(result.getResultData().getMessagesList(), true);
-									adapter.setSeenBy(result.getResultData().getSeen_by());
-									adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
-									if (adapter.getCount() > 0) {
-										chatListView.setSelectionFromTop(adapter.getCount(), 0);
-									}
-								} else {
-									AppDialog dialog = new AppDialog(ChatActivity.this, false);
-
-									if (result.getResultData() != null) {
-										dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
+										handleIntentSecondLevel(intent);
 									} else {
-										dialog.setFailed("");
+
+										Logger.d("Not Success");
+										String message = "";
+										if (result.hasResultData()) {
+											if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
+												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
+												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+												startActivity(intent);
+											} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+												Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
+												intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
+												startActivity(intent);
+												finish();
+												return;
+											} else {
+												message = result.getResultData().getMessage();
+											}
+										} else {
+											message = getString(R.string.e_something_went_wrong);
+										}
+
+										AppDialog dialog = new AppDialog(ChatActivity.this, false);
+										dialog.setFailed(message);
+										dialog.setOnDismissListener(new OnDismissListener() {
+
+											@Override
+											public void onDismiss(DialogInterface dialog) {
+												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
+												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+												startActivity(intent);
+											}
+										});
 									}
 								}
+							});
 
-								setNoItemsVisibility();
-							}
-						});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				handleIntentSecondLevel(intent);
 			}
+		}
+	}
+
+	private void handleIntentSecondLevel(Intent intent) {
+
+		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
+
+			chatId = intent.getExtras().getString(Const.CHAT_ID);
+			chatPassword = intent.getExtras().getString(Const.PASSWORD);
+
+			adapter.clearItems();
+
+			if (!TextUtils.isEmpty(chatPassword)) {
+				AppDialog dialog = new AppDialog(this, true);
+				dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
+				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+
+					@Override
+					public void onPositiveButtonClick(View v) {
+						getMessages(true, true, true, false, false, false);
+					}
+				});
+				dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+
+					@Override
+					public void onNegativeButtonClick(View v) {
+						finish();
+					}
+				});
+				dialog.setOnCancelListener(new OnCancelListener() {
+
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						finish();
+					}
+				});
+			} else {
+				getMessages(true, true, true, false, false, false);
+			}
+		} else if (intent.getExtras().containsKey(Const.USER_ID)) {
+
+			boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
+			mUserId = intent.getExtras().getString(Const.USER_ID);
+
+			new ChatApi().startChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
+					new ApiCallback<Chat>() {
+
+						@Override
+						public void onApiResponse(Result<Chat> result) {
+
+							if (result.isSuccess()) {
+
+								chatParams(result.getResultData().getChat());
+
+								chatId = String.valueOf(result.getResultData().getChat_id());
+								chatName = result.getResultData().getChat_name();
+
+								setTitle(chatName);
+
+								adapter.clearItems();
+								totalItems = Integer.valueOf(result.getResultData().getTotal_count());
+								adapter.addItems(result.getResultData().getMessagesList(), true);
+								adapter.setSeenBy(result.getResultData().getSeen_by());
+								adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
+								if (adapter.getCount() > 0) {
+									chatListView.setSelectionFromTop(adapter.getCount(), 0);
+								}
+							} else {
+								AppDialog dialog = new AppDialog(ChatActivity.this, false);
+
+								if (result.getResultData() != null) {
+									dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
+								} else {
+									dialog.setFailed("");
+								}
+							}
+
+							setNoItemsVisibility();
+						}
+					});
 		}
 	}
 

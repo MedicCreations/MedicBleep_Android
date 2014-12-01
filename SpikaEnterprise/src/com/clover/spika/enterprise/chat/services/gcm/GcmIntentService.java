@@ -54,7 +54,7 @@ public class GcmIntentService extends IntentService {
 				if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
 					chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
 				}
-
+				
 				PushHandle.handlePushNotification(chatId, firstName, chatPassword, type, this);
 			}
 		}

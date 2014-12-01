@@ -21,7 +21,6 @@ public class SplashActivity extends LoginBaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
-		extras = getIntent().getExtras();
 		ImageLoader.init(this);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
@@ -29,6 +28,12 @@ public class SplashActivity extends LoginBaseActivity {
 		} else {
 			pause(2000, true);
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		extras = getIntent().getExtras();
 	}
 
 	private void pause(final int time, final boolean toLogin) {
@@ -52,7 +57,7 @@ public class SplashActivity extends LoginBaseActivity {
 			protected void onPostExecute(Void result) {
 				if (goToLogin) {
 					Intent intent = new Intent(context, LoginActivity.class);
-					if (extras!=null){
+					if (extras != null) {
 						intent.putExtras(extras);
 					}
 					startActivity(intent);
@@ -64,16 +69,16 @@ public class SplashActivity extends LoginBaseActivity {
 		}.execute();
 	}
 
-    private void login() {
-        try {
-            executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
-                    SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
+	private void login() {
+		try {
+			executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
+					SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void startActivity(Intent intent) {

@@ -12,7 +12,6 @@ import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
-@SuppressWarnings("hiding")
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
 	private static int INVALID_TOKEN_CODE = 1000;

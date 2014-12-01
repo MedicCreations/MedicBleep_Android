@@ -1,22 +1,20 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.IOException;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
-import java.io.IOException;
-
 public class Preferences {
 
 	private SharedPreferences sharedPreferences;
-    private SharedPreferences passcodePreferences;
+	private SharedPreferences passcodePreferences;
 
 	public Preferences(Context context) {
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        passcodePreferences = context.getSharedPreferences("passcode", Context.MODE_PRIVATE);
+		passcodePreferences = context.getSharedPreferences("passcode", Context.MODE_PRIVATE);
 	}
 
 	public String getCustomString(String key) {
@@ -39,7 +37,7 @@ public class Preferences {
 		editor.putLong(Const.CLIENT_TOKEN_EXPIRES, tokenExpires);
 		editor.putString(Const.TOKEN, token);
 
-        editor.apply();
+		editor.apply();
 	}
 
 	public String getToken() throws ClientProtocolException, IOException, JSONException {
@@ -54,7 +52,7 @@ public class Preferences {
 
 		editor.putBoolean(key, value);
 
-        editor.apply();
+		editor.apply();
 	}
 
 	public boolean getCustomBoolean(String key) {
@@ -66,46 +64,47 @@ public class Preferences {
 
 		editor.putInt(key, value);
 
-        editor.apply();
+		editor.apply();
 	}
 
 	public int getCustomInt(String key) {
 		return sharedPreferences.getInt(key, -1);
 	}
 
-    public void removePreference(String key) {
-        SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
-        sharedEditor.remove(key);
-        sharedEditor.apply();
+	public void removePreference(String key) {
+		SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
+		sharedEditor.remove(key);
+		sharedEditor.apply();
 
-        SharedPreferences.Editor passcodeEditor = sharedPreferences.edit();
-        passcodeEditor.remove(key);
-        passcodeEditor.apply();
-    }
+		SharedPreferences.Editor passcodeEditor = sharedPreferences.edit();
+		passcodeEditor.remove(key);
+		passcodeEditor.apply();
+	}
 
-    public void setPasscodeEnabled(boolean enabled) {
-        SharedPreferences.Editor editor = passcodePreferences.edit();
-        editor.putBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, enabled);
-        editor.apply();
-    }
+	public void setPasscodeEnabled(boolean enabled) {
+		SharedPreferences.Editor editor = passcodePreferences.edit();
+		editor.putBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, enabled);
+		editor.apply();
+	}
 
-    public boolean isPasscodeEnabled() {
-        return passcodePreferences.getBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, false);
-    }
+	public boolean isPasscodeEnabled() {
+		return passcodePreferences.getBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, false);
+	}
 
-    public void setPasscode(String passcode) {
-        SharedPreferences.Editor editor = passcodePreferences.edit();
-        editor.putString(Const.PREFERENCES_STORED_PASSCODE, passcode);
-        editor.apply();
-    }
+	public void setPasscode(String passcode) {
+		SharedPreferences.Editor editor = passcodePreferences.edit();
+		editor.putString(Const.PREFERENCES_STORED_PASSCODE, passcode);
+		editor.apply();
+	}
 
-    public String getPasscode() {
-        return passcodePreferences.getString(Const.PREFERENCES_STORED_PASSCODE, "");
-    }
+	public String getPasscode() {
+		return passcodePreferences.getString(Const.PREFERENCES_STORED_PASSCODE, "");
+	}
 
-    public void clear() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-    }
+	public void clear() {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.clear();
+		editor.apply();
+	}
+
 }

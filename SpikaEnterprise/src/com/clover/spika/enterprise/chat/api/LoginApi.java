@@ -72,4 +72,61 @@ public class LoginApi {
 
 		}.execute();
 	}
+
+	public Result<Login> loginWithCredentialsWithGet(final String username, final String password, Context ctx) {
+
+		try {
+
+			return new BaseAsyncTask<Void, Void, Result<Login>>(ctx, false) {
+
+				protected Result<Login> doInBackground(Void... params) {
+					try {
+						HashMap<String, String> requestParams = new HashMap<String, String>();
+
+						requestParams.put(Const.USERNAME, username);
+						requestParams.put(Const.PASSWORD, password);
+
+						JSONObject jsonObject = new JSONObject();
+
+						jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGIN, requestParams, null);
+
+						Login object = new Gson().fromJson(String.valueOf(jsonObject), Login.class);
+
+						Result<Login> apiResult;
+
+						if (object != null) {
+							if (object.getCode() == Const.API_SUCCESS) {
+								apiResult = new Result<Login>(Result.ApiResponseState.SUCCESS);
+								apiResult.setResultData(object);
+
+								if (!TextUtils.isEmpty(object.getToken())) {
+									SpikaEnterpriseApp.getSharedPreferences(getContext()).setUserTokenId(object.getToken());
+								}
+							} else {
+								apiResult = new Result<Login>(Result.ApiResponseState.FAILURE);
+								apiResult.setResultData(object);
+							}
+						} else {
+							apiResult = new Result<Login>(Result.ApiResponseState.FAILURE);
+						}
+
+						return apiResult;
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+
+					return null;
+				}
+			}.execute().get();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 }

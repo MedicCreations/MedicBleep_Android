@@ -82,7 +82,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	private ListView settingsListView;
 	private ImageButton footerMore;
-	private RelativeLayout rlDrawer;
+	protected RelativeLayout rlDrawer;
 	private RelativeLayout chatLayout;
 	private ImageView partnerIcon;
 	private RobotoThinTextView screenTitle;
@@ -351,7 +351,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void forceClose() {
+	protected void forceClose() {
 		if (rlDrawer.isSelected()) {
 			rlDrawerManage();
 			hideKeyboard(etMessage);
@@ -540,8 +540,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				}
 
 			} else if (id == R.id.goBack) {
-				finish();
-
+				kill();
 			} else if (id == R.id.settingsBtn) {
 				if (settingsListView.getVisibility() == View.GONE) {
 					showSettings();
@@ -551,6 +550,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 			}
 		}
 	};
+
+	protected void kill() {
+		finish();
+	}
 
 	void openCameraCropActivity() {
 		Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
