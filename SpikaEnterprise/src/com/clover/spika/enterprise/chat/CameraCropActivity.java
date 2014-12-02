@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -7,28 +13,16 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
-import android.util.DisplayMetrics;
-import android.util.FloatMath;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -44,42 +38,21 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.views.CroppedImageView;
+import com.clover.spika.enterprise.chat.views.cropper.CropImageView;
+import com.clover.spika.enterprise.chat.views.cropper.util.ScalingUtilities;
+import com.clover.spika.enterprise.chat.views.cropper.util.ScalingUtilities.ScalingLogic;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+public class CameraCropActivity extends BaseActivity implements OnClickListener {
 
-public class CameraCropActivity extends BaseActivity implements OnTouchListener, OnClickListener {
+	private CropImageView cropImageView;
 
-	// These matrices will be used to move and zoom image
-	private Matrix matrix = new Matrix();
-	private Matrix savedMatrix = new Matrix();
-	private Matrix translateMatrix = new Matrix();
-
-	// We can be in one of these 3 states
-	private static final int NONE = 0;
-	private static final int DRAG = 1;
-	private static final int ZOOM = 2;
-	private int mode = NONE;
+	Bitmap croppedImage;
 
 	// thumbnail width and height
 	private static final int THUMB_WIDTH = 100;
 	private static final int THUMB_HEIGHT = 100;
 	// compressed max size
 	private static final double MAX_SIZE = 640;
-
-	// Remember some things for zooming
-	private PointF start = new PointF();
-	private PointF mid = new PointF();
-	private float oldDist = 1f;
-
-	private CroppedImageView mImageView;
-	private Bitmap mBitmap;
-
-	private int crop_container_size;
 
 	// Gallery type marker
 	private static final int GALLERY = 1;
@@ -107,13 +80,23 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_crop);
 
+		cropImageView = (CropImageView) findViewById(R.id.CropImageView);
+		cropImageView.setAspectRatio(20, 20);
+
+		// ROTATE
+		// final Button rotateButton = (Button)
+		// findViewById(R.id.Button_rotate);
+		// rotateButton.setOnClickListener(new View.OnClickListener() {
+		// @Override
+		// public void onClick(View v) {
+		// cropImageView.rotateImage(ROTATE_NINETY_DEGREES);
+		// }
+		// });
+
 		mIsOverJellyBean = Build.VERSION.SDK_INT > 18;
 		mCompressImages = getResources().getBoolean(R.bool.send_compressed_images);
 
 		return_flag = false;
-
-		mImageView = (CroppedImageView) findViewById(R.id.ivCameraCropPhoto);
-		mImageView.setDrawingCacheEnabled(true);
 
 		btnSend = (LinearLayout) findViewById(R.id.btnSend);
 		btnSend.setOnClickListener(this);
@@ -210,162 +193,18 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 			setContentView(R.layout.activity_camera_crop);
 
-			mImageView = (CroppedImageView) findViewById(R.id.ivCameraCropPhoto);
-			mImageView.setDrawingCacheEnabled(true);
-
-			scaleView();
+			cropImageView = (CropImageView) findViewById(R.id.CropImageView);
 
 			File file = new File(_path);
 			boolean exists = file.exists();
 
 			if (exists) {
-
 				onPhotoTaken(_path);
 			} else {
-
 				AppDialog dialog = new AppDialog(this, true);
 				dialog.setFailed(getResources().getString(R.string.e_something_went_wrong));
 			}
 		}
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		if (hasFocus) {
-			scaleView();
-		}
-	}
-
-	public void scaleView() {
-
-		View top_view = findViewById(R.id.topView);
-		View bottom_view = findViewById(R.id.bottomView);
-		LinearLayout footer = (LinearLayout) findViewById(R.id.footerLayout);
-		LinearLayout crop_frame = (LinearLayout) findViewById(R.id.llCropFrame);
-		Display display = getWindowManager().getDefaultDisplay();
-
-		DisplayMetrics displaymetrics = new DisplayMetrics();
-		display.getMetrics(displaymetrics);
-
-		int width = displaymetrics.widthPixels;
-		int height = displaymetrics.heightPixels;
-
-		// 90% of width
-		crop_container_size = (int) ((float) width * (1f - (10f / 100f)));
-
-		// 10% margins
-		float margin = ((float) width * (1f - (90f / 100f)));
-
-		// Parameters for white crop border
-		LinearLayout.LayoutParams par = new LinearLayout.LayoutParams(crop_container_size, crop_container_size);
-		par.gravity = Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL;
-		par.setMargins((int) (margin / 2f), 0, (int) (margin / 2f), 0);
-		crop_frame.setLayoutParams(par);
-
-		// Margins for other transparent views
-		float top_view_height = ((float) (height - crop_container_size - footer.getHeight())) / (float) 2;
-		top_view.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) top_view_height));
-		bottom_view.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, (int) top_view_height));
-
-		// Image container
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(crop_container_size, crop_container_size);
-		params.setMargins((int) (margin / 2f), (int) top_view_height, (int) (margin / 2f), 0);
-
-		mImageView.setLayoutParams(params);
-		mImageView.setImageBitmap(mBitmap);
-		mImageView.setMaxZoom(4f);
-	}
-
-	@SuppressLint("ClickableViewAccessibility")
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-
-		ImageView view = (ImageView) v;
-
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-		case MotionEvent.ACTION_DOWN:
-			savedMatrix.set(matrix);
-			start.set(event.getX(), event.getY());
-			mode = DRAG;
-			break;
-
-		case MotionEvent.ACTION_POINTER_DOWN:
-			oldDist = spacing(event);
-			if (oldDist > 10f) {
-				savedMatrix.set(matrix);
-				midPoint(mid, event);
-				mode = ZOOM;
-			}
-			break;
-
-		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_POINTER_UP:
-			mode = NONE;
-			break;
-
-		case MotionEvent.ACTION_MOVE:
-			if (mode == DRAG) {
-
-				matrix.set(savedMatrix);
-				matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
-			} else if (mode == ZOOM) {
-
-				float newDist = spacing(event);
-
-				if (newDist > 10f) {
-
-					matrix.set(savedMatrix);
-					float scale = newDist / oldDist;
-					matrix.postScale(scale, scale, mid.x, mid.y);
-				}
-			}
-			break;
-		}
-
-		view.setImageMatrix(matrix);
-		view.invalidate();
-
-		return true;
-	}
-
-	/**
-	 * Get the image from container - it is already cropped and zoomed If the
-	 * image is smaller than container it will be black color set aside
-	 * */
-	private Bitmap getBitmapFromView(View view) {
-
-		Bitmap returnedBitmap = Bitmap.createBitmap(crop_container_size, crop_container_size, Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(returnedBitmap);
-		Drawable bgDrawable = view.getBackground();
-
-		if (bgDrawable != null) {
-			bgDrawable.draw(canvas);
-		} else {
-			canvas.drawColor(Color.BLACK);
-		}
-
-		view.draw(canvas);
-
-		return returnedBitmap;
-	}
-
-	/** Determine the space between the first two fingers */
-	@SuppressLint("FloatMath")
-	private float spacing(MotionEvent event) {
-
-		float x = event.getX(0) - event.getX(1);
-		float y = event.getY(0) - event.getY(1);
-		return FloatMath.sqrt(x * x + y * y);
-	}
-
-	/** Calculate the mid point of the first two fingers */
-	private void midPoint(PointF point, MotionEvent event) {
-
-		float x = event.getX(0) + event.getX(1);
-		float y = event.getY(0) + event.getY(1);
-		point.set(x / 2, y / 2);
 	}
 
 	@Override
@@ -416,7 +255,6 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				break;
 			}
 		} else {
-
 			// if there is no image, just finish the activity
 			finish();
 		}
@@ -447,6 +285,9 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 		BaseAsyncTask<String, Void, byte[]> task = new BaseAsyncTask<String, Void, byte[]>(this, true) {
 
+			Bitmap mBitmap;
+
+			@SuppressWarnings("deprecation")
 			@Override
 			protected byte[] doInBackground(String... params) {
 				try {
@@ -476,26 +317,15 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 					int actualHeight = optionsMeta.outHeight;
 					int actualWidth = optionsMeta.outWidth;
 
-					// this options allow android to claim the bitmap memory
-					// if
-					// it runs low
-					// on memory
 					optionsMeta.inJustDecodeBounds = false;
 					optionsMeta.inPurgeable = true;
 					optionsMeta.inInputShareable = true;
 					optionsMeta.inTempStorage = new byte[16 * 1024];
 
-					// if (!isFromWall) {
-
 					float maxHeight = 1024.0f;
 					float maxWidth = 1024.0f;
 
 					optionsMeta.inSampleSize = Helper.calculateInSampleSize(optionsMeta, (int) maxWidth, (int) maxHeight);
-
-					// max Height and width values of the compressed image
-					// is
-					// taken as
-					// 816x612
 
 					float imgRatio = (float) actualWidth / (float) actualHeight;
 					float maxRatio = maxWidth / maxHeight;
@@ -549,16 +379,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				super.onPostExecute(result);
 
 				if (null != mBitmap) {
-					mImageView.setImageBitmap(mBitmap);
-					mImageView.setScaleType(ScaleType.MATRIX);
-
-					matrix.setTranslate(-(mBitmap.getWidth() - crop_container_size) / 2f, -(mBitmap.getHeight() - crop_container_size) / 2f);
-					mImageView.setImageMatrix(matrix);
-
-					translateMatrix.setTranslate(-(mBitmap.getWidth() - crop_container_size) / 2f, -(mBitmap.getHeight() - crop_container_size) / 2f);
-					mImageView.setImageMatrix(translateMatrix);
-
-					matrix = translateMatrix;
+					cropImageView.setImageBitmap(mBitmap);
 				} else {
 					try {
 						AppDialog dialog = new AppDialog(context, true);
@@ -593,14 +414,15 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		}
 
 		return false;
-
 	}
 
 	private void createThumb(String path, Bitmap b) {
 		int width = THUMB_WIDTH, height = THUMB_HEIGHT;
-		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
 
-		saveBitmapToFile(sb, path);
+		Bitmap scaledBitmap = ScalingUtilities.createScaledBitmap(b, width, height, ScalingLogic.CROP);
+		b.recycle();
+
+		saveBitmapToFile(scaledBitmap, path);
 	}
 
 	@Override
@@ -633,24 +455,25 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 				compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
 					@Override
 					public void onPositiveButtonClick(View v) {
-						prepareFileForUpload(compressFileBeforePrepare(getBitmapFromView(mImageView)));
+						prepareFileForUpload(compressFileBeforePrepare(cropImageView.getCroppedImage()));
 					}
 				});
 				compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
 					@Override
 					public void onNegativeButtonClick(View v) {
-						prepareFileForUpload(getBitmapFromView(mImageView));
+						prepareFileForUpload(cropImageView.getCroppedImage());
 					}
 				});
 			} else {
-				prepareFileForUpload(getBitmapFromView(mImageView));
+				prepareFileForUpload(cropImageView.getCroppedImage());
 			}
 		} else if (id == R.id.btnCancel) {
 			finish();
 		}
 	}
 
-	Bitmap compressFileBeforePrepare(Bitmap bmp) {
+	private Bitmap compressFileBeforePrepare(Bitmap bmp) {
+
 		int curWidth = bmp.getWidth();
 		int curHeight = bmp.getHeight();
 
@@ -663,9 +486,11 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 		return Bitmap.createScaledBitmap(bmp, dstWidth, dstHeight, false);
 	}
 
-	void prepareFileForUpload(Bitmap bmp) {
+	private void prepareFileForUpload(Bitmap bmp) {
+
 		ByteArrayOutputStream bs = new ByteArrayOutputStream();
 		bmp.compress(Bitmap.CompressFormat.JPEG, 100, bs);
+
 		if (saveBitmapToFile(bmp, mFilePath)) {
 			createThumb(mFileThumbPath, bmp);
 			fileUploadAsync(mFilePath, mFileThumbPath);
@@ -681,6 +506,7 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
+
 				if (result.isSuccess()) {
 					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
 				} else {
@@ -728,8 +554,10 @@ public class CameraCropActivity extends BaseActivity implements OnTouchListener,
 	}
 
 	private void sendMessage(final String fileId, final String thumbId) {
+
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+
 		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override

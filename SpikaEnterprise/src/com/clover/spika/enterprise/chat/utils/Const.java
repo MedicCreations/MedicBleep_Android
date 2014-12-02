@@ -194,7 +194,7 @@ public class Const {
 	public static final String F_POST_MESSAGE = "post_message";
 	public static final String F_GET_MESSAGES = "/message/paging";
 	public static final String F_LEAVE_CHAT = "/chat/leave";
-	public static final String F_LEAVE_CHAT_ADMIN = "/chat/members/remove";
+	public static final String F_LEAVE_CHAT_ADMIN = "/chat/member/remove";
 	public static final String F_START_NEW_CHAT = "/user/chat/start";
 	public static final String F_START_NEW_GROUP = "/groups/chat/start";
 	public static final String F_SEND_MESSAGE = "/message/send";
