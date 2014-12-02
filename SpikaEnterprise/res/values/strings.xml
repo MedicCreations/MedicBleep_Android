@@ -86,6 +86,16 @@
     <string name="e_while_encrypting">Error while encrypting.</string>
     <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
     <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
+    <string name="chat_has_been_deleted_">Chat has been deleted.</string>
+    <string name="page_has_not_been_found_">Page has not been found.</string>
+    <string name="you_are_not_a_group_admin_">You are not a group admin.</string>
+    <string name="temp_password_is_not_valid_">Temp password is not valid.</string>
+    <string name="login_with_temp_password_">Login with temp password.</string>
+    <string name="dir_not_writable_on_the_server_">Dir not writable on the server.</string>
+    <string name="invalid_login_">Invalid login.</string>
+    <string name="no_child_messages_">No child messages.</string>
+    <string name="invalid_temp_password_">Invalid temp password.</string>
+    <string name="password_already_in_use_">Password already in use.</string>
 
     <!-- new errors -->
     <string name="e_email_missing">Your email is missing</string>

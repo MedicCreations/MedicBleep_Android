@@ -397,13 +397,24 @@ public class Helper {
 
 		SparseArray<String> errors = new SparseArray<String>();
 
-		errors.put(Const.E_INVALID_TOKEN, cntx.getResources().getString(R.string.e_invalid_token));
-		errors.put(Const.E_EXPIRED_TOKEN, cntx.getResources().getString(R.string.e_expired_token));
-		errors.put(Const.E_CHAT_INACTIVE, cntx.getResources().getString(R.string.e_chat_inactive));
-		errors.put(Const.E_NOT_CHAT_MEMBER, cntx.getResources().getString(R.string.e_not_chat_member));
-		errors.put(Const.E_EMAIL_MISSING, cntx.getResources().getString(R.string.e_email_missing));
-		errors.put(Const.E_USERNAME_NOT_EXIST, cntx.getResources().getString(R.string.e_username_not_exist));
-		errors.put(Const.E_SOMETHING_WENT_WRONG, cntx.getResources().getString(R.string.e_something_went_wrong));
+		errors.put(Const.E_INVALID_TOKEN, cntx.getString(R.string.e_invalid_token));
+		errors.put(Const.E_EXPIRED_TOKEN, cntx.getString(R.string.e_expired_token));
+		errors.put(Const.E_CHAT_INACTIVE, cntx.getString(R.string.e_chat_inactive));
+		errors.put(Const.E_NOT_CHAT_MEMBER, cntx.getString(R.string.e_not_chat_member));
+		errors.put(Const.E_EMAIL_MISSING, cntx.getString(R.string.e_email_missing));
+		errors.put(Const.E_USERNAME_NOT_EXIST, cntx.getString(R.string.e_username_not_exist));
+		errors.put(Const.E_SOMETHING_WENT_WRONG, cntx.getString(R.string.e_something_went_wrong));
+		errors.put(Const.E_CHAT_DELETED, cntx.getString(R.string.chat_has_been_deleted_));
+		errors.put(Const.E_PAGE_NOT_FOUND, cntx.getString(R.string.page_has_not_been_found_));
+		errors.put(Const.E_NOT_GROUP_ADMIN, cntx.getString(R.string.you_are_not_a_group_admin_));
+		errors.put(Const.E_TEMP_PASSWORD_NOT_VALID, cntx.getString(R.string.temp_password_is_not_valid_));
+		errors.put(Const.E_LOGIN_WITH_TEMP_PASS, cntx.getString(R.string.login_with_temp_password_));
+		errors.put(Const.E_FAILED, cntx.getString(R.string.e_something_went_wrong));
+		errors.put(Const.E_DIR_NOT_WRITABLE, cntx.getString(R.string.dir_not_writable_on_the_server_));
+		errors.put(Const.E_INVALID_LOGIN, cntx.getString(R.string.invalid_login_));
+		errors.put(Const.E_NO_CHILD_MSGS, cntx.getString(R.string.no_child_messages_));
+		errors.put(Const.E_INVALID_TEMP_PASSWORD, cntx.getString(R.string.invalid_temp_password_));
+		errors.put(Const.E_PASSWORD_EXIST, cntx.getString(R.string.password_already_in_use_));
 
 		for (int i = 0; i < errors.size(); i++) {
 			if (code == errors.keyAt(i)) {

@@ -52,11 +52,10 @@
         android:layout_below="@+id/topLayout"
         android:layout_centerInParent="true" >
 
-        <com.clover.spika.enterprise.chat.views.CroppedImageView
+        <com.clover.spika.enterprise.chat.views.TouchImageView
             android:id="@+id/mImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="matrix" />
+            android:layout_height="match_parent" />
     </RelativeLayout>
 
 </RelativeLayout>

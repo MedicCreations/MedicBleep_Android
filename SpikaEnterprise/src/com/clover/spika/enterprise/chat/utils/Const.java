@@ -50,7 +50,6 @@ public class Const {
 	public static final String APP_FILED_DOWNLOADS = "Downloads";
 	public static final String APP_SPEN_FILE = "spen.txt";
 	public static final String APP_SPEN_TEMP_FILE = "spentemp.txt";
-	public static final String APP_PUSH_FILE = ".pushMap";
 
 	// Intent const
 	public static final String PROFILE_INTENT = "profileIntent";
@@ -237,7 +236,12 @@ public class Const {
 	public static final int E_USERNAME_NOT_EXIST = 1013;
 	public static final int E_SOMETHING_WENT_WRONG = 1111;
 	public static final int E_FAILED = 999;
-
+	public static final int E_DIR_NOT_WRITABLE = 1002;
+	public static final int E_INVALID_LOGIN = 1003;
+	public static final int E_NO_CHILD_MSGS = 1004;
+	public static final int E_INVALID_TEMP_PASSWORD = 1014;
+	public static final int E_PASSWORD_EXIST = 1015;
+	
 	// extras
 	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
 	public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";
