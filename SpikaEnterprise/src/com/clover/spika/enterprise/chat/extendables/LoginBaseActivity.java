@@ -49,21 +49,30 @@ public abstract class LoginBaseActivity extends Activity {
 
 					startActivity(intent);
 					finish();
+					
 				} else {
 
 					Logger.d("Not Success");
 					String message = "";
+					
 					if (result.hasResultData()) {
+						
 						if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
+							
 							Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
+							finish();
+							
 						} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+							
 							Intent intent = new Intent(LoginBaseActivity.this, ChangePasswordActivity.class);
 							intent.putExtra(Const.TEMP_PASSWORD, pass);
 							startActivity(intent);
 							finish();
+							
 							return;
+							
 						} else {
 							message = result.getResultData().getMessage();
 						}
@@ -77,9 +86,11 @@ public abstract class LoginBaseActivity extends Activity {
 
 						@Override
 						public void onDismiss(DialogInterface dialog) {
+							
 							Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
+							finish();
 						}
 					});
 				}

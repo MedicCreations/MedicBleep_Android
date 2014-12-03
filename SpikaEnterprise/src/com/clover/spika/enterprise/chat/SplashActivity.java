@@ -24,9 +24,9 @@ public class SplashActivity extends LoginBaseActivity {
 		ImageLoader.init(this);
 
 		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
-			pause(1000, false);
+			pause(0, false);
 		} else {
-			pause(2000, true);
+			pause(1000, true);
 		}
 	}
 
@@ -56,23 +56,32 @@ public class SplashActivity extends LoginBaseActivity {
 			@Override
 			protected void onPostExecute(Void result) {
 				if (goToLogin) {
+
 					Intent intent = new Intent(context, LoginActivity.class);
+
 					if (extras != null) {
 						intent.putExtras(extras);
 					}
+
 					startActivity(intent);
 					finish();
+
 					return;
 				}
+
 				login();
+
 			}
 		}.execute();
 	}
 
 	private void login() {
+
 		try {
+			
 			executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
 					SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
+			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
