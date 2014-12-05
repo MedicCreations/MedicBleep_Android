@@ -219,6 +219,14 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		AppDialog dialog = new AppDialog(getActivity(), false);
 		dialog.choseCamGalleryRoomUpdate(chatId, chatName);
 	}
+	
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Helper.setRoomThumbId(getActivity(), "");
+	}
+	
 
 	@Override
 	public void onResume() {
