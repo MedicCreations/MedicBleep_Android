@@ -50,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/topLayout"
+        android:background="@android:color/white"
         android:layout_centerInParent="true" >
 
         <com.clover.spika.enterprise.chat.views.TouchImageView

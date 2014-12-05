@@ -61,6 +61,7 @@ public class PhotoActivity extends BaseActivity {
 					super.onPostExecute(result);
 					if (result != null) {
 						mImageView.setImageBitmap(result);
+						imageLayout.setBackgroundColor(getResources().getColor(R.color.black));
 					} else {
 						AppDialog dialog = new AppDialog(context, true);
 						dialog.setFailed(context.getResources().getString(R.string.e_error_downloading_file));
