@@ -20,6 +20,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -151,6 +153,20 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		mainListView.getRefreshableView().addHeaderView(header);
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
+		mainListView.setOnScrollListener(new OnScrollListener() {
+			
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				((CreateRoomActivity)getActivity()).hideKeyboard(roomName);
+				
+			}
+			
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				
+			}
+		});
 
 		btnSearch = (ImageButton) rootView.findViewById(R.id.searchBtn);
 		btnSearch.setOnClickListener(this);
