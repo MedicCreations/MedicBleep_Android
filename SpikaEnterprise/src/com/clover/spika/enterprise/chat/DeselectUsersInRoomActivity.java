@@ -10,31 +10,33 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<User> {
+public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<GlobalModel> {
 
 	private String roomName;
 	private String roomId;
 	private boolean isChecked = false;
 
-	private List<User> mUsers;
+	private List<GlobalModel> mUsers;
 	private List<String> mUsersToPass = new ArrayList<String>();
 
-	public static void startActivity(String roomName, String roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
+	public static void startActivity(String roomName, int roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
 
 		Intent intent = new Intent(context, DeselectUsersInRoomActivity.class);
-		intent.putExtra(Const.ROOM_ID, roomId);
+		intent.putExtra(Const.ROOM_ID, String.valueOf(roomId));
 		intent.putExtra(Const.ROOM_NAME, roomName);
 		intent.putExtra(Const.IS_ACTIVE, isChecked);
 		intent.putStringArrayListExtra(Const.USER_IDS, ids);
@@ -75,36 +77,35 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	private void getUsersFromRoom() {
 
-		new UserApi().getChatMembersWithPage(this, roomId, -1, false, false, new ApiCallback<UsersList>() {
-
+		new GlobalApi().globalMembers(this, Type.ALL, roomId, -1, false, new ApiCallback<GlobalResponse>() {
 			@Override
-			public void onApiResponse(Result<UsersList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
-					mUsers = handleResult(result.getResultData().getMembersList());
+					mUsers = handleResult(result.getResultData().getModelsList());
 					setListView();
 				}
 			}
 		});
 	}
 
-	private List<User> handleResult(List<User> members) {
+	private List<GlobalModel> handleResult(List<GlobalModel> members) {
 
 		List<String> usersIds = getIntent().getStringArrayListExtra(Const.USER_IDS);
-		List<User> list = new ArrayList<User>();
+		List<GlobalModel> list = new ArrayList<GlobalModel>();
 
-		for (User item : members) {
+		for (GlobalModel item : members) {
 
 			if (isChecked) {
 				if (usersIds != null) {
-					if (usersIds.contains(String.valueOf(item.getId()))) {
-						mUsersToPass.add(String.valueOf(item.getId()));
-						item.setSelected(true);
+					if (usersIds.contains(String.valueOf(((User) item.getModel()).getId()))) {
+						mUsersToPass.add(String.valueOf(((User) item.getModel()).getId()));
+						((User) item.getModel()).setSelected(true);
 					} else {
-						item.setSelected(false);
+						((User) item.getModel()).setSelected(false);
 					}
 				} else {
-					mUsersToPass.add(String.valueOf(item.getId()));
-					item.setSelected(true);
+					mUsersToPass.add(String.valueOf(((User) item.getModel()).getId()));
+					((User) item.getModel()).setSelected(true);
 				}
 			}
 
@@ -115,18 +116,18 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 	}
 
 	private void setListView() {
-		InviteUserAdapter adapter = new InviteUserAdapter(this, mUsers, this);
+		InviteRemoveAdapter adapter = new InviteRemoveAdapter(this, mUsers, this, null);
 		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		listView.getRefreshableView().setAdapter(adapter);
 	}
 
 	@Override
-	public void onChange(User obj, boolean isFromDetails) {
+	public void onChange(GlobalModel obj, boolean isFromDetails) {
 		boolean isFound = false;
 		int j = 0;
 
 		for (String item : mUsersToPass) {
-			if (item.equals(String.valueOf(obj.getId()))) {
+			if (item.equals(String.valueOf(((User) obj.getModel()).getId()))) {
 				isFound = true;
 				break;
 			}
@@ -136,7 +137,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 		if (isFound) {
 			mUsersToPass.remove(j);
 		} else {
-			mUsersToPass.add(String.valueOf(obj.getId()));
+			mUsersToPass.add(String.valueOf(((User) obj.getModel()).getId()));
 		}
 	}
 }

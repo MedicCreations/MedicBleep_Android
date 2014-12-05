@@ -243,5 +243,6 @@
     <string name="set_a_new_admin">Set a new admin</string>
     <string name="change_category">Change category</string>
     <string name="change">Change</string>
+    <string name="admin">(admin)</string>
 
 </resources>

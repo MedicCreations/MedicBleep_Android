@@ -3,23 +3,23 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent">
+    android:background="@color/transparent" >
 
     <RelativeLayout
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp">
+        android:layout_marginLeft="5dp" >
 
         <RelativeLayout
             android:id="@+id/imageLayout"
             android:layout_width="35dp"
             android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp" >
 
             <com.clover.spika.enterprise.chat.views.RoundImageView
-                android:id="@+id/groupImage"
+                android:id="@+id/item_image"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_centerInParent="true"
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="5dp"
-                android:visibility="invisible">
+                android:visibility="invisible" >
 
                 <ImageView
                     android:layout_width="15dp"
@@ -58,10 +58,10 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/imageLayoutControl"
             android:layout_toRightOf="@+id/imageLayout"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/groupName"
+                android:id="@+id/item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -69,7 +69,6 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
         <RelativeLayout
@@ -79,8 +78,7 @@
             android:layout_alignBottom="@id/imageLayout"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/imageLayout"
-            android:background="@drawable/icon_tablearrow">
-
+            android:background="@drawable/icon_tablearrow" >
         </RelativeLayout>
     </RelativeLayout>
 

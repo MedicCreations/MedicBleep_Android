@@ -6,14 +6,14 @@ import android.widget.AdapterView;
 
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
 
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		if (getListView() != null) {
-			mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), null);
+			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
 
 			getListView().setAdapter(mUserAdapter);
 		}
@@ -42,17 +42,17 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 	@Override
 	public void onRemove(String chatId) {
 
-		if (mUserAdapter.getSelected().size() == 0 && mUserAdapter.getSelectedGroups().size() == 0 && mUserAdapter.getSelectedRooms().size() == 0) {
+		if (mUserAdapter.getUsersSelected().size() == 0 && mUserAdapter.getGroupsSelected().size() == 0 && mUserAdapter.getRoomsSelected().size() == 0) {
 			AppDialog dialog = new AppDialog(getActivity(), false);
 			dialog.setInfo(getActivity().getString(R.string.you_didn_t_select_any_users));
 			return;
 		}
 
 		String ids = "";
-		if (mUserAdapter.getSelected().size() != 0) {
+		if (mUserAdapter.getUsersSelected().size() != 0) {
 			// create users ids
 			StringBuilder idsBuilder = new StringBuilder();
-			for (String item : mUserAdapter.getSelected()) {
+			for (String item : mUserAdapter.getUsersSelected()) {
 				idsBuilder.append(item + ",");
 			}
 
@@ -61,10 +61,10 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		}
 
 		String groupIds = "";
-		if (mUserAdapter.getSelectedGroups().size() != 0) {
+		if (mUserAdapter.getGroupsSelected().size() != 0) {
 			// create group ids
 			StringBuilder idsGroupBuilder = new StringBuilder();
-			for (String item : mUserAdapter.getSelectedGroups()) {
+			for (String item : mUserAdapter.getGroupsSelected()) {
 				idsGroupBuilder.append(item + ",");
 			}
 
@@ -73,10 +73,10 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		}
 
 		String roomIds = "";
-		if (mUserAdapter.getSelectedRooms().size() != 0) {
+		if (mUserAdapter.getRoomsSelected().size() != 0) {
 			// create group ids
 			StringBuilder idsRoomBuilder = new StringBuilder();
-			for (String item : mUserAdapter.getSelectedRooms()) {
+			for (String item : mUserAdapter.getRoomsSelected()) {
 				idsRoomBuilder.append(item + ",");
 			}
 

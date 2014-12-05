@@ -513,8 +513,8 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	@Override
-	protected String getUserId() {
-		return mUserId;
+	protected int getUserId() {
+		return Integer.valueOf(mUserId);
 	}
 
 	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
@@ -597,7 +597,7 @@ public class ChatActivity extends BaseChatActivity {
 					chatParams(chat.getChat());
 
 					if (TextUtils.isEmpty(mUserId)) {
-						mUserId = chat.getUser() == null ? "" : chat.getUser().getId();
+						mUserId = chat.getUser() == null ? "" : String.valueOf(chat.getUser().getId());
 					}
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);

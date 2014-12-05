@@ -14,6 +14,7 @@ import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 import org.apache.http.util.ByteArrayBuffer;
+import org.apache.http.util.TextUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,14 +32,13 @@ public class ImageLoader {
 	// singleton usage
 	private static ImageLoader sInstance;
 
-    public static ImageLoader getInstance(Context initActivityContext) {
-        if (sInstance == null) {
-            Logger.e("ImageLoader has to be initialized first before instance can be used. " +
-                    "Call init method before usage.");
-            init(initActivityContext);
-        }
-        return sInstance;
-    }
+	public static ImageLoader getInstance(Context initActivityContext) {
+		if (sInstance == null) {
+			Logger.e("ImageLoader has to be initialized first before instance can be used. " + "Call init method before usage.");
+			init(initActivityContext);
+		}
+		return sInstance;
+	}
 
 	public static void init(Context initActivityContext) {
 		sInstance = new ImageLoader(initActivityContext);
@@ -67,19 +67,20 @@ public class ImageLoader {
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
 	}
-	
+
 	public void displayImage(Context ctx, String url, ImageView imageView) {
 
 		displayImage(ctx, url, imageView, null);
 	}
-	
+
 	public void displayImage(Context ctx, String url, ImageView imageView, OnImageDisplayFinishListener lis) {
 
 		mListener = lis;
-		
-		if(url == null || url.equals("") || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)){
+
+		if (TextUtils.isEmpty(url) || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)) {
 			imageView.setImageResource(defaultImageId);
-			if(mListener != null) mListener.onFinish();
+			if (mListener != null)
+				mListener.onFinish();
 			return;
 		}
 		// Store image and url in Map
@@ -93,7 +94,8 @@ public class ImageLoader {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
 			imageView.setImageBitmap(bitmap);
-			if(mListener != null) mListener.onFinish();
+			if (mListener != null)
+				mListener.onFinish();
 		} else {
 			// queue Photo to download from url
 			queuePhoto(ctx, url, imageView);
@@ -191,7 +193,8 @@ public class ImageLoader {
 			}
 
 		} catch (Exception e) {
-			if(Const.DEBUG_CRYPTO) e.printStackTrace();
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
 		}
 		// end: Get image from cache
 
@@ -225,7 +228,8 @@ public class ImageLoader {
 			return bitmap;
 
 		} catch (Throwable ex) {
-			if(Const.DEBUG_CRYPTO) ex.printStackTrace();
+			if (Const.DEBUG_CRYPTO)
+				ex.printStackTrace();
 			if (ex instanceof OutOfMemoryError) {
 				clearCache();
 			}
@@ -259,7 +263,8 @@ public class ImageLoader {
 			// Show bitmap on UI
 			if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
-				if(mListener != null) mListener.onFinish();
+				if (mListener != null)
+					mListener.onFinish();
 			}
 		}
 	}

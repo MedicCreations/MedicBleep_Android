@@ -1,5 +1,10 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.util.TextUtils;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,31 +14,28 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.RoomsApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import org.apache.http.util.TextUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomListener {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public InviteUserAdapter adapter;
+	public InviteRemoveAdapter adapter;
 
 	private ImageView imgRoom;
 	private RobotoRegularTextView roomName;
@@ -51,7 +53,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new InviteUserAdapter(getActivity(), new ArrayList<User>(), null);
+		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
 	}
 
 	@Override
@@ -110,14 +112,14 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		return rootView;
 	}
 
-	private void setData(List<User> data) {
+	private void setData(List<GlobalModel> data) {
 
 		for (int i = 0; i < data.size(); i++) {
-			data.get(i).setSelected(true);
+			((User) data.get(i).getModel()).setSelected(true);
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-			if (data.get(i).getId().equals(Helper.getUserId(getActivity()))) {
+			if (String.valueOf(((User) data.get(i).getModel()).getId()).equals(Helper.getUserId(getActivity()))) {
 				data.remove(i);
 			}
 		}
@@ -125,7 +127,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		adapter.setData(data);
 
 		for (int i = 0; i < data.size(); i++) {
-			adapter.setId(data.get(i).getId());
+			adapter.addToHelperArrays(data.get(i));
 		}
 
 		mainListView.onRefreshComplete();
@@ -143,7 +145,18 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 			@Override
 			public void onApiResponse(Result<ConfirmUsersList> result) {
-				setData(result.getResultData().getUserList());
+
+				List<GlobalModel> globalList = new ArrayList<GlobalModel>();
+
+				for (User user : result.getResultData().getUserList()) {
+
+					GlobalModel model = new GlobalModel();
+					model.setType(Type.USER);
+					model.setUser(user);
+					globalList.add(model);
+				}
+
+				setData(globalList);
 			}
 		});
 	}
@@ -160,7 +173,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 		StringBuilder users_to_add = new StringBuilder();
 		List<String> usersId = new ArrayList<String>();
-		usersId.addAll(adapter.getSelected());
+		usersId.addAll(adapter.getUsersSelected());
 
 		if (usersId.isEmpty()) {
 			return;

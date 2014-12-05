@@ -29,6 +29,12 @@ public class Group {
 	@Expose
 	private Category category;
 
+	@SerializedName("is_member")
+	@Expose
+	private boolean isMember;
+	
+	private boolean isSelected = false;
+
 	public int getId() {
 		return id;
 	}
@@ -107,5 +113,21 @@ public class Group {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public boolean isMember() {
+		return isMember;
+	}
+
+	public void setMember(boolean isMember) {
+		this.isMember = isMember;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 }

@@ -8,17 +8,19 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -30,14 +32,14 @@ import java.util.List;
 public class SetAdminActivity extends BaseActivity implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
-	private InviteUserAdapter adapter;
+	private InviteRemoveAdapter adapter;
 	private TextView noItems;
 
 	private String chatId;
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
-	private UserApi userApi;
+	private GlobalApi api;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,27 +64,28 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 
 		noItems = (TextView) findViewById(R.id.noItems);
 		mainListView = (PullToRefreshListView) findViewById(R.id.main_list_view);
-		adapter = new InviteUserAdapter(this, new ArrayList<User>());
+		adapter = new InviteRemoveAdapter(this, new ArrayList<GlobalModel>(), null, null);
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);
 
-		userApi = new UserApi();
+		api = new GlobalApi();
 		getUsers(true);
 	}
 
 	private void getUsers(final boolean clearPrevious) {
-		userApi.getChatMembersWithPage(this, chatId, mCurrentIndex, true, false, new ApiCallback<UsersList>() {
+
+		api.globalSearch(this, mCurrentIndex, chatId, null, Type.USER, null, false, new ApiCallback<GlobalResponse>() {
 			@Override
-			public void onApiResponse(Result<UsersList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
-					setData((List<User>) result.getResultData().getMembersList(), clearPrevious);
+					setData((List<GlobalModel>) result.getResultData().getModelsList(), clearPrevious);
 				}
 			}
 		});
 	}
 
-	public void setData(List<User> data, boolean toClearPrevious) {
+	public void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
@@ -128,11 +131,11 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			final User user = adapter.getItem(position);
+			final User user = (User) adapter.getItem(position).getModel();
 
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put(Const.CHAT_ID, chatId);
-			params.put(Const.ADMIN_ID, user.getId());
+			params.put(Const.ADMIN_ID, String.valueOf(user.getId()));
 			new ChatApi().updateChatAll(params, true, SetAdminActivity.this, new ApiCallback<BaseModel>() {
 
 				@Override
@@ -141,7 +144,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 
 						Intent intent = new Intent();
 
-						if (user.getId().equals(SpikaEnterpriseApp.getSharedPreferences(SetAdminActivity.this).getCustomString(Const.USER_ID))) {
+						if (String.valueOf(user.getId()).equals(SpikaEnterpriseApp.getSharedPreferences(SetAdminActivity.this).getCustomString(Const.USER_ID))) {
 							intent.putExtra(Const.IS_ADMIN, true);
 						} else {
 							intent.putExtra(Const.IS_ADMIN, false);

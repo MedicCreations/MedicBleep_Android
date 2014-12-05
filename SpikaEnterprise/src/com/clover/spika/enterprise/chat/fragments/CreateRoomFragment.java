@@ -33,32 +33,36 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUsersGroupsRoomsAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.RoomsApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
+import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserGroupRoom;
-import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<UserGroupRoom> {
+public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel> {
 
 	private static final int FROM_CATEGORY = 11;
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public InviteUsersGroupsRoomsAdapter adapter;
+	public InviteRemoveAdapter adapter;
 
 	private TextView txtUsers;
 
@@ -85,7 +89,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this);
+		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
 
 		mCurrentIndex = 0;
 	}
@@ -233,7 +237,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		}
 	};
 
-	private void setData(List<UserGroupRoom> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
@@ -262,16 +266,15 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {
-		RoomsApi api = new RoomsApi();
-		api.getUsersAndGroupsForRoomsByName(null, mCurrentIndex, search, getActivity(), true, new ApiCallback<UsersAndGroupsList>() {
+
+		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, Type.ALL, search, toClear, new ApiCallback<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<UsersAndGroupsList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				mTotalCount = result.getResultData().getTotalCount();
-				setData(result.getResultData().getUsersAndGroupsList(), toClear);
+				setData(result.getResultData().getModelsList(), toClear);
 			}
 		});
-
 	}
 
 	@Override
@@ -304,16 +307,16 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	@Override
-	public void onChange(UserGroupRoom obj, boolean isFromDetails) {
+	public void onChange(GlobalModel obj, boolean isFromDetails) {
 
 		boolean isFound = false;
 		int j = 0;
 
-		for (UserGroupRoom user : adapter.getUsersForString()) {
+		for (GlobalModel item : adapter.getUsersForString()) {
 
-			if (user.getId().equals(obj.getId())) {
+			if (item.getId() == obj.getId()) {
 
-				if (user.getIs_group() == obj.getIs_group()) {
+				if (item.getType() == Type.GROUP) {
 					isFound = true;
 					break;
 				}
@@ -337,12 +340,12 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getIs_group()) {
-				builder.append(adapter.getUsersForString().get(i).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getIsRoom()) {
-				builder.append(adapter.getUsersForString().get(i).getRoomName());
-			} else if (adapter.getUsersForString().get(i).getIsUser()) {
-				builder.append(adapter.getUsersForString().get(i).getFirstName() + " " + adapter.getUsersForString().get(i).getLastName());
+			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
+			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
+			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 
 			if (i != (adapter.getUsersForString().size() - 1)) {
@@ -385,33 +388,33 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 				mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
 				setCategory(data.getStringExtra(Const.CATEGORY_NAME));
 			}
-		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_GROUP_MEMBERS) {
+		} else if (requestCode == InviteRemoveAdapter.FROM_GROUP_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String groupId = data.getStringExtra(Const.GROUP_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					adapter.removeFromGroup(groupId, false);
+					adapter.removeFromGroup(Integer.valueOf(groupId), false);
 				} else {
-					adapter.addFromGroup(groupId, dataS, true);
+					adapter.addFromGroup(Integer.valueOf(groupId), dataS, true);
 				}
 
-				adapter.removeAllGroup(groupId);
+				adapter.removeAllGroup(Integer.valueOf(groupId));
 			}
-		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_ROOM_MEMBERS) {
+		} else if (requestCode == InviteRemoveAdapter.FROM_ROOM_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String roomId = data.getStringExtra(Const.ROOM_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					adapter.removeFromRoom(roomId, false);
+					adapter.removeFromRoom(Integer.valueOf(roomId), false);
 				} else {
-					adapter.addFromRoom(roomId, dataS, true);
+					adapter.addFromRoom(Integer.valueOf(roomId), dataS, true);
 				}
 
-				adapter.removeAllRoom(roomId);
+				adapter.removeAllRoom(Integer.valueOf(roomId));
 			}
 		}
 	}

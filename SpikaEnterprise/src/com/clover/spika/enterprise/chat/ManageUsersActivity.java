@@ -21,8 +21,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.RoomsApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
@@ -30,11 +29,10 @@ import com.clover.spika.enterprise.chat.listeners.OnInviteClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UserGroupRoom;
-import com.clover.spika.enterprise.chat.models.UsersAndGroupsList;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener {
@@ -47,8 +45,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ImageButton closeSearchBtn;
 	private ImageButton mInviteBtn;
 
-	private UserApi api;
-	private RoomsApi roomsApi;
+	private GlobalApi api = new GlobalApi();
 	private ManageUsersFragmentAdapter mPagerAdapter;
 	private ViewPager mViewPager;
 
@@ -81,9 +78,6 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		inviteTab.setOnClickListener(this);
 		removeTab = (ToggleButton) findViewById(R.id.removeTab);
 		removeTab.setOnClickListener(this);
-
-		api = new UserApi();
-		roomsApi = new RoomsApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -139,24 +133,23 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
 
-		roomsApi.getUsersAndGroupsForRoomsByName(chatId, currentIndex, search, this, false, new ApiCallback<UsersAndGroupsList>() {
+		api.globalSearch(this, currentIndex, chatId, null, Type.ALL, search, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<UsersAndGroupsList> result) {
-
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
 
 					mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
 
-					List<UserGroupRoom> finalList = result.getResultData().getUsersAndGroupsList();
+					List<GlobalModel> finalList = result.getResultData().getModelsList();
 
 					for (int i = 0; i < finalList.size(); i++) {
-						if (finalList.get(i).getIsMember()) {
+						if (finalList.get(i).isMember()) {
 							finalList.get(i).setSelected(true);
 						}
 					}
 
-					mPagerAdapter.setInviteUsers(result.getResultData().getUsersAndGroupsList(), toClear);
+					mPagerAdapter.setInviteUsers(result.getResultData().getModelsList(), toClear);
 
 					if (toUpdateMember) {
 						mPagerAdapter.resetMembers();
@@ -169,12 +162,12 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
-		api.getChatMembersWithPage(this, chatId, currentIndex, true, true, new ApiCallback<UsersList>() {
+		api.globalMembers(this, Type.ALL, chatId, currentIndex, true, new ApiCallback<GlobalResponse>() {
 			@Override
-			public void onApiResponse(Result<UsersList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
 					mPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
-					mPagerAdapter.setMembers(result.getResultData().getMembersList());
+					mPagerAdapter.setMembers(result.getResultData().getModelsList());
 					if (toUpdateInviteMember) {
 						getUsers(0, null, true, false);
 					}
@@ -225,7 +218,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			return mFragmentList.size();
 		}
 
-		public void setInviteUsers(List<UserGroupRoom> userList, boolean toClear) {
+		public void setInviteUsers(List<GlobalModel> userList, boolean toClear) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof InviteUsersFragment) {
 					((InviteUsersFragment) fragment).setData(userList, toClear);
@@ -249,7 +242,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			}
 		}
 
-		public void setMembers(List<User> members) {
+		public void setMembers(List<GlobalModel> members) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof RemoveUsersFragment) {
 					((RemoveUsersFragment) fragment).setMembers(members);

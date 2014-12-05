@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,30 +23,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
+public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel> {
 
-public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<User> {
-
-	UserApi api;
+	GlobalApi api;
 
 	PullToRefreshListView mainList;
-	InviteUserAdapter adapter;
+	InviteRemoveAdapter adapter;
 
 	private String chatId = "";
 	@SuppressWarnings("unused")
@@ -88,7 +91,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		setContentView(R.layout.activity_invite_people);
 		// setSearch(this);
 
-		api = new UserApi();
+		api = new GlobalApi();
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +138,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
 		invitedPeople.setMovementMethod(new ScrollingMovementMethod());
 
-		adapter = new InviteUserAdapter(this, new ArrayList<User>(), this);
+		adapter = new InviteRemoveAdapter(this, new ArrayList<GlobalModel>(), this, null);
 
 		mainList = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		mainList.setAdapter(adapter);
@@ -175,7 +178,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		}
 	};
 
-	private void setData(List<User> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainList.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
@@ -199,29 +202,20 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	}
 
 	private void getUsers(int page, String search, final boolean toClear) {
-		if (search == null) {
-			api.getUsersWithPage(this, mCurrentIndex, chatId, true, new ApiCallback<UsersList>() {
 
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
-				}
-			});
-		} else {
-			api.getUsersByName(mCurrentIndex, chatId, search, this, true, new ApiCallback<UsersList>() {
+		api.globalSearch(this, page, chatId, null, Type.ALL, search, toClear, new ApiCallback<GlobalResponse>() {
 
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
+			@Override
+			public void onApiResponse(Result<GlobalResponse> result) {
+				if (result.isSuccess()) {
+
+					GlobalResponse response = result.getResultData();
+
+					mTotalCount = response.getTotalCount();
+					setData(response.getModelsList(), toClear);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	@Override
@@ -229,7 +223,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			User user = adapter.getItem(position);
+			User user = (User) adapter.getItem(position).getModel();
 			ProfileOtherActivity.openOtherProfile(this, user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
 		}
 	}
@@ -317,7 +311,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		StringBuilder users = new StringBuilder();
 
-		List<String> usersId = adapter.getSelected();
+		List<String> usersId = adapter.getUsersSelected();
 
 		if (usersId.isEmpty()) {
 			return;
@@ -331,7 +325,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			}
 		}
 
-		api.inviteUsers(chatId, users.toString(), this, new ApiCallback<Chat>() {
+		new UserApi().inviteUsers(chatId, users.toString(), this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
@@ -348,13 +342,13 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	}
 
 	@Override
-	public void onChange(User obj, boolean isFromDetails) {
+	public void onChange(GlobalModel obj, boolean isFromDetails) {
 
 		boolean isFound = false;
 		int j = 0;
 
 		for (User user : usersToAdd) {
-			if (user.getId().equals(obj.getId())) {
+			if (user.getId() == ((User) obj.getModel()).getId()) {
 				isFound = true;
 				break;
 			}
@@ -364,7 +358,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		if (isFound) {
 			usersToAdd.remove(j);
 		} else {
-			usersToAdd.add(obj);
+			usersToAdd.add((User) obj.getModel());
 		}
 
 		StringBuilder builder = new StringBuilder();

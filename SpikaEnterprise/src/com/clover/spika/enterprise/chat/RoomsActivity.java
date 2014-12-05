@@ -16,14 +16,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.adapters.RoomsAdapter;
+import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.RoomsApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.RoomsList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -43,7 +45,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	private TextView noItems;
 
 	private PullToRefreshListView mainListView;
-	public RoomsAdapter adapter;
+	public GlobalModelAdapter adapter;
 
 	private ImageButton searchBtn;
 	private EditText searchEt;
@@ -59,13 +61,14 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	private int speedSearchAnimation = 300;
 	private OnSearchListener mSearchListener;
 
+	private GlobalApi api = new GlobalApi();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rooms);
 
-		adapter = new RoomsAdapter(this, new ArrayList<Chat>());
-
+		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);
@@ -127,7 +130,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			Chat room = adapter.getItem(position);
+			Chat room = (Chat) adapter.getItem(position).getModel();
 			ChatActivity.startWithChatId(this, String.valueOf(room.getChat_id()), room.getPassword());
 		}
 	}
@@ -196,15 +199,18 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 		finish();
 	}
 
-	private void setData(List<Chat> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();
 
-		if (toClearPrevious)
-			adapter.clearItems();
-		adapter.addItems(data);
+		if (toClearPrevious) {
+			adapter.setData(data);
+		} else {
+			adapter.addData(data);
+		}
+
 		if (toClearPrevious)
 			mainListView.getRefreshableView().setSelection(0);
 
@@ -224,30 +230,19 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	}
 
 	private void getRooms(int page, String search, final boolean toClear) {
-		RoomsApi roomApi = new RoomsApi();
-		if (search == null) {
-			roomApi.getRoomsWithPage(mCurrentIndex, mCategory, this, true, new ApiCallback<RoomsList>() {
 
-				@Override
-				public void onApiResponse(Result<RoomsList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getRoomsList(), toClear);
-					}
-				}
-			});
-		} else {
-			roomApi.getRoomsByName(mCurrentIndex, mCategory, search, this, true, new ApiCallback<RoomsList>() {
+		api.globalSearch(this, page, null, mCategory, Type.CHAT, search, true, new ApiCallback<GlobalResponse>() {
 
-				@Override
-				public void onApiResponse(Result<RoomsList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getRoomsList(), toClear);
-					}
+			@Override
+			public void onApiResponse(Result<GlobalResponse> result) {
+
+				if (result.isSuccess()) {
+					mTotalCount = result.getResultData().getTotalCount();
+					setData(result.getResultData().getModelsList(), toClear);
 				}
-			});
-		}
+			}
+		});
+
 	}
 
 	@Override

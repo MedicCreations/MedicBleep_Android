@@ -12,7 +12,7 @@ public class Chat extends BaseModel {
 	private Chat chat;
 
 	@SerializedName("chat_id")
-	private long chat_id;
+	private int chat_id;
 
 	@SerializedName("chat_name")
 	private String chat_name;
@@ -57,7 +57,12 @@ public class Chat extends BaseModel {
 	@SerializedName("category")
 	@Expose
 	private Category category;
+	
+	@SerializedName("is_member")
+	@Expose
+	private boolean isMember;
 
+	private boolean isSelected = false;
 	private boolean isNewMsg = false;
 	private boolean isRefresh = false;
 	private boolean isClear = false;
@@ -113,11 +118,11 @@ public class Chat extends BaseModel {
 		this.adapterCount = adapterCount;
 	}
 
-	public long getChat_id() {
+	public int getChat_id() {
 		return chat_id;
 	}
 
-	public void setChat_id(long chat_id) {
+	public void setChat_id(int chat_id) {
 		this.chat_id = chat_id;
 	}
 
@@ -297,5 +302,21 @@ public class Chat extends BaseModel {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public boolean isMember() {
+		return isMember;
+	}
+
+	public void setMember(boolean isMember) {
+		this.isMember = isMember;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 }

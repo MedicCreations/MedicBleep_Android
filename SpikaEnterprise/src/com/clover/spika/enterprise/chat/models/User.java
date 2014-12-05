@@ -10,14 +10,11 @@ import java.util.Map;
 
 public class User implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@SerializedName("id")
 	@Expose
-	private String id;
+	private int id;
 
 	@SerializedName("user_id")
 	@Expose
@@ -81,7 +78,7 @@ public class User implements Serializable {
 
 	private boolean isSelected = false;
 
-	public User(String id, String userId, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details,
+	public User(int id, String userId, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details,
 			boolean isSelected) {
 		super();
 		this.id = id;
@@ -96,14 +93,11 @@ public class User implements Serializable {
 		this.isSelected = isSelected;
 	}
 
-	public String getId() {
-		if (id == null || id.equals("")) {
-			return userId == null ? "" : userId;
-		}
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -211,8 +205,6 @@ public class User implements Serializable {
 			return false;
 		if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null)
 			return false;
-		if (id != null ? !id.equals(user.id) : user.id != null)
-			return false;
 		if (image != null ? !image.equals(user.image) : user.image != null)
 			return false;
 		if (imageThumb != null ? !imageThumb.equals(user.imageThumb) : user.imageThumb != null)
@@ -227,8 +219,7 @@ public class User implements Serializable {
 
 	@Override
 	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+		int result = firstName != null ? firstName.hashCode() : 0;
 		result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
 		result = 31 * result + (type != null ? type.hashCode() : 0);
 		result = 31 * result + (image != null ? image.hashCode() : 0);

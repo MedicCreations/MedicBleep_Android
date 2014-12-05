@@ -387,13 +387,12 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void getFromPush(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive,
-			String password, int isPrivate) {
+	private void getFromPush(String msg, String chatIdPush, String pushType, String password) {
 		if (chatIdPush.equals(chatId)) {
 			onChatPushUpdated();
 		} else {
 			if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-				showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive, password, isPrivate);
+				showPopUp(msg, chatIdPush, password);
 			}
 		}
 	}
@@ -417,9 +416,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	@Override
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive,
-			String password, int isPrivate) {
-		getFromPush(msg, chatIdPush, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);
+	public void pushCall(String msg, String chatIdPush, String pushType, String password) {
+		getFromPush(msg, chatIdPush, pushType, password);
 	}
 
 	@Override
@@ -674,7 +672,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	 * Required to return user id when chat with a single user is opened. This
 	 * method can return any value when chat involves more than two people.
 	 */
-	protected abstract String getUserId();
+	protected abstract int getUserId();
 
 	public static interface OnTempFileCreatedListener {
 		void onTempFileCreated(String path, String name);

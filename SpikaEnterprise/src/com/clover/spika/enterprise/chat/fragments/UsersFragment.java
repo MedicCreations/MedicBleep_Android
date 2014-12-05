@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,37 +15,36 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.UserAdapter;
+import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UsersFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public UserAdapter adapter;
+	public GlobalModelAdapter adapter;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
 
+	private GlobalApi api = new GlobalApi();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		adapter = new UserAdapter(getActivity(), new ArrayList<User>());
-
+		adapter = new GlobalModelAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
 		mCurrentIndex = 0;
 	}
 
@@ -92,7 +94,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 		}
 	};
 
-	private void setData(List<User> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
@@ -122,31 +124,19 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 	public void getUsers(int page, String search, final boolean toClear) {
 
-		UserApi api = new UserApi();
+		api.globalSearch(getActivity(), page, null, null, Type.USER, search, true, new ApiCallback<GlobalResponse>() {
 
-		if (search == null) {
-			api.getUsersWithPage(getActivity(), mCurrentIndex, null, true, new ApiCallback<UsersList>() {
+			@Override
+			public void onApiResponse(Result<GlobalResponse> result) {
+				if (result.isSuccess()) {
 
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
+					GlobalResponse response = result.getResultData();
+
+					mTotalCount = response.getTotalCount();
+					setData(response.getModelsList(), toClear);
 				}
-			});
-		} else {
-			api.getUsersByName(mCurrentIndex, null, search, getActivity(), true, new ApiCallback<UsersList>() {
-
-				@Override
-				public void onApiResponse(Result<UsersList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getUserList(), toClear);
-					}
-				}
-			});
-		}
+			}
+		});
 	}
 
 	@Override
@@ -166,8 +156,8 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			User user = adapter.getItem(position);
-			ChatActivity.startWithUserId(getActivity(), user.getId(), false, user.getFirstName(), user.getLastName());
+			User user = (User) adapter.getItem(position).getModel();
+			ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName());
 		}
 	}
 }

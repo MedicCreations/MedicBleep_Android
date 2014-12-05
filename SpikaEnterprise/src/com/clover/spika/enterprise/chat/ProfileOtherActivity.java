@@ -27,13 +27,13 @@ public class ProfileOtherActivity extends BaseActivity {
 
 	private String mUserId;
 
-	public static void openOtherProfile(Context context, String userId, String imageFileId, String chatName) {
+	public static void openOtherProfile(Context context, int userId, String imageFileId, String chatName) {
 
 		Intent intent = new Intent(context, ProfileOtherActivity.class);
 
 		intent.putExtra(Const.IMAGE, imageFileId);
 		intent.putExtra(Const.CHAT_NAME, chatName);
-		intent.putExtra(Const.USER_ID, userId);
+		intent.putExtra(Const.USER_ID, String.valueOf(userId));
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
@@ -62,6 +62,7 @@ public class ProfileOtherActivity extends BaseActivity {
 		getIntentData(getIntent());
 
 		findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
+
 		new UserApi().getProfile(this, false, mUserId, new ApiCallback<UserWrapper>() {
 			@Override
 			public void onApiResponse(Result<UserWrapper> result) {
@@ -76,7 +77,9 @@ public class ProfileOtherActivity extends BaseActivity {
 	}
 
 	private void getIntentData(Intent intent) {
+
 		if (intent != null && intent.getExtras() != null) {
+
 			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage, new OnImageDisplayFinishListener() {
 
 				@Override
@@ -84,8 +87,8 @@ public class ProfileOtherActivity extends BaseActivity {
 					findViewById(R.id.loadingLayout).setVisibility(View.GONE);
 				}
 			});
-			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 
+			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 			mUserId = getIntent().getExtras().getString(Const.USER_ID);
 		}
 	}

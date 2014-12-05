@@ -15,14 +15,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.adapters.GroupAdapter;
+import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GroupsApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.GroupsList;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -35,7 +37,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public GroupAdapter adapter;
+	public GlobalModelAdapter adapter;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
@@ -51,6 +53,8 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 
 	private String mCategory = "0";
 
+	private GlobalApi api = new GlobalApi();
+
 	public static void startActivity(String categoryId, Context context) {
 		Intent intent = new Intent(context, GroupsActivity.class);
 		intent.putExtra(Const.CATEGORY_ID, categoryId);
@@ -64,8 +68,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		setContentView(R.layout.activity_groups);
 		// setSearch(this);
 
-		adapter = new GroupAdapter(this, new ArrayList<Group>());
-
+		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);
@@ -132,15 +135,18 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		}
 	};
 
-	private void setData(List<Group> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();
 
-		if (toClearPrevious)
-			adapter.clearItems();
-		adapter.addItems(data);
+		if (toClearPrevious) {
+			adapter.setData(data);
+		} else {
+			adapter.addData(data);
+		}
+
 		if (toClearPrevious)
 			mainListView.getRefreshableView().setSelection(0);
 
@@ -160,30 +166,17 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	}
 
 	public void getGroup(int page, String search, final boolean toClear) {
-		GroupsApi groupApi = new GroupsApi();
-		if (search == null) {
-			groupApi.getGroupsWithPage(mCurrentIndex, mCategory, this, true, new ApiCallback<GroupsList>() {
 
-				@Override
-				public void onApiResponse(Result<GroupsList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getGroupList(), toClear);
-					}
-				}
-			});
-		} else {
-			groupApi.getGroupsByName(mCurrentIndex, mCategory, search, this, true, new ApiCallback<GroupsList>() {
+		api.globalSearch(this, page, null, mCategory, Type.GROUP, search, true, new ApiCallback<GlobalResponse>() {
 
-				@Override
-				public void onApiResponse(Result<GroupsList> result) {
-					if (result.isSuccess()) {
-						mTotalCount = result.getResultData().getTotalCount();
-						setData(result.getResultData().getGroupList(), toClear);
-					}
+			@Override
+			public void onApiResponse(Result<GlobalResponse> result) {
+				if (result.isSuccess()) {
+					mTotalCount = result.getResultData().getTotalCount();
+					setData(result.getResultData().getModelsList(), toClear);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	@Override
@@ -203,7 +196,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			Group group = adapter.getItem(position);
+			Group group = (Group) adapter.getItem(position).getModel();
 			ChatActivity.startWithUserId(this, String.valueOf(group.getId()), true, group.getGroupName(), null);
 		}
 	}

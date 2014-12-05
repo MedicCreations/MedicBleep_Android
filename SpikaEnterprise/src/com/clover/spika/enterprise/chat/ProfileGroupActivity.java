@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,24 +23,19 @@ import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.UsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks {
 
@@ -42,7 +43,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	ToggleButton profileTab;
 	ToggleButton membersTab;
 
-	UserApi api;
+	GlobalApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
 
@@ -94,7 +95,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
 
-		api = new UserApi();
+		api = new GlobalApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -179,7 +180,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		}
 
-		public void setMembers(List<User> members) {
+		public void setMembers(List<GlobalModel> members) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof MembersFragment) {
 					((MembersFragment) fragment).setMembers(members);
@@ -233,12 +234,12 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
-		api.getChatMembersWithPage(this, chatId, page, true, false, new ApiCallback<UsersList>() {
+		api.globalMembers(this, Type.ALL, chatId, page, true, new ApiCallback<GlobalResponse>() {
 			@Override
-			public void onApiResponse(Result<UsersList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
 					profileFragmentPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
-					profileFragmentPagerAdapter.setMembers(result.getResultData().getMembersList());
+					profileFragmentPagerAdapter.setMembers(result.getResultData().getModelsList());
 				}
 			}
 		});

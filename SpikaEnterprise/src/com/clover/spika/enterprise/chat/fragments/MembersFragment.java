@@ -6,12 +6,14 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.listeners.OnUserClickedListener;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
@@ -19,7 +21,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class MembersFragment extends CustomFragment implements OnUserClickedListener<User> {
+public class MembersFragment extends CustomFragment implements OnItemClickListener {
 
 	public interface Callbacks {
 		void getMembers(int index, final boolean toUpdateInviteMember);
@@ -32,7 +34,7 @@ public class MembersFragment extends CustomFragment implements OnUserClickedList
 	};
 	protected Callbacks mCallbacks = sDummyCallback;
 
-	protected InviteUserAdapter mUserAdapter;
+	protected InviteRemoveAdapter mUserAdapter;
 
 	protected int mCurrentIndex = 0;
 	protected int mTotalCount = 0;
@@ -71,14 +73,13 @@ public class MembersFragment extends CustomFragment implements OnUserClickedList
 		super.onViewCreated(view, savedInstanceState);
 
 		if (getListView() != null) {
-			mUserAdapter = new InviteUserAdapter(getActivity(), new ArrayList<User>());
-			mUserAdapter.setOnUserClickListener(this);
-
+			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
+			getListView().setOnItemClickListener(this);
 			getListView().setAdapter(mUserAdapter);
 		}
 	}
 
-	public void setMembers(List<User> members) {
+	public void setMembers(List<GlobalModel> members) {
 		int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
 
 		mUserAdapter.addData(members);
@@ -124,8 +125,16 @@ public class MembersFragment extends CustomFragment implements OnUserClickedList
 	};
 
 	@Override
-	public void onUserClicked(User user) {
-		ChatActivity.startWithUserId(getActivity(), user.getId(), false, user.getFirstName(), user.getLastName());
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		position = position - 1;
+
+		if (position != -1 && position != mUserAdapter.getCount()) {
+			GlobalModel user = mUserAdapter.getItem(position);
+
+			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false, ((User) user.getModel()).getFirstName(),
+					((User) user.getModel()).getLastName());
+		}
 	}
 
 }

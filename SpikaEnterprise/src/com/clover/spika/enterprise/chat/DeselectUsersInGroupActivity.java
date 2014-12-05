@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,34 +10,32 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.adapters.InviteUserAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GroupsApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
-import com.clover.spika.enterprise.chat.models.GroupMember;
-import com.clover.spika.enterprise.chat.models.GroupMembersList;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<User> {
+public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<GlobalModel> {
 
 	private String groupName;
 	private String groupId;
 	private boolean isChecked = false;
 
-	private List<User> mUsers;
+	private List<GlobalModel> mUsers;
 	private List<String> mUsersToPass = new ArrayList<String>();
 
-	public static void startActivity(String groupName, String groupId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
+	public static void startActivity(String groupName, int groupId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
 		Intent intent = new Intent(context, DeselectUsersInGroupActivity.class);
-		intent.putExtra(Const.GROUP_ID, groupId);
+		intent.putExtra(Const.GROUP_ID, String.valueOf(groupId));
 		intent.putExtra(Const.GROUP_NAME, groupName);
 		intent.putExtra(Const.IS_ACTIVE, isChecked);
 		intent.putStringArrayListExtra(Const.USER_IDS, ids);
@@ -72,31 +73,34 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 	}
 
 	private void getUsersFromGroup() {
-		new GroupsApi().getGroupMembers("-1", groupId, this, true, new ApiCallback<GroupMembersList>() {
+
+		new GlobalApi().globalMembers(this, Type.ALL, groupId, -1, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GroupMembersList> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
-					List<GroupMember> members = result.getResultData().getMemberList();
+					List<GlobalModel> members = result.getResultData().getModelsList();
 					mUsers = generateUserList(members);
 
 					setListView();
 				}
 			}
 		});
-
 	}
 
 	private void setListView() {
-		InviteUserAdapter adapter = new InviteUserAdapter(this, mUsers, this);
+		InviteRemoveAdapter adapter = new InviteRemoveAdapter(this, mUsers, this, null);
 		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		listView.getRefreshableView().setAdapter(adapter);
 	}
 
-	private List<User> generateUserList(List<GroupMember> members) {
+	private List<GlobalModel> generateUserList(List<GlobalModel> members) {
 		List<String> usersIds = getIntent().getStringArrayListExtra(Const.USER_IDS);
-		List<User> list = new ArrayList<User>();
-		for (GroupMember item : members) {
+		List<GlobalModel> list = new ArrayList<GlobalModel>();
+		for (GlobalModel globalModel : members) {
+
+			User item = (User) globalModel.getModel();
+
 			boolean toCheck = false;
 			if (isChecked) {
 				if (usersIds != null) {
@@ -109,20 +113,27 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 					toCheck = true;
 				}
 			}
-			list.add(new User(String.valueOf(item.getId()), String.valueOf(item.getId()), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImage_thumb(),
-					false, null, toCheck));
+
+			User finalUser = new User(item.getId(), String.valueOf(item.getId()), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false,
+					null, toCheck);
+
+			GlobalModel finalModel = new GlobalModel();
+			finalModel.setType(Type.USER);
+			finalModel.setUser(finalUser);
+
+			list.add(finalModel);
 		}
 
 		return list;
 	}
 
 	@Override
-	public void onChange(User obj, boolean isFromDetails) {
+	public void onChange(GlobalModel obj, boolean isFromDetails) {
 		boolean isFound = false;
 		int j = 0;
 
 		for (String item : mUsersToPass) {
-			if (item.equals(String.valueOf(obj.getId()))) {
+			if (item.equals(String.valueOf(((User) obj.getModel()).getId()))) {
 				isFound = true;
 				break;
 			}
@@ -132,7 +143,7 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 		if (isFound) {
 			mUsersToPass.remove(j);
 		} else {
-			mUsersToPass.add(String.valueOf(obj.getId()));
+			mUsersToPass.add(String.valueOf(((User) obj.getModel()).getId()));
 		}
 	}
 

@@ -107,7 +107,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
     @Override
     protected void leaveChat() {
-
     }
 
     @Override
@@ -157,8 +156,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     @Override
-    protected String getUserId() {
-        return mUserId;
+    protected int getUserId() {
+        return Integer.valueOf(mUserId);
     }
 
     @Override

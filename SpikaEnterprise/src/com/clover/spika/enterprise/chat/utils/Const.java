@@ -87,7 +87,7 @@ public class Const {
 	public static final String CHAT_NAME = "chat_name";
 	public static final String CHAT_ID = "chat_id";
 	public static final String USER_GROUP_ROOMS = "user_group_rooms";
-	public static final String USERS_TO_ADD = "users_to_add";
+	public static final String USERS_TO_ADD = "user_ids";
 	public static final String LAST_MSG_ID = "last_msg_id";
 	public static final String FIRST_MSG_ID = "first_msg_id";
 	public static final String MESSAGES = "messages";
@@ -128,6 +128,12 @@ public class Const {
 	public static final String IS_PRIVATE = "is_private";
 	public static final String PUSH_CHAT_PASSWORD = "chat_password";
 	public static final String PUBLIC = "public";
+	public static final String SEARCH_RESULT = "search_result";
+	public static final String MEMBERS_RESULT = "members_result";
+
+	public static final String USER = "user";
+	public static final String GROUP = "group";
+	public static final String CHAT = "chat";
 
 	public static final String ROOT_ID = "root_id";
 	public static final String PARENT_ID = "parent_id";
@@ -187,9 +193,7 @@ public class Const {
 	// Api urls
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
-	public static final String F_USER_GET_ALL_CHARACTERS = "/user/list";
 	public static final String F_INVITE_USERS = "/chat/member/add";
-	public static final String F_USER_GET_CHAT_MEMBERS = "/chat/member/list";
 	public static final String F_USER_GET_FILE = "/file/download";
 	public static final String F_POST_MESSAGE = "post_message";
 	public static final String F_GET_MESSAGES = "/message/paging";
@@ -219,6 +223,8 @@ public class Const {
 	public static final String F_GET_DISTINC_USER = "/room/add/users";
 	public static final String F_FORGOT_PASSWORD = "/user/password/forgot";
 	public static final String F_CHANGE_PASSWORD = "/user/password/change";
+	public static final String F_GLOBAL_SEARCH_URL = "/search/list";
+	public static final String F_GLOBAL_MEMBERS_URL = "/member/list";
 
 	public static final int API_SUCCESS = 2000;
 
@@ -241,7 +247,7 @@ public class Const {
 	public static final int E_NO_CHILD_MSGS = 1004;
 	public static final int E_INVALID_TEMP_PASSWORD = 1014;
 	public static final int E_PASSWORD_EXIST = 1015;
-	
+
 	// extras
 	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
 	public static final String EXTRA_MESSAGE_ID = "com.clover.spika.enterprise.message_id";

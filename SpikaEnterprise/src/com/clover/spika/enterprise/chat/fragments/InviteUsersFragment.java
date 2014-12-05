@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.InviteUsersGroupsRoomsAdapter;
+import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -31,13 +31,16 @@ import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnInviteClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserGroupRoom;
+import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class InviteUsersFragment extends CustomFragment implements AdapterView.OnItemClickListener, OnChangeListener<UserGroupRoom>, OnSearchManageUsersListener,
+public class InviteUsersFragment extends CustomFragment implements AdapterView.OnItemClickListener, OnChangeListener<GlobalModel>, OnSearchManageUsersListener,
 		OnInviteClickListener {
 
 	public interface Callbacks {
@@ -52,7 +55,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	private Callbacks mCallbacks = sDummyCallbacks;
 
 	private PullToRefreshListView mainListView;
-	private InviteUsersGroupsRoomsAdapter adapter;
+	private InviteRemoveAdapter adapter;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
@@ -96,7 +99,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		super.onViewCreated(view, savedInstanceState);
 
 		if (view != null) {
-			adapter = new InviteUsersGroupsRoomsAdapter(getActivity(), new ArrayList<UserGroupRoom>(), this, this);
+			adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
 
 			noItems = (TextView) view.findViewById(R.id.noItems);
 			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
@@ -120,22 +123,26 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			UserGroupRoom user = adapter.getItem(position);
-			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
+			GlobalModel user = adapter.getItem(position);
+
+			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), ((User) user.getModel()).getImage(),
+					((User) user.getModel()).getFirstName() + " " + ((User) user.getModel()).getLastName());
 		}
 	}
 
 	@Override
-	public void onChange(UserGroupRoom obj, boolean isFromDetails) {
+	public void onChange(GlobalModel obj, boolean isFromDetails) {
 
 		boolean isFound = false;
 		int j = 0;
 
-		for (UserGroupRoom user : adapter.getUsersForString()) {
-			if (user.getId().equals(obj.getId())) {
+		for (GlobalModel user : adapter.getUsersForString()) {
+
+			if (user.getId() == obj.getId()) {
 				isFound = true;
 				break;
 			}
+
 			j++;
 		}
 
@@ -153,19 +160,19 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getIs_group()) {
-				builder.append(adapter.getUsersForString().get(i).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getIsRoom()) {
-				builder.append(adapter.getUsersForString().get(i).getRoomName());
-			} else {
-				builder.append(adapter.getUsersForString().get(i).getFirstName() + " " + adapter.getUsersForString().get(i).getLastName());
+			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
+			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
+			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 
 			if (i != (adapter.getUsersForString().size() - 1)) {
 				builder.append(", ");
 			}
 		}
-		
+
 		String selectedUsers = getActivity().getString(R.string.selected_users);
 		Spannable span = new SpannableString(selectedUsers + builder.toString());
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -306,7 +313,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 				});
 	}
 
-	public void setData(List<UserGroupRoom> data, boolean toClearPrevious) {
+	public void setData(List<GlobalModel> data, boolean toClearPrevious) {
 
 		try {
 			// -2 is because of header and footer view
@@ -379,33 +386,33 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_GROUP_MEMBERS) {
+		if (requestCode == InviteRemoveAdapter.FROM_GROUP_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String groupId = data.getStringExtra(Const.GROUP_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					adapter.removeFromGroup(groupId, false);
+					adapter.removeFromGroup(Integer.parseInt(groupId), false);
 				} else {
-					adapter.addFromGroup(groupId, dataS, true);
+					adapter.addFromGroup(Integer.parseInt(groupId), dataS, true);
 				}
 
-				adapter.removeAllGroup(groupId);
+				adapter.removeAllGroup(Integer.parseInt(groupId));
 			}
-		} else if (requestCode == InviteUsersGroupsRoomsAdapter.FROM_ROOM_MEMBERS) {
+		} else if (requestCode == InviteRemoveAdapter.FROM_ROOM_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);
 				String roomId = data.getStringExtra(Const.ROOM_ID);
 
 				if (dataS == null || dataS.length < 1) {
-					adapter.removeFromRoom(roomId, false);
+					adapter.removeFromRoom(Integer.parseInt(roomId), false);
 				} else {
-					adapter.addFromRoom(roomId, dataS, true);
+					adapter.addFromRoom(Integer.parseInt(roomId), dataS, true);
 				}
 
-				adapter.removeAllRoom(roomId);
+				adapter.removeAllRoom(Integer.parseInt(roomId));
 			}
 		}
 	}

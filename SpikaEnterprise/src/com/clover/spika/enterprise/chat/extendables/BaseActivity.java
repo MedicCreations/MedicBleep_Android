@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -31,20 +34,17 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.Push;
+import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BaseActivity extends SlidingFragmentActivity {
 
 	/* Handling push notifications display */
-	List<Push> qPush = new ArrayList<Push>();
+	List<LocalPush> qPush = new ArrayList<LocalPush>();
 	boolean isPushShowing = false;
 	boolean isOpenSearch = false;
 
@@ -78,17 +78,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 				String message = intent.getExtras().getString(Const.PUSH_MESSAGE);
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
-				String chatName = intent.getExtras().getString(Const.CHAT_NAME);
-				String chatImage = intent.getExtras().getString(Const.IMAGE);
-				String chatThumb = intent.getExtras().getString(Const.IMAGE_THUMB);
 				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
-				int isActive = intent.getExtras().getInt(Const.IS_ACTIVE);
-				String adminId = intent.getExtras().getString(Const.ADMIN_ID);
-				String type = intent.getExtras().getString(Const.TYPE);
 				String password = intent.getExtras().getString(Const.PASSWORD);
-				int isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
 
-				pushCall(message, chatId, chatName, chatImage, chatThumb, pushType, type, adminId, isActive, password, isPrivate);
+				pushCall(message, chatId, pushType, password);
 			}
 		};
 		// end: handle notifications
@@ -134,11 +127,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onPause();
 	}
 
-	public void pushCall(String msg, String chatIdPush, String chatName, String chatImage, String chatThumb, String pushType, String type, String adminId, int isActive,
-			String password, int isPrivate) {
+	public void pushCall(String msg, String chatIdPush, String pushType, String password) {
 
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-			showPopUp(msg, chatIdPush, chatName, chatImage, chatThumb, type, adminId, isActive, password, isPrivate);
+			showPopUp(msg, chatIdPush, password);
 			lobbyPushHandle(chatIdPush);
 		}
 	}
@@ -154,21 +146,14 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * @param chatName
 	 * @param chatImage
 	 */
-	public void showPopUp(final String msg, final String chatId, final String chatName, final String chatImage, final String chatThumb, final String type, final String adminId,
-			final int isActive, final String password, final int isPrivate) {
+	public void showPopUp(final String msg, final String chatId, final String password) {
 
 		if (isPushShowing) {
-			Push push = new Push();
-			push.setId(chatId);
-			push.setMessage(msg);
-			push.setChatName(chatName);
-			push.setChatImage(chatImage);
-			push.setChatThumb(chatThumb);
-			push.setType(type);
-			push.setAdminId(adminId);
-			push.setIsActive(isActive);
+
+			LocalPush push = new LocalPush();
+			push.setChatId(chatId);
 			push.setPassword(password);
-			push.setIsPrivate(isPrivate);
+			push.setMessage(msg);
 
 			qPush.add(push);
 
@@ -249,8 +234,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getId(), qPush.get(0).getChatName(), qPush.get(0).getChatImage(), qPush.get(0).getChatThumb(), qPush
-									.get(0).getType(), qPush.get(0).getAdminId(), qPush.get(0).getIsActive(), qPush.get(0).getPassword(), qPush.get(0).getIsPrivate());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getChatId(), qPush.get(0).getPassword());
 							qPush.remove(0);
 						}
 					}
