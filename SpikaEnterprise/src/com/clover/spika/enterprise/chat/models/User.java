@@ -18,7 +18,7 @@ public class User implements Serializable {
 
 	@SerializedName("user_id")
 	@Expose
-	private String userId;
+	private int userId = 0;
 
 	@SerializedName("firstname")
 	@Expose
@@ -78,11 +78,9 @@ public class User implements Serializable {
 
 	private boolean isSelected = false;
 
-	public User(int id, String userId, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details,
-			boolean isSelected) {
+	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected) {
 		super();
 		this.id = id;
-		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.type = type;
@@ -94,7 +92,12 @@ public class User implements Serializable {
 	}
 
 	public int getId() {
-		return id;
+
+		if (userId == 0) {
+			return id;
+		} else {
+			return userId;
+		}
 	}
 
 	public void setId(int id) {

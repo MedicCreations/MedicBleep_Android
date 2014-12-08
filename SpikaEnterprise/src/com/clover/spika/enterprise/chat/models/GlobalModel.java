@@ -81,7 +81,7 @@ public class GlobalModel {
 		} else if (getType() == Type.GROUP) {
 			return getGroup().getId();
 		} else if (getType() == Type.CHAT) {
-			return getChat().getChat_id();
+			return getChat().getId();
 		}
 
 		return -1;

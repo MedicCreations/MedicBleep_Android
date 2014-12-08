@@ -234,7 +234,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
-		api.globalMembers(this, Type.ALL, chatId, page, true, new ApiCallback<GlobalResponse>() {
+		api.globalMembers(this, Type.ALL, chatId, null, page, true, new ApiCallback<GlobalResponse>() {
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {

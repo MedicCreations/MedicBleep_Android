@@ -162,7 +162,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
-		api.globalMembers(this, Type.ALL, chatId, currentIndex, true, new ApiCallback<GlobalResponse>() {
+		api.globalMembers(this, Type.ALL, chatId, null, currentIndex, true, new ApiCallback<GlobalResponse>() {
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
@@ -343,7 +343,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			return;
 		}
 		if (chatModelNew != null) {
-			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getChat_id()), chatModelNew.getPassword());
+			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getId()), chatModelNew.getPassword());
 		}
 
 		finish();

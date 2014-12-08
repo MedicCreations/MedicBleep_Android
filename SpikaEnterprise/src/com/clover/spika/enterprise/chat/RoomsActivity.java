@@ -131,7 +131,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = (Chat) adapter.getItem(position).getModel();
-			ChatActivity.startWithChatId(this, String.valueOf(room.getChat_id()), room.getPassword());
+			ChatActivity.startWithChatId(this, String.valueOf(room.getId()), room.getPassword());
 		}
 	}
 

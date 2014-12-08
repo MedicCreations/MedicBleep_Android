@@ -20,7 +20,6 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
@@ -77,7 +76,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	private void getUsersFromRoom() {
 
-		new GlobalApi().globalMembers(this, Type.ALL, roomId, -1, false, new ApiCallback<GlobalResponse>() {
+		new GlobalApi().globalMembers(this, Type.USER, roomId, null, -1, true, new ApiCallback<GlobalResponse>() {
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
@@ -97,15 +96,18 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 			if (isChecked) {
 				if (usersIds != null) {
-					if (usersIds.contains(String.valueOf(((User) item.getModel()).getId()))) {
-						mUsersToPass.add(String.valueOf(((User) item.getModel()).getId()));
-						((User) item.getModel()).setSelected(true);
+
+					if (usersIds.contains(String.valueOf(item.getId()))) {
+
+						mUsersToPass.add(String.valueOf(item.getId()));
+						item.setSelected(true);
 					} else {
-						((User) item.getModel()).setSelected(false);
+						item.setSelected(false);
 					}
 				} else {
-					mUsersToPass.add(String.valueOf(((User) item.getModel()).getId()));
-					((User) item.getModel()).setSelected(true);
+
+					mUsersToPass.add(String.valueOf(item.getId()));
+					item.setSelected(true);
 				}
 			}
 
@@ -123,21 +125,24 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	@Override
 	public void onChange(GlobalModel obj, boolean isFromDetails) {
+
 		boolean isFound = false;
 		int j = 0;
 
 		for (String item : mUsersToPass) {
-			if (item.equals(String.valueOf(((User) obj.getModel()).getId()))) {
+
+			if (Integer.parseInt(item) == obj.getId()) {
 				isFound = true;
 				break;
 			}
+
 			j++;
 		}
 
 		if (isFound) {
 			mUsersToPass.remove(j);
 		} else {
-			mUsersToPass.add(String.valueOf(((User) obj.getModel()).getId()));
+			mUsersToPass.add(String.valueOf(obj.getId()));
 		}
 	}
 }

@@ -74,7 +74,7 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 
 	private void getUsersFromGroup() {
 
-		new GlobalApi().globalMembers(this, Type.ALL, groupId, -1, true, new ApiCallback<GlobalResponse>() {
+		new GlobalApi().globalMembers(this, Type.USER, null, groupId, -1, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
@@ -114,8 +114,7 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 				}
 			}
 
-			User finalUser = new User(item.getId(), String.valueOf(item.getId()), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false,
-					null, toCheck);
+			User finalUser = new User(item.getId(), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false, null, toCheck);
 
 			GlobalModel finalModel = new GlobalModel();
 			finalModel.setType(Type.USER);
@@ -129,14 +128,17 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 
 	@Override
 	public void onChange(GlobalModel obj, boolean isFromDetails) {
+
 		boolean isFound = false;
 		int j = 0;
 
 		for (String item : mUsersToPass) {
-			if (item.equals(String.valueOf(((User) obj.getModel()).getId()))) {
+
+			if (Integer.parseInt(item) == obj.getId()) {
 				isFound = true;
 				break;
 			}
+
 			j++;
 		}
 

@@ -27,7 +27,6 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
@@ -175,14 +174,13 @@ public class CreateRoomActivity extends BaseActivity {
 
 	public void createRoomFinaly(String userIds, String groupIds, String roomIds) {
 
-		Logger.d("password: " + roomPassword);
 		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
 
 			@Override
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
 
-					String chat_id = String.valueOf(result.getResultData().getChat().getChat_id());
+					String chat_id = String.valueOf(result.getResultData().getChat().getId());
 
 					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.getResultData().getChat().getPassword());
 

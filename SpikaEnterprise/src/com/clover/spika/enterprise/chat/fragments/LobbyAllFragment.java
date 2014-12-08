@@ -132,7 +132,7 @@ public class LobbyAllFragment extends CustomFragment implements OnItemClickListe
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getChat_id()), user.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
 		}
 	}
 

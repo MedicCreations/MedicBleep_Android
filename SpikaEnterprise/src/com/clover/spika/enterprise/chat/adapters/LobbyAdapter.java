@@ -78,7 +78,7 @@ public class LobbyAdapter extends BaseAdapter {
 
 		for (int i = 0; i < data.size(); i++) {
 
-			if (data.get(i).getChat_id() == finalChatId) {
+			if (data.get(i).getId() == finalChatId) {
 
 				int ureadInt = 0;
 

@@ -106,7 +106,8 @@ public class GlobalApi {
 		}.execute();
 	}
 
-	public void globalMembers(Context ctx, final int type, final String chatId, final int page, boolean showProgressBar, final ApiCallback<GlobalResponse> listener) {
+	public void globalMembers(Context ctx, final int type, final String chatId, final String groupId, final int page, boolean showProgressBar,
+			final ApiCallback<GlobalResponse> listener) {
 
 		new BaseAsyncTask<Void, Void, GlobalResponse>(ctx, showProgressBar) {
 
@@ -119,6 +120,10 @@ public class GlobalApi {
 
 				if (!TextUtils.isEmpty(chatId)) {
 					requestParams.put(Const.CHAT_ID, chatId);
+				}
+
+				if (!TextUtils.isEmpty(groupId)) {
+					requestParams.put(Const.GROUP_ID, groupId);
 				}
 
 				try {

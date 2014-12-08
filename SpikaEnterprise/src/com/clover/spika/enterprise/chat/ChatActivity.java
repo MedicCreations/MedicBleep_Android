@@ -393,7 +393,7 @@ public class ChatActivity extends BaseChatActivity {
 
 								chatParams(result.getResultData().getChat());
 
-								chatId = String.valueOf(result.getResultData().getChat_id());
+								chatId = String.valueOf(result.getResultData().getId());
 								chatName = result.getResultData().getChat_name();
 
 								setTitle(chatName);

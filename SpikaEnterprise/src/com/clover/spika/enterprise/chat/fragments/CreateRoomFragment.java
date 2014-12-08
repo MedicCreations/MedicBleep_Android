@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -88,9 +87,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
-
 		mCurrentIndex = 0;
 	}
 
@@ -101,8 +98,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 	}
 
-	@SuppressLint("InflateParams")
-	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -113,12 +108,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
 
 		if (!isCategoriesEnabled) {
-
 			RelativeLayout categoryLayout = (RelativeLayout) header.findViewById(R.id.layoutCategory);
 			categoryLayout.setVisibility(View.GONE);
-			// View viewAboveCategory = (View)
-			// header.findViewById(R.id.aboveCategoryLayout);
-			// viewAboveCategory.setVisibility(View.GONE);
 		}
 
 		if (getArguments() != null)
@@ -158,17 +149,16 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnScrollListener(new OnScrollListener() {
-			
+
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				((CreateRoomActivity)getActivity()).hideKeyboard(roomName);
-				
+				((CreateRoomActivity) getActivity()).hideKeyboard(roomName);
+
 			}
-			
+
 			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-				
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
 			}
 		});
 
@@ -316,10 +306,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 			if (item.getId() == obj.getId()) {
 
-				if (item.getType() == Type.GROUP) {
-					isFound = true;
-					break;
-				}
+				isFound = true;
+				break;
 			}
 
 			j++;
@@ -554,7 +542,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	@Override
 	public void onDestroy() {
-		Helper.setRoomThumbId(getActivity(), null);
+		Helper.setRoomThumbId(getActivity(), "");
 		super.onDestroy();
 	}
 }
