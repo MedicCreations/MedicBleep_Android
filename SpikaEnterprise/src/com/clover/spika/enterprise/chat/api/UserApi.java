@@ -76,7 +76,7 @@ public class UserApi {
 		}.execute();
 	}
 
-	public void updateUserToken(final Context ctx, final ApiCallback<BaseModel> listener) {
+	public void updateUserToken(final Context ctx, final String userToken, final ApiCallback<BaseModel> listener) {
 		new BaseAsyncTask<Void, Void, BaseModel>(ctx, false) {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
@@ -85,10 +85,9 @@ public class UserApi {
 
 				HashMap<String, String> postParams = new HashMap<String, String>();
 				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL));
-
 				try {
 					jsonObject = NetworkManagement
-							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, userToken);
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {

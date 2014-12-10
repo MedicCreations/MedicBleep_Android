@@ -229,12 +229,13 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(Context ctx, String userId, String userImageName, String firstName, String lastName) {
+	public static void setUserProperties(Context ctx, String userId, String userImageName, String firstName, String lastName, String token) {
 		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
 		pref.setCustomString(Const.USER_ID, userId);
 		pref.setCustomString(Const.USER_IMAGE_NAME, userImageName);
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
+		pref.setCustomString(Const.TOKEN, token);
 	}
 
 	public static void setUserImage(Context ctx, String image) {

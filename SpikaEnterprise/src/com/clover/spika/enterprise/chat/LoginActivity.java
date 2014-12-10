@@ -110,6 +110,7 @@ public class LoginActivity extends LoginBaseActivity {
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.PASSWORD, password.getText().toString());
+					SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(Const.REMEMBER_CREDENTIALS, true);
 				}
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();

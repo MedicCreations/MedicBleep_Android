@@ -23,10 +23,12 @@ public class GoogleUtils {
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 	private GoogleCloudMessaging gcm;
+	private String mUserToken = "";
 
-	public String getPushToken(Context ctx) {
+	public String getPushToken(Context ctx, String userToken) {
 
 		String regId = "";
+		mUserToken = userToken;
 
 		if (checkPlayServices(ctx)) {
 
@@ -97,7 +99,7 @@ public class GoogleUtils {
 	private void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
-		new UserApi().updateUserToken(ctx, new ApiCallback<BaseModel>() {
+		new UserApi().updateUserToken(ctx, mUserToken, new ApiCallback<BaseModel>() {
 
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {

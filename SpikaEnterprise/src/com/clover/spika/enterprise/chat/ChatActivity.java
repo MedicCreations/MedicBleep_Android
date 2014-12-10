@@ -290,9 +290,9 @@ public class ChatActivity extends BaseChatActivity {
 										Logger.d("Success");
 
 										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
-												.getResultData().getFirstname(), result.getResultData().getLastname());
+												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
 
-										new GoogleUtils().getPushToken(ChatActivity.this);
+										new GoogleUtils().getPushToken(ChatActivity.this, result.getResultData().getToken());
 
 										handleIntentSecondLevel(intent);
 									} else {

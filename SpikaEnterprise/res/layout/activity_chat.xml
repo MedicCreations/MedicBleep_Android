@@ -92,7 +92,8 @@
         <RelativeLayout
             android:id="@+id/chatLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/menu_height"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/menu_height"
             android:layout_alignParentBottom="true"
             android:background="@color/chat_menu_gray"
             android:padding="5dp" >
@@ -100,7 +101,7 @@
             <ImageButton
                 android:id="@+id/footerMore"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"
@@ -113,14 +114,16 @@
             <EditText
                 android:id="@+id/etMessage"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/footerMore"
                 android:background="@drawable/chat_mask"
                 android:imeOptions="actionDone"
-                android:inputType="text"
+                android:inputType="textMultiLine"
                 android:padding="5dp"
-                android:singleLine="true" />
+                android:singleLine="false"
+                android:maxLines="3" 
+                android:scrollbars="vertical"/>
         </RelativeLayout>
 
         <RelativeLayout

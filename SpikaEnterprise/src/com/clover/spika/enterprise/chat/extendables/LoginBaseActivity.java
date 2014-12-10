@@ -37,9 +37,9 @@ public abstract class LoginBaseActivity extends Activity {
 					Logger.d("Success");
 
 					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(),
-							result.getResultData().getLastname());
+							result.getResultData().getLastname(), result.getResultData().getToken());
 
-					new GoogleUtils().getPushToken(LoginBaseActivity.this);
+					new GoogleUtils().getPushToken(LoginBaseActivity.this, result.getResultData().getToken());
 
 					Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
@@ -90,7 +90,7 @@ public abstract class LoginBaseActivity extends Activity {
 							Intent intent = new Intent(LoginBaseActivity.this, LoginActivity.class);
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
-							finish();
+//							finish();
 						}
 					});
 				}

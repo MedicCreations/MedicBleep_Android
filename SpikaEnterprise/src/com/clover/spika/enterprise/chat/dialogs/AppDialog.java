@@ -324,7 +324,6 @@ public class AppDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				dismiss();
-
 				if (isFinish) {
 					getOwnerActivity().finish();
 				}
