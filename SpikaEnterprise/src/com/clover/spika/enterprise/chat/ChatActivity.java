@@ -37,7 +37,6 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ChatActivity extends BaseChatActivity {
@@ -51,7 +50,8 @@ public class ChatActivity extends BaseChatActivity {
 
 	private boolean isRunning = false;
 	private boolean isResume = false;
-
+	private boolean isOnCreate = false;
+	
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -88,6 +88,8 @@ public class ChatActivity extends BaseChatActivity {
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
+		
+		isOnCreate = true;
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class ChatActivity extends BaseChatActivity {
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 
 		loadImage();
-
+		
 		if (isResume) {
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
@@ -194,7 +196,9 @@ public class ChatActivity extends BaseChatActivity {
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 			loadImage();
 		} else {
-			getIntentData(intent);
+			if (!isOnCreate){
+				getIntentData(intent);
+			}
 		}
 	}
 
@@ -273,21 +277,19 @@ public class ChatActivity extends BaseChatActivity {
 	private void getIntentData(final Intent intent) {
 
 		if (intent != null && intent.getExtras() != null) {
-
-			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION)) {
+			
+			
+			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
-
 				try {
 
 					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-
 					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword, this, true,
 							new ApiCallback<Login>() {
 								@Override
 								public void onApiResponse(Result<Login> result) {
 									if (result.isSuccess()) {
 
-										Logger.d("Success");
 
 										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
 												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
@@ -297,7 +299,6 @@ public class ChatActivity extends BaseChatActivity {
 										handleIntentSecondLevel(intent);
 									} else {
 
-										Logger.d("Not Success");
 										String message = "";
 										if (result.hasResultData()) {
 											if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
@@ -343,6 +344,8 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void handleIntentSecondLevel(Intent intent) {
+		
+		isOnCreate = false;
 
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 

@@ -28,7 +28,6 @@ public abstract class LoginBaseActivity extends Activity {
 
 	protected void executeLoginApi(String user, final String pass, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException, NoSuchAlgorithmException {
 		String hashPassword = Utils.getHexString(pass);
-
 		new LoginApi().loginWithCredentials(user, hashPassword, this, showProgress, new ApiCallback<Login>() {
 			@Override
 			public void onApiResponse(Result<Login> result) {
