@@ -19,6 +19,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
@@ -55,7 +56,11 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
-
+		
+		RobotoRegularTextView tvAppVersion = (RobotoRegularTextView) view.findViewById(R.id.app_version);
+		String version = Helper.getAppVersion();
+		tvAppVersion.setText(tvAppVersion.getText() + version);
+		
 		userImage = (ImageView) view.findViewById(R.id.userImage);
 
 		setUserImage();

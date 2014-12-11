@@ -243,5 +243,6 @@
     <string name="change_category">Change category</string>
     <string name="change">Change</string>
     <string name="admin">(admin)</string>
+    <string name="version">Version:</string>
 
 </resources>

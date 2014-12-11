@@ -64,7 +64,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:scrollbars="none" >
 
         <LinearLayout
@@ -186,5 +186,35 @@
                 android:background="@android:color/transparent"/>
         </LinearLayout>
     </ScrollView>
-
+	
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:layout_weight="1"
+        android:padding="5dp"
+        >
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"/>
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
+            android:id="@+id/app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_below="@+id/app_name"
+            android:text="@string/version"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"/>
+        
+    </RelativeLayout>
+    
 </LinearLayout>
