@@ -34,6 +34,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
@@ -273,6 +274,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			try {
 				String hashPassword = Utils.getHexString(newPassword);
 				requestParams.put(Const.PASSWORD, hashPassword);
+				Helper.storeChatPassword(ProfileGroupActivity.this, hashPassword, chatId);
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			} catch (UnsupportedEncodingException e) {

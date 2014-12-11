@@ -44,7 +44,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -526,5 +529,61 @@ public class Helper {
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}
+	
+	public static void saveMap(Context ctx, Map<String,String> inputMap){
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+        if (pref != null){
+            JSONObject jsonObject = new JSONObject(inputMap);
+            String jsonString = jsonObject.toString();
+            String userId = pref.getCustomString(Const.USER_ID);
+            pref.setCustomString(userId, jsonString);
+        }
+    }
+	
+	public static Map<String,String> loadMap(Context ctx){
+		
+        Map<String, String> outputMap = new HashMap<String,String>();
+        Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+        String userId = pref.getCustomString(Const.USER_ID);
+        try{
+            if (pref != null){       
+                String jsonString = pref.getCustomString(userId);
+                if (!jsonString.equals("")){
+                	JSONObject jsonObject = new JSONObject(jsonString);
+                    Iterator<String> keysItr = jsonObject.keys();
+                    while(keysItr.hasNext()) {
+                        String key = keysItr.next();
+                        String value = (String) jsonObject.get(key);
+                        outputMap.put(key, value);
+                    }
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return outputMap;
+    }
+	
+	public static String getStoredChatPassword(Context ctx, String chatId){
+		
+		String password = "";
+		Map<String, String> chatPasswords = loadMap(ctx);
+		password = chatPasswords.get(chatId);
+		Logger.d("ovo je pass: " + password);
+		return password;
+		
+	}
+	
+	public static void storeChatPassword(Context ctx, String chatPassword, String chatId){
+		
+		Map<String, String> chatPasswords = loadMap(ctx);
+		if (chatPasswords.containsKey(chatId)){
+			chatPasswords.remove(chatId);
+		} 
+		chatPasswords.put(chatId, chatPassword);
+		saveMap(ctx, chatPasswords);
+		
+	}
+	
 
 }

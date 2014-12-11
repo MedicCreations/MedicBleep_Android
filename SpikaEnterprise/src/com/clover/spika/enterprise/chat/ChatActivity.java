@@ -352,29 +352,36 @@ public class ChatActivity extends BaseChatActivity {
 			adapter.clearItems();
 
 			if (!TextUtils.isEmpty(chatPassword)) {
-				AppDialog dialog = new AppDialog(this, true);
-				dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
-				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+				
+				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)){
+					getMessages(true, true, true, false, false, false);
+				} else {
+					AppDialog dialog = new AppDialog(this, true);
+					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
+					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
-					@Override
-					public void onPositiveButtonClick(View v) {
-						getMessages(true, true, true, false, false, false);
-					}
-				});
-				dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+						@Override
+						public void onPositiveButtonClick(View v) {
+							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
+							getMessages(true, true, true, false, false, false);
+						}
+					});
+					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
-					@Override
-					public void onNegativeButtonClick(View v) {
-						finish();
-					}
-				});
-				dialog.setOnCancelListener(new OnCancelListener() {
+						@Override
+						public void onNegativeButtonClick(View v) {
+							finish();
+						}
+					});
+					dialog.setOnCancelListener(new OnCancelListener() {
 
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						finish();
-					}
-				});
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							finish();
+						}
+					});
+				}
+				
 			} else {
 				getMessages(true, true, true, false, false, false);
 			}

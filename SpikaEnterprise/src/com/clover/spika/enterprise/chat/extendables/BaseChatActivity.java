@@ -591,15 +591,15 @@ public abstract class BaseChatActivity extends BaseActivity {
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryId);
 					}
 				} else if (position == SETTINGS_POSITION_SECOND) {
-					if (chatType == Const.C_PRIVATE || chatType == Const.C_ROOM) {
+					if (chatType == Const.C_PRIVATE) {
 						InvitePeopleActivity.startActivity(chatId, chatType, isAdmin, BaseChatActivity.this);
+					} else if (chatType == Const.C_ROOM){
+						leaveChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
 						ManageUsersActivity.startActivity(chatId, BaseChatActivity.this);
 					}
 				} else if (position == SETTINGS_POSITION_THIRD) {
-					if (chatType == Const.C_ROOM) {
-						leaveChat();
-					} else if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
+					if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
 						// deactivate chat
 						deactivateChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_INACTIVE) {

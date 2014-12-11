@@ -163,7 +163,6 @@
     </string-array>
     <string-array name="room_chat_settings_array">
         <item>Show profile</item>
-        <item>Invite</item>
         <item>Leave room</item>
     </string-array>
     <string-array name="room_chat_admin_active_settings_array">
