@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 public class GlobalModelAdapter extends BaseAdapter {
 
@@ -128,14 +129,14 @@ public class GlobalModelAdapter extends BaseAdapter {
 
 		public RelativeLayout itemLayout;
 		public ImageView itemImage;
-		public TextView itemName;
+		public RobotoRegularTextView itemName;
 		public RelativeLayout missedLayout;
 
 		public ViewHolderCharacter(View view) {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			itemImage = (ImageView) view.findViewById(R.id.item_image);
-			itemName = (TextView) view.findViewById(R.id.item_name);
+			itemName = (RobotoRegularTextView) view.findViewById(R.id.item_name);
 			missedLayout = (RelativeLayout) view.findViewById(R.id.missedLayout);
 		}
 	}

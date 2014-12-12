@@ -244,5 +244,7 @@
     <string name="change">Change</string>
     <string name="admin">(admin)</string>
     <string name="version">Version:</string>
+    <string name="group">group</string>
+    <string name="room">room</string>
 
 </resources>

@@ -19,7 +19,7 @@
             android:padding="5dp"
             android:orientation="vertical">
 
-            <TextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/categoryName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

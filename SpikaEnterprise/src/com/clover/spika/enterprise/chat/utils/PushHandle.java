@@ -1,6 +1,9 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -11,6 +14,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -26,14 +30,26 @@ public class PushHandle {
 		String message = context.getResources().getString(R.string.msg_from) + " " + firstName;
 
 		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-		ComponentName componentInfo = taskInfo.get(0).topActivity;
+		ComponentName componentInfo = null;
+		boolean isActive = false;
+		
+		if(Utils.isBuildOver(Build.VERSION_CODES.KITKAT_WATCH)){
+			isActive = isActivePCG(am);
+		} else {
+			List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+			componentInfo = taskInfo.get(0).topActivity;
+			isActive = componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat");
+		}
 
 		boolean isScreenOn = true;
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-		isScreenOn = pm.isScreenOn();
+		if(Utils.isBuildOver(Build.VERSION_CODES.KITKAT)){
+			isScreenOn = pm.isInteractive();
+		}else{
+			isScreenOn = pm.isScreenOn();
+		}
 
-		if (componentInfo.getPackageName().equalsIgnoreCase("com.clover.spika.enterprise.chat") && isScreenOn) {
+		if (isActive && isScreenOn) {
 
 			Intent inBroadcast = new Intent();
 			inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
@@ -95,6 +111,27 @@ public class PushHandle {
 
 			mNotificationManager.notify(Integer.valueOf(chatId), notification);
 		}
+	}
+	
+	
+	private static boolean isActivePCG(ActivityManager am) {
+		final Set<String> activePackages = new HashSet<String>();
+		final List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+		for (ActivityManager.RunningAppProcessInfo processInfo : processInfos) {
+			if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+				activePackages.addAll(Arrays.asList(processInfo.pkgList));
+			}
+		}
+		String[] activePCG;
+		activePCG = activePackages.toArray(new String[activePackages.size()]);
+		if (activePCG != null) {
+		    for (String activePackage : activePCG) {
+		      if (activePackage.equals("com.clover.spika.enterprise.chat")) {
+		        return true;
+		      }
+		    }
+		  }
+		return false;
 	}
 
 }

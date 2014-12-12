@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +26,10 @@ public class ProfileOtherActivity extends BaseActivity {
 	private ImageView profileImage;
 	private TextView profileName;
 	private DetailsView mDetailScrollView;
-
+	private ImageButton mOpenChat;
+	
+	private String mUserFirstName = "";
+	private String mUserLastName = "";
 	private String mUserId;
 
 	public static void openOtherProfile(Context context, int userId, String imageFileId, String chatName) {
@@ -38,6 +43,21 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		context.startActivity(intent);
 	}
+	
+	public static void openOtherProfileFromList(Context context, int userId, String imageFileId, String chatName, String firstName, String lastName) {
+
+		Intent intent = new Intent(context, ProfileOtherActivity.class);
+
+		intent.putExtra(Const.IMAGE, imageFileId);
+		intent.putExtra(Const.CHAT_NAME, chatName);
+		intent.putExtra(Const.FIRSTNAME, firstName);
+		intent.putExtra(Const.LASTNAME, lastName);
+		intent.putExtra(Const.USER_ID, String.valueOf(userId));
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		context.startActivity(intent);
+	}
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +94,25 @@ public class ProfileOtherActivity extends BaseActivity {
 				}
 			}
 		});
+		
+		mOpenChat = (ImageButton) findViewById(R.id.openChat);
+		boolean isFirstUserProfile = getResources().getBoolean(R.bool.first_user_profile);
+		
+		if (isFirstUserProfile){
+			mOpenChat.setVisibility(View.VISIBLE);
+		} else {
+			mOpenChat.setVisibility(View.GONE);
+		}
+		mOpenChat.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				ChatActivity.startWithUserId(ProfileOtherActivity.this, String.valueOf(mUserId), false, mUserFirstName, mUserLastName);
+				
+			}
+		});
+		
 	}
 
 	private void getIntentData(Intent intent) {
@@ -90,6 +129,8 @@ public class ProfileOtherActivity extends BaseActivity {
 
 			profileName.setText(intent.getExtras().getString(Const.CHAT_NAME));
 			mUserId = getIntent().getExtras().getString(Const.USER_ID);
+			mUserFirstName = getIntent().getExtras().getString(Const.FIRSTNAME);
+			mUserLastName = getIntent().getExtras().getString(Const.LASTNAME);
 		}
 	}
 

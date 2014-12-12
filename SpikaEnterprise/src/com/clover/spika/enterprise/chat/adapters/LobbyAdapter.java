@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -138,7 +139,7 @@ public class LobbyAdapter extends BaseAdapter {
 		public RelativeLayout itemLayout;
 		public ImageView lobbyImage;
 
-		public TextView lobbyName;
+		public RobotoRegularTextView lobbyName;
 
 		public TextView unreadText;
 		public RelativeLayout unreadLayout;
@@ -148,7 +149,7 @@ public class LobbyAdapter extends BaseAdapter {
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			lobbyImage = (ImageView) view.findViewById(R.id.lobbyImage);
 
-			lobbyName = (TextView) view.findViewById(R.id.lobbyName);
+			lobbyName = (RobotoRegularTextView) view.findViewById(R.id.lobbyName);
 
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
 			unreadLayout = (RelativeLayout) view.findViewById(R.id.unreadLayout);

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.models.Category;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,13 +77,13 @@ public class CategoryAdapter extends BaseAdapter {
 
 		public RelativeLayout itemLayout;
 		public RelativeLayout clickLayout;
-		public TextView catName;
+		public RobotoRegularTextView catName;
 
 		public ViewHolderGroup(View view) {
 
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			clickLayout = (RelativeLayout) view.findViewById(R.id.clickLayout);
-			catName = (TextView) view.findViewById(R.id.categoryName);
+			catName = (RobotoRegularTextView) view.findViewById(R.id.categoryName);
 
 		}
 	}

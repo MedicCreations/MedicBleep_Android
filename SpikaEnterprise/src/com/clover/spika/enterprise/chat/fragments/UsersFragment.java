@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
+import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -157,7 +158,15 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 
 		if (position != -1 && position != adapter.getCount()) {
 			User user = (User) adapter.getItem(position).getModel();
-			ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName());
+			
+			boolean isFirstUserProfile = getResources().getBoolean(R.bool.first_user_profile);
+			
+			if (isFirstUserProfile){
+				ProfileOtherActivity.openOtherProfileFromList(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user.getFirstName(), user.getLastName());
+			} else {
+				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName());
+			}
+			
 		}
 	}
 }

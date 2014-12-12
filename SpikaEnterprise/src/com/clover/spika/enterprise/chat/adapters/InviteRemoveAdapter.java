@@ -26,6 +26,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
+import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 public class InviteRemoveAdapter extends BaseAdapter {
 
@@ -166,10 +167,12 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		if (item.getType() == Type.CHAT) {
 			holder.personName.setText(((Chat) item.getModel()).getChat_name());
-			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_green));
+			holder.personType.setText(getContext().getResources().getString(R.string.room));
+//			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_green));
 		} else if (item.getType() == Type.GROUP) {
 			holder.personName.setText(((Group) item.getModel()).getGroupName());
-			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
+			holder.personType.setText(getContext().getResources().getString(R.string.group));
+//			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
 		} else {
 
 			String name = ((User) item.getModel()).getFirstName() + " " + ((User) item.getModel()).getLastName();
@@ -180,6 +183,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			holder.personName.setText(name);
 			holder.personName.setTextColor(Color.BLACK);
+			holder.personType.setVisibility(View.GONE);
 		}
 
 		if (!disableNameClick) {
@@ -592,7 +596,8 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		public RelativeLayout itemLayout;
 		public ImageView profileImg;
 
-		public TextView personName;
+		public RobotoRegularTextView personName;
+		public RobotoRegularTextView personType;
 		public RobotoCheckBox isSelected;
 
 		public ViewHolderCharacter(View view) {
@@ -600,7 +605,8 @@ public class InviteRemoveAdapter extends BaseAdapter {
 			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
 			profileImg = (ImageView) view.findViewById(R.id.userImage);
 
-			personName = (TextView) view.findViewById(R.id.personName);
+			personName = (RobotoRegularTextView) view.findViewById(R.id.personName);
+			personType = (RobotoRegularTextView) view.findViewById(R.id.personType);
 			isSelected = (RobotoCheckBox) view.findViewById(R.id.isSelected);
 		}
 	}

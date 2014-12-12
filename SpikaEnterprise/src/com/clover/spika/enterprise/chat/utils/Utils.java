@@ -431,4 +431,12 @@ public class Utils {
 
 		return stringBuffer.toString();
 	}
+	
+	
+	public static boolean isBuildOver (int version){
+		if(android.os.Build.VERSION.SDK_INT > version) return true;
+		return false;
+	}
+	
+	
 }

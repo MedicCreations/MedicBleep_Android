@@ -77,7 +77,7 @@ public class PoolingService extends Service {
 		if (PasscodeUtility.getInstance().isInApp()) {
 			serviceTime = 5000;
 		} else {
-			serviceTime = 60000;
+			serviceTime = 30000;
 		}
 
 		api.getPush(this, listener);

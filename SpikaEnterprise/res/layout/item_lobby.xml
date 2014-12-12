@@ -60,7 +60,7 @@
             android:layout_toRightOf="@+id/imageLayout"
             android:orientation="vertical">
 
-            <TextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/lobbyName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
