@@ -76,6 +76,7 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
 			getListView().setOnItemClickListener(this);
 			getListView().setAdapter(mUserAdapter);
+			mUserAdapter.setCheckBox(false);
 		}
 	}
 

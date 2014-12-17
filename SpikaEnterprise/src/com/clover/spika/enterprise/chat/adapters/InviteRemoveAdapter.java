@@ -590,6 +590,12 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		usersToAdd.clear();
 	}
+	
+	
+	public void setCheckBox(boolean showCheckBox){
+		this.showCheckBox = showCheckBox;
+	}
+	
 
 	public class ViewHolderCharacter {
 
