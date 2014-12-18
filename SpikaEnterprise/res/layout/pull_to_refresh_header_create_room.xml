@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
-    
+
     <RelativeLayout
         android:id="@+id/layoutRoomName"
         android:layout_width="match_parent"
@@ -23,11 +23,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:imeOptions="actionDone"
-            android:singleLine="true"
             android:layout_toEndOf="@+id/img_room"
             android:layout_toRightOf="@+id/img_room"
-            android:hint="@string/enterRoomName" />
+            android:hint="@string/enterRoomName"
+            android:imeOptions="actionDone"
+            android:singleLine="true" />
     </RelativeLayout>
 
     <View
@@ -37,7 +37,6 @@
         android:layout_below="@id/layoutRoomName"
         android:background="@color/chat_menu_gray" />
 
-    
     <RelativeLayout
         android:id="@+id/layoutPrivate"
         android:layout_width="match_parent"
@@ -49,33 +48,31 @@
             android:id="@+id/tvPrivate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:singleLine="true"
-            android:padding="10dp"
-            android:textSize="15sp"
-            android:textColor="@color/devil_gray"
-            android:text="@string/private_room"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        
-        <Switch 
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="@string/private_room"
+            android:textColor="@color/devil_gray"
+            android:textSize="15sp" />
+
+        <Switch
             android:id="@+id/switch_private_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            />
-        
+            android:layout_alignParentRight="true"
+            android:padding="10dp" />
     </RelativeLayout>
-    
+
     <View
         android:id="@+id/belowPrivateLayout"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@id/layoutPrivate"
         android:background="@color/chat_menu_gray" />
-    
+
     <RelativeLayout
         android:id="@+id/layoutPassword"
         android:layout_width="match_parent"
@@ -87,23 +84,22 @@
             android:id="@+id/etPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
             android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:gravity="start"
             android:background="@android:color/transparent"
-            android:hint="@string/password" />
-        
+            android:gravity="start"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true" />
     </RelativeLayout>
-    
+
     <View
         android:id="@+id/belowPasswordLayout"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@id/layoutPassword"
         android:background="@color/chat_menu_gray" />
-    
+
     <RelativeLayout
         android:id="@+id/layoutPasswordRepeat"
         android:layout_width="match_parent"
@@ -115,30 +111,29 @@
             android:id="@+id/etPasswordRepeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
             android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:gravity="start"
             android:background="@android:color/transparent"
-            android:hint="@string/password_repeat" />
-        
+            android:gravity="start"
+            android:hint="@string/password_repeat"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true" />
     </RelativeLayout>
-    
+
     <View
         android:id="@+id/belowPasswordRepeatLayout"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@id/layoutPasswordRepeat"
         android:background="@color/chat_menu_gray" />
-    
+
     <RelativeLayout
         android:id="@+id/layoutCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_below="@id/belowPasswordRepeatLayout" >
-        
+        android:layout_below="@id/belowPasswordRepeatLayout"
+        android:background="@color/white" >
+
         <TextView
             android:id="@+id/tvCategory"
             android:layout_width="match_parent"
@@ -169,20 +164,84 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/belowCategoryLayout"
-        android:padding="10dp"
+        android:background="@color/white"
         android:ems="13"
         android:gravity="bottom"
-        android:maxLines="4"
-        android:scrollbars="vertical"
-        android:background="@color/white"
         android:lineSpacingExtra="5dp"
+        android:maxLines="4"
+        android:padding="10dp"
+        android:scrollbars="vertical"
         android:textColor="@color/text_blue" />
+
+    <View
+        android:id="@+id/belowUsersLayout"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/txtUserNames"
+        android:background="@color/chat_menu_gray" />
+
+    <LinearLayout
+        android:id="@+id/filter_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/belowUsersLayout"
+        android:orientation="horizontal"
+        android:weightSum="4" >
+
+        <TextView
+            android:id="@+id/filter_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/all"
+            android:textColor="@color/text_blue"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/filter_users"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/users"
+            android:textColor="@color/baloon_blue"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/filter_groups"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/groups"
+            android:textColor="@color/baloon_blue"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/filter_rooms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/rooms"
+            android:textColor="@color/baloon_blue"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtUserNames"
+        android:layout_below="@+id/filter_layout"
         android:background="@color/text_dark_gray" >
 
         <EditText
@@ -215,6 +274,5 @@
             android:scaleType="centerInside"
             android:src="@drawable/icon_search" />
     </RelativeLayout>
-    
 
 </RelativeLayout>

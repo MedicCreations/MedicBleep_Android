@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity;
@@ -157,6 +156,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		GlobalModel item = getItem(position);
 
+		holder.personType.setVisibility(View.GONE);
 		if (position % 2 == 0) {
 			holder.itemLayout.setBackgroundColor(getContext().getResources().getColor(R.color.gray_in_adapter));
 		} else {
@@ -166,13 +166,16 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.profileImg);
 
 		if (item.getType() == Type.CHAT) {
+
 			holder.personName.setText(((Chat) item.getModel()).getChat_name());
+			holder.personType.setVisibility(View.VISIBLE);
 			holder.personType.setText(getContext().getResources().getString(R.string.room));
-//			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_green));
+
 		} else if (item.getType() == Type.GROUP) {
+
 			holder.personName.setText(((Group) item.getModel()).getGroupName());
+			holder.personType.setVisibility(View.VISIBLE);
 			holder.personType.setText(getContext().getResources().getString(R.string.group));
-//			holder.personName.setTextColor(getContext().getResources().getColor(R.color.default_blue));
 		} else {
 
 			String name = ((User) item.getModel()).getFirstName() + " " + ((User) item.getModel()).getLastName();
@@ -183,7 +186,6 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			holder.personName.setText(name);
 			holder.personName.setTextColor(Color.BLACK);
-			holder.personType.setVisibility(View.GONE);
 		}
 
 		if (!disableNameClick) {
@@ -590,12 +592,10 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		usersToAdd.clear();
 	}
-	
-	
-	public void setCheckBox(boolean showCheckBox){
+
+	public void setCheckBox(boolean showCheckBox) {
 		this.showCheckBox = showCheckBox;
 	}
-	
 
 	public class ViewHolderCharacter {
 

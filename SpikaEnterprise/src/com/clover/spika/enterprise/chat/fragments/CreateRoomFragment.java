@@ -84,6 +84,13 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private RobotoThinEditText mEtPassword;
 	private RobotoThinEditText mEtPasswordRepeat;
 
+	private TextView filterAll;
+	private TextView filterUsers;
+	private TextView filterGroups;
+	private TextView filterRooms;
+
+	private int currentFilter = GlobalModel.Type.ALL;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,8 +128,22 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		txtUsers = (TextView) header.findViewById(R.id.txtUserNames);
 		txtUsers.setMovementMethod(new ScrollingMovementMethod());
+
 		mTvCategoryName = (TextView) header.findViewById(R.id.tvCategory);
 		setCategory(mCategoryName);
+
+		filterAll = (TextView) header.findViewById(R.id.filter_all);
+		filterAll.setOnClickListener(this);
+
+		filterUsers = (TextView) header.findViewById(R.id.filter_users);
+		filterUsers.setOnClickListener(this);
+
+		filterGroups = (TextView) header.findViewById(R.id.filter_groups);
+		filterGroups.setOnClickListener(this);
+
+		filterRooms = (TextView) header.findViewById(R.id.filter_rooms);
+		filterRooms.setOnClickListener(this);
+
 		imgRoom = (ImageView) header.findViewById(R.id.img_room);
 		imgRoom.setOnClickListener(this);
 
@@ -179,7 +200,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 			}
 		});
 
-		getUsers(mCurrentIndex, null, false);
+		getListItems(mCurrentIndex, null, false, currentFilter);
 
 		setInitialTextToTxtUsers();
 
@@ -223,22 +244,26 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getUsers(mCurrentIndex, mSearchData, false);
+			getListItems(mCurrentIndex, mSearchData, false, currentFilter);
 		}
 	};
 
 	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
+		if (toClearPrevious) {
+			currentCount = data.size();
+		}
+
+		if (toClearPrevious) {
 			adapter.setData(data);
-		else
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -255,9 +280,9 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		}
 	}
 
-	public void getUsers(int page, String search, final boolean toClear) {
+	public void getListItems(int page, String search, final boolean toClear, int type) {
 
-		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, Type.ALL, search, true, new ApiCallback<GlobalResponse>() {
+		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, type, search, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
@@ -275,7 +300,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		} else {
 			mSearchData = data;
 		}
-		getUsers(mCurrentIndex, mSearchData, true);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	@Override
@@ -287,8 +312,113 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		case R.id.searchBtn:
 			mSearchData = etSearch.getText().toString();
 			onSearch(mSearchData);
+
+		case R.id.filter_all:
+			filterAllGo();
+			break;
+
+		case R.id.filter_users:
+			filterUsersGo();
+			break;
+
+		case R.id.filter_groups:
+			filterGroupsGo();
+			break;
+
+		case R.id.filter_rooms:
+			filterRoomsGo();
+			break;
+
 		}
 
+	}
+
+	private void filterAllGo() {
+
+		// TODO
+
+		currentFilter = GlobalModel.Type.ALL;
+
+		filterAll.setTextColor(getActivity().getResources().getColor(R.color.text_blue));
+		filterAll.setTextSize(15);
+
+		filterUsers.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterUsers.setTextSize(12);
+
+		filterGroups.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterGroups.setTextSize(12);
+
+		filterRooms.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterRooms.setTextSize(12);
+
+		mCurrentIndex = 0;
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+	}
+
+	private void filterUsersGo() {
+
+		// TODO
+
+		currentFilter = GlobalModel.Type.USER;
+
+		filterAll.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterAll.setTextSize(12);
+
+		filterUsers.setTextColor(getActivity().getResources().getColor(R.color.text_blue));
+		filterUsers.setTextSize(15);
+
+		filterGroups.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterGroups.setTextSize(12);
+
+		filterRooms.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterRooms.setTextSize(12);
+
+		mCurrentIndex = 0;
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+	}
+
+	private void filterGroupsGo() {
+
+		// TODO
+
+		currentFilter = GlobalModel.Type.GROUP;
+
+		filterAll.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterAll.setTextSize(12);
+
+		filterUsers.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterUsers.setTextSize(12);
+
+		filterGroups.setTextColor(getActivity().getResources().getColor(R.color.text_blue));
+		filterGroups.setTextSize(15);
+
+		filterRooms.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterRooms.setTextSize(12);
+
+		mCurrentIndex = 0;
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+	}
+
+	private void filterRoomsGo() {
+
+		// TODO
+
+		currentFilter = GlobalModel.Type.CHAT;
+
+		filterAll.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterAll.setTextSize(12);
+
+		filterUsers.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterUsers.setTextSize(12);
+
+		filterGroups.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
+		filterGroups.setTextSize(12);
+
+		filterRooms.setTextColor(getActivity().getResources().getColor(R.color.text_blue));
+		filterRooms.setTextSize(15);
+
+		mCurrentIndex = 0;
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	private void showDialog() {
@@ -363,7 +493,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private void setCategory(String catName) {
 		if (mCategoryId != null && !mCategoryId.equals("0")) {
 			mTvCategoryName.setText(catName);
-		}else {
+		} else {
 			mTvCategoryName.setText(getString(R.string.select_category));
 		}
 	}
