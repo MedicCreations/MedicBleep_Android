@@ -588,7 +588,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 					} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 					} else {
-						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryId);
+						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryName);
 					}
 				} else if (position == SETTINGS_POSITION_SECOND) {
 					if (chatType == Const.C_PRIVATE) {
