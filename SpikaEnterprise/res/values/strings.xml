@@ -131,6 +131,7 @@
     <string name="invalid_token_message">INVALID TOKEN</string>
     <string name="msg_from">You have received a message from</string>
     <string name="no_items">No Items</string>
+    <string name="no_messages">No Messages</string>
     <string name="file_download">File</string>
     <string name="file_download_started">File download started&#8230;</string>
     <string name="download_in_progress">Download in progress&#8230;</string>
@@ -241,6 +242,7 @@
     <string name="set">Set</string>
     <string name="set_a_new_admin">Set a new admin</string>
     <string name="change_category">Change category</string>
+    <string name="category">Category</string>
     <string name="change">Change</string>
     <string name="admin">(admin)</string>
     <string name="version">Version:</string>

@@ -45,6 +45,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	Button tvPassword;
 	Button tvSetAdmin;
 	Button tvChangeCat;
+	TextView tvChangeCategoryLabel;
 
 	private ImageLoader imageLoader;
 
@@ -80,6 +81,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		passwordLayout = (LinearLayout) rootView.findViewById(R.id.layoutPassword);
 		layoutSetAdmin = (LinearLayout) rootView.findViewById(R.id.layoutSetAdmin);
 		layoutChangeCategory = (LinearLayout) rootView.findViewById(R.id.layoutChangeCategory);
+		tvChangeCategoryLabel = (TextView) rootView.findViewById(R.id.tvChangeCategory);
 
 		tvPassword = (Button) rootView.findViewById(R.id.tvPassword);
 		tvSetAdmin = (Button) rootView.findViewById(R.id.tvSetAdmin);
@@ -123,15 +125,20 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 			passwordLayout.setVisibility(View.GONE);
 			tvChangeCat.setClickable(false);
+			tvChangeCategoryLabel.setText(getString(R.string.category));
 			layoutSetAdmin.setVisibility(View.GONE);
 			addPhotoButton.setVisibility(View.GONE);
 			switchIsPrivate.setEnabled(false);
 		}
 
-		if (!TextUtils.isEmpty(categoryName)) {
+		if (!TextUtils.isEmpty(categoryName) && !categoryName.equals("0")) {
 			tvChangeCat.setText(categoryName);
 		} else {
-			tvChangeCat.setText(getString(R.string.none));
+			if(isAdmin){
+				tvChangeCat.setText(getString(R.string.set));
+			}else{
+				tvChangeCat.setText(getString(R.string.none));
+			}
 		}
 	}
 

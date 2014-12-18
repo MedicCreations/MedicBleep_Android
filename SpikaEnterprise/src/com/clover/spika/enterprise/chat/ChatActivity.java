@@ -636,10 +636,10 @@ public class ChatActivity extends BaseChatActivity {
 						}
 					}
 				} else {
-					setNoItemsVisibility();
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
 				}
+				setNoItemsVisibility();
 			}
 		});
 	}

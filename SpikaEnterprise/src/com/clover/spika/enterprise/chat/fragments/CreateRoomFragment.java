@@ -257,7 +257,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	public void getUsers(int page, String search, final boolean toClear) {
 
-		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, Type.ALL, search, toClear, new ApiCallback<GlobalResponse>() {
+		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, Type.ALL, search, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
 			public void onApiResponse(Result<GlobalResponse> result) {
@@ -363,6 +363,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private void setCategory(String catName) {
 		if (mCategoryId != null && !mCategoryId.equals("0")) {
 			mTvCategoryName.setText(catName);
+		}else {
+			mTvCategoryName.setText(getString(R.string.select_category));
 		}
 	}
 

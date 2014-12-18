@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.util.TextUtils;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +22,6 @@ import com.clover.spika.enterprise.chat.models.HelperModel;
 import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.utils.Const;
 
-import org.apache.http.util.TextUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class UserDetailsAdapter extends BaseAdapter {
 
 	private Context mContext;
@@ -30,29 +30,31 @@ public class UserDetailsAdapter extends BaseAdapter {
 	public UserDetailsAdapter(Context context, List<UserDetail> userDetailValues, List<Map<String, String>> userDetails) {
 
 		this.mContext = context;
-
+		
 		for (UserDetail usDet : userDetailValues) {
 
 			boolean isAdd = true;
+			
+			if (userDetails != null) {
+				for (Map<String, String> val : userDetails) {
+					if (val.containsKey(usDet.getKey())) {
 
-			for (Map<String, String> val : userDetails) {
-				if (val.containsKey(usDet.getKey())) {
+						if (!TextUtils.isEmpty(val.get(usDet.getKey()))) {
 
-					if (!TextUtils.isEmpty(val.get(usDet.getKey()))) {
+							usDet.setValue(val.get(usDet.getKey()));
 
-						usDet.setValue(val.get(usDet.getKey()));
+							if (val.get(Const.PUBLIC).equals("1") || val.get(Const.PUBLIC).equals("true")) {
+								usDet.setPublicValue(true);
+							} else {
+								usDet.setPublicValue(false);
+							}
 
-						if (val.get(Const.PUBLIC).equals("1") || val.get(Const.PUBLIC).equals("true")) {
-							usDet.setPublicValue(true);
+							break;
 						} else {
-							usDet.setPublicValue(false);
+
+							isAdd = false;
+							break;
 						}
-
-						break;
-					} else {
-
-						isAdd = false;
-						break;
 					}
 				}
 			}
