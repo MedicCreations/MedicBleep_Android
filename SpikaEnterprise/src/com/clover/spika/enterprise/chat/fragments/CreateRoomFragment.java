@@ -335,8 +335,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	private void filterAllGo() {
 
-		// TODO
-
 		currentFilter = GlobalModel.Type.ALL;
 
 		filterAll.setTextColor(getActivity().getResources().getColor(R.color.text_blue));
@@ -356,8 +354,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private void filterUsersGo() {
-
-		// TODO
 
 		currentFilter = GlobalModel.Type.USER;
 
@@ -379,8 +375,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	private void filterGroupsGo() {
 
-		// TODO
-
 		currentFilter = GlobalModel.Type.GROUP;
 
 		filterAll.setTextColor(getActivity().getResources().getColor(R.color.baloon_blue));
@@ -400,8 +394,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private void filterRoomsGo() {
-
-		// TODO
 
 		currentFilter = GlobalModel.Type.CHAT;
 

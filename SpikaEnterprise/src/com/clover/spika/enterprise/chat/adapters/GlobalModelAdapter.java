@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -111,19 +110,6 @@ public class GlobalModelAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-
-	// XXX
-	// public List<String> selected = new ArrayList<String>();
-	// public List<String> deselected = new ArrayList<String>();
-	// private String newGroupPeriod = null;
-	//
-	// public String getNewGroupPeriod() {
-	// return newGroupPeriod;
-	// }
-	//
-	// public void setNewGroupPeriod(String newGroupPeriod) {
-	// this.newGroupPeriod = newGroupPeriod;
-	// }
 
 	public class ViewHolderCharacter {
 

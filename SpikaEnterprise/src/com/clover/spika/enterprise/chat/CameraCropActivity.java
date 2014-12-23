@@ -82,6 +82,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 		cropImageView = (CropImageView) findViewById(R.id.CropImageView);
 		cropImageView.setAspectRatio(20, 20);
+		// TODO set fixed rect uncomment
+		// cropImageView.setFixedAspectRatio(true);
 
 		// ROTATE
 		// final Button rotateButton = (Button)
