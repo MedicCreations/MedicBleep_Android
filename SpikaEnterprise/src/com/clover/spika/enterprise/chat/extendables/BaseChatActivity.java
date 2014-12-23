@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -360,8 +359,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	private void setEditTextEditorAction() {
+		etMessage.setHorizontallyScrolling(false);
+		etMessage.setMaxLines(4);
 		etMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				
 				if ((event != null  && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || actionId == EditorInfo.IME_ACTION_DONE) {
 					if (!TextUtils.isEmpty(etMessage.getText().toString())) {
 						onEditorSendEvent(etMessage.getText().toString());
@@ -371,6 +373,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				return false;
 			}
 		});
+		
 	}
 
 	protected void setSettingsItems(int chatType) {
