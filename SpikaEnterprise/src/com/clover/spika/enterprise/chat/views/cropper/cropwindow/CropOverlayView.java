@@ -23,15 +23,10 @@ import android.util.Pair;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.RelativeLayout;
 
-import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.views.TouchImageView;
 import com.clover.spika.enterprise.chat.views.cropper.CropImageView;
 import com.clover.spika.enterprise.chat.views.cropper.cropwindow.edge.Edge;
 import com.clover.spika.enterprise.chat.views.cropper.cropwindow.handle.Handle;
-import com.clover.spika.enterprise.chat.views.cropper.util.AspectRatioUtil;
 import com.clover.spika.enterprise.chat.views.cropper.util.HandleUtil;
 import com.clover.spika.enterprise.chat.views.cropper.util.PaintUtil;
 
@@ -380,78 +375,31 @@ public class CropOverlayView extends View {
 			initializedCropWindow = true;
 
 		if (mFixAspectRatio) {
-
-			// If the image aspect ratio is wider than the crop aspect ratio,
-			// then the image height is the determining initial length. Else,
-			// vice-versa.
-			
-			// TODO crop image fixed aspect ratio fix
 			
 			CropImageView parent = (CropImageView) this.getParent();
-			final float halfCrop = 60f;
+			
+			Rect rect = parent.getRealBitmapRect();
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			
+			float halfCrop = 60f;
+			float padding = 20f;
+			
+			if (width>height){
+				halfCrop = height/2;
+			} else {
+				halfCrop = width/2;
+			}
+			
+			
 			final float centerX = parent.getWidth() / 2f;
 			final float centerY = parent.getHeight() / 2f;
 			
-			Edge.TOP.setCoordinate(centerY - halfCrop);
-			Edge.BOTTOM.setCoordinate(centerY + halfCrop);
-			Edge.LEFT.setCoordinate(centerX - halfCrop);
-			Edge.RIGHT.setCoordinate(centerX + halfCrop);
+			Edge.TOP.setCoordinate(centerY - halfCrop + padding);
+			Edge.BOTTOM.setCoordinate(centerY + halfCrop - padding);
+			Edge.LEFT.setCoordinate(centerX - halfCrop + padding);
+			Edge.RIGHT.setCoordinate(centerX + halfCrop - padding);
 			
-//			if (AspectRatioUtil.calculateAspectRatio(bitmapRect) > mTargetAspectRatio) {
-//
-//				Logger.d("prvi if");
-//				
-//				CropImageView parent = (CropImageView) this.getParent();
-//					
-//				final float padding = 20f;
-//				
-//				Edge.TOP.setCoordinate(parent.getY() + padding);
-//				Edge.BOTTOM.setCoordinate(parent.getY() + parent.getHeight() - padding);
-//
-//				final float centerX = parent.getWidth() / 2f;
-//
-//				// Limits the aspect ratio to no less than 40 wide or 40 tall
-//				final float cropWidth = Math
-//						.max(Edge.MIN_CROP_LENGTH_PX, AspectRatioUtil.calculateWidth(Edge.TOP.getCoordinate(), Edge.BOTTOM.getCoordinate(), mTargetAspectRatio));
-//
-//				// Create new TargetAspectRatio if the original one does not fit
-//				// the screen
-//				if (cropWidth == Edge.MIN_CROP_LENGTH_PX)
-//					mTargetAspectRatio = (Edge.MIN_CROP_LENGTH_PX) / (Edge.BOTTOM.getCoordinate() - Edge.TOP.getCoordinate());
-//
-//				final float halfCropWidth = cropWidth / 2f;
-//				Edge.LEFT.setCoordinate(centerX - halfCropWidth);
-//				Edge.RIGHT.setCoordinate(centerX + halfCropWidth);
-//
-//			} else {
-//				
-//				CropImageView parent = (CropImageView) this.getParent();
-//				
-//				TouchImageView mImageView = (TouchImageView) parent.findViewById(R.id.ImageView_image);
-//				
-//				Logger.d("height: "+mImageView + "   width: " + mImageView.getWidth());
-//				
-//				final float padding = 20f;
-//				Edge.LEFT.setCoordinate(padding);
-//				Edge.RIGHT.setCoordinate(parent.getWidth() - padding);
-//				
-//				final float centerY = parent.getHeight() / 2f;
-//				
-//				// Limits the aspect ratio to no less than 40 wide or 40 tall
-//				final float cropHeight = Math.max(Edge.MIN_CROP_LENGTH_PX,
-//						AspectRatioUtil.calculateHeight(Edge.LEFT.getCoordinate(), Edge.RIGHT.getCoordinate(), mTargetAspectRatio));
-//
-//				Logger.d("cropHeight: "+ cropHeight + "    centerY: " + centerY);
-//				
-//				// Create new TargetAspectRatio if the original one does not fit
-//				// the screen
-//				if (cropHeight == Edge.MIN_CROP_LENGTH_PX){
-//					mTargetAspectRatio = (Edge.RIGHT.getCoordinate() - Edge.LEFT.getCoordinate()) / Edge.MIN_CROP_LENGTH_PX;
-//				}
-//				final float halfCropHeight = cropHeight / 2f;
-//				Edge.TOP.setCoordinate(centerY - halfCropHeight);
-//				Edge.BOTTOM.setCoordinate(centerY + halfCropHeight);
-//			}
 
 		} else { // ... do not fix aspect ratio...
 

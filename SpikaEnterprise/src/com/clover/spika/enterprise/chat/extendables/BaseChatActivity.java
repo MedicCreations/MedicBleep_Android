@@ -456,6 +456,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 						intent.putExtra(Const.CHAT_ID, chatId);
 						intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
 						intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+						intent.putExtra(Const.IS_SQUARE, false);
 						startActivity(intent);
 						dialog.dismiss();
 					}

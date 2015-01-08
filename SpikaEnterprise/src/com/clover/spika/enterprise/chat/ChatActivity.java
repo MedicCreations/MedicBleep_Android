@@ -126,11 +126,13 @@ public class ChatActivity extends BaseChatActivity {
 
 				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, isAdmin);
 
-				if (isAdmin && isActive == 1) {
-					chatType = Const.C_ROOM_ADMIN_ACTIVE;
-				}
-				if (isAdmin && isActive == 0) {
-					chatType = Const.C_ROOM_ADMIN_INACTIVE;
+				if (chatType == Const.C_ROOM){
+					if (isAdmin && isActive == 1) {
+						chatType = Const.C_ROOM_ADMIN_ACTIVE;
+					}
+					if (isAdmin && isActive == 0) {
+						chatType = Const.C_ROOM_ADMIN_INACTIVE;
+					}
 				}
 
 				setSettingsItems(chatType);
@@ -466,11 +468,13 @@ public class ChatActivity extends BaseChatActivity {
 
 		chatType = chat.getType();
 
-		if (isAdmin && isActive == 1) {
-			chatType = Const.C_ROOM_ADMIN_ACTIVE;
-		}
-		if (isAdmin && isActive == 0) {
-			chatType = Const.C_ROOM_ADMIN_INACTIVE;
+		if (chatType == Const.C_ROOM){
+			if (isAdmin && isActive == 1) {
+				chatType = Const.C_ROOM_ADMIN_ACTIVE;
+			}
+			if (isAdmin && isActive == 0) {
+				chatType = Const.C_ROOM_ADMIN_INACTIVE;
+			}
 		}
 
 		setSettingsItems(chatType);

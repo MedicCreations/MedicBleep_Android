@@ -130,6 +130,8 @@ public class Const {
 	public static final String PUBLIC = "public";
 	public static final String SEARCH_RESULT = "search_result";
 	public static final String MEMBERS_RESULT = "members_result";
+	
+	public static final String IS_SQUARE = "is_square";
 
 	public static final String USER = "user";
 	public static final String GROUP = "group";

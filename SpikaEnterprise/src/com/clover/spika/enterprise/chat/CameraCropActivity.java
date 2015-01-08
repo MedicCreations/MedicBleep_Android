@@ -74,6 +74,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	private boolean mIsOverJellyBean;
 	private boolean mCompressImages;
 	private boolean mIsSamsung = false;
+	
+	private boolean isSquare = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -141,6 +143,10 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 		if (getIntent().getExtras().containsKey(Const.CHAT_ID)) {
 			chatId = getIntent().getStringExtra(Const.CHAT_ID);
+		}
+		
+		if (getIntent().getExtras().containsKey(Const.IS_SQUARE)) {
+			isSquare = getIntent().getBooleanExtra(Const.IS_SQUARE, false);
 		}
 	}
 
@@ -382,7 +388,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 				if (null != mBitmap) {
 					cropImageView.setImageBitmap(mBitmap);
-					cropImageView.setFixedAspectRatio(true);
+					cropImageView.setFixedAspectRatio(isSquare);
 					findViewById(R.id.relativeLayout_main).setBackgroundColor(getResources().getColor(R.color.black));
 				} else {
 					try {

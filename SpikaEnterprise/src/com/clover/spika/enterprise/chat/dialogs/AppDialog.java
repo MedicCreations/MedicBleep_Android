@@ -393,6 +393,7 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 				getContext().startActivity(intent);
 			}
 		});
@@ -406,6 +407,7 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.PROFILE_INTENT, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 				getContext().startActivity(intent);
 			}
 		});
@@ -431,6 +433,7 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 				// getContext().startActivity(intent);
 				getOwnerActivity().startActivityForResult(intent, 1);
 			}
@@ -445,6 +448,7 @@ public class AppDialog extends Dialog {
 				Intent intent = new Intent(getContext(), CameraCropActivity.class);
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 				// getContext().startActivity(intent);
 				Logger.d("activity " + getOwnerActivity().getLocalClassName());
 				getOwnerActivity().startActivityForResult(intent, 1);
@@ -475,6 +479,7 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.CHAT_ID, chatId);
 				intent.putExtra(Const.CHAT_NAME, chatName);
 				intent.putExtra(Const.UPDATE_PICTURE, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 
 				getContext().startActivity(intent);
 			}
@@ -492,6 +497,7 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.CHAT_ID, chatId);
 				intent.putExtra(Const.CHAT_NAME, chatName);
 				intent.putExtra(Const.UPDATE_PICTURE, true);
+				intent.putExtra(Const.IS_SQUARE, true);
 
 				getContext().startActivity(intent);
 			}

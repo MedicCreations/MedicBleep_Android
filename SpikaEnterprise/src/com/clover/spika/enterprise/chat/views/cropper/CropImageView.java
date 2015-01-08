@@ -28,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.views.TouchImageView;
@@ -501,6 +500,12 @@ public class CropImageView extends FrameLayout {
 		}
 
 		return spec;
+	}
+	
+	
+	public Rect getRealBitmapRect(){
+		Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(mBitmap, mImageView);
+		return displayedImageRect;
 	}
 
 }
