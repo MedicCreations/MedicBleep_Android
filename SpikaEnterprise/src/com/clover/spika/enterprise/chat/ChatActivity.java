@@ -37,6 +37,7 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ChatActivity extends BaseChatActivity {
@@ -284,9 +285,11 @@ public class ChatActivity extends BaseChatActivity {
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 				try {
+					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
 
 					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword, this, true,
+					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword,
+							intent.getExtras().getString(Const.ORGANIZATION_ID), this, true,
 							new ApiCallback<Login>() {
 								@Override
 								public void onApiResponse(Result<Login> result) {

@@ -35,12 +35,17 @@ public class GcmIntentService extends IntentService {
 			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
 				String chatId = "";
+				String organizationId = "";
 				String firstName = "";
 				String type = "";
 				String chatPassword = "";
 
 				if (extras.containsKey(Const.CHAT_ID)) {
 					chatId = extras.getString(Const.CHAT_ID);
+				}
+				
+				if (extras.containsKey(Const.ORGANIZATION_ID)) {
+					organizationId = extras.getString(Const.ORGANIZATION_ID);
 				}
 
 				if (extras.containsKey(Const.FIRSTNAME)) {
@@ -55,7 +60,7 @@ public class GcmIntentService extends IntentService {
 					chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
 				}
 				
-				PushHandle.handlePushNotification(chatId, firstName, chatPassword, type, this);
+				PushHandle.handlePushNotification(chatId, organizationId, firstName, chatPassword, type, this);
 			}
 		}
 

@@ -1,0 +1,91 @@
+package com.clover.spika.enterprise.chat;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+import com.clover.spika.enterprise.chat.adapters.OrganizationAdapter;
+import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
+import com.clover.spika.enterprise.chat.models.Organization;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
+
+public class ChooseOrganizationActivity extends LoginBaseActivity implements OnItemClickListener{
+	
+	private ListView orgListView;
+	private OrganizationAdapter adapter;
+	
+	private List<Organization> organizations = new ArrayList<Organization>();
+	private Bundle extras;
+	private String username;
+	private String password;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_choose_organization);
+		
+		extras = getIntent().getExtras();
+		organizations = (List<Organization>) this.getIntent().getSerializableExtra(Const.ORGANIZATIONS);
+		username = extras.getString(Const.USERNAME);
+		password = extras.getString(Const.PASSWORD);
+		
+		orgListView = (ListView) findViewById(R.id.listOrganizations);
+		adapter = new OrganizationAdapter(this);
+		
+		orgListView.setAdapter(adapter);
+		orgListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		adapter.setData(organizations);
+		
+		findViewById(R.id.goBack).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		orgListView.setOnItemClickListener(this);
+	}
+	
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		
+		Organization organization = organizations.get(position);
+		
+		login(organization.getId());
+		
+	}
+	
+	
+	private void login(String organizationId){
+		
+		Logger.d("username: " + username);
+		Logger.d("password: " + password);
+		Logger.d("orgId: " + organizationId);
+		
+		
+		try {
+			executeLoginApi(username, password, organizationId, extras, true);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+}

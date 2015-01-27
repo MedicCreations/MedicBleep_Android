@@ -15,6 +15,10 @@ public class LocalPush extends BaseModel {
 	@SerializedName("chat_id")
 	@Expose
 	private String chatId;
+	
+	@SerializedName("organization_id")
+	@Expose
+	private String organizationId;
 
 	@SerializedName("firstname")
 	@Expose
@@ -49,6 +53,14 @@ public class LocalPush extends BaseModel {
 
 	public void setChatId(String chatId) {
 		this.chatId = chatId;
+	}
+	
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getFirstName() {

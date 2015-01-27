@@ -105,7 +105,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 			try {
 
-				executeLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
+				executePreLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
 
 				if (rememberMeCheckBox.isChecked()) {
 					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());

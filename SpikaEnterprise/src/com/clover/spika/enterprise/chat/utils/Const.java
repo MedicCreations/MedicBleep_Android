@@ -159,6 +159,10 @@ public class Const {
 	public static final String CATEGORY_ID = "category_id";
 	public static final String CATEGORY_NAME = "category_name";
 	public static final String URL = "url";
+	
+	public static final String ORGANIZATION_ID = "organization_id";
+	public static final String ORGANIZATION_NAME = "organization_name";
+	public static final String ORGANIZATIONS = "organizations";
 
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;
@@ -193,6 +197,7 @@ public class Const {
 	public static final int UPDATE_CHAT_ACTIVATE = 4;
 
 	// Api urls
+	public static final String F_PRELOGIN = "/user/prelogin";
 	public static final String F_LOGIN = "/user/login";
 	public static final String F_USER_GET_GROUPS = "/groups/list";
 	public static final String F_INVITE_USERS = "/chat/member/add";

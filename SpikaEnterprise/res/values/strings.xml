@@ -248,5 +248,6 @@
     <string name="version">Version:</string>
     <string name="group">group</string>
     <string name="room">room</string>
+    <string name="choose_organization">Choose organization</string>
 
 </resources>

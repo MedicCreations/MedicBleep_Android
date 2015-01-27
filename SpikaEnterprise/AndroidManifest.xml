@@ -182,7 +182,10 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ChangePasswordActivity"
             android:screenOrientation="portrait" />
-
+		<activity
+            android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
+            android:screenOrientation="portrait" />
+		
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
         <activity

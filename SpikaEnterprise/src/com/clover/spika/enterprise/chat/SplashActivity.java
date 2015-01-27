@@ -79,7 +79,7 @@ public class SplashActivity extends LoginBaseActivity {
 
 		try {
 			
-			executeLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
+			executePreLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
 					SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
 			
 		} catch (UnsupportedEncodingException e) {

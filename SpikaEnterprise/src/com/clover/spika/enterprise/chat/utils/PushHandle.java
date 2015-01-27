@@ -25,7 +25,7 @@ public class PushHandle {
 
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	public static void handlePushNotification(final String chatId, String firstName, String chatPassword, String type, Context context) {
+	public static void handlePushNotification(final String chatId, String organizationId, String firstName, String chatPassword, String type, Context context) {
 
 		String message = context.getResources().getString(R.string.msg_from) + " " + firstName;
 
@@ -73,6 +73,7 @@ public class PushHandle {
 			pushIntent.putExtra(Const.PUSH_TYPE, type);
 			pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
 			pushIntent.putExtra(Const.PASSWORD, chatPassword);
+			pushIntent.putExtra(Const.ORGANIZATION_ID, organizationId);
 			pushIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			pushIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
