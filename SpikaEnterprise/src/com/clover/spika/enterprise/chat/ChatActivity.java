@@ -199,7 +199,7 @@ public class ChatActivity extends BaseChatActivity {
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 			loadImage();
 		} else {
-			if (!isOnCreate){
+			if (!isOnCreate || intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)){
 				getIntentData(intent);
 			}
 		}
@@ -281,7 +281,6 @@ public class ChatActivity extends BaseChatActivity {
 
 		if (intent != null && intent.getExtras() != null) {
 			
-			
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 				try {
@@ -294,7 +293,6 @@ public class ChatActivity extends BaseChatActivity {
 								@Override
 								public void onApiResponse(Result<Login> result) {
 									if (result.isSuccess()) {
-
 
 										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
 												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
@@ -357,7 +355,7 @@ public class ChatActivity extends BaseChatActivity {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
-			adapter.clearItems();
+//			adapter.clearItems();
 
 			if (!TextUtils.isEmpty(chatPassword)) {
 				
@@ -574,7 +572,7 @@ public class ChatActivity extends BaseChatActivity {
 			isRunning = true;
 
 			if (isClear) {
-				adapter.clearItems();
+//				adapter.clearItems();
 				totalItems = 0;
 			}
 		} else {

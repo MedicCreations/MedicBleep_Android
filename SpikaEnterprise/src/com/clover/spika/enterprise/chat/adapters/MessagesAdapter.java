@@ -34,6 +34,7 @@ import com.clover.spika.enterprise.chat.utils.MessageSortingById;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -444,8 +445,17 @@ public class MessagesAdapter extends BaseAdapter {
 			}
 		} else {
 			Message msg;
+			List<Integer> messIds = new ArrayList<Integer>();
+			for(Message item : data){
+				messIds.add(item.getIntegerId());
+			}
 			for (int i = 0; i < newItems.size(); i++) {
 				msg = newItems.get(i);
+				if(messIds.contains(msg.getIntegerId())){
+					newItems.remove(i);
+					i--;
+					continue;
+				}
 				msg.setMe(isMe(newItems.get(i).getUser_id()));
 				msg = Message.decryptContent(ctx, newItems.get(i));
 				newItems.set(i, msg);
