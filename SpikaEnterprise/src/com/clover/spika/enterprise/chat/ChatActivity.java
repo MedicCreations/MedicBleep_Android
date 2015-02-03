@@ -87,10 +87,11 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		});
 
+		isOnCreate = true;
+		
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
 		
-		isOnCreate = true;
 	}
 
 	@Override
@@ -199,7 +200,7 @@ public class ChatActivity extends BaseChatActivity {
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 			loadImage();
 		} else {
-			if (!isOnCreate || intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)){
+			if (!isOnCreate){
 				getIntentData(intent);
 			}
 		}
@@ -278,7 +279,7 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void getIntentData(final Intent intent) {
-
+		
 		if (intent != null && intent.getExtras() != null) {
 			
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
@@ -349,7 +350,7 @@ public class ChatActivity extends BaseChatActivity {
 	private void handleIntentSecondLevel(Intent intent) {
 		
 		isOnCreate = false;
-
+		
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
