@@ -1,5 +1,9 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URI;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -26,12 +30,9 @@ import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URI;
 
 public class RecordVideoActivity extends BaseActivity {
 
@@ -174,7 +175,12 @@ public class RecordVideoActivity extends BaseActivity {
             public void onApiResponse(Result<UploadFileModel> result) {
 
                 if (result.isSuccess()) {
-                    sendMsg(result.getResultData().getFileId());
+                	if(getIntent().getIntExtra(Const.INTENT_TYPE, -1) == Const.SHARE_INTENT_INT){
+                		ChooseLobbyActivity.start(RecordVideoActivity.this, result.getResultData().getFileId());
+                		finish();
+                	}else{
+                		sendMsg(result.getResultData().getFileId());
+                	}
                 } else {
                     AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
                     dialog.setFailed("");
@@ -227,6 +233,20 @@ public class RecordVideoActivity extends BaseActivity {
 			intent.setType("video/*");
 			intent.setAction(Intent.ACTION_GET_CONTENT);
 			startActivityForResult(intent, RESULT_FROM_GALLERY);
+
+			break;
+			
+		case Const.SHARE_INTENT_INT:
+
+			Uri selectedVideoUri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                mFilePath = getVideoPath(selectedVideoUri);
+            } else {
+                mFilePath = selectedVideoUri.toString();
+            }
+            
+            SpikaEnterpriseApp.getInstance().setVideoPath(mFilePath);
 
 			break;
 

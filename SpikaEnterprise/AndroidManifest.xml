@@ -182,10 +182,10 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ChangePasswordActivity"
             android:screenOrientation="portrait" />
-		<activity
+        <activity
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
-		
+
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
         <activity
@@ -193,6 +193,38 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareImageActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareVideoActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareFileActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ChooseLobbyActivity"
             android:screenOrientation="portrait" />
     </application>
 

@@ -57,10 +57,12 @@ public class Const {
 	public static final String PHOTO_INTENT = "PhotoIntent";
 	public static final String VIDEO_INTENT = "VideoIntent";
 	public static final String GALLERY_INTENT = "GalleryIntent";
+	public static final String SHARE_INTENT = "ShareIntent";
 	public static final String ROOM_INTENT = "RoomIntent";
 	public static final String CHAT_INTENT = "ChatIntent";
 	public static final int VIDEO_INTENT_INT = 9000;
 	public static final int GALLERY_INTENT_INT = 9001;
+	public static final int SHARE_INTENT_INT = 9002;
 	public static final String ANONYMOUS_INTENT = "AnnonymousIntent";
 	public static final String FROM_WAll = "FromWall";
 	public static final String FROM_NOTIFICATION = "FromNotification";
