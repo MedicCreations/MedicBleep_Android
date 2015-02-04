@@ -26,6 +26,7 @@ package com.clover.spika.enterprise.chat.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -438,5 +439,20 @@ public class Utils {
 		return false;
 	}
 	
+	/**
+	 * get dp in px
+	 * 
+	 */
+	public static int getPxFromDp(int dp, Resources res){
+		return (int) (dp * (res.getDisplayMetrics().densityDpi / 160f));
+	}
+	
+	/**
+	 * get px in dp
+	 * 
+	 */
+	public static int getDpFromPx(int px, Resources res){
+		return (int) (px / (res.getDisplayMetrics().densityDpi / 160f));
+	}
 	
 }

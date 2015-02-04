@@ -1,6 +1,10 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,60 +13,71 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
+import com.clover.spika.enterprise.chat.adapters.GroupsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LobbyApi;
+import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.LobbyModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-import java.util.ArrayList;
-import java.util.List;
+public class GroupsFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
 
-public class LobbyAllFragment extends CustomFragment implements OnItemClickListener {
-
-	private PullToRefreshListView mainListView;
-	private LobbyAdapter adapter;
 	private TextView noItems;
+
+	PullToRefreshListView mainListView;
+	public GroupsAdapter adapter;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
+	private String mSearchData = null;
+
+	private GlobalApi api = new GlobalApi();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		adapter = new GroupsAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
+		mCurrentIndex = 0;
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		getLobby(0, true);
+		((MainActivity) getActivity()).setSearch(this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_lobby_child, container, false);
 
-		mCurrentIndex = 0;
+		View rootView = inflater.inflate(R.layout.fragment_users_list, container, false);
 
-		noItems = (TextView) view.findViewById(R.id.noItems);
+		noItems = (TextView) rootView.findViewById(R.id.noItems);
 
-		mainListView = (PullToRefreshListView) view.findViewById(R.id.mainListView);
+		mainListView = (PullToRefreshListView) rootView.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
-
-		adapter = new LobbyAdapter(getActivity(), new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 
-		return view;
+		getGroups(mCurrentIndex, null, false);
+
+		return rootView;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		((MainActivity) getActivity()).disableSearch();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -75,14 +90,12 @@ public class LobbyAllFragment extends CustomFragment implements OnItemClickListe
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getLobby(mCurrentIndex, false);
+			getGroups(mCurrentIndex, mSearchData, false);
 		}
 	};
 
-	private void setData(List<Chat> data, boolean toClearPrevious) {
-		if (mainListView == null) {
-			return;
-		}
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
+		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();
@@ -97,10 +110,8 @@ public class LobbyAllFragment extends CustomFragment implements OnItemClickListe
 		mainListView.onRefreshComplete();
 
 		if (adapter.getCount() == 0) {
-			mainListView.setVisibility(View.INVISIBLE);
 			noItems.setVisibility(View.VISIBLE);
 		} else {
-			mainListView.setVisibility(View.VISIBLE);
 			noItems.setVisibility(View.GONE);
 		}
 
@@ -108,38 +119,46 @@ public class LobbyAllFragment extends CustomFragment implements OnItemClickListe
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-		} else {
-			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
 	}
 
-	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
+	public void getGroups(int page, String search, final boolean toClear) {
+
+		api.globalSearch(getActivity(), page, null, null, Type.CHAT, search, true, new ApiCallback<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<LobbyModel> result) {
+			public void onApiResponse(Result<GlobalResponse> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getAllLobby().getTotalCount();
-					setData(result.getResultData().getAllLobby().getChatsList(), toClear);
+
+					GlobalResponse response = result.getResultData();
+
+					mTotalCount = response.getTotalCount();
+					setData(response.getModelsList(), toClear);
 				}
 			}
 		});
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		position = position - 1;
-
-		if (position != -1 && position != adapter.getCount()) {
-			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
+	public void onSearch(String data) {
+		mCurrentIndex = 0;
+		if (TextUtils.isEmpty(data)) {
+			mSearchData = null;
+		} else {
+			mSearchData = data;
 		}
+		getGroups(mCurrentIndex, mSearchData, true);
 	}
 
 	@Override
-	public void handlePushNotificationInFragment(String chatId) {
-		if (adapter != null) {
-			adapter.incrementUnread(chatId);
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		position = position - 1;
+
+		if (position != -1 && position != adapter.getCount()) {
+			Chat room = (Chat) adapter.getItem(position).getModel();
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.getPassword());
+			
 		}
 	}
 }

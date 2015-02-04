@@ -16,7 +16,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
+import com.clover.spika.enterprise.chat.adapters.PeopleAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
@@ -29,12 +29,12 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class UsersFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
+public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
-	public GlobalModelAdapter adapter;
+	public PeopleAdapter adapter;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
@@ -45,7 +45,7 @@ public class UsersFragment extends CustomFragment implements OnItemClickListener
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new GlobalModelAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
+		adapter = new PeopleAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
 		mCurrentIndex = 0;
 	}
 

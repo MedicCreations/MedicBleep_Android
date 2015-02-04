@@ -3,85 +3,87 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent">
+    android:background="@color/transparent" >
 
     <RelativeLayout
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp">
+        android:layout_marginLeft="10dp" >
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/recentImage"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@null"
+            android:src="@drawable/default_user_image" />
+
+        <TextView
+            android:id="@+id/unreadText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/recentImage"
+            android:layout_alignTop="@id/recentImage"
+            android:layout_marginRight="-8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/notification_icon"
+            android:gravity="center"
+            android:minHeight="25dp"
+            android:minWidth="25dp"
+            android:text="!"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <RelativeLayout
-            android:id="@+id/imageLayout"
-            android:layout_width="35dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp">
-
-            <com.clover.spika.enterprise.chat.views.RoundImageView
-                android:id="@+id/lobbyImage"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_centerInParent="true"
-                android:contentDescription="@null"
-                tools:src="@drawable/default_user_image" />
-
-            <RelativeLayout
-                android:id="@+id/unreadLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="5dp"
-                android:visibility="invisible">
-
-                <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/notification_icon" />
-
-                <TextView
-                    android:id="@+id/unreadText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="!"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-        </RelativeLayout>
-
-        <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/textContent"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/recentImage"
+            android:layout_alignTop="@id/recentImage"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/imageLayoutControl"
-            android:layout_toRightOf="@+id/imageLayout"
-            android:orientation="vertical">
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/recentImage"
+            android:orientation="vertical" >
 
             <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:id="@+id/lobbyName"
+                android:id="@+id/recentName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:layout_marginTop="5dp"
                 android:textColor="@color/black"
-                android:textSize="20sp" 
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/imageLayoutControl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageLayout"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/imageLayout"
-            android:background="@drawable/icon_tablearrow">
-
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/lastMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold" />
         </RelativeLayout>
+
+        <View
+            android:layout_alignLeft="@id/textContent"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/textContent"
+            android:layout_marginTop="5dp"
+            android:background="@color/light_light_gray" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -1,5 +1,14 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -30,15 +39,7 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSortingById;
-
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class MessagesAdapter extends BaseAdapter {
 
@@ -52,12 +53,13 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
-
+	
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
 		this.data = arrayList;
 
 		imageLoader = ImageLoader.getInstance(context);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
 	}
 
 	@Override
@@ -113,8 +115,8 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meViewLocation.setVisibility(View.GONE);
 		holder.youViewLocation.setVisibility(View.GONE);
 
-		holder.meFileLayout.setVisibility(View.GONE);
-		holder.youFileLayout.setVisibility(View.GONE);
+		holder.meDownloadFile.setVisibility(View.GONE);
+		holder.youDownloadFile.setVisibility(View.GONE);
 
 		holder.loading_bar.setVisibility(View.GONE);
 
@@ -126,10 +128,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.meMsgLayout.setVisibility(View.VISIBLE);
 
-			setItemBackground(position, holder.meMsgLayout);
-
 			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
-			holder.mePersonName.setText(msg.getFirstname() + " " + msg.getLastname());
+			
+			if(msg.getType() == Const.MSG_TYPE_PHOTO){
+				holder.meMsgLayoutBack.setPadding(0, 0, 0, 0);
+			}else{
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.meMsgLayoutBack.setPadding(padding, padding, padding, padding);
+			}
 
 			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
 				holder.meMsgContent.setVisibility(View.VISIBLE);
@@ -192,8 +198,8 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
-				holder.meFileLayout.setVisibility(View.VISIBLE);
-				holder.meFileName.setText(msg.getText());
+				holder.meDownloadFile.setVisibility(View.VISIBLE);
+				holder.meDownloadFile.setText(msg.getText());
 				holder.meDownloadFile.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -207,7 +213,6 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
-				holder.mePersonName.setText("");
 				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
 				holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
@@ -215,7 +220,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
-				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root_white);
 			} else if (msg.getRootId() > 0) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
 				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
@@ -227,11 +232,18 @@ public class MessagesAdapter extends BaseAdapter {
 			// Chat member messages, not mine
 
 			holder.youMsgLayout.setVisibility(View.VISIBLE);
-
-			setItemBackground(position, holder.youMsgLayout);
+			
+			imageLoader.displayImage(convertView.getContext(), msg.getImageThumb(), holder.profileImage);
 
 			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
+			
+			if(msg.getType() == Const.MSG_TYPE_PHOTO){
+				holder.youMsgLayoutBack.setPadding(0, 0, 0, 0);
+			}else{
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+			}
 
 			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
 				holder.youMsgContent.setVisibility(View.VISIBLE);
@@ -300,8 +312,8 @@ public class MessagesAdapter extends BaseAdapter {
 
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
-				holder.youFileLayout.setVisibility(View.VISIBLE);
-				holder.youFileName.setText(msg.getText());
+				holder.youDownloadFile.setVisibility(View.VISIBLE);
+				holder.youDownloadFile.setText(msg.getText());
 				holder.youDownloadFile.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -322,14 +334,14 @@ public class MessagesAdapter extends BaseAdapter {
 			}
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
-				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setVisibility(View.VISIBLE);
 				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
 			} else if (msg.getRootId() > 0) {
-				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setVisibility(View.VISIBLE);
 				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
 			} else {
 				holder.youThreadIndicator.setImageDrawable(null);
-				holder.meThreadIndicator.setVisibility(View.GONE);
+				holder.youThreadIndicator.setVisibility(View.GONE);
 			}
 		}
 
@@ -338,7 +350,7 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.dateSeparator.setVisibility(View.GONE);
 		} else {
 			holder.dateSeparator.setVisibility(View.VISIBLE);
-			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
+			holder.sectionDate.setText(getDateFormat(msg.getCreated()));
 		}
 
 		// Paging animation
@@ -356,8 +368,16 @@ public class MessagesAdapter extends BaseAdapter {
 		if (position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)) {
 			holder.seenByTv.setText("Seen by " + seenBy);
 			holder.seenByTv.setVisibility(View.VISIBLE);
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
 		} else {
 			holder.seenByTv.setVisibility(View.GONE);
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
+		}
+		
+		if (position == (getCount() - 1)) {
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
+		} else {
+			convertView.setPadding(0, 0, 0, 0);
 		}
 
 		return convertView;
@@ -412,6 +432,17 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		return 0;
+	}
+	
+	private String getDateFormat(String createdString) {
+		long created = Long.parseLong(createdString) * 1000;
+
+		Date date = new Date(created);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(Const.DATE_SEPARATOR_FORMAT, Locale.getDefault());
+
+		String rez = dateFormat.format(date);
+
+		return rez;
 	}
 
 	public void setSeenBy(String seenBy) {
@@ -510,19 +541,11 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 	}
 
-	private void setItemBackground(int position, View view) {
-		if (position % 2 == 0) {
-			view.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
-		} else {
-			view.setBackgroundColor(Color.WHITE);
-		}
-	}
-
 	public class ViewHolderChatMsg {
 
 		// start: message item for my message
 		public LinearLayout meMsgLayout;
-		public TextView mePersonName;
+		public LinearLayout meMsgLayoutBack;
 		public TextView meMsgContent;
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
@@ -531,31 +554,29 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView meListenSound;
 		public ImageView youListenSound;
 
-		public ImageView meWatchVideo;
-		public ImageView youWatchVideo;
+		public TextView meWatchVideo;
+		public TextView youWatchVideo;
 
-		public ImageView meViewLocation;
-		public ImageView youViewLocation;
+		public TextView meViewLocation;
+		public TextView youViewLocation;
 
 		public ImageView meViewImage;
 		public ImageView youViewImage;
 
-		public RelativeLayout meFileLayout;
-		public TextView meFileName;
-		public ImageView meDownloadFile;
+		public TextView meDownloadFile;
 
-		public RelativeLayout youFileLayout;
-		public TextView youFileName;
-		public ImageView youDownloadFile;
+		public TextView youDownloadFile;
 
 		public TextView seenByTv;
 
 		// start: message item for you message
-		public LinearLayout youMsgLayout;
+		public RelativeLayout youMsgLayout;
+		public LinearLayout youMsgLayoutBack;
 		public TextView youPersonName;
 		public TextView youMsgContent;
 		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
+		public ImageView profileImage;
 		// end: you msg
 
 		// start: loading bar
@@ -572,10 +593,10 @@ public class MessagesAdapter extends BaseAdapter {
 
 		public ViewHolderChatMsg(View view) {
 
-			meMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
+			meMsgLayout = (LinearLayout) view.findViewById(R.id.meWholeLayout);
+			meMsgLayoutBack = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
 			// start: message item for my message
 			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
-			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			// end: me msg
@@ -583,31 +604,29 @@ public class MessagesAdapter extends BaseAdapter {
 			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
 			youListenSound = (ImageView) view.findViewById(R.id.youListenSound);
 
-			meWatchVideo = (ImageView) view.findViewById(R.id.meWatchVideo);
-			youWatchVideo = (ImageView) view.findViewById(R.id.youWatchVideo);
+			meWatchVideo = (TextView) view.findViewById(R.id.meWatchVideo);
+			youWatchVideo = (TextView) view.findViewById(R.id.youWatchVideo);
 
-			meViewLocation = (ImageView) view.findViewById(R.id.meViewLocation);
-			youViewLocation = (ImageView) view.findViewById(R.id.youViewLocation);
+			meViewLocation = (TextView) view.findViewById(R.id.meViewLocation);
+			youViewLocation = (TextView) view.findViewById(R.id.youViewLocation);
 
 			meViewImage = (ImageView) view.findViewById(R.id.meViewImage);
 			youViewImage = (ImageView) view.findViewById(R.id.youViewImage);
 
-			meFileLayout = (RelativeLayout) view.findViewById(R.id.meFileLayout);
-			meFileName = (TextView) view.findViewById(R.id.meFileName);
-			meDownloadFile = (ImageView) view.findViewById(R.id.meDownloadFile);
+			meDownloadFile = (TextView) view.findViewById(R.id.meDownloadFile);
 
-			youFileLayout = (RelativeLayout) view.findViewById(R.id.youFileLayout);
-			youFileName = (TextView) view.findViewById(R.id.youFileName);
-			youDownloadFile = (ImageView) view.findViewById(R.id.youDownloadFile);
+			youDownloadFile = (TextView) view.findViewById(R.id.youDownloadFile);
 
 			seenByTv = (TextView) view.findViewById(R.id.tvSeenBy);
 
-			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
+			youMsgLayout = (RelativeLayout) view.findViewById(R.id.youWholeLayout);
+			youMsgLayoutBack = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message
 			youMsgTime = (TextView) view.findViewById(R.id.timeYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
+			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
 			// end: you msg
 
 			// start: loading bar

@@ -15,20 +15,25 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.utils.Utils;
+
 public class RoundCornersImageView extends ImageView {
 
 	private float corner = 15;
 
 	public RoundCornersImageView(Context context) {
 		super(context);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public RoundCornersImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public RoundCornersImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public void setCorner(float cor) {

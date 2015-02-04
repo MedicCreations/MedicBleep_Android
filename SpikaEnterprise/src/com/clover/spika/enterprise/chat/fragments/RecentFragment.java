@@ -24,7 +24,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyUsersFragment extends CustomFragment implements OnItemClickListener {
+public class RecentFragment extends CustomFragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
 	private RecentAdapter adapter;
@@ -57,7 +57,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new RecentAdapter(getActivity(), new ArrayList<Chat>(), true);
+		adapter = new RecentAdapter(getActivity(), new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
@@ -83,7 +83,6 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		if (mainListView == null) {
 			return;
 		}
-
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();
@@ -115,13 +114,13 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.USERS_TYPE, getActivity(), false, new ApiCallback<LobbyModel>() {
+		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
-					setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().getAllLobby().getTotalCount();
+					setData(result.getResultData().getAllLobby().getChatsList(), toClear);
 				}
 			}
 		});
@@ -132,7 +131,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			Chat user = adapter.getItem(position);
+			final Chat user = adapter.getItem(position);
 			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
 		}
 	}

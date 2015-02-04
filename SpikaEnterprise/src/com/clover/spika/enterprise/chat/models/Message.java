@@ -64,6 +64,9 @@ public class Message implements Parcelable {
 
 	@SerializedName("child_list")
 	private String childListText;
+	
+	@SerializedName("image_thumb")
+	private String imageThumb;
 
 	public Message() {
 	}
@@ -214,6 +217,14 @@ public class Message implements Parcelable {
 
 	public String getChildListText() {
 		return childListText;
+	}
+	
+	public String getImageThumb() {
+		return imageThumb;
+	}
+
+	public void setImageThumb(String imageThumb) {
+		this.imageThumb = imageThumb;
 	}
 
 	@Override

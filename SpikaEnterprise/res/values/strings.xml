@@ -249,5 +249,11 @@
     <string name="group">group</string>
     <string name="room">room</string>
     <string name="choose_organization">Choose organization</string>
+    
+    <!-- NES STRING RELATED TO NEW DESIGN -->
+    <string name="recent">Recent</string>
+    <string name="people">People</string>
+    <string name="location_tap_to_view">Location: Tap to view</string>
+    <string name="video_tap_to_play">Video: Tap to play</string>
 
 </resources>
