@@ -1,16 +1,14 @@
 package com.clover.spika.enterprise.chat.networking;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.TextUtils;
-
-import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
-import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Preferences;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,15 +38,17 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.TextUtils;
+
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
+import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
@@ -214,20 +214,26 @@ public class NetworkManagement {
 
 	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
-
+		String gifString = null;
+		
 		// form parameters
 		if (getParams != null && !getParams.isEmpty()) {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			for (Map.Entry<String, String> entity : getParams.entrySet()) {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+				if(entity.getKey() == "file_id" && entity.getValue().startsWith("http")){
+					gifString = entity.getValue();
+					break;
+				}
 			}
 
 			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
 		}
-
+		
 		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
+		if(gifString != null) httpGet = new HttpGet(gifString);
 		Logger.custom("RawRequest", httpGet.getURI().toString());
-
+		
 		httpGet.setHeader("Encoding", "UTF-8");
 		httpGet.setHeader(TOKEN, prefs.getToken());
 

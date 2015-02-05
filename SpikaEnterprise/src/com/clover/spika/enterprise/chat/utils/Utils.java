@@ -119,6 +119,28 @@ public class Utils {
 
 		return filePath;
 	}
+	
+	public static String handleFileDecryptionToPath(String filePath, String destPath, Context ctx) {
+		try {
+			if (JNAesCrypto.isEncryptionEnabled) {
+				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+				tempOut.createNewFile();
+
+				File out = new File(destPath);
+				out.createNewFile();
+
+				JNAesCrypto.decryptJNFiles(new File(filePath), tempOut, out);
+
+				return out.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
+			return null;
+		}
+
+		return filePath;
+	}
 
 	public static void copyStream(InputStream is, OutputStream os) {
 		final int buffer_size = 1024;
@@ -440,6 +462,15 @@ public class Utils {
 	}
 	
 	/**
+	 * get sp in px
+	 * 
+	 */
+	public static float getPxFromSp(float sp, Resources res) {
+	    float scaledDensity = res.getDisplayMetrics().scaledDensity;
+	    return sp * scaledDensity;
+	}
+	
+	/**
 	 * get dp in px
 	 * 
 	 */
@@ -453,6 +484,14 @@ public class Utils {
 	 */
 	public static int getDpFromPx(int px, Resources res){
 		return (int) (px / (res.getDisplayMetrics().densityDpi / 160f));
+	}
+	
+	public static File getFilesFolder(){
+		File file = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY, Const.APP_FILED_FILES);
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		return file;
 	}
 	
 }

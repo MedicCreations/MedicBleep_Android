@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -618,6 +617,14 @@ public class ChatActivity extends BaseChatActivity {
 					}
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
+					for(int i = 0; i < chat.getMessagesList().size(); i++){
+						if(chat.getMessagesList().get(i).getType() == Const.MSG_TYPE_DEFAULT){
+							if(chat.getMessagesList().get(i).getText().startsWith("http") 
+									&& chat.getMessagesList().get(i).getText().endsWith(".gif")){
+								chat.getMessagesList().get(i).setType(Const.MSG_TYPE_GIF);
+							}
+						}
+					}
 					adapter.setSeenBy(chat.getSeen_by());
 
 					totalItems = Integer.valueOf(chat.getTotal_count());

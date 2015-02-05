@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
@@ -20,6 +21,7 @@ public class PhotoActivity extends BaseActivity {
 	ImageButton goBack;
 	RelativeLayout imageLayout;
 	TouchImageView mImageView;
+	WebView webView;
 
 	String imageUrl;
 
@@ -39,6 +41,7 @@ public class PhotoActivity extends BaseActivity {
 
 		imageLayout = (RelativeLayout) findViewById(R.id.imageLayout);
 		mImageView = (TouchImageView) findViewById(R.id.mImageView);
+		webView = (WebView) findViewById(R.id.webView);
 
 		onNewIntent(getIntent());
 	}
@@ -50,25 +53,31 @@ public class PhotoActivity extends BaseActivity {
 		if (intent.getExtras() != null && intent.getExtras().containsKey(Const.IMAGE)) {
 			imageUrl = intent.getExtras().getString(Const.IMAGE, "");
 
-			new BaseAsyncTask<Void, Void, Bitmap>(this, true) {
+			if(intent.hasExtra(Const.TYPE) && intent.getIntExtra(Const.TYPE, -1) == Const.MSG_TYPE_GIF){
+				webView.setVisibility(View.VISIBLE);
+				String x = "<!DOCTYPE html><html><body><img src=\""+imageUrl+"\" alt=\"Smileyface\" width=\"100%\" height=\"100%\"></body></html>";
+				webView.loadData(x, "text/html", "utf-8");
+			}else{
+				new BaseAsyncTask<Void, Void, Bitmap>(this, true) {
 
-				protected Bitmap doInBackground(Void... params) {
-					return ImageLoader.getInstance(PhotoActivity.this).getBitmap(context, imageUrl);
-				}
-
-				@Override
-				protected void onPostExecute(Bitmap result) {
-					super.onPostExecute(result);
-					if (result != null) {
-						mImageView.setImageBitmap(result);
-						imageLayout.setBackgroundColor(getResources().getColor(R.color.black));
-					} else {
-						AppDialog dialog = new AppDialog(context, true);
-						dialog.setFailed(context.getResources().getString(R.string.e_error_downloading_file));
+					protected Bitmap doInBackground(Void... params) {
+						return ImageLoader.getInstance(PhotoActivity.this).getBitmap(context, imageUrl);
 					}
-				}
 
-			}.execute();
+					@Override
+					protected void onPostExecute(Bitmap result) {
+						super.onPostExecute(result);
+						if (result != null) {
+							mImageView.setImageBitmap(result);
+							imageLayout.setBackgroundColor(getResources().getColor(R.color.black));
+						} else {
+							AppDialog dialog = new AppDialog(context, true);
+							dialog.setFailed(context.getResources().getString(R.string.e_error_downloading_file));
+						}
+					}
+
+				}.execute();
+			}
 		}
 	}
 

@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,19 +12,34 @@ import java.util.List;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,10 +49,13 @@ import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.VoiceActivity;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSortingById;
@@ -54,12 +74,23 @@ public class MessagesAdapter extends BaseAdapter {
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
 	
+	private int displayWidth = 0;
+	Typeface typeface;
+	
+	private boolean isDownloadingSound = false;
+	private MediaPlayer currentMediaPlayer = null;
+	private String currentPlayingPath = null;
+	private Button activePlayIcon = null;
+	
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
 		this.data = arrayList;
 
 		imageLoader = ImageLoader.getInstance(context);
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
+		
+		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
+		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Thin.ttf");
 	}
 
 	@Override
@@ -119,6 +150,14 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youDownloadFile.setVisibility(View.GONE);
 
 		holder.loading_bar.setVisibility(View.GONE);
+		
+		holder.meWebView.setVisibility(View.GONE);
+		holder.meWebView.loadUrl("about:blank");
+		holder.meFlForWebView.setVisibility(View.GONE);
+		
+		holder.youWebView.setVisibility(View.GONE);
+		holder.youWebView.loadUrl("about:blank");
+		holder.youFlForWebView.setVisibility(View.GONE);
 
 		// Assign values
 		final Message msg = getItem(position);
@@ -130,7 +169,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
 			
-			if(msg.getType() == Const.MSG_TYPE_PHOTO){
+			if(msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF){
 				holder.meMsgLayoutBack.setPadding(0, 0, 0, 0);
 			}else{
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
@@ -158,7 +197,29 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
-			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
+				
+				holder.meWebView.setVisibility(View.VISIBLE);
+				holder.meFlForWebView.setVisibility(View.VISIBLE);
+				
+				String x = "<!DOCTYPE html><html><body><img src=\""+msg.getText()+"\" alt=\"Smileyface\" width=\"100%\" height=\"100%\"></body></html>";
+				holder.meWebView.loadData(x, "text/html", "utf-8");
+				
+				holder.meWebView.setOnTouchListener(new OnTouchListener() {
+					
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						if(event.getAction() == MotionEvent.ACTION_UP){
+							Intent intent = new Intent(ctx, PhotoActivity.class);
+							intent.putExtra(Const.IMAGE, msg.getText());
+							intent.putExtra(Const.TYPE, msg.getType());
+							ctx.startActivity(intent);
+						}
+						return false;
+					}
+				});
+				
+			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 				holder.meWatchVideo.setVisibility(View.VISIBLE);
 				holder.meWatchVideo.setOnClickListener(new OnClickListener() {
 
@@ -186,16 +247,19 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
+				
 				holder.meListenSound.setVisibility(View.VISIBLE);
-				holder.meListenSound.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, VoiceActivity.class);
-						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-						ctx.startActivity(intent);
-					}
-				});
+				setVoiceControls(msg, holder.meListenSound);
+				
+//				holder.meListenSound.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, VoiceActivity.class);
+//						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+//						ctx.startActivity(intent);
+//					}
+//				});
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
 				holder.meDownloadFile.setVisibility(View.VISIBLE);
@@ -233,16 +297,49 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.youMsgLayout.setVisibility(View.VISIBLE);
 			
-			imageLoader.displayImage(convertView.getContext(), msg.getImageThumb(), holder.profileImage);
+			if (!msg.getImageThumb().equals((String) holder.profileImage.getTag())) {
+				holder.profileImage.setImageDrawable(null);
+				imageLoader.displayImage(convertView.getContext(), msg.getImageThumb(), holder.profileImage);
+				holder.profileImage.setTag(msg.getImageThumb());
+			}
 
 			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
 			
-			if(msg.getType() == Const.MSG_TYPE_PHOTO){
+			if(msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF){
 				holder.youMsgLayoutBack.setPadding(0, 0, 0, 0);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+			}else if(msg.getType() == Const.MSG_TYPE_LOCATION || msg.getType() == Const.MSG_TYPE_VIDEO){
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+			}else if(msg.getType() == Const.MSG_TYPE_VOICE){
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 1;
 			}else{
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
 				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				
+				int textWidth = msg.getTextWidth();
+				
+				if(textWidth == -1){
+					textWidth = calculateNeedTextWidth(msg.getText(), ctx);
+					msg.setTextWidth(textWidth);
+				}
+				
+				int timeWidth = msg.getTimeWidth();
+				
+				if(timeWidth == -1){
+					timeWidth = calculateNeedTextWidth(getCreatedTime(msg.getCreated()), ctx);
+					msg.setTimeWidth(timeWidth);
+				}
+				
+				if(textWidth > displayWidth - Utils.getPxFromDp(75, ctx.getResources()) - timeWidth){
+					((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 1;
+				}else{
+					((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+				}
 			}
 
 			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
@@ -266,7 +363,29 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
-			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
+				
+				holder.youWebView.setVisibility(View.VISIBLE);
+				holder.youFlForWebView.setVisibility(View.VISIBLE);
+				
+				String x = "<!DOCTYPE html><html><body><img src=\""+msg.getText()+"\" alt=\"Smileyface\" width=\"100%\" height=\"100%\"></body></html>";
+				holder.youWebView.loadData(x, "text/html", "utf-8");
+				
+				holder.youWebView.setOnTouchListener(new OnTouchListener() {
+					
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						if(event.getAction() == MotionEvent.ACTION_UP){
+							Intent intent = new Intent(ctx, PhotoActivity.class);
+							intent.putExtra(Const.IMAGE, msg.getText());
+							intent.putExtra(Const.TYPE, msg.getType());
+							ctx.startActivity(intent);
+						}
+						return false;
+					}
+				});
+				
+			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 
 				holder.youWatchVideo.setVisibility(View.VISIBLE);
 				holder.youWatchVideo.setOnClickListener(new OnClickListener() {
@@ -298,17 +417,20 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
-
+				
 				holder.youListenSound.setVisibility(View.VISIBLE);
-				holder.youListenSound.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, VoiceActivity.class);
-						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-						ctx.startActivity(intent);
-					}
-				});
+				setVoiceControls(msg, holder.youListenSound);
+				
+//				holder.youListenSound.setVisibility(View.VISIBLE);
+//				holder.youListenSound.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, VoiceActivity.class);
+//						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+//						ctx.startActivity(intent);
+//					}
+//				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
@@ -381,6 +503,161 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		return convertView;
+	}
+	
+	private double totalOfDownload = -1;
+	private void setVoiceControls(final Message msg, final RelativeLayout holder) {
+		
+		final Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
+		final SeekBar seekControl = (SeekBar) holder.getChildAt(Const.SoundControl.SEEKBAR);
+		final Chronometer chronoControl = (Chronometer) holder.getChildAt(Const.SoundControl.CHRONOMETER);
+		
+		playPause.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				File sound = new File(Utils.getFilesFolder() + "/" + msg.getFile_id());
+				if(sound.exists()){
+					Log.d("LOG", sound.getPath()+" is EXISTS");
+					if(currentMediaPlayer == null){
+						currentMediaPlayer = new MediaPlayer();
+						try {
+							currentMediaPlayer.setDataSource(sound.getAbsolutePath());
+							currentMediaPlayer.prepare();
+							currentMediaPlayer.start();
+							currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+								@Override
+								public void onCompletion(MediaPlayer mp) {
+									currentPlayingPath = null;
+									currentMediaPlayer.stop();
+									currentMediaPlayer.release();
+									currentMediaPlayer = null;
+									playPause.setText("P");
+								}
+							});
+							currentPlayingPath = sound.getAbsolutePath();
+							playPause.setText("AKK");
+							activePlayIcon = playPause;
+						} catch (IOException e) {
+							e.printStackTrace();
+							currentMediaPlayer = null;
+						}
+					}else{
+						if(currentPlayingPath != null && currentPlayingPath.equals(sound.getAbsolutePath())){
+							currentMediaPlayer.stop();
+							currentMediaPlayer.release();
+							currentMediaPlayer = null;
+							playPause.setText("P");
+						}else{
+							currentMediaPlayer.stop();
+							currentMediaPlayer.release();
+							currentMediaPlayer = null;
+							activePlayIcon.setText("P");
+							try {
+								currentMediaPlayer = new MediaPlayer();
+								currentMediaPlayer.setDataSource(sound.getAbsolutePath());
+								currentMediaPlayer.prepare();
+								currentMediaPlayer.start();
+								currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+									@Override
+									public void onCompletion(MediaPlayer mp) {
+										currentPlayingPath = null;
+										currentMediaPlayer.stop();
+										currentMediaPlayer.release();
+										currentMediaPlayer = null;
+										playPause.setText("P");
+									}
+								});
+								currentPlayingPath = sound.getAbsolutePath();
+								playPause.setText("AKK");
+								activePlayIcon = playPause;
+							} catch (IOException e) {
+								e.printStackTrace();
+								currentMediaPlayer = null;
+							}
+						}
+					}
+					
+				}else{
+					if(isDownloadingSound){
+						return;
+					}
+					isDownloadingSound = true;
+					totalOfDownload = -1;
+					
+					final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+					final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+					final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+					pbLoading.setVisibility(View.VISIBLE);
+					pbLoadingBar.setVisibility(View.VISIBLE);
+					percentTv.setVisibility(View.VISIBLE);
+					playPause.setVisibility(View.INVISIBLE);
+					seekControl.setVisibility(View.INVISIBLE);
+					chronoControl.setVisibility(View.INVISIBLE);
+					new FileManageApi().downloadFileToFile(sound, msg.getFile_id(), false, ctx, new ApiCallback<String>() {
+						
+						@Override
+						public void onApiResponse(Result<String> result) {
+							pbLoading.setVisibility(View.INVISIBLE);
+							pbLoadingBar.setVisibility(View.INVISIBLE);
+							pbLoadingBar.setProgress(0);
+							percentTv.setVisibility(View.INVISIBLE);
+							percentTv.setText("0%");
+							playPause.setVisibility(View.VISIBLE);
+							seekControl.setVisibility(View.VISIBLE);
+							chronoControl.setVisibility(View.VISIBLE);
+							
+							isDownloadingSound = false;
+						}
+					}, new ProgressBarListeners() {
+						
+						@Override
+						public void onSetMax(long total) {
+							if(totalOfDownload == -1) {
+								totalOfDownload = total;
+								pbLoadingBar.setMax((int) totalOfDownload);
+							}
+						}
+						
+						@Override
+						public void onProgress(long current) {
+							if(totalOfDownload != -1){
+								pbLoadingBar.setProgress((int) current);
+								final String percent = String.valueOf(((int)(100 * current / (double)totalOfDownload)));
+								((Activity)ctx).runOnUiThread(new Runnable() {
+									
+									@Override
+									public void run() {
+										percentTv.setText(String.valueOf(percent + "%"));	
+									}
+								});
+							}
+						}
+						
+						@Override
+						public void onFinish() {}
+					});
+				}
+			}
+		});
+	}
+	
+	private int calculateNeedTextWidth(String text, Context c){
+		Paint paint = new Paint();
+		Rect bounds = new Rect();
+
+		int text_width = 0;
+
+		paint.setTypeface(typeface);// your preference here
+		paint.setTextSize(Utils.getPxFromSp(20, c.getResources()));// have this the same as your text size
+
+		paint.getTextBounds(text, 0, text.length(), bounds);
+
+		text_width =  bounds.width();
+		
+		return text_width;
 	}
 
 	private boolean isMe(String userId) {
@@ -549,10 +826,12 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView meMsgContent;
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
+		public FrameLayout meFlForWebView;
+		public WebView meWebView;
 		// end: me msg
 
-		public ImageView meListenSound;
-		public ImageView youListenSound;
+		public RelativeLayout meListenSound;
+		public RelativeLayout youListenSound;
 
 		public TextView meWatchVideo;
 		public TextView youWatchVideo;
@@ -577,6 +856,8 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
 		public ImageView profileImage;
+		public FrameLayout youFlForWebView;
+		public WebView youWebView;
 		// end: you msg
 
 		// start: loading bar
@@ -599,10 +880,13 @@ public class MessagesAdapter extends BaseAdapter {
 			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
+			
+			meFlForWebView = (FrameLayout) view.findViewById(R.id.meFlForWebView);
+			meWebView = (WebView) view.findViewById(R.id.meWebView);
 			// end: me msg
 
-			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
-			youListenSound = (ImageView) view.findViewById(R.id.youListenSound);
+			meListenSound = (RelativeLayout) view.findViewById(R.id.meRlSound);
+			youListenSound = (RelativeLayout) view.findViewById(R.id.youRlSound);
 
 			meWatchVideo = (TextView) view.findViewById(R.id.meWatchVideo);
 			youWatchVideo = (TextView) view.findViewById(R.id.youWatchVideo);
@@ -627,6 +911,9 @@ public class MessagesAdapter extends BaseAdapter {
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
 			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
+			
+			youFlForWebView = (FrameLayout) view.findViewById(R.id.youFlForWebView);
+			youWebView = (WebView) view.findViewById(R.id.youWebView);
 			// end: you msg
 
 			// start: loading bar

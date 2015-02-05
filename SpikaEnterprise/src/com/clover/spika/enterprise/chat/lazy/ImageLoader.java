@@ -1,21 +1,5 @@
 package com.clover.spika.enterprise.chat.lazy;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.widget.ImageView;
-
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Utils;
-
-import org.apache.http.util.ByteArrayBuffer;
-import org.apache.http.util.TextUtils;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,6 +10,23 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.apache.http.util.ByteArrayBuffer;
+import org.apache.http.util.TextUtils;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
+import com.clover.spika.enterprise.chat.networking.NetworkManagement;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class ImageLoader {
 
@@ -185,8 +186,14 @@ public class ImageLoader {
 		// start: Get image from cache
 		try {
 
-			String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
-			Bitmap localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
+			Bitmap localBitmap;
+			
+			if(url.startsWith("http")){
+				localBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+			}else{
+				String fileStr1 = Utils.getStringFromFile(file.getAbsolutePath());
+				localBitmap = JNAesCrypto.decryptBitmapJN(fileStr1, file.getAbsolutePath());
+			}
 
 			if (localBitmap != null) {
 				return localBitmap;
@@ -222,8 +229,12 @@ public class ImageLoader {
 			fos.close();
 			is.close();
 
-			String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
-			bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
+			if(url.startsWith("http")){
+				bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+			}else{
+				String fileStr = Utils.getStringFromFile(file.getAbsolutePath());
+				bitmap = JNAesCrypto.decryptBitmapJN(fileStr, file.getAbsolutePath());
+			}
 
 			return bitmap;
 

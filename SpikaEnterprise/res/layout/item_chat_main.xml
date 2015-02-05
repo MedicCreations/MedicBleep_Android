@@ -118,18 +118,74 @@
                         android:layout_height="wrap_content"
                         android:autoLink="all"
                         android:gravity="right"
+                        android:textColorLink="@color/light_light_gray"
                         android:linksClickable="true"
                         android:textColor="@android:color/white"
                         android:textSize="20sp" />
                 </RelativeLayout>
 
-                <ImageView
+                <RelativeLayout android:id="@+id/meRlSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    
+                    <Button android:id="@+id/mePlayPause"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:text="play"/>
+                    
+                    <ProgressBar
+                        android:id="@+id/mePbSound"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:visibility="invisible" />
+                    
+                    <Chronometer android:id="@+id/meChronoPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/mePlayPause"
+                        android:textColor="@android:color/white"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:text="00:00"/>
+                    
+                    <TextView android:id="@+id/meDownloadPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/mePlayPause"
+                        android:textColor="@android:color/white"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:visibility="invisible"
+                        android:text="0%"/>
+                    
+                    <SeekBar
+                        android:id="@+id/meSeekBar"
+                        android:layout_toRightOf="@id/meChronoPlay"
+                        android:layout_width="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:thumb="@drawable/shape_thumb" />
+                    
+                    <ProgressBar
+                        android:id="@+id/meDownloadProgressHor"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:visibility="invisible"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/meDownloadPercent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp" />
+                    
+                </RelativeLayout>
+                <!-- <ImageView
                     android:id="@+id/meListenSound"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="right"
                     android:contentDescription="@null"
-                    android:src="@drawable/icon_voice" />
+                    android:src="@drawable/icon_voice" /> -->
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                     android:id="@+id/meWatchVideo"
@@ -160,6 +216,18 @@
                     android:layout_gravity="right"
                     android:contentDescription="@null"
                     android:scaleType="centerCrop" />
+                
+                <FrameLayout
+                        android:id="@+id/meFlForWebView"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                         >
+                        
+                        <WebView android:id="@+id/meWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+                        
+                    </FrameLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                     android:id="@+id/meDownloadFile"
@@ -189,6 +257,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/temp"
+                android:paddingLeft="10dp"
                 android:textColor="@color/devil_gray"
                 android:textSize="14sp" />
 
@@ -207,19 +276,19 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/youPersonName"
                 android:layout_toRightOf="@id/youProfileImage"
-                android:weightSum="2"
+                android:gravity="left"
                 android:orientation="horizontal" >
 
                 <LinearLayout
                     android:id="@+id/defaultMsgLayoutYou"
-                    android:layout_width="0dp"
-                    android:layout_weight="0"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/shape_you_chat_bubble"
                     android:minHeight="20dp"
                     android:minWidth="20dp"
+                    android:layout_weight="0"
                     android:orientation="vertical"
                     android:padding="10dp" >
 
@@ -246,14 +315,75 @@
                             android:textColor="@android:color/black"
                             android:textSize="20sp" />
                     </RelativeLayout>
+                    
+                    <RelativeLayout
+                        android:id="@+id/youRlSound"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left" >
 
-                    <ImageView
+                        <Button
+                            android:id="@+id/youPlayPause"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:text="play" />
+
+                        <ProgressBar
+                            android:id="@+id/YouPbSound"
+                            android:layout_width="35dp"
+                            android:visibility="invisible"
+                            android:layout_height="35dp" />
+
+                        <Chronometer
+                            android:id="@+id/youChronoPlay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youPlayPause"
+                            android:text="00:00"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/youDownloadPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:visibility="invisible"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youPlayPause"
+                            android:text="0%"
+                            android:textColor="@android:color/white" />
+
+                        <SeekBar
+                            android:id="@+id/youSeekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youChronoPlay"
+                            android:thumb="@drawable/shape_thumb" />
+
+                        <ProgressBar
+                            android:id="@+id/youDownloadProgressHor"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:visibility="invisible"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youDownloadPercent" />
+                    
+                    </RelativeLayout>
+
+                    <!-- <ImageView
                         android:id="@+id/youListenSound"
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_gravity="left"
                         android:contentDescription="@null"
-                        android:src="@drawable/icon_voice" />
+                        android:src="@drawable/icon_voice" /> -->
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/youWatchVideo"
@@ -284,6 +414,18 @@
                         android:layout_gravity="left"
                         android:contentDescription="@null"
                         android:scaleType="centerCrop" />
+                    
+                    <FrameLayout
+                        android:id="@+id/youFlForWebView"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                         >
+                        
+                        <WebView android:id="@+id/youWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
+                        
+                    </FrameLayout>
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/youDownloadFile"
@@ -293,16 +435,17 @@
                         android:drawableRight="@drawable/icon_file"
                         android:gravity="left|center_vertical"
                         android:text=""
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="17sp" />
                 </LinearLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                     android:id="@+id/timeYou"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
+                    android:gravity="left"
+                    android:layout_gravity="bottom"
                     android:textColor="@color/text_time_gray"
                     android:textSize="15sp" />
             </LinearLayout>

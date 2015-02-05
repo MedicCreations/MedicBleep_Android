@@ -50,13 +50,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/topLayout"
-        android:background="@android:color/white"
+        android:background="@color/default_blue_light"
         android:layout_centerInParent="true" >
 
         <com.clover.spika.enterprise.chat.views.TouchImageView
             android:id="@+id/mImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/default_blue_light" />
+        
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" 
+            android:visibility="gone"/>
     </RelativeLayout>
 
 </RelativeLayout>

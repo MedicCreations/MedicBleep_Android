@@ -49,6 +49,7 @@ public class Const {
 	public static final String APP_FILES_DIRECTORY = "SpikaEnterprise/";
 	public static final String APP_LAZY_LIST = "LazyList";
 	public static final String APP_FILED_DOWNLOADS = "Downloads";
+	public static final String APP_FILED_FILES = "Files";
 	public static final String APP_SPEN_FILE = "spen.txt";
 	public static final String APP_SPEN_TEMP_FILE = "spentemp.txt";
 
@@ -172,6 +173,7 @@ public class Const {
 	public static final int MSG_TYPE_VOICE = 5;
 	public static final int MSG_TYPE_FILE = 6;
 	public static final int MSG_TYPE_DELETED = 7;
+	public static final int MSG_TYPE_GIF = 9;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;
@@ -277,5 +279,15 @@ public class Const {
 	public static final String DEFAULT_IMAGE_USER = "default_user_image";
 	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
 	public static final String FROM_CHAT = "from_chat";
+	
+	public static final class SoundControl{
+		public static final int PLAY_BUTTON = 0;
+		public static final int DOWNLOAD_PROGRESS = 1;
+		public static final int CHRONOMETER = 2;
+		public static final int PERCENT_TV = 3;
+		public static final int SEEKBAR = 4;
+		public static final int PROGREEBAR = 5;
+	}
+	
 
 }

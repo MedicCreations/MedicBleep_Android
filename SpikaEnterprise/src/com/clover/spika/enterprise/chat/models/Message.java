@@ -67,6 +67,9 @@ public class Message implements Parcelable {
 	
 	@SerializedName("image_thumb")
 	private String imageThumb;
+	
+	private int textWidth = -1;
+	private int timeWidth = -1;
 
 	public Message() {
 	}
@@ -226,6 +229,22 @@ public class Message implements Parcelable {
 	public void setImageThumb(String imageThumb) {
 		this.imageThumb = imageThumb;
 	}
+	
+	public int getTextWidth() {
+		return textWidth;
+	}
+
+	public void setTextWidth(int textWidth) {
+		this.textWidth = textWidth;
+	}
+
+	public int getTimeWidth() {
+		return timeWidth;
+	}
+
+	public void setTimeWidth(int timeWidth) {
+		this.timeWidth = timeWidth;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -315,6 +334,7 @@ public class Message implements Parcelable {
 		switch (msg.getType()) {
 
 		case Const.MSG_TYPE_DEFAULT:
+		case Const.MSG_TYPE_GIF:
 		case Const.MSG_TYPE_FILE:
 
 			try {
