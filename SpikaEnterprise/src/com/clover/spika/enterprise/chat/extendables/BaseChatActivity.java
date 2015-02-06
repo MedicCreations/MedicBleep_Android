@@ -1,5 +1,13 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -49,14 +57,6 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-
 public abstract class BaseChatActivity extends BaseActivity {
 
 	protected static final int PICK_FILE_RESULT_CODE = 987;
@@ -82,7 +82,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	private ListView settingsListView;
 	private ImageButton footerMore;
+	private ImageButton footerEmoji;
 	protected RelativeLayout rlDrawer;
+	protected RelativeLayout rlDrawerEmoji;
 	private RelativeLayout chatLayout;
 	private ImageView partnerIcon;
 	private RobotoThinTextView screenTitle;
@@ -137,9 +139,15 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 		rlDrawer = (RelativeLayout) findViewById(R.id.rlDrawer);
 		rlDrawer.setSelected(false);
+		
+		rlDrawerEmoji = (RelativeLayout) findViewById(R.id.rlDrawerEmoji);
+		rlDrawerEmoji.setSelected(false);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(thisClickListener);
+		
+		footerEmoji = (ImageButton) findViewById(R.id.footerSmiley);
+		footerEmoji.setOnClickListener(thisClickListener);
 
 		chatLayout = (RelativeLayout) findViewById(R.id.chatLayout);
 
@@ -310,6 +318,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	private void rlDrawerManage() {
+		if(rlDrawerEmoji.isSelected()){
+			replaceDrawer();
+			return;
+		}
 		if (!rlDrawer.isSelected()) {
 			rlDrawer.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawer, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
@@ -350,10 +362,102 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.translationY(chatListView, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
 		}
 	}
+	
+	private void replaceDrawer() {
+		if(rlDrawerEmoji.isSelected()){
+			AnimUtils.translationX(rlDrawerEmoji, 0, getResources().getDisplayMetrics().widthPixels, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawerEmoji.setVisibility(View.GONE);
+					rlDrawerEmoji.setSelected(false);
+
+					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
+					rlDrawerEmoji.setX(0);
+				}
+			});
+			
+			AnimUtils.translationY(rlDrawer, 0, 0, 0, null);
+			rlDrawer.setVisibility(View.VISIBLE);
+			AnimUtils.translationX(rlDrawer, -getResources().getDisplayMetrics().widthPixels, 0, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawer.setSelected(true);
+					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
+				}
+			});
+		}else{
+			AnimUtils.translationY(rlDrawerEmoji, 0, 0, 0, null);
+			rlDrawerEmoji.setVisibility(View.VISIBLE);
+			AnimUtils.translationX(rlDrawerEmoji, getResources().getDisplayMetrics().widthPixels, 0, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawerEmoji.setSelected(true);
+					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
+				}
+			});
+			
+			AnimUtils.translationX(rlDrawer, 0, -getResources().getDisplayMetrics().widthPixels, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawer.setVisibility(View.GONE);
+					rlDrawer.setSelected(false);
+
+					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
+					rlDrawer.setX(0);
+				}
+			});
+		}
+	}
+
+	private void rlDrawerEmojiManage() {
+		if (!rlDrawerEmoji.isSelected()) {
+			rlDrawerEmoji.setVisibility(View.VISIBLE);
+			AnimUtils.translationY(rlDrawerEmoji, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawerEmoji.setSelected(true);
+					RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) chatListView.getLayoutParams();
+					params.bottomMargin = Helper.dpToPx(BaseChatActivity.this, drawerHeight);
+					chatListView.setLayoutParams(params);
+
+					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
+					hideKeyboard(etMessage);
+
+					new Handler().postDelayed(new Runnable() {
+
+						@Override
+						public void run() {
+							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
+						}
+					}, 100);
+				}
+			});
+			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
+		} else {
+			AnimUtils.translationY(rlDrawerEmoji, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					rlDrawerEmoji.setVisibility(View.GONE);
+					rlDrawerEmoji.setSelected(false);
+
+					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
+					
+				}
+			});
+			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) chatListView.getLayoutParams();
+			params.bottomMargin = 0;
+			chatListView.setLayoutParams(params);
+			AnimUtils.translationY(chatListView, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
+		}
+	}
 
 	protected void forceClose() {
 		if (rlDrawer.isSelected()) {
 			rlDrawerManage();
+			hideKeyboard(etMessage);
+		}else if(rlDrawerEmoji.isSelected()){
+			rlDrawerEmojiManage();
 			hideKeyboard(etMessage);
 		}
 	}
@@ -428,7 +532,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 	public void onBackPressed() {
 		if (rlDrawer.isSelected()) {
 			forceClose();
-		} else {
+		} else if(rlDrawerEmoji.isSelected()){
+			forceClose();
+		}else {
 			super.onBackPressed();
 		}
 	}
@@ -531,6 +637,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 			} else if (id == R.id.footerMore && isActive == 1) {
 				rlDrawerManage();
+				hideSettings();
+
+			} else if (id == R.id.footerSmiley && isActive == 1) {
+				rlDrawerEmojiManage();
 				hideSettings();
 
 			} else if (id == R.id.partnerIcon) {

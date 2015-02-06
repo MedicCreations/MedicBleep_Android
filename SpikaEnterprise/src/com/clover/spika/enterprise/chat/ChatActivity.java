@@ -185,6 +185,8 @@ public class ChatActivity extends BaseChatActivity {
 	public void onBackPressed() {
 		if (rlDrawer.isSelected()) {
 			forceClose();
+		}else if (rlDrawerEmoji.isSelected()) {
+			forceClose();
 		} else {
 			kill();
 		}

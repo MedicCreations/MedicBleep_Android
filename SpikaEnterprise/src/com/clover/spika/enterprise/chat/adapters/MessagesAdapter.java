@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -21,6 +22,9 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -41,6 +45,7 @@ import android.widget.SeekBar;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
@@ -81,6 +86,8 @@ public class MessagesAdapter extends BaseAdapter {
 	private MediaPlayer currentMediaPlayer = null;
 	private String currentPlayingPath = null;
 	private Button activePlayIcon = null;
+	private Chronometer activeChronometer = null;
+	private SeekBar activeSeekbar = null;
 	
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
@@ -158,7 +165,7 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youWebView.setVisibility(View.GONE);
 		holder.youWebView.loadUrl("about:blank");
 		holder.youFlForWebView.setVisibility(View.GONE);
-
+		
 		// Assign values
 		final Message msg = getItem(position);
 
@@ -248,18 +255,10 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
 				
+				resetVoiceControls(holder.meListenSound);
 				holder.meListenSound.setVisibility(View.VISIBLE);
 				setVoiceControls(msg, holder.meListenSound);
 				
-//				holder.meListenSound.setOnClickListener(new OnClickListener() {
-//
-//					@Override
-//					public void onClick(View v) {
-//						Intent intent = new Intent(ctx, VoiceActivity.class);
-//						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-//						ctx.startActivity(intent);
-//					}
-//				});
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
 				holder.meDownloadFile.setVisibility(View.VISIBLE);
@@ -418,19 +417,9 @@ public class MessagesAdapter extends BaseAdapter {
 
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
 				
+				resetVoiceControls(holder.youListenSound);
 				holder.youListenSound.setVisibility(View.VISIBLE);
 				setVoiceControls(msg, holder.youListenSound);
-				
-//				holder.youListenSound.setVisibility(View.VISIBLE);
-//				holder.youListenSound.setOnClickListener(new OnClickListener() {
-//
-//					@Override
-//					public void onClick(View v) {
-//						Intent intent = new Intent(ctx, VoiceActivity.class);
-//						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-//						ctx.startActivity(intent);
-//					}
-//				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
@@ -505,6 +494,27 @@ public class MessagesAdapter extends BaseAdapter {
 		return convertView;
 	}
 	
+	private void resetVoiceControls(RelativeLayout holder) {
+		Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
+		playPause.setBackgroundResource(R.drawable.play_button);
+		playPause.setVisibility(View.VISIBLE);
+		SeekBar seekControl = (SeekBar) holder.getChildAt(Const.SoundControl.SEEKBAR);
+		seekControl.setMax(100);
+		seekControl.setProgress(0);
+		seekControl.setVisibility(View.VISIBLE);
+		Chronometer chronoControl = (Chronometer) holder.getChildAt(Const.SoundControl.CHRONOMETER);
+		chronoControl.setText("00:00");
+		chronoControl.setVisibility(View.VISIBLE);
+		ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+		pbLoading.setVisibility(View.INVISIBLE);
+		ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+		pbLoadingBar.setVisibility(View.INVISIBLE);
+		pbLoadingBar.setProgress(0);
+		TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+		percentTv.setVisibility(View.INVISIBLE);
+		percentTv.setText("0%");
+	}
+
 	private double totalOfDownload = -1;
 	private void setVoiceControls(final Message msg, final RelativeLayout holder) {
 		
@@ -516,131 +526,216 @@ public class MessagesAdapter extends BaseAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				File sound = new File(Utils.getFilesFolder() + "/" + msg.getFile_id());
-				if(sound.exists()){
-					Log.d("LOG", sound.getPath()+" is EXISTS");
-					if(currentMediaPlayer == null){
-						currentMediaPlayer = new MediaPlayer();
-						try {
-							currentMediaPlayer.setDataSource(sound.getAbsolutePath());
-							currentMediaPlayer.prepare();
-							currentMediaPlayer.start();
-							currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-
-								@Override
-								public void onCompletion(MediaPlayer mp) {
-									currentPlayingPath = null;
-									currentMediaPlayer.stop();
-									currentMediaPlayer.release();
-									currentMediaPlayer = null;
-									playPause.setText("P");
-								}
-							});
-							currentPlayingPath = sound.getAbsolutePath();
-							playPause.setText("AKK");
-							activePlayIcon = playPause;
-						} catch (IOException e) {
-							e.printStackTrace();
-							currentMediaPlayer = null;
-						}
-					}else{
-						if(currentPlayingPath != null && currentPlayingPath.equals(sound.getAbsolutePath())){
-							currentMediaPlayer.stop();
-							currentMediaPlayer.release();
-							currentMediaPlayer = null;
-							playPause.setText("P");
-						}else{
-							currentMediaPlayer.stop();
-							currentMediaPlayer.release();
-							currentMediaPlayer = null;
-							activePlayIcon.setText("P");
-							try {
-								currentMediaPlayer = new MediaPlayer();
-								currentMediaPlayer.setDataSource(sound.getAbsolutePath());
-								currentMediaPlayer.prepare();
-								currentMediaPlayer.start();
-								currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-
-									@Override
-									public void onCompletion(MediaPlayer mp) {
-										currentPlayingPath = null;
-										currentMediaPlayer.stop();
-										currentMediaPlayer.release();
-										currentMediaPlayer = null;
-										playPause.setText("P");
-									}
-								});
-								currentPlayingPath = sound.getAbsolutePath();
-								playPause.setText("AKK");
-								activePlayIcon = playPause;
-							} catch (IOException e) {
-								e.printStackTrace();
-								currentMediaPlayer = null;
-							}
-						}
-					}
-					
+				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+		});
+		
+		seekControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				if(observer != null) observer.stop();
+				observer = null;
+				if(activeSeekbar != null && activeSeekbar != seekBar) activeSeekbar.setProgress(0);
+				if(currentMediaPlayer != null){
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+				}
+				currentMediaPlayer = null;
+				if(activeChronometer != null){
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+				}
+				if(activePlayIcon != null){
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+				}
+				seekBar.setMax(100);
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+		});
+	}
+	
+	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder){
+		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
+		if(sound.exists()){
+			if(currentMediaPlayer == null){
+				
+				play(chronoControl, sound, playPause, seekControl, startOffset);
+				
+			}else{
+				if(currentPlayingPath != null && currentPlayingPath.equals(sound.getAbsolutePath())){
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
 				}else{
-					if(isDownloadingSound){
-						return;
-					}
-					isDownloadingSound = true;
-					totalOfDownload = -1;
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
 					
-					final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
-					final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
-					final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
-					pbLoading.setVisibility(View.VISIBLE);
-					pbLoadingBar.setVisibility(View.VISIBLE);
-					percentTv.setVisibility(View.VISIBLE);
-					playPause.setVisibility(View.INVISIBLE);
-					seekControl.setVisibility(View.INVISIBLE);
-					chronoControl.setVisibility(View.INVISIBLE);
-					new FileManageApi().downloadFileToFile(sound, msg.getFile_id(), false, ctx, new ApiCallback<String>() {
+					play(chronoControl, sound, playPause, seekControl, startOffset);
+					
+				}
+			}
+			
+		}else{
+			if(isDownloadingSound){
+				return;
+			}
+			isDownloadingSound = true;
+			totalOfDownload = -1;
+			
+			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+		}
+	}
+	
+	private class MediaObserver implements Runnable {
+		private AtomicBoolean stop = new AtomicBoolean(false);
+
+		public void stop() {
+			stop.set(true);
+		}
+
+		@Override
+		public void run() {
+			while (!stop.get()) {
+				long elapsedMillis = SystemClock.elapsedRealtime() - activeChronometer.getBase();
+				Log.e("LOG", elapsedMillis+" :ELG");
+				activeSeekbar.setProgress((int) elapsedMillis);
+				try {
+					Thread.sleep(33);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	private MediaObserver observer = null;
+	
+	private void play(final Chronometer chronoControl, File sound, final Button playPause, final SeekBar seekControl, final int startOffset){
+		currentMediaPlayer = new MediaPlayer();
+		if (activeChronometer != null) activeChronometer.stop();
+		try {
+			
+			currentMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					seekControl.setMax(mp.getDuration());
+					if(startOffset != 0) {
+						double offset = (((double)seekControl.getMax() * (double)startOffset) / (double)100);
+						currentMediaPlayer.seekTo((int) offset);
+						chronoControl.setBase((long) (SystemClock.elapsedRealtime() - offset));
+					}
+				}
+			});
+			
+			currentMediaPlayer.setDataSource(sound.getAbsolutePath());
+			currentMediaPlayer.prepare();
+			currentMediaPlayer.start();
+			chronoControl.setBase(SystemClock.elapsedRealtime());
+			chronoControl.start();
+			activeChronometer = chronoControl;
+			activeSeekbar = seekControl;
+			
+			observer = new MediaObserver();
+			new Thread(observer).start();
+			
+			currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					observer.stop();
+				    activeSeekbar.setProgress(0);
+					currentPlayingPath = null;
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					chronoControl.stop();
+					chronoControl.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
+				}
+			});
+			
+			currentPlayingPath = sound.getAbsolutePath();
+			playPause.setBackgroundResource(R.drawable.pause_button);
+			activePlayIcon = playPause;
+		} catch (IOException e) {
+			e.printStackTrace();
+			currentMediaPlayer = null;
+		}
+	}
+	
+	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId){
+		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+		pbLoading.setVisibility(View.VISIBLE);
+		pbLoadingBar.setVisibility(View.VISIBLE);
+		percentTv.setVisibility(View.VISIBLE);
+		playPause.setVisibility(View.INVISIBLE);
+		seekControl.setVisibility(View.INVISIBLE);
+		chronoControl.setVisibility(View.INVISIBLE);
+		new FileManageApi().downloadFileToFile(sound, fileId, false, ctx, new ApiCallback<String>() {
+			
+			@Override
+			public void onApiResponse(Result<String> result) {
+				pbLoading.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setProgress(0);
+				percentTv.setVisibility(View.INVISIBLE);
+				percentTv.setText("0%");
+				playPause.setVisibility(View.VISIBLE);
+				seekControl.setVisibility(View.VISIBLE);
+				chronoControl.setVisibility(View.VISIBLE);
+				
+				isDownloadingSound = false;
+			}
+		}, new ProgressBarListeners() {
+			
+			@Override
+			public void onSetMax(long total) {
+				if(totalOfDownload == -1) {
+					totalOfDownload = total;
+					pbLoadingBar.setMax((int) totalOfDownload);
+				}
+			}
+			
+			@Override
+			public void onProgress(long current) {
+				if(totalOfDownload != -1){
+					pbLoadingBar.setProgress((int) current);
+					final String percent = String.valueOf(((int)(100 * current / (double)totalOfDownload)));
+					((Activity)ctx).runOnUiThread(new Runnable() {
 						
 						@Override
-						public void onApiResponse(Result<String> result) {
-							pbLoading.setVisibility(View.INVISIBLE);
-							pbLoadingBar.setVisibility(View.INVISIBLE);
-							pbLoadingBar.setProgress(0);
-							percentTv.setVisibility(View.INVISIBLE);
-							percentTv.setText("0%");
-							playPause.setVisibility(View.VISIBLE);
-							seekControl.setVisibility(View.VISIBLE);
-							chronoControl.setVisibility(View.VISIBLE);
-							
-							isDownloadingSound = false;
+						public void run() {
+							percentTv.setText(String.valueOf(percent + "%"));	
 						}
-					}, new ProgressBarListeners() {
-						
-						@Override
-						public void onSetMax(long total) {
-							if(totalOfDownload == -1) {
-								totalOfDownload = total;
-								pbLoadingBar.setMax((int) totalOfDownload);
-							}
-						}
-						
-						@Override
-						public void onProgress(long current) {
-							if(totalOfDownload != -1){
-								pbLoadingBar.setProgress((int) current);
-								final String percent = String.valueOf(((int)(100 * current / (double)totalOfDownload)));
-								((Activity)ctx).runOnUiThread(new Runnable() {
-									
-									@Override
-									public void run() {
-										percentTv.setText(String.valueOf(percent + "%"));	
-									}
-								});
-							}
-						}
-						
-						@Override
-						public void onFinish() {}
 					});
 				}
 			}
+			
+			@Override
+			public void onFinish() {}
 		});
 	}
 	

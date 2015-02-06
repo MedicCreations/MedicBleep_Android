@@ -117,6 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/footerMore"
+                android:layout_toLeftOf="@+id/footerSmiley"
                 android:background="@drawable/chat_mask"
                 android:imeOptions="actionSend"
                 android:inputType="textCapSentences"
@@ -124,6 +125,19 @@
                 android:singleLine="false"
                 android:maxLines="3" 
                 android:scrollbars="vertical"/>
+            
+            <ImageButton
+                android:id="@+id/footerSmiley"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/more_button_selector" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -240,6 +254,16 @@
                         android:textColor="@android:color/black" />
                 </LinearLayout>
             </LinearLayout>
+        </RelativeLayout>
+        
+        <RelativeLayout
+            android:id="@+id/rlDrawerEmoji"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:background="#ff00ff"
+            android:visibility="gone" >
+
         </RelativeLayout>
 
         <View
