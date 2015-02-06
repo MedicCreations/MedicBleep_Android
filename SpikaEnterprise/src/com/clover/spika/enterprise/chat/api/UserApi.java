@@ -40,7 +40,7 @@ public class UserApi {
 				postParams.put(Const.IMAGE_THUMB, thumb);
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.TOKEN));
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {
@@ -84,7 +84,7 @@ public class UserApi {
 				JSONObject jsonObject = new JSONObject();
 
 				HashMap<String, String> postParams = new HashMap<String, String>();
-				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL));
+				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PUSH_TOKEN_LOCAL));
 				try {
 					jsonObject = NetworkManagement
 							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, userToken);
@@ -132,7 +132,7 @@ public class UserApi {
 				postParams.put(Const.PUSH_TOKEN, "");
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.TOKEN));
 					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
@@ -183,7 +183,7 @@ public class UserApi {
 				}
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.TOKEN));
 					return new Gson().fromJson(jsonObject.toString(), UserWrapper.class);
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
@@ -223,7 +223,7 @@ public class UserApi {
 				HashMap<String, String> getParams = new HashMap<String, String>();
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, getParams, SpikaEnterpriseApp.getSharedPreferences(context)
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, getParams, SpikaEnterpriseApp.getSharedPreferences()
 							.getCustomString(Const.TOKEN));
 					return new Gson().fromJson(jsonObject.toString(), Information.class);
 				} catch (JsonSyntaxException e) {
@@ -286,7 +286,7 @@ public class UserApi {
 				try {
 
 					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams,
-							SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+							SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.TOKEN));
 
 					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
 
@@ -385,7 +385,7 @@ public class UserApi {
 
 					if (isUpdate) {
 						jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams,
-								SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.TOKEN));
+								SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.TOKEN));
 					} else {
 
 						String hashTempPassword = Utils.getHexString(tempPassword);
@@ -414,11 +414,11 @@ public class UserApi {
 						if (baseModel.getCode() == Const.API_SUCCESS) {
 							result = new Result<Login>(Result.ApiResponseState.SUCCESS);
 
-							SpikaEnterpriseApp.getSharedPreferences(getContext()).setUserTokenId(baseModel.getToken());
-							if (SpikaEnterpriseApp.getSharedPreferences(getContext()).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
-								SpikaEnterpriseApp.getSharedPreferences(getContext()).setCustomString(Const.PASSWORD, newPassword);
+							SpikaEnterpriseApp.getSharedPreferences().setUserTokenId(baseModel.getToken());
+							if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
+								SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, newPassword);
 							} else {
-								SpikaEnterpriseApp.getSharedPreferences(getContext()).setCustomString(Const.PASSWORD, "");
+								SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, "");
 							}
 						} else {
 							result = new Result<Login>(Result.ApiResponseState.FAILURE);
@@ -454,7 +454,7 @@ public class UserApi {
 				}
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, getParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
 				} catch (JSONException e) {

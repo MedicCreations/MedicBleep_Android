@@ -56,7 +56,7 @@ public class RecordVideoActivity extends BaseActivity {
 	private Runnable mRunnForProgressBar;
 
 	private long mDurationOfVideo = 0;
-	
+
 	private String mFilePath = null;
 	private String mFileName = null;
 
@@ -79,14 +79,14 @@ public class RecordVideoActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-                try {
-                	String[] items = mFilePath.split("/");
-            		mFileName = items[items.length - 1];
-                    uploadVideo(mFilePath);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
+				try {
+					String[] items = mFilePath.split("/");
+					mFileName = items[items.length - 1];
+					uploadVideo(mFilePath);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
 		});
 
 		mIsPlaying = 0;
@@ -126,19 +126,19 @@ public class RecordVideoActivity extends BaseActivity {
 
 		Bundle extras = getIntent().getExtras();
 		chatId = extras.getString(Const.CHAT_ID);
-		
-		//if activity restart after calling camera intent (SAMSUNG DEVICES)
-		if(!SpikaEnterpriseApp.getInstance().checkForRestartVideoActivity()){
+
+		// if activity restart after calling camera intent (SAMSUNG DEVICES)
+		if (!SpikaEnterpriseApp.checkForRestartVideoActivity()) {
 			gotoGalleryOrCamera(extras.getInt(Const.INTENT_TYPE));
-		}else{
-			mFilePath = SpikaEnterpriseApp.getInstance().videoPath();
+		} else {
+			mFilePath = SpikaEnterpriseApp.videoPath();
 		}
 
 	}
 
 	private void sendMsg(String fileId) {
-        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
-        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
 
 			@Override
@@ -154,37 +154,37 @@ public class RecordVideoActivity extends BaseActivity {
 		});
 	}
 
-    private void uploadVideo(String filePath) throws FileNotFoundException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            uploadVideoAsync(filePath);
-        } else {
-            new BaseChatActivity.BuildTempFileAsync(this, getVideoName(Uri.parse(filePath)), new BaseChatActivity.OnTempFileCreatedListener() {
-                @Override
-                public void onTempFileCreated(String path, String name) {
-                    uploadVideoAsync(path);
-                }
-            }).execute(getContentResolver().openInputStream(Uri.parse(filePath)));
-        }
-    }
+	private void uploadVideo(String filePath) throws FileNotFoundException {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+			uploadVideoAsync(filePath);
+		} else {
+			new BaseChatActivity.BuildTempFileAsync(this, getVideoName(Uri.parse(filePath)), new BaseChatActivity.OnTempFileCreatedListener() {
+				@Override
+				public void onTempFileCreated(String path, String name) {
+					uploadVideoAsync(path);
+				}
+			}).execute(getContentResolver().openInputStream(Uri.parse(filePath)));
+		}
+	}
 
-    private void uploadVideoAsync(String path) {
-        new FileManageApi().uploadFile(path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
+	private void uploadVideoAsync(String path) {
+		new FileManageApi().uploadFile(path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
 
-            @Override
-            public void onApiResponse(Result<UploadFileModel> result) {
+			@Override
+			public void onApiResponse(Result<UploadFileModel> result) {
 
-                if (result.isSuccess()) {
-                    sendMsg(result.getResultData().getFileId());
-                } else {
-                    AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
-                    dialog.setFailed("");
-                }
-            }
-        });
-    }
+				if (result.isSuccess()) {
+					sendMsg(result.getResultData().getFileId());
+				} else {
+					AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
+					dialog.setFailed("");
+				}
+			}
+		});
+	}
 
 	private void gotoGalleryOrCamera(int chooseWhereToGo) {
-		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(true);
+		SpikaEnterpriseApp.setCheckForRestartVideoActivity(true);
 		switch (chooseWhereToGo) {
 		case Const.VIDEO_INTENT_INT:
 
@@ -205,12 +205,13 @@ public class RecordVideoActivity extends BaseActivity {
 					mFilePath = video.getPath();
 
 					cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-					
-					//----> don't know why, but on older devices don't work with EXTRA_OUTPUT
+
+					// ----> don't know why, but on older devices don't work
+					// with EXTRA_OUTPUT
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
-		            } 
-					
+					}
+
 					startActivityForResult(cameraIntent, RESULT_FROM_CAMERA);
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -234,38 +235,40 @@ public class RecordVideoActivity extends BaseActivity {
 			break;
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		try {
 			Uri selectedVideoUri = data.getData();
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                mFilePath = getVideoPath(selectedVideoUri);
-            } else {
-                mFilePath = selectedVideoUri.toString();
-            }
-            
-            SpikaEnterpriseApp.getInstance().setVideoPath(mFilePath);
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+				mFilePath = getVideoPath(selectedVideoUri);
+			} else {
+				mFilePath = selectedVideoUri.toString();
+			}
 
-            super.onActivityResult(requestCode, resultCode, data);
+			SpikaEnterpriseApp.setVideoPath(mFilePath);
+
+			super.onActivityResult(requestCode, resultCode, data);
 		} catch (Exception e) {
 			e.printStackTrace();
 			finish();
 		}
 	}
 
-    private boolean isRecordTooLong(long videoDuration) {
-        if (videoDuration != 0 && videoDuration > Const.MAX_RECORDING_TIME_VIDEO * 1000) {
-
-            AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
-            dialog.setFailed(getResources().getString(R.string.e_record_time_to_long));
-
-            return true;
-        } else {
-            return false;
-        }
-    }
+	// XXX not in use
+	// private boolean isRecordTooLong(long videoDuration) {
+	// if (videoDuration != 0 && videoDuration > Const.MAX_RECORDING_TIME_VIDEO
+	// * 1000) {
+	//
+	// AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
+	// dialog.setFailed(getResources().getString(R.string.e_record_time_to_long));
+	//
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// }
 
 	private void onPlay(int playPauseStop) {
 
@@ -286,32 +289,32 @@ public class RecordVideoActivity extends BaseActivity {
 
 	private void startPlaying() {
 		if (mIsPlaying == 0) {
-            mVideoView.setVideoURI(Uri.parse(mFilePath));
-            mVideoView.start();
+			mVideoView.setVideoURI(Uri.parse(mFilePath));
+			mVideoView.start();
 			mVideoView.setOnPreparedListener(new OnPreparedListener() {
 
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mDurationOfVideo = mVideoView.getDuration();
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mDurationOfVideo = mVideoView.getDuration();
 
-                    mPbForPlaying.setMax((int) mDurationOfVideo);
+					mPbForPlaying.setMax((int) mDurationOfVideo);
 
-                    mRunnForProgressBar = new Runnable() {
+					mRunnForProgressBar = new Runnable() {
 
-                        @Override
-                        public void run() {
-                            mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
-                            if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
-                                mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
-                            } else {
-                                mPbForPlaying.setProgress(mVideoView.getDuration());
-                            }
-                        }
-                    };
-                    mHandlerForProgressBar.post(mRunnForProgressBar);
-                    mIsPlaying = 2;
-                }
-            });
+						@Override
+						public void run() {
+							mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
+							if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
+								mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
+							} else {
+								mPbForPlaying.setProgress(mVideoView.getDuration());
+							}
+						}
+					};
+					mHandlerForProgressBar.post(mRunnForProgressBar);
+					mIsPlaying = 2;
+				}
+			});
 
 		} else if (mIsPlaying == 1) {
 			mVideoView.start();
@@ -354,15 +357,15 @@ public class RecordVideoActivity extends BaseActivity {
 	}
 
 	private String getVideoName(Uri uri) {
-        String name = "";
+		String name = "";
 
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+		Cursor cursor = getContentResolver().query(uri, null, null, null, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            name = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
-            cursor.close();
-        }
-        return name;
-    }
-	
+		if (cursor != null && cursor.moveToFirst()) {
+			name = cursor.getString(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME));
+			cursor.close();
+		}
+		return name;
+	}
+
 }

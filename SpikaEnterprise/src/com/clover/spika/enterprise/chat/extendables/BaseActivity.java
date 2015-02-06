@@ -36,10 +36,12 @@ import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.services.robospice.Jackson2SpiceService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.octo.android.robospice.SpiceManager;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -50,6 +52,20 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	PushBroadcastReceiver myPushRecevier;
 	IntentFilter intentFilter;
+
+	protected SpiceManager spiceManager = new SpiceManager(Jackson2SpiceService.class);
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		spiceManager.start(this);
+	}
+
+	@Override
+	protected void onStop() {
+		spiceManager.shouldStop();
+		super.onStop();
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

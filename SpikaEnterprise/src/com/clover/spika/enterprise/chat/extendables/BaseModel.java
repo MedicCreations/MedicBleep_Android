@@ -1,32 +1,34 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseModel {
 
 	@SerializedName("message")
 	@Expose
-	private String message;
+	private String _message;
 
 	@SerializedName("code")
 	@Expose
-	private int code;
+	private int _code;
 
 	public String getMessage() {
-		return message == null ? "" : message;
+		return _message == null ? "" : _message;
 	}
 
 	public void setMessage(String message) {
-		this.message = message;
+		this._message = message;
 	}
 
 	public int getCode() {
-		return code;
+		return _code;
 	}
 
 	public void setCode(int code) {
-		this.code = code;
+		this._code = code;
 	}
 
 	@Override
@@ -38,9 +40,9 @@ public class BaseModel {
 
 		BaseModel baseModel = (BaseModel) o;
 
-		if (code != baseModel.code)
+		if (_code != baseModel._code)
 			return false;
-		if (message != null ? !message.equals(baseModel.message) : baseModel.message != null)
+		if (_message != null ? !_message.equals(baseModel._message) : baseModel._message != null)
 			return false;
 
 		return true;
@@ -48,8 +50,8 @@ public class BaseModel {
 
 	@Override
 	public int hashCode() {
-		int result = message != null ? message.hashCode() : 0;
-		result = 31 * result + code;
+		int result = _message != null ? _message.hashCode() : 0;
+		result = 31 * result + _code;
 		return result;
 	}
 

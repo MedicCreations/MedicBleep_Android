@@ -9,7 +9,6 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -34,9 +33,7 @@ public class RoomsApi {
 				getParams.put(Const.ROOM_ALL_IDS, roomAllIds);
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
-				} catch (JSONException e) {
-					e.printStackTrace();
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.File;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -9,41 +11,24 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
 import com.clover.spika.enterprise.chat.utils.Preferences;
 
-import java.io.File;
-
 public class SpikaEnterpriseApp extends Application {
 
-	private static SpikaEnterpriseApp mInstance;
 	private static Context mAppContext;
-	private boolean mCheckForRestartVideoActivity = false;
-	private String mFilePathForVideo = null;
-	private String mSamsungPath = null;
-
-	private Intent poolingIntent;
+	private static Preferences mAppPreferences;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		mInstance = this;
-		JNAesCrypto.isEncryptionEnabled = getApplicationContext().getResources().getBoolean(R.bool.enable_global_encryption);
+		JNAesCrypto.isEncryptionEnabled = getResources().getBoolean(R.bool.enable_global_encryption);
+		setAppContext(getApplicationContext());
 
-		this.setAppContext(getApplicationContext());
-
-		poolingIntent = new Intent(this, PoolingService.class);
+		Intent poolingIntent = new Intent(this, PoolingService.class);
 		if (getResources().getBoolean(R.bool.enable_polling)) {
 			startService(poolingIntent);
 		} else {
 			stopService(poolingIntent);
 		}
-	}
-
-	public static Preferences getSharedPreferences(Context ctx) {
-		return new Preferences(ctx);
-	}
-
-	public static SpikaEnterpriseApp getInstance() {
-		return mInstance;
 	}
 
 	public static Context getAppContext() {
@@ -54,31 +39,47 @@ public class SpikaEnterpriseApp extends Application {
 		SpikaEnterpriseApp.mAppContext = mAppContext;
 	}
 
-	public boolean checkForRestartVideoActivity() {
+	public static Preferences getSharedPreferences() {
+
+		if (mAppPreferences == null) {
+			return new Preferences(getAppContext());
+		} else {
+			return mAppPreferences;
+		}
+	}
+
+	// Video activity and path variables and methods
+	private static boolean mCheckForRestartVideoActivity = false;
+	private static String mFilePathForVideo = null;
+
+	public static boolean checkForRestartVideoActivity() {
 		return mCheckForRestartVideoActivity;
 	}
 
-	public void setCheckForRestartVideoActivity(boolean check) {
+	public static void setCheckForRestartVideoActivity(boolean check) {
 		mCheckForRestartVideoActivity = check;
 	}
 
-	public String videoPath() {
+	public static String videoPath() {
 		return mFilePathForVideo;
 	}
 
-	public void setVideoPath(String path) {
+	public static void setVideoPath(String path) {
 		mFilePathForVideo = path;
 	}
 
-	public String samsungImagePath() {
+	// Samsung image path variable and methods
+	private static String mSamsungPath = null;
+
+	public static String samsungImagePath() {
 		return mSamsungPath;
 	}
 
-	public void setSamsungImagePath(String path) {
+	public static void setSamsungImagePath(String path) {
 		mSamsungPath = path;
 	}
 
-	public void deleteSamsungPathImage() {
+	public static void deleteSamsungPathImage() {
 		if (mSamsungPath != null && !mSamsungPath.equals("-1")) {
 			File f = new File(mSamsungPath);
 			if (f.exists())
@@ -86,5 +87,4 @@ public class SpikaEnterpriseApp extends Application {
 		}
 		setSamsungImagePath(null);
 	}
-
 }

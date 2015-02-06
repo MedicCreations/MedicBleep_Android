@@ -74,7 +74,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	private boolean mIsOverJellyBean;
 	private boolean mCompressImages;
 	private boolean mIsSamsung = false;
-	
+
 	private boolean isSquare = false;
 
 	@Override
@@ -85,7 +85,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		cropImageView = (CropImageView) findViewById(R.id.CropImageView);
 		cropImageView.setAspectRatio(20, 20);
 		// TODO set fixed rect uncomment
-		//cropImageView.setFixedAspectRatio(true);
+		// cropImageView.setFixedAspectRatio(true);
 
 		// ROTATE
 		// final Button rotateButton = (Button)
@@ -144,7 +144,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		if (getIntent().getExtras().containsKey(Const.CHAT_ID)) {
 			chatId = getIntent().getStringExtra(Const.CHAT_ID);
 		}
-		
+
 		if (getIntent().getExtras().containsKey(Const.IS_SQUARE)) {
 			isSquare = getIntent().getBooleanExtra(Const.IS_SQUARE, false);
 		}
@@ -439,11 +439,11 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	protected void onResume() {
 		super.onResume();
 
-		if (mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null) {
-			if (SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")) {
+		if (mIsSamsung && SpikaEnterpriseApp.samsungImagePath() != null) {
+			if (SpikaEnterpriseApp.samsungImagePath().equals("-1")) {
 				finish();
 			} else {
-				onPhotoTaken(SpikaEnterpriseApp.getInstance().samsungImagePath());
+				onPhotoTaken(SpikaEnterpriseApp.samsungImagePath());
 			}
 		}
 

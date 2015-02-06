@@ -250,6 +250,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			});
 			((ProfileGroupActivity) getActivity()).setChangeImage(Helper.getRoomThumbId(getActivity()), Helper.getRoomThumbId(getActivity()));
 		}
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 	}
 }

@@ -26,11 +26,18 @@ package com.clover.spika.enterprise.chat.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.clover.spika.enterprise.chat.LoginActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 import org.json.JSONArray;
@@ -431,12 +438,31 @@ public class Utils {
 
 		return stringBuffer.toString();
 	}
-	
-	
-	public static boolean isBuildOver (int version){
-		if(android.os.Build.VERSION.SDK_INT > version) return true;
+
+	public static boolean isBuildOver(int version) {
+		if (android.os.Build.VERSION.SDK_INT > version)
+			return true;
 		return false;
 	}
-	
-	
+
+	public static void onFailedUniversal(String message, final Context ctx) {
+
+		if (TextUtils.isEmpty(message)) {
+			message = ctx.getString(R.string.e_something_went_wrong);
+		}
+
+		AppDialog dialog = new AppDialog(ctx, false);
+		dialog.setFailed(message);
+		dialog.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+
+				Intent intent = new Intent(ctx, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				ctx.startActivity(intent);
+			}
+		});
+	}
+
 }

@@ -102,7 +102,7 @@ public class GlobalModelAdapter extends BaseAdapter {
 			holder.itemName.setText(((Group) item.getModel()).getGroupName());
 		}
 
-		if (SpikaEnterpriseApp.getSharedPreferences(mContext).getCustomBoolean(String.valueOf(item.getId()))) {
+		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(String.valueOf(item.getId()))) {
 			holder.missedLayout.setVisibility(View.VISIBLE);
 		} else {
 			holder.missedLayout.setVisibility(View.GONE);

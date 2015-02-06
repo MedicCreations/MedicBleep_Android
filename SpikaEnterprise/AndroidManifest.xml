@@ -90,6 +90,10 @@
         </receiver>
 
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
+        
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.robospice.Jackson2SpiceService"
+            android:exported="false" />
 
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
@@ -182,10 +186,10 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ChangePasswordActivity"
             android:screenOrientation="portrait" />
-		<activity
+        <activity
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
-		
+
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
         <activity

@@ -102,14 +102,13 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onResume() {
 		super.onResume();
 		onClosed();
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
-
 		View header = inflater.inflate(R.layout.pull_to_refresh_header_create_room, null);
 
 		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);

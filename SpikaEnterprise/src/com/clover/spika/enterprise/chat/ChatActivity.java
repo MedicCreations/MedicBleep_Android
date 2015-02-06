@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -22,7 +21,7 @@ import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -34,11 +33,13 @@ import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -52,7 +53,7 @@ public class ChatActivity extends BaseChatActivity {
 	private boolean isRunning = false;
 	private boolean isResume = false;
 	private boolean isOnCreate = false;
-	
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -88,10 +89,10 @@ public class ChatActivity extends BaseChatActivity {
 		});
 
 		isOnCreate = true;
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
-		
+
 	}
 
 	@Override
@@ -99,12 +100,12 @@ public class ChatActivity extends BaseChatActivity {
 		super.onResume();
 
 		// if activity restart after calling camera intent (SAMSUNG DEVICES)
-		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
-		SpikaEnterpriseApp.getInstance().setVideoPath(null);
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.setCheckForRestartVideoActivity(false);
+		SpikaEnterpriseApp.setVideoPath(null);
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 
 		loadImage();
-		
+
 		if (isResume) {
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
@@ -128,7 +129,7 @@ public class ChatActivity extends BaseChatActivity {
 
 				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, isAdmin);
 
-				if (chatType == Const.C_ROOM){
+				if (chatType == Const.C_ROOM) {
 					if (isAdmin && isActive == 1) {
 						chatType = Const.C_ROOM_ADMIN_ACTIVE;
 					}
@@ -200,7 +201,7 @@ public class ChatActivity extends BaseChatActivity {
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 			loadImage();
 		} else {
-			if (!isOnCreate){
+			if (!isOnCreate) {
 				getIntentData(intent);
 			}
 		}
@@ -279,63 +280,57 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void getIntentData(final Intent intent) {
-		
+
 		if (intent != null && intent.getExtras() != null) {
-			
+
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 				try {
 					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
 
-					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword,
-							intent.getExtras().getString(Const.ORGANIZATION_ID), this, true,
-							new ApiCallback<Login>() {
-								@Override
-								public void onApiResponse(Result<Login> result) {
-									if (result.isSuccess()) {
+					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
 
-										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
-												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
+					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences().getCustomString(
+							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID));
+					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
-										new GoogleUtils().getPushToken(ChatActivity.this, result.getResultData().getToken());
+						@Override
+						public void onRequestFailure(SpiceException ex) {
+							Utils.onFailedUniversal(null, ChatActivity.this);
+						}
 
-										handleIntentSecondLevel(intent);
-									} else {
+						@Override
+						public void onRequestSuccess(Login result) {
 
-										String message = "";
-										if (result.hasResultData()) {
-											if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
-												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(intent);
-											} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
-												Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
-												intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
-												startActivity(intent);
-												finish();
-												return;
-											} else {
-												message = result.getResultData().getMessage();
-											}
-										} else {
-											message = getString(R.string.e_something_went_wrong);
-										}
+							if (result.getCode() == Const.API_SUCCESS) {
 
-										AppDialog dialog = new AppDialog(ChatActivity.this, false);
-										dialog.setFailed(message);
-										dialog.setOnDismissListener(new OnDismissListener() {
+								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(),
+										result.getToken());
+								new GoogleUtils().getPushToken(ChatActivity.this, result.getToken());
 
-											@Override
-											public void onDismiss(DialogInterface dialog) {
-												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(intent);
-											}
-										});
-									}
+								handleIntentSecondLevel(intent);
+
+							} else {
+
+								String message = "";
+								if (result.getCode() == Const.E_INVALID_TOKEN) {
+									Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
+									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									startActivity(intent);
+								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
+									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
+									startActivity(intent);
+									finish();
+									return;
+								} else {
+									message = result.getMessage();
 								}
-							});
+
+								Utils.onFailedUniversal(message, ChatActivity.this);
+							}
+						}
+					});
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -348,19 +343,19 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void handleIntentSecondLevel(Intent intent) {
-		
+
 		isOnCreate = false;
-		
+
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
-//			adapter.clearItems();
+			// adapter.clearItems();
 
 			if (!TextUtils.isEmpty(chatPassword)) {
-				
-				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)){
+
+				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
 					getMessages(true, true, true, false, false, false);
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
@@ -388,7 +383,7 @@ public class ChatActivity extends BaseChatActivity {
 						}
 					});
 				}
-				
+
 			} else {
 				getMessages(true, true, true, false, false, false);
 			}
@@ -470,7 +465,7 @@ public class ChatActivity extends BaseChatActivity {
 
 		chatType = chat.getType();
 
-		if (chatType == Const.C_ROOM){
+		if (chatType == Const.C_ROOM) {
 			if (isAdmin && isActive == 1) {
 				chatType = Const.C_ROOM_ADMIN_ACTIVE;
 			}
@@ -573,7 +568,7 @@ public class ChatActivity extends BaseChatActivity {
 			isRunning = true;
 
 			if (isClear) {
-//				adapter.clearItems();
+				// adapter.clearItems();
 				totalItems = 0;
 			}
 		} else {

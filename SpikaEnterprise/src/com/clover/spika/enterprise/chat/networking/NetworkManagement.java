@@ -1,17 +1,16 @@
 package com.clover.spika.enterprise.chat.networking;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.text.TextUtils;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
-import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Preferences;
-
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -40,15 +39,18 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
+import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
@@ -98,6 +100,12 @@ public class NetworkManagement {
 		}
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+		
+		Header[] head = response.getAllHeaders();
+		for(Header h : head){
+			Log.d("RawResponse", h.getName() + " = " + h.getValue());
+		}
+		
 		HttpEntity entity = response.getEntity();
 
 		return Helper.jObjectFromString(getString(entity.getContent()));

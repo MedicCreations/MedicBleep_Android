@@ -100,7 +100,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 	public void onResume() {
 		super.onResume();
 		onClosed();
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 
 		new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
 			@Override

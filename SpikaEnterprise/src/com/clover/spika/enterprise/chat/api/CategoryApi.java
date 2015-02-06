@@ -11,15 +11,13 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class CategoryApi {
 
-	public void getCategory(Context ctx, boolean showProgressBar,
-			final ApiCallback<CategoryList> listener) {
+	public void getCategory(Context ctx, boolean showProgressBar, final ApiCallback<CategoryList> listener) {
 		new BaseAsyncTask<Void, Void, CategoryList>(ctx, showProgressBar) {
 
 			@Override
@@ -29,16 +27,14 @@ public class CategoryApi {
 
 				try {
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null,
-							SpikaEnterpriseApp.getSharedPreferences(getContext()).getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null, SpikaEnterpriseApp.getSharedPreferences().getToken());
 				} catch (JsonSyntaxException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if(jsonObject == null) return null;
+				if (jsonObject == null)
+					return null;
 				return new Gson().fromJson(jsonObject.toString(), CategoryList.class);
 			}
 
