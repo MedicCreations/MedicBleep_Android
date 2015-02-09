@@ -15,20 +15,21 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.RoomsApi;
+import com.clover.spika.enterprise.chat.api.robospice.RoomsSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomListener {
 
@@ -141,22 +142,37 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 	public void getUsers() {
 
-		new RoomsApi().getDistinctUser(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity(), true, new ApiCallback<ConfirmUsersList>() {
+		handleProgress(true);
+		RoomsSpice.GetDistinctUser getDistinctUser = new RoomsSpice.GetDistinctUser(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity());
+		spiceManager.execute(getDistinctUser, new CustomSpiceListener<ConfirmUsersList>() {
 
 			@Override
-			public void onApiResponse(Result<ConfirmUsersList> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
 
-				List<GlobalModel> globalList = new ArrayList<GlobalModel>();
+			@Override
+			public void onRequestSuccess(ConfirmUsersList list) {
+				handleProgress(false);
 
-				for (User user : result.getResultData().getUserList()) {
+				if (list != null && list.getCode() == Const.API_SUCCESS) {
+					List<GlobalModel> globalList = new ArrayList<GlobalModel>();
 
-					GlobalModel model = new GlobalModel();
-					model.setType(Type.USER);
-					model.setUser(user);
-					globalList.add(model);
+					if (list.getUserList() != null) {
+						for (User user : list.getUserList()) {
+
+							GlobalModel model = new GlobalModel();
+							model.setType(Type.USER);
+							model.setUser(user);
+							globalList.add(model);
+						}
+					}
+
+					setData(globalList);
+				} else {
+					Utils.onFailedUniversal(null, getActivity());
 				}
-
-				setData(globalList);
 			}
 		});
 	}

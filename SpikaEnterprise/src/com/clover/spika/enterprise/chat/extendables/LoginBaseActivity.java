@@ -15,6 +15,7 @@ import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.models.PreLogin;
@@ -32,6 +33,36 @@ public abstract class LoginBaseActivity extends Activity {
 
 	protected SpiceManager spiceManager = new SpiceManager(Jackson2SpiceService.class);
 
+	private AppProgressDialog progressBar;
+
+	public void handleProgress(boolean showProgress) {
+
+		try {
+
+			if (showProgress) {
+
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
+					progressBar = null;
+				}
+
+				progressBar = new AppProgressDialog(this);
+				progressBar.show();
+
+			} else {
+
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
+				}
+
+				progressBar = null;
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -47,6 +78,7 @@ public abstract class LoginBaseActivity extends Activity {
 	protected void executePreLoginApi(final String user, final String pass, final Bundle extras, final boolean showProgress) throws UnsupportedEncodingException,
 			NoSuchAlgorithmException {
 
+		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
 		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword, this);
@@ -54,11 +86,13 @@ public abstract class LoginBaseActivity extends Activity {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
 				Utils.onFailedUniversal(null, LoginBaseActivity.this);
 			}
 
 			@Override
 			public void onRequestSuccess(PreLogin result) {
+				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
@@ -125,6 +159,7 @@ public abstract class LoginBaseActivity extends Activity {
 	protected void executeLoginApi(String user, final String pass, String organization_id, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException,
 			NoSuchAlgorithmException {
 
+		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
 		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id, this);
@@ -132,11 +167,13 @@ public abstract class LoginBaseActivity extends Activity {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
 				Utils.onFailedUniversal(null, LoginBaseActivity.this);
 			}
 
 			@Override
 			public void onRequestSuccess(Login result) {
+				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
 

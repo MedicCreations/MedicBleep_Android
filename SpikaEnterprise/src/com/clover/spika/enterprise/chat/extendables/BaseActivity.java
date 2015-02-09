@@ -33,6 +33,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
@@ -65,6 +66,36 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onStop() {
 		spiceManager.shouldStop();
 		super.onStop();
+	}
+
+	private AppProgressDialog progressBar;
+
+	public void handleProgress(boolean showProgress) {
+
+		try {
+
+			if (showProgress) {
+
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
+					progressBar = null;
+				}
+
+				progressBar = new AppProgressDialog(this);
+				progressBar.show();
+
+			} else {
+
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
+				}
+
+				progressBar = null;
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override

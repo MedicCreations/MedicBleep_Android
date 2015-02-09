@@ -290,17 +290,20 @@ public class ChatActivity extends BaseChatActivity {
 
 					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
 
+					handleProgress(true);
 					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
 							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
 					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
 						@Override
 						public void onRequestFailure(SpiceException ex) {
+							handleProgress(false);
 							Utils.onFailedUniversal(null, ChatActivity.this);
 						}
 
 						@Override
 						public void onRequestSuccess(Login result) {
+							handleProgress(false);
 
 							if (result.getCode() == Const.API_SUCCESS) {
 

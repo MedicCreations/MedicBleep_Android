@@ -35,7 +35,7 @@ public class SplashActivity extends LoginBaseActivity {
 		super.onResume();
 		extras = getIntent().getExtras();
 	}
-
+	
 	private void pause(final int time, final boolean toLogin) {
 		new BaseAsyncTask<Void, Void, Void>(this, false) {
 

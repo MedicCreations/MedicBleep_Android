@@ -363,8 +363,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 		etMessage.setMaxLines(4);
 		etMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				
-				if ((event != null  && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || actionId == EditorInfo.IME_ACTION_DONE) {
+
+				if ((event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || actionId == EditorInfo.IME_ACTION_DONE) {
 					if (!TextUtils.isEmpty(etMessage.getText().toString())) {
 						onEditorSendEvent(etMessage.getText().toString());
 						return true;
@@ -373,7 +373,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				return false;
 			}
 		});
-		
+
 	}
 
 	protected void setSettingsItems(int chatType) {
@@ -597,7 +597,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				} else if (position == SETTINGS_POSITION_SECOND) {
 					if (chatType == Const.C_PRIVATE) {
 						InvitePeopleActivity.startActivity(chatId, chatType, isAdmin, BaseChatActivity.this);
-					} else if (chatType == Const.C_ROOM){
+					} else if (chatType == Const.C_ROOM) {
 						leaveChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
 						ManageUsersActivity.startActivity(chatId, BaseChatActivity.this);

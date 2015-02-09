@@ -34,7 +34,7 @@ public class LoginSpice {
 			parameters.set(Const.USERNAME, username);
 			parameters.set(Const.PASSWORD, password);
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getHeader(ctx));
+			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
 
 			return getRestTemplate().postForObject(Const.BASE_URL + Const.F_PRELOGIN, request, PreLogin.class);
 		}
@@ -64,7 +64,7 @@ public class LoginSpice {
 			parameters.set(Const.PASSWORD, password);
 			parameters.set(Const.ORGANIZATION_ID, organizationId);
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getHeader(ctx));
+			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
 
 			return getRestTemplate().postForObject(Const.BASE_URL + Const.F_LOGIN, request, Login.class);
 		}
@@ -91,7 +91,7 @@ public class LoginSpice {
 			parameters.set(Const.USERNAME, username);
 			parameters.set(Const.PASSWORD, password);
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getHeader(ctx));
+			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
 
 			return getRestTemplate().getForObject(Const.BASE_URL + Const.F_LOGIN, Login.class, request);
 		}

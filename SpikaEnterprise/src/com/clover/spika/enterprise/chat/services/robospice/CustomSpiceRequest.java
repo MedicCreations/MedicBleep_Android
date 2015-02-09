@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -51,7 +52,7 @@ public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T>
 		return null;
 	}
 
-	public HttpHeaders getHeader(Context ctx) {
+	public HttpHeaders getPostHeader(Context ctx) {
 
 		List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
 		acceptableMediaTypes.add(MediaType.ALL);
@@ -72,6 +73,11 @@ public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T>
 		}
 
 		return headers;
+	}
+
+	public HttpEntity<?> getGetheaders(Context ctx) {
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(getPostHeader(ctx));
+		return httpEntity;
 	}
 
 }
