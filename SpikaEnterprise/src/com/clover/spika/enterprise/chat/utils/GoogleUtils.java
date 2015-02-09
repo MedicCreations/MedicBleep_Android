@@ -1,8 +1,11 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -15,8 +18,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import java.io.IOException;
 
 public class GoogleUtils {
 
@@ -69,6 +70,7 @@ public class GoogleUtils {
 					String regId = gcm.register(Const.GCM_SENDER_ID);
 					msg = "Device registered, registration ID=" + regId;
 
+					Log.d("Vida", "RegId: " + msg);
 					// if (regId != null &&
 					// !regId.equals(getRegistrationId(context))) {
 					storeRegistrationId(context, regId);
@@ -98,7 +100,7 @@ public class GoogleUtils {
 	 */
 	private void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
-		SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
 		new UserApi().updateUserToken(ctx, mUserToken, new ApiCallback<BaseModel>() {
 
 			@Override
@@ -142,9 +144,9 @@ public class GoogleUtils {
 	 * @return registration ID, or empty string if there is no existing
 	 *         registration ID.
 	 */
-	public String getRegistrationId(Context context) {
+	public String getRegistrationId(Context ctx) {
 
-		String registrationId = SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PUSH_TOKEN_LOCAL);
+		String registrationId = SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL);
 
 		if (registrationId == null || registrationId.isEmpty()) {
 			Logger.i("GCM registration ID not found");
@@ -154,7 +156,7 @@ public class GoogleUtils {
 		// Check if app was updated; if so, it must clear the registration ID
 		// since the existing regID is not guaranteed to work with the new
 		// app version.
-		if (Helper.isUpdated(context)) {
+		if (Helper.isUpdated(ctx)) {
 			Logger.i("App has been updated, we need to register GCM again.");
 			return "";
 		}

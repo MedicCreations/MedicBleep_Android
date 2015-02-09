@@ -38,25 +38,25 @@ public class LoginActivity extends LoginBaseActivity {
 		password = (EditText) findViewById(R.id.password);
 		tvForgotPassword = (RobotoRegularTextView) findViewById(R.id.tvForgotPassword);
 		tvForgotPassword.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
 				startActivity(intent);
-				
+
 			}
 		});
 		rememberMeCheckBox = (CheckBox) findViewById(R.id.checkBoxRememberLogin);
-		rememberMeCheckBox.setChecked(SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS));
+		rememberMeCheckBox.setChecked(SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS));
 		rememberMeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (!isChecked) {
-					SpikaEnterpriseApp.getSharedPreferences().removePreference(Const.USERNAME);
-					SpikaEnterpriseApp.getSharedPreferences().removePreference(Const.PASSWORD);
+					SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).removePreference(Const.USERNAME);
+					SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).removePreference(Const.PASSWORD);
 				}
 
-				SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, isChecked);
+				SpikaEnterpriseApp.getSharedPreferences(LoginActivity.this).setCustomBoolean(Const.REMEMBER_CREDENTIALS, isChecked);
 			}
 		});
 
@@ -67,8 +67,8 @@ public class LoginActivity extends LoginBaseActivity {
 		super.onResume();
 		hideKeyboard(username);
 
-		username.setText(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USERNAME));
-		password.setText(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
+		username.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME));
+		password.setText(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
 
 	}
 
@@ -108,9 +108,9 @@ public class LoginActivity extends LoginBaseActivity {
 				executePreLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
 
 				if (rememberMeCheckBox.isChecked()) {
-					SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.USERNAME, username.getText().toString());
-					SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, password.getText().toString());
-					SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, true);
+					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.USERNAME, username.getText().toString());
+					SpikaEnterpriseApp.getSharedPreferences(this).setCustomString(Const.PASSWORD, password.getText().toString());
+					SpikaEnterpriseApp.getSharedPreferences(this).setCustomBoolean(Const.REMEMBER_CREDENTIALS, true);
 				}
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
@@ -120,5 +120,5 @@ public class LoginActivity extends LoginBaseActivity {
 
 		}
 	}
-	
+
 }

@@ -39,8 +39,8 @@ public class PasscodeUtility {
 	 *            context of the activity (or application context)
 	 * @return true if passcode has been enabled
 	 */
-	public boolean isPasscodeEnabled(Context context) {
-		return SpikaEnterpriseApp.getSharedPreferences().isPasscodeEnabled();
+	public boolean isPasscodeEnabled(Context ctx) {
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).isPasscodeEnabled();
 	}
 
 	/**
@@ -52,12 +52,12 @@ public class PasscodeUtility {
 	 *            sets the internal variable which is later checked for passcode
 	 *            availability
 	 */
-	public void setPasscodeEnabled(Context context, boolean isPasscodeEnabled) {
+	public void setPasscodeEnabled(Context ctx, boolean isPasscodeEnabled) {
 		if (Looper.myLooper() != Looper.getMainLooper()) {
 			throw new IllegalAccessError("You can only set new values on main thread!");
 		}
 
-		SpikaEnterpriseApp.getSharedPreferences().setPasscodeEnabled(isPasscodeEnabled);
+		SpikaEnterpriseApp.getSharedPreferences(ctx).setPasscodeEnabled(isPasscodeEnabled);
 	}
 
 	/**
@@ -86,9 +86,9 @@ public class PasscodeUtility {
 		this.isSessionValid = isSessionValid;
 	}
 
-	public boolean validate(Context context, String requestedPasscode) {
+	public boolean validate(Context ctx, String requestedPasscode) {
 		if (this.passcode == null) {
-			this.passcode = SpikaEnterpriseApp.getSharedPreferences().getPasscode();
+			this.passcode = SpikaEnterpriseApp.getSharedPreferences(ctx).getPasscode();
 
 			// if, by any chance, passcode length is wrong, react as if entered
 			// passcode is false and thus not validated
@@ -99,14 +99,14 @@ public class PasscodeUtility {
 		return this.passcode.equals(requestedPasscode);
 	}
 
-	public void setPasscode(Context context, String requestedPasscode) {
+	public void setPasscode(Context ctx, String requestedPasscode) {
 		if (TextUtils.isEmpty(requestedPasscode)) {
-			SpikaEnterpriseApp.getSharedPreferences().removePreference(Const.PREFERENCES_STORED_PASSCODE);
+			SpikaEnterpriseApp.getSharedPreferences(ctx).removePreference(Const.PREFERENCES_STORED_PASSCODE);
 			return;
 		}
 
 		if (requestedPasscode.length() == 4) {
-			SpikaEnterpriseApp.getSharedPreferences().setPasscode(requestedPasscode);
+			SpikaEnterpriseApp.getSharedPreferences(ctx).setPasscode(requestedPasscode);
 		}
 	}
 

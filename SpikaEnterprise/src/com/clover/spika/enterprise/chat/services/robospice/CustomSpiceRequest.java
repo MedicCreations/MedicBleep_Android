@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -50,7 +51,7 @@ public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T>
 		return null;
 	}
 
-	public HttpHeaders getHeader() {
+	public HttpHeaders getHeader(Context ctx) {
 
 		List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
 		acceptableMediaTypes.add(MediaType.ALL);
@@ -58,14 +59,14 @@ public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T>
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setAccept(acceptableMediaTypes);
-		
+
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 		headers.set("Encoding", "UTF-8");
 		headers.set(Const.APP_VERSION, Helper.getAppVersion());
 		headers.set(Const.PLATFORM, "android");
 
-		String token = SpikaEnterpriseApp.getSharedPreferences().getToken();
+		String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
 		if (!TextUtils.isEmpty(token)) {
 			headers.set("token", token);
 		}

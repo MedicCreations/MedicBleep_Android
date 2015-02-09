@@ -288,10 +288,10 @@ public class ChatActivity extends BaseChatActivity {
 				try {
 					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
 
-					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
+					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
 
-					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences().getCustomString(
-							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID));
+					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
+							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
 					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
 						@Override
@@ -319,7 +319,7 @@ public class ChatActivity extends BaseChatActivity {
 									startActivity(intent);
 								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
 									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
-									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
+									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
 									startActivity(intent);
 									finish();
 									return;

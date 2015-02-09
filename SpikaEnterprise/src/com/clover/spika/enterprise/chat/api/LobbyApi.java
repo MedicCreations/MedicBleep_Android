@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class LobbyApi {
 
-	public void getLobbyByType(final int page, final int type, Context ctx, boolean showProgressBar, final ApiCallback<LobbyModel> listener) {
+	public void getLobbyByType(final int page, final int type, final Context ctx, boolean showProgressBar, final ApiCallback<LobbyModel> listener) {
 		new BaseAsyncTask<Void, Void, LobbyModel>(ctx, showProgressBar) {
 
 			@Override
@@ -30,7 +30,7 @@ public class LobbyApi {
 				getParams.put(Const.TYPE, String.valueOf(type));
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_LOBBY, getParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_LOBBY, getParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

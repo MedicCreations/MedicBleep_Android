@@ -33,7 +33,7 @@ public class RoomsApi {
 				getParams.put(Const.ROOM_ALL_IDS, roomAllIds);
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_DISTINC_USER, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

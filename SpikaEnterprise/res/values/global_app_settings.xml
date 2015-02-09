@@ -28,7 +28,7 @@
 
     <!-- Enable polling in the app -->
     <bool name="enable_polling">false</bool>
-    
+
     <!-- Enable first user profile than chat -->
     <bool name="first_user_profile">false</bool>
 

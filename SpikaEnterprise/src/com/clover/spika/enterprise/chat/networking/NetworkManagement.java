@@ -136,6 +136,8 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httpGet.setHeader("token", token);
 		}
+		
+		Log.d("RawRequest token", "Token: " + token);
 
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");

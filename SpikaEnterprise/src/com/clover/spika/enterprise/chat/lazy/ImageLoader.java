@@ -178,7 +178,7 @@ public class ImageLoader {
 	 * @param url
 	 * @return
 	 */
-	public Bitmap getBitmap(Context context, String url) {
+	public Bitmap getBitmap(Context ctx, String url) {
 
 		File file = fileCache.getFile(url);
 
@@ -205,7 +205,7 @@ public class ImageLoader {
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.FILE_ID, url);
 
-			InputStream is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(), Const.F_USER_GET_FILE, getParams).getContent();
+			InputStream is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(ctx), Const.F_USER_GET_FILE, getParams).getContent();
 
 			BufferedInputStream bis = new BufferedInputStream(is);
 

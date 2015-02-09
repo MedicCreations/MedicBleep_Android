@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class CategoryApi {
 
-	public void getCategory(Context ctx, boolean showProgressBar, final ApiCallback<CategoryList> listener) {
+	public void getCategory(final Context ctx, boolean showProgressBar, final ApiCallback<CategoryList> listener) {
 		new BaseAsyncTask<Void, Void, CategoryList>(ctx, showProgressBar) {
 
 			@Override
@@ -27,7 +27,7 @@ public class CategoryApi {
 
 				try {
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
 				} catch (JsonSyntaxException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

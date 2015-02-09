@@ -16,6 +16,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 import android.app.Application;
+import android.app.Notification;
 
 import com.octo.android.robospice.SpringAndroidSpiceService;
 import com.octo.android.robospice.persistence.CacheManager;
@@ -24,7 +25,7 @@ import com.octo.android.robospice.persistence.springandroid.json.jackson.Jackson
 
 public class Jackson2SpiceService extends SpringAndroidSpiceService {
 
-//	private static final int WEBSERVICES_TIMEOUT = 10000;
+	// private static final int WEBSERVICES_TIMEOUT = 10000;
 
 	@Override
 	public RestTemplate createRestTemplate() {
@@ -43,7 +44,7 @@ public class Jackson2SpiceService extends SpringAndroidSpiceService {
 		// bug on http connection for Android < 2.2
 		// http://android-developers.blogspot.fr/2011/09/androids-http-clients.html
 		// but still a problem for upload with Spring-android on android 4.1
-		System.setProperty("http.keepAlive", "false");
+		// System.setProperty("http.keepAlive", "false");
 
 		// // set timeout for requests
 		// ClientHttpRequestFactory factory = restTemplate.getRequestFactory();
@@ -90,6 +91,11 @@ public class Jackson2SpiceService extends SpringAndroidSpiceService {
 		cacheManager.addPersister(jacksonObjectPersisterFactory);
 
 		return cacheManager;
+	}
+	
+	@Override
+	public Notification createDefaultNotification() {
+		return null;
 	}
 
 }

@@ -25,7 +25,7 @@ public class LocalPushApi {
 				try {
 
 					JSONObject jsonObject = NetworkManagement
-							.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences().getToken());
+							.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
 
 					return new Gson().fromJson(jsonObject.toString(), LocalPush.class);
 

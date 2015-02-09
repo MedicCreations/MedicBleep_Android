@@ -47,7 +47,7 @@ public class GlobalApi {
 
 				try {
 
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_SEARCH_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences()
+					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_SEARCH_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context)
 							.getToken());
 
 					int code = jsonObject.getInt(Const.CODE);
@@ -128,7 +128,7 @@ public class GlobalApi {
 
 				try {
 
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_MEMBERS_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences()
+					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_MEMBERS_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context)
 							.getToken());
 
 					int code = jsonObject.getInt(Const.CODE);

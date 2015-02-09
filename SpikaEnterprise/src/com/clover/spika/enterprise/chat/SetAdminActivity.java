@@ -144,7 +144,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 
 						Intent intent = new Intent();
 
-						if (String.valueOf(user.getId()).equals(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USER_ID))) {
+						if (String.valueOf(user.getId()).equals(SpikaEnterpriseApp.getSharedPreferences(SetAdminActivity.this).getCustomString(Const.USER_ID))) {
 							intent.putExtra(Const.IS_ADMIN, true);
 						} else {
 							intent.putExtra(Const.IS_ADMIN, false);

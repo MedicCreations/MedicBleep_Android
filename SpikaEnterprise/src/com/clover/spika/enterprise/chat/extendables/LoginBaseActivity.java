@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
@@ -48,7 +49,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword);
+		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword, this);
 		spiceManager.execute(preLoginWithCredentials, new CustomSpiceListener<PreLogin>() {
 
 			@Override
@@ -126,7 +127,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id);
+		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id, this);
 		spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
 			@Override
@@ -141,6 +142,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 					Logger.d("Success");
 
+					Log.d("Vida", "token: " + result.getToken());
 					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(), result.getToken());
 
 					new GoogleUtils().getPushToken(LoginBaseActivity.this, result.getToken());

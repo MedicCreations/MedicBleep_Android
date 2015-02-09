@@ -81,19 +81,21 @@
 
         <receiver
             android:name="com.clover.spika.enterprise.chat.services.gcm.GcmBroadcastReceiver"
+            android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
                 <category android:name="com.clover.spika.enterprise.chat.gcm" />
             </intent-filter>
         </receiver>
 
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
-        
         <service
             android:name="com.clover.spika.enterprise.chat.services.robospice.Jackson2SpiceService"
             android:exported="false" />
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
@@ -189,9 +191,6 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
-
-        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
-
         <activity
             android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
             android:screenOrientation="portrait" />

@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 
 public class ChatApi {
 
-	public void startChat(final boolean isGroup, final String userId, final String firstname, final String lastname, boolean showProgressBar, Context ctx,
+	public void startChat(final boolean isGroup, final String userId, final String firstname, final String lastname, boolean showProgressBar, final Context ctx,
 			final ApiCallback<Chat> listener) {
 		new BaseAsyncTask<Void, Void, Chat>(ctx, showProgressBar) {
 
@@ -45,7 +45,7 @@ public class ChatApi {
 						requestParams.put(Const.LASTNAME, lastname);
 					}
 
-					jsonObject = NetworkManagement.httpPostRequest(url, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpPostRequest(url, requestParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (IOException e) {
@@ -102,7 +102,7 @@ public class ChatApi {
 						}
 					}
 
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_MESSAGES, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_MESSAGES, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (IOException e) {
@@ -182,7 +182,7 @@ public class ChatApi {
 					requestParams.put(Const.ROOT_ID, String.valueOf(rootId));
 					requestParams.put(Const.PARENT_ID, String.valueOf(parentId));
 
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_SEND_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_SEND_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					if (jsonObject != null) {
 						return jsonObject.getInt(Const.CODE);
@@ -225,7 +225,7 @@ public class ChatApi {
 				requestParams.put(Const.CHAT_ID, chatId);
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
 				} catch (IOException e) {
@@ -274,7 +274,7 @@ public class ChatApi {
 
 					JSONObject jsonObject = null;
 
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT_ADMIN, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_LEAVE_CHAT_ADMIN, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (Exception e) {
@@ -319,7 +319,7 @@ public class ChatApi {
 				requestParams.put(Const.ROOT_ID, String.valueOf(messageId));
 
 				try {
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_THREADS, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_THREADS, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -359,7 +359,7 @@ public class ChatApi {
 				requestParams.put(Const.MESSAGE_ID, messageId);
 
 				try {
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_DELETE_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_DELETE_MESSAGE, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
@@ -411,7 +411,7 @@ public class ChatApi {
 				requestParams.put(Const.PASSWORD, password);
 
 				try {
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_CREATE_ROOM, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_CREATE_ROOM, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (ClientProtocolException e) {
@@ -477,7 +477,7 @@ public class ChatApi {
 				}
 
 				try {
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
 				} catch (IOException e) {
@@ -519,7 +519,7 @@ public class ChatApi {
 				JSONObject jsonObject = new JSONObject();
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_CHAT, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), BaseModel.class);
 				} catch (IOException e) {
@@ -573,7 +573,7 @@ public class ChatApi {
 
 				try {
 
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, requestParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
+					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
 					return new Gson().fromJson(String.valueOf(jsonObject), Chat.class);
 				} catch (Exception e) {
