@@ -28,6 +28,7 @@
     <color name="text_gray_image">#7e7e7e</color>
     <color name="devil_gray">#666666</color>
     <color name="light_light_gray">#eeeeee</color>
+    <color name="dark_gray">#555555</color>
 
     <!-- Enterprise style -->
     <color name="default_blue">#43A5DA</color>

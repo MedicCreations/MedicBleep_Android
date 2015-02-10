@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -47,15 +49,20 @@ import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.EmojiApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.Stickers;
+import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
+import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
+import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -98,6 +105,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private Animation animHideSettingsHack;
 
 	private ImageLoader imageLoader;
+	
+	private List<Stickers> stickersList = new ArrayList<Stickers>();
+	
+	private SelectEmojiListener mEmojiListener = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -388,11 +399,26 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}else{
 			AnimUtils.translationY(rlDrawerEmoji, 0, 0, 0, null);
 			rlDrawerEmoji.setVisibility(View.VISIBLE);
+			
+			if(stickersList.size() == 0){
+				new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
+					
+					@Override
+					public void onApiResponse(Result<StickersHolder> result) {
+						stickersList.addAll(result.getResultData().getStickersList());
+						EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+						layout.setStickersList(result.getResultData().getStickersList(), BaseChatActivity.this, mEmojiListener);
+					}
+				});
+			}
+			
 			AnimUtils.translationX(rlDrawerEmoji, getResources().getDisplayMetrics().widthPixels, 0, drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setSelected(true);
 					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
+					EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+					layout.resetDotsIfNeed();
 				}
 			});
 			
@@ -410,6 +436,21 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	private void rlDrawerEmojiManage() {
+		if(rlDrawer.isSelected()){
+			replaceDrawer();
+			return;
+		}
+		if(stickersList.size() == 0){
+			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
+				
+				@Override
+				public void onApiResponse(Result<StickersHolder> result) {
+					stickersList.addAll(result.getResultData().getStickersList());
+					EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+					layout.setStickersList(result.getResultData().getStickersList(), BaseChatActivity.this, mEmojiListener);
+				}
+			});
+		}
 		if (!rlDrawerEmoji.isSelected()) {
 			rlDrawerEmoji.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawerEmoji, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
@@ -428,6 +469,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 						@Override
 						public void run() {
 							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
+							EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+							layout.resetDotsIfNeed();
 						}
 					}, 100);
 				}
@@ -727,7 +770,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 			}
 		}
 	};
-
+	
+	public void setEmojiListener(SelectEmojiListener lis){
+		mEmojiListener = lis;
+	}
+	
 	/**
 	 * Called when admin wants to activate chat
 	 */

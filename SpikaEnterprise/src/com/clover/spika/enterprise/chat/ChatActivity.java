@@ -33,12 +33,14 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -91,6 +93,14 @@ public class ChatActivity extends BaseChatActivity {
 		
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
+		
+		setEmojiListener(new SelectEmojiListener() {
+			
+			@Override
+			public void onEmojiSelect(Stickers selectedStickers) {
+				sendMessage(Const.MSG_TYPE_GIF, chatId, selectedStickers.getUrl(), null, null, null, null);
+			}
+		});
 		
 	}
 
@@ -543,6 +553,7 @@ public class ChatActivity extends BaseChatActivity {
 				if (result.isSuccess()) {
 					etMessage.setText("");
 					hideKeyboard(etMessage);
+					forceClose();
 
 					callNewMsgs();
 				} else {

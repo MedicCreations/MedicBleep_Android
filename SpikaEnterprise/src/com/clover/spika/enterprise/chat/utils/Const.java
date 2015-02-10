@@ -235,6 +235,7 @@ public class Const {
 	public static final String F_CHANGE_PASSWORD = "/user/password/change";
 	public static final String F_GLOBAL_SEARCH_URL = "/search/list";
 	public static final String F_GLOBAL_MEMBERS_URL = "/member/list";
+	public static final String F_STICKERS_URL = "/message/stickers";
 
 	public static final int API_SUCCESS = 2000;
 
@@ -279,6 +280,8 @@ public class Const {
 	public static final String DEFAULT_IMAGE_USER = "default_user_image";
 	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
 	public static final String FROM_CHAT = "from_chat";
+	public static final String POSITION = "position";
+	public static final String STICEKRS_HOLDER = "stickersHolder";
 	
 	public static final class SoundControl{
 		public static final int PLAY_BUTTON = 0;
