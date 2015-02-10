@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.adapters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.Group;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 public class GroupsAdapter extends BaseAdapter {
@@ -45,6 +48,24 @@ public class GroupsAdapter extends BaseAdapter {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
+	
+	public List<GlobalModel> getData(){
+		return data;
+	}
+	
+	public void manageData(String manageWith, List<GlobalModel> allData){
+		data.clear();
+		data.addAll(allData);
+		for (int i = 0; i < data.size(); i++) {
+			if (((Chat) data.get(i).getModel()).getChat_name().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				continue;
+			} else {
+				data.remove(i);
+				i--;
+			}
+		}
+		this.notifyDataSetChanged();
+	}
 
 	@Override
 	public int getCount() {
@@ -67,7 +88,7 @@ public class GroupsAdapter extends BaseAdapter {
 		final ViewHolderCharacter holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_lobby, parent, false);
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_people, parent, false);
 
 			holder = new ViewHolderCharacter(convertView);
 			convertView.setTag(holder);
@@ -82,7 +103,6 @@ public class GroupsAdapter extends BaseAdapter {
 
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.groupImage);
 		holder.groupName.setText(((Chat) item.getModel()).getChat_name());
-		holder.lastMessage.setText("last message");
 
 		return convertView;
 	}
@@ -95,9 +115,8 @@ public class GroupsAdapter extends BaseAdapter {
 
 		public ViewHolderCharacter(View view) {
 
-			groupImage = (ImageView) view.findViewById(R.id.recentImage);
-			groupName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
-			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
+			groupImage = (ImageView) view.findViewById(R.id.item_image);
+			groupName = (RobotoRegularTextView) view.findViewById(R.id.item_name);
 			
 		}
 

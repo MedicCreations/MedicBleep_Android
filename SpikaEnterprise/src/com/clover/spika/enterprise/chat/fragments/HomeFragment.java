@@ -58,8 +58,6 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		//adapter.handlePushNotificationNumber(chatId);
 	}
 
-
-
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {

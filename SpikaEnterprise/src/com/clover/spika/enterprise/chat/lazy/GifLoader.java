@@ -15,18 +15,16 @@ import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.TextUtils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
 
 public class GifLoader {
 
@@ -63,11 +61,22 @@ public class GifLoader {
 	public GifLoader(Context context) {
 
 		fileCache = new FileCache(context);
+		gifCache = GifCache.getInstance();
 
 		// Creates a thread pool that reuses a fixed number of
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
 	}
+	
+//	public GifLoader(Context context, GifCache cache) {
+//
+//		fileCache = new FileCache(context);
+//		gifCache = cache;
+//
+//		// Creates a thread pool that reuses a fixed number of
+//		// threads operating off a shared unbounded queue.
+//		executorService = Executors.newFixedThreadPool(5);
+//	}
 
 	public void displayImage(Context ctx, String url, ImageView imageView) {
 
@@ -75,7 +84,7 @@ public class GifLoader {
 	}
 
 	public void displayImage(Context ctx, String url, ImageView imageView, OnImageDisplayFinishListener lis) {
-
+		
 		mListener = lis;
 
 		if (TextUtils.isEmpty(url) || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)) {
@@ -89,12 +98,12 @@ public class GifLoader {
 
 		// Check image is stored in MemoryCache Map or not (see
 		// MemoryCache.java)
-		File file = gifCache.get(url);
+		GifAnimationDrawable file = gifCache.get(url);
 
 		if (file != null) {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
-//			imageView.setImageBitmap(bitmap); //TODO
+			Log.d("LOG", "SET TAG");
 			imageView.setTag(file);
 			if (mListener != null)
 				mListener.onFinish();
@@ -102,6 +111,7 @@ public class GifLoader {
 			// queue Photo to download from url
 			queuePhoto(ctx, url, imageView);
 
+			Log.d("LOG", "SET BLAH");
 			// Before downloading image show default image
 			if (defaultImageId != -1) {
 				imageView.setImageResource(defaultImageId);
@@ -149,7 +159,7 @@ public class GifLoader {
 					return;
 
 				// download image from web url
-				File file = getFile(context, photoToLoad.url);
+				GifAnimationDrawable file = getFile(context, photoToLoad.url);
 
 				// set image data in Memory Cache
 				gifCache.put(photoToLoad.url, file);
@@ -180,15 +190,15 @@ public class GifLoader {
 	 * @param url
 	 * @return
 	 */
-	public File getFile(Context context, String url) {
+	public GifAnimationDrawable getFile(Context context, String url) {
 
 		File file = fileCache.getFile(url);
 
 		// start: Get image from cache
 		try {
 
-			File localFile;
-			localFile = file;
+			GifAnimationDrawable localFile;
+			localFile = new GifAnimationDrawable(file, context);
 			
 			if (localFile != null) {
 				return localFile;
@@ -202,8 +212,6 @@ public class GifLoader {
 
 		// start: Download image
 		try {
-			File fileNew = null;
-
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.FILE_ID, url);
 
@@ -223,8 +231,8 @@ public class GifLoader {
 			fos.flush();
 			fos.close();
 			is.close();
-
-			return fileNew;
+			
+			return new GifAnimationDrawable(file, context);
 
 		} catch (Throwable ex) {
 			if (Const.DEBUG_CRYPTO)
@@ -249,10 +257,10 @@ public class GifLoader {
 
 	// Used to display bitmap in the UI thread
 	private class BitmapDisplayer implements Runnable {
-		File file;
+		GifAnimationDrawable file;
 		PhotoToLoad photoToLoad;
 
-		public BitmapDisplayer(File file, PhotoToLoad photoLoad) {
+		public BitmapDisplayer(GifAnimationDrawable file, PhotoToLoad photoLoad) {
 			this.file = file;
 			this.photoToLoad = photoLoad;
 		}
@@ -261,7 +269,6 @@ public class GifLoader {
 
 			// Show bitmap on UI
 			if (file != null) {
-//				photoToLoad.imageView.setImageBitmap(bitmap); //TODO
 				photoToLoad.imageView.setTag(file);
 				if (mListener != null)
 					mListener.onFinish();

@@ -11,36 +11,27 @@
         android:id="@+id/loading_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp" >
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:background="@color/dark_gray" >
 
-        <View
-            android:id="@+id/spliter3"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_alignParentTop="true" />
-
-        <ImageView
-            android:id="@+id/loading_bar_img"
+        <ProgressBar
+            android:id="@+id/loadingPaging"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+             />
+        
+        <TextView android:id="@+id/loadingPagingText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/spliter3"
-            android:layout_centerHorizontal="true"
-            android:contentDescription="@null" />
+            android:layout_height="35dp"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:text="@string/loading_older_messages"
+            android:layout_toRightOf="@id/loadingPaging"
+            android:layout_marginLeft="5dp"
+            android:textColor="@android:color/white"/>
 
-        <View
-            android:id="@+id/spliter"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_below="@+id/loading_bar_img"
-            android:layout_marginTop="10dp"
-            android:background="@color/text_blue" />
-
-        <View
-            android:id="@+id/spliter2"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_below="@+id/spliter" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -217,6 +208,12 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp" >
 
+                    <ProgressBar
+                        android:id="@+id/mePbGif"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center" />
+
                     <ImageView
                         android:id="@+id/meGifView"
                         android:layout_width="150dp"
@@ -224,11 +221,6 @@
                         android:layout_gravity="right"
                         android:contentDescription="@null"
                         android:scaleType="fitCenter" />
-
-                    <WebView
-                        android:id="@+id/meWebView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
                 </FrameLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
@@ -379,16 +371,6 @@
                             android:visibility="invisible" />
                     </RelativeLayout>
 
-                    <!--
-                         <ImageView
-                        android:id="@+id/youListenSound"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_gravity="left"
-                        android:contentDescription="@null"
-                        android:src="@drawable/icon_voice" />
-                    -->
-
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/youWatchVideo"
                         android:layout_width="wrap_content"
@@ -424,10 +406,19 @@
                         android:layout_width="150dp"
                         android:layout_height="150dp" >
 
-                        <WebView
-                            android:id="@+id/youWebView"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                        <ProgressBar
+                            android:id="@+id/youPbGif"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center" />
+
+                        <ImageView
+                            android:id="@+id/youGifView"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_gravity="left"
+                            android:contentDescription="@null"
+                            android:scaleType="fitCenter" />
                     </FrameLayout>
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView

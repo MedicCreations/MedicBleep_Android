@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.adapters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -44,6 +45,26 @@ public class PeopleAdapter extends BaseAdapter {
 	public void addData(List<GlobalModel> list) {
 		data.addAll(list);
 		notifyDataSetChanged();
+	}
+	
+	public List<GlobalModel> getData(){
+		return data;
+	}
+	
+	public void manageData(String manageWith, List<GlobalModel> allData){
+		data.clear();
+		data.addAll(allData);
+		for(int i = 0; i < data.size(); i++){
+			if(((User)data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+				continue;
+			}else if(((User)data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+				continue;
+			}else{
+				data.remove(i);
+				i--;
+			}
+		}
+		this.notifyDataSetChanged();
 	}
 
 	@Override

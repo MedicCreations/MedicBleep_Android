@@ -1,21 +1,15 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
@@ -65,14 +59,18 @@ public class PhotoActivity extends BaseActivity {
 					
 					@Override
 					public void onFinish() {
+						Log.d("LOG", "finish");
 						pbLoading.setVisibility(View.GONE);
 						GifAnimationDrawable big;
 						try {
-							big = new GifAnimationDrawable((File) mImageView.getTag(), PhotoActivity.this);
-							big.setOneShot(false);
-							mImageView.setImageDrawable(big);
-							big.setVisible(true, true);
-						} catch (IOException e) {
+							if(mImageView.getTag() != null){
+								big = (GifAnimationDrawable) mImageView.getTag();
+								
+								big.setOneShot(false);
+								mImageView.setImageDrawable(big);
+								big.setVisible(true, true);
+							}
+						} catch (NullPointerException e) {
 							e.printStackTrace();
 						}
 					}

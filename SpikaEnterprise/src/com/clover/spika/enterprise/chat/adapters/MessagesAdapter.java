@@ -23,29 +23,24 @@ import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
@@ -54,7 +49,6 @@ import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
-import com.clover.spika.enterprise.chat.VoiceActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -135,8 +129,6 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// set items to null
-		holder.loading_bar_img.setBackgroundColor(Color.TRANSPARENT);
-
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
 
@@ -162,17 +154,17 @@ public class MessagesAdapter extends BaseAdapter {
 
 		holder.loading_bar.setVisibility(View.GONE);
 		
-		holder.meWebView.setVisibility(View.GONE);
 		holder.meGifView.setVisibility(View.GONE);
-		holder.meWebView.loadUrl("about:blank");
-		holder.meFlForWebView.setVisibility(View.GONE);
+		holder.meFlForGif.setVisibility(View.GONE);
 		
-		holder.youWebView.setVisibility(View.GONE);
-		holder.youWebView.loadUrl("about:blank");
-		holder.youFlForWebView.setVisibility(View.GONE);
+		holder.youGifView.setVisibility(View.GONE);
+		holder.youFlForGif.setVisibility(View.GONE);
 		
 		holder.meMsgLayoutBack.setBackgroundResource(R.drawable.shape_my_chat_bubble);
-		if(holder.meFlForWebView.getTag() != null && holder.meFlForWebView.getTag() instanceof GetGif) ((GetGif) holder.meFlForWebView.getTag()).cancel(true);
+		holder.meFlForGif.getChildAt(0).setVisibility(View.VISIBLE); //progress for gif
+		
+		holder.youMsgLayoutBack.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+		holder.youFlForGif.getChildAt(0).setVisibility(View.VISIBLE); //progress for gif
 		
 		// Assign values
 		final Message msg = getItem(position);
@@ -214,25 +206,7 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
 				
-//				holder.meWebView.setVisibility(View.VISIBLE);
-				holder.meFlForWebView.setVisibility(View.VISIBLE);
-				
-//				String x = "<!DOCTYPE html><html><body><img src=\""+msg.getText()+"\" alt=\"Smileyface\" width=\"100%\" height=\"100%\"></body></html>";
-//				holder.meWebView.loadData(x, "text/html", "utf-8");
-//				
-//				holder.meGifView.setOnTouchListener(new OnTouchListener() {
-//					
-//					@Override
-//					public boolean onTouch(View v, MotionEvent event) {
-//						if(event.getAction() == MotionEvent.ACTION_UP){
-//							Intent intent = new Intent(ctx, PhotoActivity.class);
-//							intent.putExtra(Const.IMAGE, msg.getText());
-//							intent.putExtra(Const.TYPE, msg.getType());
-//							ctx.startActivity(intent);
-//						}
-//						return false;
-//					}
-//				});
+				holder.meFlForGif.setVisibility(View.VISIBLE);
 				
 				holder.meGifView.setVisibility(View.VISIBLE);
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
@@ -240,9 +214,7 @@ public class MessagesAdapter extends BaseAdapter {
 					
 					@Override
 					public void onFinish() {
-						GetGif async = new GetGif(holder.meGifView);
-						async.execute();
-						holder.meFlForWebView.setTag(async);
+						setGif(holder.meGifView, (ProgressBar) holder.meFlForGif.getChildAt(0));
 					}
 				});
 				
@@ -395,25 +367,29 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
 				
-				holder.youWebView.setVisibility(View.VISIBLE);
-				holder.youFlForWebView.setVisibility(View.VISIBLE);
+				holder.youFlForGif.setVisibility(View.VISIBLE);
 				
-				String x = "<!DOCTYPE html><html><body><img src=\""+msg.getText()+"\" alt=\"Smileyface\" width=\"100%\" height=\"100%\"></body></html>";
-				holder.youWebView.loadData(x, "text/html", "utf-8");
-				
-				holder.youWebView.setOnTouchListener(new OnTouchListener() {
+				holder.youGifView.setVisibility(View.VISIBLE);
+				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
+				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.youGifView, new OnImageDisplayFinishListener() {
 					
 					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						if(event.getAction() == MotionEvent.ACTION_UP){
-							Intent intent = new Intent(ctx, PhotoActivity.class);
-							intent.putExtra(Const.IMAGE, msg.getText());
-							intent.putExtra(Const.TYPE, msg.getType());
-							ctx.startActivity(intent);
-						}
-						return false;
+					public void onFinish() {
+						setGif(holder.youGifView, (ProgressBar) holder.youFlForGif.getChildAt(0));
 					}
 				});
+				
+				holder.youGifView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.TYPE, msg.getType());
+						ctx.startActivity(intent);
+					}
+				});
+				
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 
@@ -498,8 +474,6 @@ public class MessagesAdapter extends BaseAdapter {
 		// Paging animation
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
-
-			Helper.startPaggingAnimation(ctx, holder.loading_bar_img);
 
 			if (ctx instanceof ChatActivity) {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
@@ -944,36 +918,16 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 	}
 	
-	class GetGif extends AsyncTask<Void, Void, GifAnimationDrawable>{
-		
-		ImageView iv;
-		
-		public GetGif (ImageView iv){
-			this.iv = iv;
+	private void setGif(ImageView iv, ProgressBar pb){
+		GifAnimationDrawable big = (GifAnimationDrawable) iv.getTag();
+		big.setOneShot(false);
+		pb.setVisibility(View.GONE);
+		if(big != null){
+			iv.setImageDrawable(big);
+			big.setVisible(true, true);
 		}
-
-		@Override
-		protected GifAnimationDrawable doInBackground(Void... params) {
-			GifAnimationDrawable big = null;
-			try {
-				big = new GifAnimationDrawable((File) iv.getTag(), ctx);
-				big.setOneShot(false);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return big;
-		}
-		
-		@Override
-		protected void onPostExecute(GifAnimationDrawable result) {
-			super.onPostExecute(result);
-			iv.setImageDrawable(result);
-			result.setVisible(true, true);
-		}
-		
 	}
-
+	
 	public class ViewHolderChatMsg {
 
 		// start: message item for my message
@@ -982,8 +936,7 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView meMsgContent;
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
-		public FrameLayout meFlForWebView;
-		public WebView meWebView;
+		public FrameLayout meFlForGif;
 		public ImageView meGifView;
 		// end: me msg
 
@@ -1013,13 +966,12 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
 		public ImageView profileImage;
-		public FrameLayout youFlForWebView;
-		public WebView youWebView;
+		public FrameLayout youFlForGif;
+		public ImageView youGifView;
 		// end: you msg
 
 		// start: loading bar
 		public RelativeLayout loading_bar;
-		public ImageView loading_bar_img;
 
 		// end: loading bar
 
@@ -1038,8 +990,7 @@ public class MessagesAdapter extends BaseAdapter {
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			
-			meFlForWebView = (FrameLayout) view.findViewById(R.id.meFlForWebView);
-			meWebView = (WebView) view.findViewById(R.id.meWebView);
+			meFlForGif = (FrameLayout) view.findViewById(R.id.meFlForWebView);
 			meGifView = (ImageView) view.findViewById(R.id.meGifView);
 			// end: me msg
 
@@ -1070,13 +1021,12 @@ public class MessagesAdapter extends BaseAdapter {
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
 			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
 			
-			youFlForWebView = (FrameLayout) view.findViewById(R.id.youFlForWebView);
-			youWebView = (WebView) view.findViewById(R.id.youWebView);
+			youFlForGif = (FrameLayout) view.findViewById(R.id.youFlForWebView);
+			youGifView = (ImageView) view.findViewById(R.id.youGifView);
 			// end: you msg
 
 			// start: loading bar
 			loading_bar = (RelativeLayout) view.findViewById(R.id.loading_bar);
-			loading_bar_img = (ImageView) view.findViewById(R.id.loading_bar_img);
 			// end: loading bar
 
 			// start: date separator

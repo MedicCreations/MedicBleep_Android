@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.views.emoji;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,18 +80,17 @@ public class EmojiFragment extends CustomFragment {
 				public void onFinish() {
 					GifAnimationDrawable big;
 					try {
-						big = new GifAnimationDrawable((File) iv.getTag(), getActivity());
+//						big = new GifAnimationDrawable((File) iv.getTag(), getActivity());
+						big = (GifAnimationDrawable) iv.getTag();
 						big.setOneShot(false);
 						iv.setImageDrawable(big);
 						big.setVisible(true, true);
 						
 						pbLoading.setVisibility(View.GONE);
 						iv.setVisibility(View.VISIBLE);
-					} catch (MalformedURLException e) {
+					} catch (NullPointerException e) {
 						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					} 
 				}
 			});
 			
