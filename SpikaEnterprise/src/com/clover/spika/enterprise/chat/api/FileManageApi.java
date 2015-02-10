@@ -221,6 +221,61 @@ public class FileManageApi {
 
 		}.execute();
 	}
+	
+	public void downloadFileToFile(final File destFile, final String fileId, boolean showProgress, final Context ctx, final ApiCallback<String> listener, final ProgressBarListeners pbListener) {
+		new BaseAsyncTask<Void, Void, String>(ctx, showProgress) {
+
+			protected String doInBackground(Void... params) {
+				HashMap<String, String> getParams = new HashMap<String, String>();
+				getParams.put(Const.FILE_ID, fileId);
+
+				try {
+					HttpEntity en = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams);
+					InputStream is = en.getContent();
+
+					File file;
+
+					if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+						file = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_SPEN_FILE);
+					} else {
+						return null;
+					}
+
+					OutputStream os = new FileOutputStream(file);
+					Helper.copyStream(is, os, en.getContentLength(), pbListener);
+
+					is.close();
+					os.close();
+
+					String finalFilePath = Utils.handleFileDecryptionToPath(file.getAbsolutePath(), destFile.getAbsolutePath(), context);
+
+					return finalFilePath;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+
+			protected void onPostExecute(String path) {
+				super.onPostExecute(path);
+
+				if (listener != null) {
+					Result<String> result;
+
+					if (path != null) {
+						result = new Result<String>(Result.ApiResponseState.SUCCESS);
+						result.setResultData(path);
+					} else {
+						result = new Result<String>(Result.ApiResponseState.FAILURE);
+					}
+
+					listener.onApiResponse(result);
+				}
+			}
+
+		}.execute();
+	}
 
 	public void startFileDownload(final String fileName, final String fileId, final int id, Context ctx) {
 		new BaseAsyncTask<Void, Void, Void>(ctx, false) {

@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
+import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
@@ -27,7 +27,7 @@ import java.util.List;
 public class LobbyGroupsFragment extends CustomFragment implements OnItemClickListener {
 
 	private PullToRefreshListView mainListView;
-	private LobbyAdapter adapter;
+	private RecentAdapter adapter;
 	private TextView noItems;
 
 	private int mCurrentIndex = 0;
@@ -57,7 +57,7 @@ public class LobbyGroupsFragment extends CustomFragment implements OnItemClickLi
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new LobbyAdapter(getActivity(), new ArrayList<Chat>(), false);
+		adapter = new RecentAdapter(getActivity(), new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);

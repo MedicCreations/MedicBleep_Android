@@ -1,13 +1,15 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
@@ -15,18 +17,14 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-public class LobbyAdapter extends BaseAdapter {
+public class RecentAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<Chat> data = new ArrayList<Chat>();
 
 	private ImageLoader imageLoader;
 
-	public LobbyAdapter(Context context, Collection<Chat> users, boolean isUsers) {
+	public RecentAdapter(Context context, Collection<Chat> users, boolean isUsers) {
 		this.mContext = context;
 		this.data.addAll(users);
 
@@ -112,22 +110,17 @@ public class LobbyAdapter extends BaseAdapter {
 		}
 
 		// set image to null
-		holder.lobbyImage.setImageDrawable(null);
+		holder.recentImage.setImageDrawable(null);
 
-		if (position % 2 != 0) {
-			holder.itemLayout.setBackgroundColor(getContext().getResources().getColor(R.color.gray_in_adapter));
-		} else {
-			holder.itemLayout.setBackgroundColor(Color.WHITE);
-		}
-
-		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.lobbyImage);
-		holder.lobbyName.setText(getItem(position).getChat_name());
+		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.recentImage);
+		holder.recentName.setText(getItem(position).getChat_name());
+		holder.lastMessage.setText("last message");
 
 		if (Integer.parseInt(getItem(position).getUnread()) > 0) {
-			holder.unreadLayout.setVisibility(View.VISIBLE);
+			holder.unreadText.setVisibility(View.VISIBLE);
 			holder.unreadText.setText(getItem(position).getUnread());
 		} else {
-			holder.unreadLayout.setVisibility(View.INVISIBLE);
+			holder.unreadText.setVisibility(View.INVISIBLE);
 			holder.unreadText.setText("");
 		}
 
@@ -136,23 +129,18 @@ public class LobbyAdapter extends BaseAdapter {
 
 	public class ViewHolderCharacter {
 
-		public RelativeLayout itemLayout;
-		public ImageView lobbyImage;
-
-		public RobotoRegularTextView lobbyName;
-
+		public ImageView recentImage;
+		public RobotoRegularTextView recentName;
 		public TextView unreadText;
-		public RelativeLayout unreadLayout;
+		public RobotoRegularTextView lastMessage;
 
 		public ViewHolderCharacter(View view) {
 
-			itemLayout = (RelativeLayout) view.findViewById(R.id.itemLayout);
-			lobbyImage = (ImageView) view.findViewById(R.id.lobbyImage);
-
-			lobbyName = (RobotoRegularTextView) view.findViewById(R.id.lobbyName);
-
+			recentImage = (ImageView) view.findViewById(R.id.recentImage);
+			recentName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
-			unreadLayout = (RelativeLayout) view.findViewById(R.id.unreadLayout);
+			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
+			
 		}
 
 	}

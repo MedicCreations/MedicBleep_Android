@@ -39,8 +39,8 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	String image;
 
 	ProfileFragment profileFragment;
-	LobbyFragment lobbyFragment;
-	UsersFragment usersFragment;
+	HomeFragment lobbyFragment;
+	PeopleFragment usersFragment;
 	InformationFragment informationFragment;
 
 	public SidebarFragment() {
@@ -115,7 +115,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 		case R.id.lobby:
 
 			if (lobbyFragment == null) {
-				lobbyFragment = new LobbyFragment();
+				lobbyFragment = new HomeFragment();
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.lobby));
@@ -126,7 +126,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 		case R.id.users:
 
 			if (usersFragment == null) {
-				usersFragment = new UsersFragment();
+				usersFragment = new PeopleFragment();
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.users));

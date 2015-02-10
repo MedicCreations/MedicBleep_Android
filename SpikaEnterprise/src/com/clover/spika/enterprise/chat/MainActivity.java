@@ -14,7 +14,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.fragments.LobbyFragment;
+import com.clover.spika.enterprise.chat.fragments.HomeFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
@@ -65,10 +65,10 @@ public class MainActivity extends BaseActivity {
 		if (savedInstanceState != null)
 			mFragment = (CustomFragment) getSupportFragmentManager().getFragment(savedInstanceState, "mainContent");
 		if (mFragment == null)
-			mFragment = new LobbyFragment();
+			mFragment = new HomeFragment();
 
 		setContentView(R.layout.activity_main);
-		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment, LobbyFragment.class.getSimpleName()).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, mFragment, HomeFragment.class.getSimpleName()).commit();
 		// end: set the above view (content)
 
 		// start: set sliding menu options
@@ -289,8 +289,8 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	public void lobbyPushHandle(String chatId) {
-		if (mFragment != null && mFragment instanceof LobbyFragment) {
-			((LobbyFragment) mFragment).handlePushNotificationInFragment(chatId);
+		if (mFragment != null && mFragment instanceof HomeFragment) {
+			((HomeFragment) mFragment).handlePushNotificationInFragment(chatId);
 		}
 	}
 }
