@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.adapters.LobbyAdapter;
+import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
@@ -34,7 +33,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 public class ChooseLobbyActivity extends BaseActivity implements OnItemClickListener{
 	
 	private PullToRefreshListView mainListView;
-	private LobbyAdapter adapter;
+	private RecentAdapter adapter;
 	private TextView noItems;
 
 	private int mCurrentIndex = 0;
@@ -74,7 +73,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new LobbyAdapter(this, new ArrayList<Chat>(), false);
+		adapter = new RecentAdapter(this, new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
