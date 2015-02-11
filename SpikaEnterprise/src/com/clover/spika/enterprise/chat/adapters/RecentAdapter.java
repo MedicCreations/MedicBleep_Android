@@ -140,7 +140,6 @@ public class RecentAdapter extends BaseAdapter {
 			recentName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
 			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
-			
 		}
 
 	}

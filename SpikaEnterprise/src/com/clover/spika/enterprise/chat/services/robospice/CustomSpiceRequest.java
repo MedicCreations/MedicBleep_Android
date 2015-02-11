@@ -53,7 +53,7 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 		.add("Encoding", "UTF-8")
 		.add(Const.APP_VERSION, Helper.getAppVersion())
 		.add(Const.PLATFORM, "android")
-		.add("User-Agent", "SpikaEnterprise Android");
+		.add("User-Agent", Const.HTTP_USER_AGENT);
 
 		String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
 		if (!TextUtils.isEmpty(token)) {
