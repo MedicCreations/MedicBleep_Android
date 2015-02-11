@@ -32,6 +32,7 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -40,6 +41,7 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -92,6 +94,14 @@ public class ChatActivity extends BaseChatActivity {
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
+
+		setEmojiListener(new SelectEmojiListener() {
+
+			@Override
+			public void onEmojiSelect(Stickers selectedStickers) {
+				sendMessage(Const.MSG_TYPE_GIF, chatId, selectedStickers.getUrl(), null, null, null, null);
+			}
+		});
 
 	}
 
@@ -185,6 +195,8 @@ public class ChatActivity extends BaseChatActivity {
 	@Override
 	public void onBackPressed() {
 		if (rlDrawer.isSelected()) {
+			forceClose();
+		} else if (rlDrawerEmoji.isSelected()) {
 			forceClose();
 		} else {
 			kill();
@@ -539,6 +551,7 @@ public class ChatActivity extends BaseChatActivity {
 				if (result.isSuccess()) {
 					etMessage.setText("");
 					hideKeyboard(etMessage);
+					forceClose();
 
 					callNewMsgs();
 				} else {
@@ -615,6 +628,13 @@ public class ChatActivity extends BaseChatActivity {
 					}
 
 					adapter.addItems(chat.getMessagesList(), isNewMsg);
+					for (int i = 0; i < chat.getMessagesList().size(); i++) {
+						if (chat.getMessagesList().get(i).getType() == Const.MSG_TYPE_DEFAULT) {
+							if (chat.getMessagesList().get(i).getText().startsWith("http") && chat.getMessagesList().get(i).getText().endsWith(".gif")) {
+								chat.getMessagesList().get(i).setType(Const.MSG_TYPE_GIF);
+							}
+						}
+					}
 					adapter.setSeenBy(chat.getSeen_by());
 
 					totalItems = Integer.valueOf(chat.getTotal_count());

@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -109,6 +110,28 @@ public class Utils {
 				tempOut.createNewFile();
 
 				File out = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+				out.createNewFile();
+
+				JNAesCrypto.decryptJNFiles(new File(filePath), tempOut, out);
+
+				return out.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			if (Const.DEBUG_CRYPTO)
+				e.printStackTrace();
+			return null;
+		}
+
+		return filePath;
+	}
+
+	public static String handleFileDecryptionToPath(String filePath, String destPath, Context ctx) {
+		try {
+			if (JNAesCrypto.isEncryptionEnabled) {
+				File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+				tempOut.createNewFile();
+
+				File out = new File(destPath);
 				out.createNewFile();
 
 				JNAesCrypto.decryptJNFiles(new File(filePath), tempOut, out);
@@ -454,6 +477,39 @@ public class Utils {
 				ctx.startActivity(intent);
 			}
 		});
+	}
+
+	/**
+	 * get sp in px
+	 * 
+	 */
+	public static float getPxFromSp(float sp, Resources res) {
+		float scaledDensity = res.getDisplayMetrics().scaledDensity;
+		return sp * scaledDensity;
+	}
+
+	/**
+	 * get dp in px
+	 * 
+	 */
+	public static int getPxFromDp(int dp, Resources res) {
+		return (int) (dp * (res.getDisplayMetrics().densityDpi / 160f));
+	}
+
+	/**
+	 * get px in dp
+	 * 
+	 */
+	public static int getDpFromPx(int px, Resources res) {
+		return (int) (px / (res.getDisplayMetrics().densityDpi / 160f));
+	}
+
+	public static File getFilesFolder() {
+		File file = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY, Const.APP_FILED_FILES);
+		if (!file.exists()) {
+			file.mkdir();
+		}
+		return file;
 	}
 
 }

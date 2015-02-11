@@ -1,36 +1,7 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.text.TextUtils;
-import android.util.SparseIntArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.clover.spika.enterprise.chat.ChatActivity;
-import com.clover.spika.enterprise.chat.LocationActivity;
-import com.clover.spika.enterprise.chat.PhotoActivity;
-import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.VideoActivity;
-import com.clover.spika.enterprise.chat.VoiceActivity;
-import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.models.Message;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.MessageSortingById;
-
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,6 +10,59 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.SystemClock;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.SparseIntArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+
+import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.LocationActivity;
+import com.clover.spika.enterprise.chat.PhotoActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.VideoActivity;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
+import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.lazy.GifLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
+import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.MessageSortingById;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
 
 public class MessagesAdapter extends BaseAdapter {
 
@@ -52,12 +76,26 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
-
+	
+	private int displayWidth = 0;
+	Typeface typeface;
+	
+	private boolean isDownloadingSound = false;
+	private MediaPlayer currentMediaPlayer = null;
+	private String currentPlayingPath = null;
+	private Button activePlayIcon = null;
+	private Chronometer activeChronometer = null;
+	private SeekBar activeSeekbar = null;
+	
 	public MessagesAdapter(Context context, List<Message> arrayList) {
 		this.ctx = context;
 		this.data = arrayList;
 
 		imageLoader = ImageLoader.getInstance(context);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
+		
+		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
+		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Thin.ttf");
 	}
 
 	@Override
@@ -91,8 +129,6 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// set items to null
-		holder.loading_bar_img.setBackgroundColor(Color.TRANSPARENT);
-
 		holder.meMsgLayout.setVisibility(View.GONE);
 		holder.youMsgLayout.setVisibility(View.GONE);
 
@@ -113,11 +149,23 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meViewLocation.setVisibility(View.GONE);
 		holder.youViewLocation.setVisibility(View.GONE);
 
-		holder.meFileLayout.setVisibility(View.GONE);
-		holder.youFileLayout.setVisibility(View.GONE);
+		holder.meDownloadFile.setVisibility(View.GONE);
+		holder.youDownloadFile.setVisibility(View.GONE);
 
 		holder.loading_bar.setVisibility(View.GONE);
-
+		
+		holder.meGifView.setVisibility(View.GONE);
+		holder.meFlForGif.setVisibility(View.GONE);
+		
+		holder.youGifView.setVisibility(View.GONE);
+		holder.youFlForGif.setVisibility(View.GONE);
+		
+		holder.meMsgLayoutBack.setBackgroundResource(R.drawable.shape_my_chat_bubble);
+		holder.meFlForGif.getChildAt(0).setVisibility(View.VISIBLE); //progress for gif
+		
+		holder.youMsgLayoutBack.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+		holder.youFlForGif.getChildAt(0).setVisibility(View.VISIBLE); //progress for gif
+		
 		// Assign values
 		final Message msg = getItem(position);
 
@@ -126,10 +174,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.meMsgLayout.setVisibility(View.VISIBLE);
 
-			setItemBackground(position, holder.meMsgLayout);
-
 			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
-			holder.mePersonName.setText(msg.getFirstname() + " " + msg.getLastname());
+			
+			if(msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF){
+				holder.meMsgLayoutBack.setPadding(0, 0, 0, 0);
+			}else{
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.meMsgLayoutBack.setPadding(padding, padding, padding, padding);
+			}
 
 			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
 				holder.meMsgContent.setVisibility(View.VISIBLE);
@@ -152,7 +204,32 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
-			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
+				
+				holder.meFlForGif.setVisibility(View.VISIBLE);
+				
+				holder.meGifView.setVisibility(View.VISIBLE);
+				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
+				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.meGifView, new OnImageDisplayFinishListener() {
+					
+					@Override
+					public void onFinish() {
+						setGif(holder.meGifView, (ProgressBar) holder.meFlForGif.getChildAt(0));
+					}
+				});
+				
+				holder.meGifView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.TYPE, msg.getType());
+						ctx.startActivity(intent);
+					}
+				});
+				
+			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 				holder.meWatchVideo.setVisibility(View.VISIBLE);
 				holder.meWatchVideo.setOnClickListener(new OnClickListener() {
 
@@ -180,20 +257,15 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
+				
+				resetVoiceControls(holder.meListenSound);
 				holder.meListenSound.setVisibility(View.VISIBLE);
-				holder.meListenSound.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, VoiceActivity.class);
-						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-						ctx.startActivity(intent);
-					}
-				});
+				setVoiceControls(msg, holder.meListenSound);
+				
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
-				holder.meFileLayout.setVisibility(View.VISIBLE);
-				holder.meFileName.setText(msg.getText());
+				holder.meDownloadFile.setVisibility(View.VISIBLE);
+				holder.meDownloadFile.setText(msg.getText());
 				holder.meDownloadFile.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -207,7 +279,6 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
-				holder.mePersonName.setText("");
 				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
 				holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
@@ -215,7 +286,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
-				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root_white);
 			} else if (msg.getRootId() > 0) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
 				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
@@ -227,11 +298,51 @@ public class MessagesAdapter extends BaseAdapter {
 			// Chat member messages, not mine
 
 			holder.youMsgLayout.setVisibility(View.VISIBLE);
-
-			setItemBackground(position, holder.youMsgLayout);
+			
+			if (!msg.getImageThumb().equals((String) holder.profileImage.getTag())) {
+				holder.profileImage.setImageDrawable(null);
+				imageLoader.displayImage(convertView.getContext(), msg.getImageThumb(), holder.profileImage);
+				holder.profileImage.setTag(msg.getImageThumb());
+			}
 
 			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
 			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
+			
+			if(msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF){
+				holder.youMsgLayoutBack.setPadding(0, 0, 0, 0);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+			}else if(msg.getType() == Const.MSG_TYPE_LOCATION || msg.getType() == Const.MSG_TYPE_VIDEO){
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+			}else if(msg.getType() == Const.MSG_TYPE_VOICE){
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 1;
+			}else{
+				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+				
+				int textWidth = msg.getTextWidth();
+				
+				if(textWidth == -1){
+					textWidth = calculateNeedTextWidth(msg.getText(), ctx);
+					msg.setTextWidth(textWidth);
+				}
+				
+				int timeWidth = msg.getTimeWidth();
+				
+				if(timeWidth == -1){
+					timeWidth = calculateNeedTextWidth(getCreatedTime(msg.getCreated()), ctx);
+					msg.setTimeWidth(timeWidth);
+				}
+				
+				if(textWidth > displayWidth - Utils.getPxFromDp(75, ctx.getResources()) - timeWidth){
+					((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 1;
+				}else{
+					((LayoutParams)holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
+				}
+			}
 
 			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
 				holder.youMsgContent.setVisibility(View.VISIBLE);
@@ -254,7 +365,33 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
-			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
+			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
+				
+				holder.youFlForGif.setVisibility(View.VISIBLE);
+				
+				holder.youGifView.setVisibility(View.VISIBLE);
+				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
+				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.youGifView, new OnImageDisplayFinishListener() {
+					
+					@Override
+					public void onFinish() {
+						setGif(holder.youGifView, (ProgressBar) holder.youFlForGif.getChildAt(0));
+					}
+				});
+				
+				holder.youGifView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.TYPE, msg.getType());
+						ctx.startActivity(intent);
+					}
+				});
+				
+				
+			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 
 				holder.youWatchVideo.setVisibility(View.VISIBLE);
 				holder.youWatchVideo.setOnClickListener(new OnClickListener() {
@@ -286,22 +423,15 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
-
+				
+				resetVoiceControls(holder.youListenSound);
 				holder.youListenSound.setVisibility(View.VISIBLE);
-				holder.youListenSound.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, VoiceActivity.class);
-						intent.putExtra(Const.FILE_ID, msg.getFile_id());
-						ctx.startActivity(intent);
-					}
-				});
+				setVoiceControls(msg, holder.youListenSound);
 
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
-				holder.youFileLayout.setVisibility(View.VISIBLE);
-				holder.youFileName.setText(msg.getText());
+				holder.youDownloadFile.setVisibility(View.VISIBLE);
+				holder.youDownloadFile.setText(msg.getText());
 				holder.youDownloadFile.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -322,14 +452,14 @@ public class MessagesAdapter extends BaseAdapter {
 			}
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
-				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setVisibility(View.VISIBLE);
 				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
 			} else if (msg.getRootId() > 0) {
-				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.youThreadIndicator.setVisibility(View.VISIBLE);
 				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
 			} else {
 				holder.youThreadIndicator.setImageDrawable(null);
-				holder.meThreadIndicator.setVisibility(View.GONE);
+				holder.youThreadIndicator.setVisibility(View.GONE);
 			}
 		}
 
@@ -338,14 +468,12 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.dateSeparator.setVisibility(View.GONE);
 		} else {
 			holder.dateSeparator.setVisibility(View.VISIBLE);
-			holder.sectionDate.setText(getSectionDate(msg.getCreated()));
+			holder.sectionDate.setText(getDateFormat(msg.getCreated()));
 		}
 
 		// Paging animation
 		if (position == (0) && !endOfSearch) {
 			holder.loading_bar.setVisibility(View.VISIBLE);
-
-			Helper.startPaggingAnimation(ctx, holder.loading_bar_img);
 
 			if (ctx instanceof ChatActivity) {
 				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
@@ -356,11 +484,280 @@ public class MessagesAdapter extends BaseAdapter {
 		if (position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)) {
 			holder.seenByTv.setText("Seen by " + seenBy);
 			holder.seenByTv.setVisibility(View.VISIBLE);
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
 		} else {
 			holder.seenByTv.setVisibility(View.GONE);
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
+		}
+		
+		if (position == (getCount() - 1)) {
+			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
+		} else {
+			convertView.setPadding(0, 0, 0, 0);
 		}
 
 		return convertView;
+	}
+	
+	private void resetVoiceControls(RelativeLayout holder) {
+		Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
+		playPause.setBackgroundResource(R.drawable.play_button);
+		playPause.setVisibility(View.VISIBLE);
+		SeekBar seekControl = (SeekBar) holder.getChildAt(Const.SoundControl.SEEKBAR);
+		seekControl.setMax(100);
+		seekControl.setProgress(0);
+		seekControl.setVisibility(View.VISIBLE);
+		Chronometer chronoControl = (Chronometer) holder.getChildAt(Const.SoundControl.CHRONOMETER);
+		chronoControl.setText("00:00");
+		chronoControl.setVisibility(View.VISIBLE);
+		ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+		pbLoading.setVisibility(View.INVISIBLE);
+		ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+		pbLoadingBar.setVisibility(View.INVISIBLE);
+		pbLoadingBar.setProgress(0);
+		TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+		percentTv.setVisibility(View.INVISIBLE);
+		percentTv.setText("0%");
+	}
+
+	private double totalOfDownload = -1;
+	private void setVoiceControls(final Message msg, final RelativeLayout holder) {
+		
+		final Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
+		final SeekBar seekControl = (SeekBar) holder.getChildAt(Const.SoundControl.SEEKBAR);
+		final Chronometer chronoControl = (Chronometer) holder.getChildAt(Const.SoundControl.CHRONOMETER);
+		
+		playPause.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+		});
+		
+		seekControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				if(observer != null) observer.stop();
+				observer = null;
+				if(activeSeekbar != null && activeSeekbar != seekBar) activeSeekbar.setProgress(0);
+				if(currentMediaPlayer != null){
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+				}
+				currentMediaPlayer = null;
+				if(activeChronometer != null){
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+				}
+				if(activePlayIcon != null){
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+				}
+				seekBar.setMax(100);
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+		});
+	}
+	
+	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder){
+		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
+		if(sound.exists()){
+			if(currentMediaPlayer == null){
+				
+				play(chronoControl, sound, playPause, seekControl, startOffset);
+				
+			}else{
+				if(currentPlayingPath != null && currentPlayingPath.equals(sound.getAbsolutePath())){
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
+				}else{
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+					
+					play(chronoControl, sound, playPause, seekControl, startOffset);
+					
+				}
+			}
+			
+		}else{
+			if(isDownloadingSound){
+				return;
+			}
+			isDownloadingSound = true;
+			totalOfDownload = -1;
+			
+			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+		}
+	}
+	
+	private class MediaObserver implements Runnable {
+		private AtomicBoolean stop = new AtomicBoolean(false);
+
+		public void stop() {
+			stop.set(true);
+		}
+
+		@Override
+		public void run() {
+			while (!stop.get()) {
+				long elapsedMillis = SystemClock.elapsedRealtime() - activeChronometer.getBase();
+				Log.e("LOG", elapsedMillis+" :ELG");
+				activeSeekbar.setProgress((int) elapsedMillis);
+				try {
+					Thread.sleep(33);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	private MediaObserver observer = null;
+	
+	private void play(final Chronometer chronoControl, File sound, final Button playPause, final SeekBar seekControl, final int startOffset){
+		currentMediaPlayer = new MediaPlayer();
+		if (activeChronometer != null) activeChronometer.stop();
+		try {
+			
+			currentMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					seekControl.setMax(mp.getDuration());
+					if(startOffset != 0) {
+						double offset = (((double)seekControl.getMax() * (double)startOffset) / (double)100);
+						currentMediaPlayer.seekTo((int) offset);
+						chronoControl.setBase((long) (SystemClock.elapsedRealtime() - offset));
+					}
+				}
+			});
+			
+			currentMediaPlayer.setDataSource(sound.getAbsolutePath());
+			currentMediaPlayer.prepare();
+			currentMediaPlayer.start();
+			chronoControl.setBase(SystemClock.elapsedRealtime());
+			chronoControl.start();
+			activeChronometer = chronoControl;
+			activeSeekbar = seekControl;
+			
+			observer = new MediaObserver();
+			new Thread(observer).start();
+			
+			currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					observer.stop();
+				    activeSeekbar.setProgress(0);
+					currentPlayingPath = null;
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					chronoControl.stop();
+					chronoControl.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
+				}
+			});
+			
+			currentPlayingPath = sound.getAbsolutePath();
+			playPause.setBackgroundResource(R.drawable.pause_button);
+			activePlayIcon = playPause;
+		} catch (IOException e) {
+			e.printStackTrace();
+			currentMediaPlayer = null;
+		}
+	}
+	
+	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId){
+		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+		pbLoading.setVisibility(View.VISIBLE);
+		pbLoadingBar.setVisibility(View.VISIBLE);
+		percentTv.setVisibility(View.VISIBLE);
+		playPause.setVisibility(View.INVISIBLE);
+		seekControl.setVisibility(View.INVISIBLE);
+		chronoControl.setVisibility(View.INVISIBLE);
+		new FileManageApi().downloadFileToFile(sound, fileId, false, ctx, new ApiCallback<String>() {
+			
+			@Override
+			public void onApiResponse(Result<String> result) {
+				pbLoading.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setProgress(0);
+				percentTv.setVisibility(View.INVISIBLE);
+				percentTv.setText("0%");
+				playPause.setVisibility(View.VISIBLE);
+				seekControl.setVisibility(View.VISIBLE);
+				chronoControl.setVisibility(View.VISIBLE);
+				
+				isDownloadingSound = false;
+			}
+		}, new ProgressBarListeners() {
+			
+			@Override
+			public void onSetMax(long total) {
+				if(totalOfDownload == -1) {
+					totalOfDownload = total;
+					pbLoadingBar.setMax((int) totalOfDownload);
+				}
+			}
+			
+			@Override
+			public void onProgress(long current) {
+				if(totalOfDownload != -1){
+					pbLoadingBar.setProgress((int) current);
+					final String percent = String.valueOf(((int)(100 * current / (double)totalOfDownload)));
+					((Activity)ctx).runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							percentTv.setText(String.valueOf(percent + "%"));	
+						}
+					});
+				}
+			}
+			
+			@Override
+			public void onFinish() {}
+		});
+	}
+	
+	private int calculateNeedTextWidth(String text, Context c){
+		Paint paint = new Paint();
+		Rect bounds = new Rect();
+
+		int text_width = 0;
+
+		paint.setTypeface(typeface);// your preference here
+		paint.setTextSize(Utils.getPxFromSp(20, c.getResources()));// have this the same as your text size
+
+		paint.getTextBounds(text, 0, text.length(), bounds);
+
+		text_width =  bounds.width();
+		
+		return text_width;
 	}
 
 	private boolean isMe(String userId) {
@@ -412,6 +809,17 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		return 0;
+	}
+	
+	private String getDateFormat(String createdString) {
+		long created = Long.parseLong(createdString) * 1000;
+
+		Date date = new Date(created);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(Const.DATE_SEPARATOR_FORMAT, Locale.getDefault());
+
+		String rez = dateFormat.format(date);
+
+		return rez;
 	}
 
 	public void setSeenBy(String seenBy) {
@@ -509,58 +917,61 @@ public class MessagesAdapter extends BaseAdapter {
 			setEndOfSearch(false);
 		}
 	}
-
-	private void setItemBackground(int position, View view) {
-		if (position % 2 == 0) {
-			view.setBackgroundColor(ctx.getResources().getColor(R.color.gray_in_adapter));
-		} else {
-			view.setBackgroundColor(Color.WHITE);
+	
+	private void setGif(ImageView iv, ProgressBar pb){
+		GifAnimationDrawable big = (GifAnimationDrawable) iv.getTag();
+		big.setOneShot(false);
+		pb.setVisibility(View.GONE);
+		if(big != null){
+			iv.setImageDrawable(big);
+			big.setVisible(true, true);
 		}
 	}
-
+	
 	public class ViewHolderChatMsg {
 
 		// start: message item for my message
 		public LinearLayout meMsgLayout;
-		public TextView mePersonName;
+		public LinearLayout meMsgLayoutBack;
 		public TextView meMsgContent;
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
+		public FrameLayout meFlForGif;
+		public ImageView meGifView;
 		// end: me msg
 
-		public ImageView meListenSound;
-		public ImageView youListenSound;
+		public RelativeLayout meListenSound;
+		public RelativeLayout youListenSound;
 
-		public ImageView meWatchVideo;
-		public ImageView youWatchVideo;
+		public TextView meWatchVideo;
+		public TextView youWatchVideo;
 
-		public ImageView meViewLocation;
-		public ImageView youViewLocation;
+		public TextView meViewLocation;
+		public TextView youViewLocation;
 
 		public ImageView meViewImage;
 		public ImageView youViewImage;
 
-		public RelativeLayout meFileLayout;
-		public TextView meFileName;
-		public ImageView meDownloadFile;
+		public TextView meDownloadFile;
 
-		public RelativeLayout youFileLayout;
-		public TextView youFileName;
-		public ImageView youDownloadFile;
+		public TextView youDownloadFile;
 
 		public TextView seenByTv;
 
 		// start: message item for you message
-		public LinearLayout youMsgLayout;
+		public RelativeLayout youMsgLayout;
+		public LinearLayout youMsgLayoutBack;
 		public TextView youPersonName;
 		public TextView youMsgContent;
 		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
+		public ImageView profileImage;
+		public FrameLayout youFlForGif;
+		public ImageView youGifView;
 		// end: you msg
 
 		// start: loading bar
 		public RelativeLayout loading_bar;
-		public ImageView loading_bar_img;
 
 		// end: loading bar
 
@@ -572,47 +983,50 @@ public class MessagesAdapter extends BaseAdapter {
 
 		public ViewHolderChatMsg(View view) {
 
-			meMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
+			meMsgLayout = (LinearLayout) view.findViewById(R.id.meWholeLayout);
+			meMsgLayoutBack = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutMe);
 			// start: message item for my message
 			meMsgTime = (TextView) view.findViewById(R.id.timeMe);
-			mePersonName = (TextView) view.findViewById(R.id.mePersonName);
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
+			
+			meFlForGif = (FrameLayout) view.findViewById(R.id.meFlForWebView);
+			meGifView = (ImageView) view.findViewById(R.id.meGifView);
 			// end: me msg
 
-			meListenSound = (ImageView) view.findViewById(R.id.meListenSound);
-			youListenSound = (ImageView) view.findViewById(R.id.youListenSound);
+			meListenSound = (RelativeLayout) view.findViewById(R.id.meRlSound);
+			youListenSound = (RelativeLayout) view.findViewById(R.id.youRlSound);
 
-			meWatchVideo = (ImageView) view.findViewById(R.id.meWatchVideo);
-			youWatchVideo = (ImageView) view.findViewById(R.id.youWatchVideo);
+			meWatchVideo = (TextView) view.findViewById(R.id.meWatchVideo);
+			youWatchVideo = (TextView) view.findViewById(R.id.youWatchVideo);
 
-			meViewLocation = (ImageView) view.findViewById(R.id.meViewLocation);
-			youViewLocation = (ImageView) view.findViewById(R.id.youViewLocation);
+			meViewLocation = (TextView) view.findViewById(R.id.meViewLocation);
+			youViewLocation = (TextView) view.findViewById(R.id.youViewLocation);
 
 			meViewImage = (ImageView) view.findViewById(R.id.meViewImage);
 			youViewImage = (ImageView) view.findViewById(R.id.youViewImage);
 
-			meFileLayout = (RelativeLayout) view.findViewById(R.id.meFileLayout);
-			meFileName = (TextView) view.findViewById(R.id.meFileName);
-			meDownloadFile = (ImageView) view.findViewById(R.id.meDownloadFile);
+			meDownloadFile = (TextView) view.findViewById(R.id.meDownloadFile);
 
-			youFileLayout = (RelativeLayout) view.findViewById(R.id.youFileLayout);
-			youFileName = (TextView) view.findViewById(R.id.youFileName);
-			youDownloadFile = (ImageView) view.findViewById(R.id.youDownloadFile);
+			youDownloadFile = (TextView) view.findViewById(R.id.youDownloadFile);
 
 			seenByTv = (TextView) view.findViewById(R.id.tvSeenBy);
 
-			youMsgLayout = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
+			youMsgLayout = (RelativeLayout) view.findViewById(R.id.youWholeLayout);
+			youMsgLayoutBack = (LinearLayout) view.findViewById(R.id.defaultMsgLayoutYou);
 			// start: message item for you message
 			youMsgTime = (TextView) view.findViewById(R.id.timeYou);
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
+			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
+			
+			youFlForGif = (FrameLayout) view.findViewById(R.id.youFlForWebView);
+			youGifView = (ImageView) view.findViewById(R.id.youGifView);
 			// end: you msg
 
 			// start: loading bar
 			loading_bar = (RelativeLayout) view.findViewById(R.id.loading_bar);
-			loading_bar_img = (ImageView) view.findViewById(R.id.loading_bar_img);
 			// end: loading bar
 
 			// start: date separator

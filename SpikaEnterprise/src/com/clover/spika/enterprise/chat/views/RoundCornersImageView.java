@@ -15,20 +15,25 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.utils.Utils;
+
 public class RoundCornersImageView extends ImageView {
 
 	private float corner = 15;
 
 	public RoundCornersImageView(Context context) {
 		super(context);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public RoundCornersImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public RoundCornersImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		setCorner(Utils.getPxFromDp(10, context.getResources()));
 	}
 
 	public void setCorner(float cor) {
@@ -65,11 +70,13 @@ public class RoundCornersImageView extends ImageView {
 		if (bmp.getWidth() != radius || bmp.getHeight() != radius) {
 			if (bmp.getWidth() > bmp.getHeight()) {
 				double height = (double) radius / ((double) bmp.getWidth() / (double) bmp.getHeight());
-				sbmp = Bitmap.createScaledBitmap(bmp, radius, (int) height, false);
+//				sbmp = Bitmap.createScaledBitmap(bmp, radius, (int) height, false);
+				sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
 				// top = radius - sbmp.getHeight();
 			} else if (bmp.getWidth() < bmp.getHeight()) {
 				double width = (double) radius / ((double) bmp.getHeight() / (double) bmp.getWidth());
-				sbmp = Bitmap.createScaledBitmap(bmp, (int) width, radius, false);
+//				sbmp = Bitmap.createScaledBitmap(bmp, (int) width, radius, false);
+				sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);
 				// left = radius - sbmp.getWidth();
 			} else {
 				sbmp = Bitmap.createScaledBitmap(bmp, radius, radius, false);

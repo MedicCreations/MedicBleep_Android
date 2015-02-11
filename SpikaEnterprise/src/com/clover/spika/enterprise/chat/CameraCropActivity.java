@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.cropper.CropImageView;
@@ -118,7 +119,16 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 	@SuppressLint("InlinedApi")
 	private void getImageIntents() {
-		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
+		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.SHARE_INTENT)) {
+			Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+			if(uri.toString().contains("file://")){
+				String selected_image_path = uri.toString().substring(7);
+				onPhotoTaken(selected_image_path);
+			}else{
+				String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
+				onPhotoTaken(selected_image_path);
+			}
+		}else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
 			if (mIsOverJellyBean) {
 				Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -390,6 +400,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 					cropImageView.setImageBitmap(mBitmap);
 					cropImageView.setFixedAspectRatio(isSquare);
 					findViewById(R.id.relativeLayout_main).setBackgroundColor(getResources().getColor(R.color.black));
+					((View) findViewById(R.id.relativeLayout_main).getParent()).postInvalidate();
 				} else {
 					try {
 						AppDialog dialog = new AppDialog(context, true);
@@ -552,6 +563,10 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 					} else if (getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// update user
 						updateUser(fileId, result.getResultData().getFileId());
+					} else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.SHARE_INTENT)) {
+						// update user
+						ChooseLobbyActivity.start(CameraCropActivity.this, fileId, result.getResultData().getFileId());
+						finish();
 					}
 				} else {
 					if (result.hasResultData()) {

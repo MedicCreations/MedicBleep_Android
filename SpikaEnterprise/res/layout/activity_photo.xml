@@ -50,13 +50,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/topLayout"
-        android:background="@android:color/white"
+        android:background="@color/default_blue_light"
         android:layout_centerInParent="true" >
 
         <com.clover.spika.enterprise.chat.views.TouchImageView
             android:id="@+id/mImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/default_blue_light" />
+
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+        
     </RelativeLayout>
 
 </RelativeLayout>

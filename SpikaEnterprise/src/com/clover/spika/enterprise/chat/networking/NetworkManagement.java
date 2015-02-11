@@ -215,20 +215,26 @@ public class NetworkManagement {
 
 	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
-
+		String gifString = null;
+		
 		// form parameters
 		if (getParams != null && !getParams.isEmpty()) {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			for (Map.Entry<String, String> entity : getParams.entrySet()) {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
+				if(entity.getKey() == "file_id" && entity.getValue().startsWith("http")){
+					gifString = entity.getValue();
+					break;
+				}
 			}
 
 			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
 		}
-
+		
 		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
+		if(gifString != null) httpGet = new HttpGet(gifString);
 		Logger.custom("RawRequest", httpGet.getURI().toString());
-
+		
 		httpGet.setHeader("Encoding", "UTF-8");
 		httpGet.setHeader(TOKEN, prefs.getToken());
 

@@ -30,6 +30,7 @@ public class Const {
 
 	// Timestamp
 	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";
+	public static final String DATE_SEPARATOR_FORMAT = "EEE d MMM HH:mm";
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
 
@@ -48,6 +49,7 @@ public class Const {
 	public static final String APP_FILES_DIRECTORY = "SpikaEnterprise/";
 	public static final String APP_LAZY_LIST = "LazyList";
 	public static final String APP_FILED_DOWNLOADS = "Downloads";
+	public static final String APP_FILED_FILES = "Files";
 	public static final String APP_SPEN_FILE = "spen.txt";
 	public static final String APP_SPEN_TEMP_FILE = "spentemp.txt";
 
@@ -57,10 +59,12 @@ public class Const {
 	public static final String PHOTO_INTENT = "PhotoIntent";
 	public static final String VIDEO_INTENT = "VideoIntent";
 	public static final String GALLERY_INTENT = "GalleryIntent";
+	public static final String SHARE_INTENT = "ShareIntent";
 	public static final String ROOM_INTENT = "RoomIntent";
 	public static final String CHAT_INTENT = "ChatIntent";
 	public static final int VIDEO_INTENT_INT = 9000;
 	public static final int GALLERY_INTENT_INT = 9001;
+	public static final int SHARE_INTENT_INT = 9002;
 	public static final String ANONYMOUS_INTENT = "AnnonymousIntent";
 	public static final String FROM_WAll = "FromWall";
 	public static final String FROM_NOTIFICATION = "FromNotification";
@@ -171,6 +175,7 @@ public class Const {
 	public static final int MSG_TYPE_VOICE = 5;
 	public static final int MSG_TYPE_FILE = 6;
 	public static final int MSG_TYPE_DELETED = 7;
+	public static final int MSG_TYPE_GIF = 9;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;
@@ -232,6 +237,7 @@ public class Const {
 	public static final String F_CHANGE_PASSWORD = "/user/password/change";
 	public static final String F_GLOBAL_SEARCH_URL = "/search/list";
 	public static final String F_GLOBAL_MEMBERS_URL = "/member/list";
+	public static final String F_STICKERS_URL = "/message/stickers";
 
 	public static final int API_SUCCESS = 2000;
 
@@ -276,5 +282,17 @@ public class Const {
 	public static final String DEFAULT_IMAGE_USER = "default_user_image";
 	public static final String DEFAULT_IMAGE_GROUP = "default_group_image";
 	public static final String FROM_CHAT = "from_chat";
+	public static final String POSITION = "position";
+	public static final String STICEKRS_HOLDER = "stickersHolder";
+	
+	public static final class SoundControl{
+		public static final int PLAY_BUTTON = 0;
+		public static final int DOWNLOAD_PROGRESS = 1;
+		public static final int CHRONOMETER = 2;
+		public static final int PERCENT_TV = 3;
+		public static final int SEEKBAR = 4;
+		public static final int PROGREEBAR = 5;
+	}
+	
 
 }
