@@ -1,26 +1,14 @@
 package com.clover.spika.enterprise.chat.services.gcm;
 
-import android.app.Activity;
-import android.content.ComponentName;
+import com.google.android.gcm.GCMBroadcastReceiver;
+
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.WakefulBroadcastReceiver;
 
-/**
- * GCMReceiver
- * 
- * Returns GCMIntentService class name.
- */
-
-public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
+public class GcmBroadcastReceiver extends GCMBroadcastReceiver {
 
 	@Override
-	public void onReceive(Context context, Intent intent) {
-		// Explicitly specify that GcmIntentService will handle the intent.
-		ComponentName comp = new ComponentName(context.getPackageName(), GcmIntentService.class.getName());
-		// Start the service, keeping the device awake while it is launching.
-		startWakefulService(context, (intent.setComponent(comp)));
-		setResultCode(Activity.RESULT_OK);
+	protected String getGCMIntentServiceClassName(Context context) {
+		return GcmIntentService.class.getName();
 	}
 
 }

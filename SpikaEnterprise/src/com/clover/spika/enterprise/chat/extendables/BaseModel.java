@@ -15,6 +15,9 @@ public class BaseModel {
 	@Expose
 	private int _code;
 
+	public BaseModel() {
+	}
+
 	public String getMessage() {
 		return _message == null ? "" : _message;
 	}

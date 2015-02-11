@@ -143,8 +143,11 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	public void getUsers() {
 
 		handleProgress(true);
-		RoomsSpice.GetDistinctUser getDistinctUser = new RoomsSpice.GetDistinctUser(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity());
-		spiceManager.execute(getDistinctUser, new CustomSpiceListener<ConfirmUsersList>() {
+		RoomsSpice.GetDistinctUserOK get = new RoomsSpice.GetDistinctUserOK(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity());
+		// RoomsSpice.GetDistinctUser getDistinctUser = new
+		// RoomsSpice.GetDistinctUser(userIds, groupIds, roomIds, groupAllIds,
+		// roomAllIds, getActivity());
+		spiceManager.execute(get, new CustomSpiceListener<ConfirmUsersList>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {

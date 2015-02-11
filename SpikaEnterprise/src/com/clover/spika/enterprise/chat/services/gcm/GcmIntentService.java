@@ -1,70 +1,71 @@
 package com.clover.spika.enterprise.chat.services.gcm;
 
-import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PushHandle;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gcm.GCMBaseIntentService;
 
-/**
- * GCMIntentService
- * 
- * Handles push broadcast and generates HookUp notification if application is in
- * foreground or Android notification if application is in background.
- */
-
-public class GcmIntentService extends IntentService {
+public class GcmIntentService extends GCMBaseIntentService {
 
 	public GcmIntentService() {
-		super("GcmIntentService");
+		super(Const.GCM_SENDER_ID);
 	}
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	protected void onMessage(Context arg0, Intent intent) {
+
 		Bundle extras = intent.getExtras();
-		GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-		String messageType = gcm.getMessageType(intent);
 
 		if (!extras.isEmpty()) {
 
 			Logger.i("PushReceived: " + extras.toString());
 
-			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+			String chatId = "";
+			String organizationId = "";
+			String firstName = "";
+			String type = "";
+			String chatPassword = "";
 
-				String chatId = "";
-				String organizationId = "";
-				String firstName = "";
-				String type = "";
-				String chatPassword = "";
-
-				if (extras.containsKey(Const.CHAT_ID)) {
-					chatId = extras.getString(Const.CHAT_ID);
-				}
-				
-				if (extras.containsKey(Const.ORGANIZATION_ID)) {
-					organizationId = extras.getString(Const.ORGANIZATION_ID);
-				}
-
-				if (extras.containsKey(Const.FIRSTNAME)) {
-					firstName = extras.getString(Const.FIRSTNAME);
-				}
-
-				if (extras.containsKey(Const.TYPE)) {
-					type = extras.getString(Const.TYPE);
-				}
-
-				if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
-					chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
-				}
-				
-				PushHandle.handlePushNotification(chatId, organizationId, firstName, chatPassword, type, this);
+			if (extras.containsKey(Const.CHAT_ID)) {
+				chatId = extras.getString(Const.CHAT_ID);
 			}
-		}
 
-		GcmBroadcastReceiver.completeWakefulIntent(intent);
+			if (extras.containsKey(Const.ORGANIZATION_ID)) {
+				organizationId = extras.getString(Const.ORGANIZATION_ID);
+			}
+
+			if (extras.containsKey(Const.FIRSTNAME)) {
+				firstName = extras.getString(Const.FIRSTNAME);
+			}
+
+			if (extras.containsKey(Const.TYPE)) {
+				type = extras.getString(Const.TYPE);
+			}
+
+			if (extras.containsKey(Const.PUSH_CHAT_PASSWORD)) {
+				chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
+			}
+
+			PushHandle.handlePushNotification(chatId, organizationId, firstName, chatPassword, type, this);
+		}
+	}
+
+	@Override
+	protected void onRegistered(Context ctx, String regId) {
+		new GoogleUtils().storeRegistrationId(ctx, regId);
+	}
+
+	@Override
+	protected void onUnregistered(Context arg0, String arg1) {
+	}
+
+	@Override
+	protected void onError(Context arg0, String arg1) {
 	}
 
 }

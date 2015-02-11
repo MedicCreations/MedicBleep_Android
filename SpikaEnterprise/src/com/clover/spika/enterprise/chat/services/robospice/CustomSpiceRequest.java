@@ -1,12 +1,6 @@
 package com.clover.spika.enterprise.chat.services.robospice;
 
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -14,9 +8,10 @@ import android.text.TextUtils;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
+import com.squareup.okhttp.Headers;
 
-public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T> {
+public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 
 	public CustomSpiceRequest(Class<T> clazz) {
 		super(clazz);
@@ -52,32 +47,44 @@ public abstract class CustomSpiceRequest<T> extends SpringAndroidSpiceRequest<T>
 		return null;
 	}
 
-	public HttpHeaders getPostHeader(Context ctx) {
+	public Headers getPostHeader(Context ctx) {
 
-		List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-		acceptableMediaTypes.add(MediaType.ALL);
-
-		HttpHeaders headers = new HttpHeaders();
-
-		headers.setAccept(acceptableMediaTypes);
-
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-		headers.set("Encoding", "UTF-8");
-		headers.set(Const.APP_VERSION, Helper.getAppVersion());
-		headers.set(Const.PLATFORM, "android");
+		Headers.Builder headersBuilder = new Headers.Builder()
+		.add("Encoding", "UTF-8")
+		.add(Const.APP_VERSION, Helper.getAppVersion())
+		.add(Const.PLATFORM, "android")
+		.add("User-Agent", "SpikaEnterprise Android");
 
 		String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
 		if (!TextUtils.isEmpty(token)) {
-			headers.set("token", token);
+			headersBuilder.add("token", token);
 		}
 
-		return headers;
+		return headersBuilder.build();
 	}
 
-	public HttpEntity<?> getGetheaders(Context ctx) {
-		HttpEntity<?> httpEntity = new HttpEntity<Object>(getPostHeader(ctx));
-		return httpEntity;
-	}
+	// public HttpEntity<String> getGetheaders(Context ctx) {
+	//
+	// List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
+	// acceptableMediaTypes.add(MediaType.ALL);
+	//
+	// HttpHeaders headers = new HttpHeaders();
+	//
+	// headers.setAccept(acceptableMediaTypes);
+	//
+	// headers.setContentType(MediaType.TEXT_HTML);
+	//
+	// headers.set("Encoding", "UTF-8");
+	// headers.set(Const.APP_VERSION, Helper.getAppVersion());
+	// headers.set(Const.PLATFORM, "android");
+	//
+	// String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+	// if (!TextUtils.isEmpty(token)) {
+	// headers.set("token", token);
+	// }
+	//
+	// HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
+	// return httpEntity;
+	// }
 
 }

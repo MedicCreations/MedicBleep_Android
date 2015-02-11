@@ -32,12 +32,10 @@ import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 import org.json.JSONArray;
@@ -414,13 +412,6 @@ public class Utils {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);
 		df.setMinimumFractionDigits(2);
-
-		Log.d("MEMORY_HANDLING", "debug. =================================" + step);
-		Log.d("MEMORY_HANDLING",
-				"debug.memory: allocated: " + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "MB of "
-						+ df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "MB (" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576))
-						+ "MB free)");
-		Log.d("MEMORY_HANDLING", "debug. =================================END");
 	}
 
 	public static String getHexString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {

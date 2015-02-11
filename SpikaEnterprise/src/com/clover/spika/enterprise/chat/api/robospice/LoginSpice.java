@@ -1,15 +1,17 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
 import android.content.Context;
-
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 public class LoginSpice {
 
@@ -30,13 +32,19 @@ public class LoginSpice {
 		@Override
 		public PreLogin loadDataFromNetwork() throws Exception {
 
-			MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-			parameters.set(Const.USERNAME, username);
-			parameters.set(Const.PASSWORD, password);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
 
-			return getRestTemplate().postForObject(Const.BASE_URL + Const.F_PRELOGIN, request, PreLogin.class);
+			Call connection = getOkHttpClient().newCall(requestBuilder.build());
+
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responsBody = resBody.string();
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(responsBody, PreLogin.class);
 		}
 	}
 
@@ -59,14 +67,19 @@ public class LoginSpice {
 		@Override
 		public Login loadDataFromNetwork() throws Exception {
 
-			MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-			parameters.set(Const.USERNAME, username);
-			parameters.set(Const.PASSWORD, password);
-			parameters.set(Const.ORGANIZATION_ID, organizationId);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).add(Const.ORGANIZATION_ID, organizationId).build();
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
-			return getRestTemplate().postForObject(Const.BASE_URL + Const.F_LOGIN, request, Login.class);
+			Call connection = getOkHttpClient().newCall(requestBuilder.build());
+
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responsBody = resBody.string();
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(responsBody, Login.class);
 		}
 	}
 
@@ -87,13 +100,19 @@ public class LoginSpice {
 		@Override
 		public Login loadDataFromNetwork() throws Exception {
 
-			MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-			parameters.set(Const.USERNAME, username);
-			parameters.set(Const.PASSWORD, password);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
 
-			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(parameters, getPostHeader(ctx));
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
-			return getRestTemplate().getForObject(Const.BASE_URL + Const.F_LOGIN, Login.class, request);
+			Call connection = getOkHttpClient().newCall(requestBuilder.build());
+
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responsBody = resBody.string();
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(responsBody, Login.class);
 		}
 	}
 

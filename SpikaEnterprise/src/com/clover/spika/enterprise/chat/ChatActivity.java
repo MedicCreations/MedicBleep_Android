@@ -309,7 +309,7 @@ public class ChatActivity extends BaseChatActivity {
 
 								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(),
 										result.getToken());
-								new GoogleUtils().getPushToken(ChatActivity.this, result.getToken());
+								new GoogleUtils().getPushToken(ChatActivity.this);
 
 								handleIntentSecondLevel(intent);
 

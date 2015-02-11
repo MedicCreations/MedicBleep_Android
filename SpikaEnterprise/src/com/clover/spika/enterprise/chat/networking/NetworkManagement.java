@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -43,7 +42,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
@@ -100,12 +98,7 @@ public class NetworkManagement {
 		}
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
-		
-		Header[] head = response.getAllHeaders();
-		for(Header h : head){
-			Log.d("RawResponse", h.getName() + " = " + h.getValue());
-		}
-		
+
 		HttpEntity entity = response.getEntity();
 
 		return Helper.jObjectFromString(getString(entity.getContent()));
@@ -136,8 +129,6 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			httpGet.setHeader("token", token);
 		}
-		
-		Log.d("RawRequest token", "Token: " + token);
 
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");

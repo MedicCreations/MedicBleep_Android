@@ -3,12 +3,12 @@ package com.clover.spika.enterprise.chat.extendables;
 import android.support.v4.app.Fragment;
 
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
-import com.clover.spika.enterprise.chat.services.robospice.Jackson2SpiceService;
+import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.octo.android.robospice.SpiceManager;
 
 public class CustomFragment extends Fragment {
 
-	protected SpiceManager spiceManager = new SpiceManager(Jackson2SpiceService.class);
+	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 
 	@Override
 	public void onStart() {

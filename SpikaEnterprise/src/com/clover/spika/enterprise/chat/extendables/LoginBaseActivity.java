@@ -8,7 +8,6 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
@@ -20,18 +19,17 @@ import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.services.robospice.Jackson2SpiceService;
+import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public abstract class LoginBaseActivity extends Activity {
 
-	protected SpiceManager spiceManager = new SpiceManager(Jackson2SpiceService.class);
+	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 
 	private AppProgressDialog progressBar;
 
@@ -96,7 +94,6 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					Logger.d("Success");
 					List<Organization> organizations = result.getOrganizations();
 
 					if (organizations.size() == 1) {
@@ -126,7 +123,6 @@ public abstract class LoginBaseActivity extends Activity {
 
 				} else {
 
-					Logger.d("Not Success");
 					String message = "";
 
 					if (result.getCode() == Const.E_INVALID_TOKEN) {
@@ -177,12 +173,9 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					Logger.d("Success");
-
-					Log.d("Vida", "token: " + result.getToken());
 					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(), result.getToken());
 
-					new GoogleUtils().getPushToken(LoginBaseActivity.this, result.getToken());
+					new GoogleUtils().getPushToken(LoginBaseActivity.this);
 
 					Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
@@ -195,7 +188,6 @@ public abstract class LoginBaseActivity extends Activity {
 
 				} else {
 
-					Logger.d("Not Success");
 					String message = "";
 
 					if (result.getCode() == Const.E_INVALID_TOKEN) {
