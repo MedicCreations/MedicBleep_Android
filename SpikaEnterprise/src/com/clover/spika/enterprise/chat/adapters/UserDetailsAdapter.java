@@ -7,15 +7,16 @@ import java.util.Map;
 import org.apache.http.util.TextUtils;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.R.color;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnDismissDialogListener;
 import com.clover.spika.enterprise.chat.models.HelperModel;
@@ -26,14 +27,21 @@ public class UserDetailsAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<UserDetail> mUserDetailValues = new ArrayList<UserDetail>();
+	private boolean isShowNotEdit = false;
 
-	public UserDetailsAdapter(Context context, List<UserDetail> userDetailValues, List<Map<String, String>> userDetails) {
+	public UserDetailsAdapter(Context context, List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit) {
 
 		this.mContext = context;
 		
+		setNewData(userDetailValues, userDetails, isShowNotEdit);
+		
+	}
+	
+	public void setNewData(List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit){
+		mUserDetailValues.clear();
 		for (UserDetail usDet : userDetailValues) {
 
-			boolean isAdd = true;
+			boolean isAdd = !isShowNotEdit;
 			
 			if (userDetails != null) {
 				for (Map<String, String> val : userDetails) {
@@ -45,6 +53,7 @@ public class UserDetailsAdapter extends BaseAdapter {
 
 							if (val.get(Const.PUBLIC).equals("1") || val.get(Const.PUBLIC).equals("true")) {
 								usDet.setPublicValue(true);
+								isAdd = true;
 							} else {
 								usDet.setPublicValue(false);
 							}
@@ -63,6 +72,10 @@ public class UserDetailsAdapter extends BaseAdapter {
 				mUserDetailValues.add(usDet);
 			}
 		}
+	}
+	
+	public void setShowNotEdit(boolean b) {
+		isShowNotEdit = b;
 	}
 
 	public List<UserDetail> getList() {
@@ -101,68 +114,74 @@ public class UserDetailsAdapter extends BaseAdapter {
 		final UserDetail userDetail = mUserDetailValues.get(position);
 		userDetail.setPosition(position);
 
-		if (!TextUtils.isEmpty(userDetail.getValue())) {
-			holder.editDetail.setText(userDetail.getValue());
-			holder.editDetail.setTextColor(mContext.getResources().getColor(R.color.default_blue));
-		} else {
-			holder.editDetail.setText(userDetail.getLabel());
-			holder.editDetail.setTextColor(color.gray_in_adapter);
-		}
+		holder.editLabel.setText(userDetail.getLabel());
+		holder.editValue.setText(userDetail.getValue());
+		
+		if(!isShowNotEdit){
+			holder.editValue.setOnClickListener(new View.OnClickListener() {
 
-		holder.editDetail.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
 
-			@Override
-			public void onClick(View v) {
+					AppDialog dialog = new AppDialog(mContext, false);
+					dialog.setEditDialog(userDetail, new OnDismissDialogListener() {
 
-				AppDialog dialog = new AppDialog(mContext, false);
-				dialog.setEditDialog(userDetail, new OnDismissDialogListener() {
+						@Override
+						public void onDismissDialog(Object object) {
 
-					@Override
-					public void onDismissDialog(Object object) {
-
-						if (object != null) {
-							HelperModel realObject = (HelperModel) object;
-							mUserDetailValues.get(realObject.getPosition()).setValue(realObject.getValue());
-							notifyDataSetChanged();
+							if (object != null) {
+								HelperModel realObject = (HelperModel) object;
+								mUserDetailValues.get(realObject.getPosition()).setValue(realObject.getValue());
+								notifyDataSetChanged();
+							}
 						}
-					}
-				});
-			}
-		});
-
-		holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
-		holder.switchSwitcher.setTag(position);
-		holder.switchSwitcher.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-
-				int position = (Integer) v.getTag();
-
-				if (mUserDetailValues.get(position).isPublicValue()) {
-					mUserDetailValues.get(position).setPublicValue(false);
-				} else {
-					mUserDetailValues.get(position).setPublicValue(true);
+					});
 				}
+			});
+		}else{
+			holder.editValue.setClickable(false);
+		}
+		
+		if(isShowNotEdit){
+			((View) holder.switchDetailPublic.getParent()).setVisibility(View.GONE);
+		}else{
+			holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
+			((View) holder.switchDetailPublic.getParent()).setVisibility(View.VISIBLE);
+			holder.switchSwitcher.setTag(position);
+			holder.switchSwitcher.setOnClickListener(new View.OnClickListener() {
 
-				notifyDataSetChanged();
-			}
-		});
+				@Override
+				public void onClick(View v) {
+
+					int position = (Integer) v.getTag();
+
+					if (mUserDetailValues.get(position).isPublicValue()) {
+						mUserDetailValues.get(position).setPublicValue(false);
+					} else {
+						mUserDetailValues.get(position).setPublicValue(true);
+					}
+
+					notifyDataSetChanged();
+				}
+			});
+		}
 
 		return convertView;
 	}
 
 	public class ViewHolderDetail {
 
-		public TextView editDetail;
+		public TextView editLabel;
+		public TextView editValue;
 		public Switch switchDetailPublic;
 		public View switchSwitcher;
 
 		public ViewHolderDetail(View view) {
 
-			editDetail = (TextView) view.findViewById(R.id.editDetail);
+			editLabel = (TextView) view.findViewById(R.id.editDetailLabel);
+			editValue = (TextView) view.findViewById(R.id.editDetailValue);
 			switchDetailPublic = (Switch) view.findViewById(R.id.switchDetailPublic);
-			switchSwitcher = (View) view.findViewById(R.id.switchSwitcher);
+			switchSwitcher = view.findViewById(R.id.switchSwitcher);
 		}
 	}
 

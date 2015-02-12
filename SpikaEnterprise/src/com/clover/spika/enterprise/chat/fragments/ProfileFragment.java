@@ -12,39 +12,30 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
-import com.clover.spika.enterprise.chat.EditProfileActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.ShowProfileActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
-import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-import com.clover.spika.enterprise.chat.views.DetailsView;
 
 public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener, OnCheckedChangeListener {
 
 	private Switch mSwitchPasscodeEnabled;
 	private ImageView profileImage;
 	private Button updatePassword;
-	private DetailsView mDetailScrollView;
 	private FrameLayout mLoadingLayout;
-	private UserWrapper userWrapper;
-	private ProgressBar progressBarDetails;
 
 	String imageId;
 	String firstname;
@@ -87,11 +78,13 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		updatePassword = (Button) rootView.findViewById(R.id.updatePassword);
 		updatePassword.setOnClickListener(this);
 
-		mDetailScrollView = (DetailsView) rootView.findViewById(R.id.scrollViewDetails);
 		mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
-
-		progressBarDetails = (ProgressBar) rootView.findViewById(R.id.progressBarDetails);
-		progressBarDetails.setVisibility(View.VISIBLE);
+		
+		((MainActivity)getActivity()).enableEditProfile(this);
+		
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableCreateRoom();
+		}
 
 		return rootView;
 	}
@@ -102,24 +95,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		onClosed();
 		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
 
-		new UserApi().getProfile(getActivity(), true, Helper.getUserId(getActivity()), new ApiCallback<UserWrapper>() {
-			@Override
-			public void onApiResponse(Result<UserWrapper> result) {
-				if (result.isSuccess()) {
-					progressBarDetails.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-
-					userWrapper = result.getResultData();
-
-					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
-
-					if (ProfileFragment.this != null && getActivity() != null) {
-						((MainActivity) getActivity()).enableEditProfile(ProfileFragment.this);
-					}
-				} else {
-					progressBarDetails.findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -245,8 +220,10 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 	@Override
 	public void onEditProfile() {
-		Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-		intent.putExtra(Const.USER_WRAPPER, userWrapper);
+		Intent intent = new Intent(getActivity(), ShowProfileActivity.class);
+		intent.putExtra(Const.USER_IMAGE_NAME, imageId);
+		intent.putExtra(Const.FIRSTNAME, firstname);
+		intent.putExtra(Const.LASTNAME, lastname);
 		getActivity().startActivity(intent);
 	}
 

@@ -8,11 +8,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.RoomsActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -20,27 +19,21 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-import com.clover.spika.enterprise.chat.views.RobotoThinButton;
-import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
 public class SidebarFragment extends Fragment implements OnClickListener {
 
 	ImageView userImage;
-	RobotoThinTextView userName;
+	TextView userName;
 
 	Button profile;
-	RobotoThinButton lobby;
-	RobotoThinButton users;
-	RobotoThinButton groups;
-	RobotoThinButton rooms;
-	RobotoThinButton information;
-	RobotoThinButton logout;
+	Button lobby;
+	Button information;
+	Button logout;
 
 	String image;
 
 	ProfileFragment profileFragment;
 	HomeFragment lobbyFragment;
-	PeopleFragment usersFragment;
 	InformationFragment informationFragment;
 
 	public SidebarFragment() {
@@ -65,28 +58,19 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		setUserImage();
 
-		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
+		userName = (TextView) view.findViewById(R.id.userName);
 		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(this);
 
-		lobby = (RobotoThinButton) view.findViewById(R.id.lobby);
+		lobby = (Button) view.findViewById(R.id.lobby);
 		lobby.setOnClickListener(this);
 
-		users = (RobotoThinButton) view.findViewById(R.id.users);
-		users.setOnClickListener(this);
-
-		groups = (RobotoThinButton) view.findViewById(R.id.groups);
-		groups.setOnClickListener(this);
-
-		rooms = (RobotoThinButton) view.findViewById(R.id.rooms);
-		rooms.setOnClickListener(this);
-
-		information = (RobotoThinButton) view.findViewById(R.id.information);
+		information = (Button) view.findViewById(R.id.information);
 		information.setOnClickListener(this);
 
-		logout = (RobotoThinButton) view.findViewById(R.id.logout);
+		logout = (Button) view.findViewById(R.id.logout);
 		logout.setOnClickListener(this);
 
 		return view;
@@ -120,37 +104,6 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.lobby));
 			switchFragment(lobbyFragment);
-
-			break;
-
-		case R.id.users:
-
-			if (usersFragment == null) {
-				usersFragment = new PeopleFragment();
-			}
-
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.users));
-			switchFragment(usersFragment);
-
-			break;
-
-		case R.id.rooms:
-		case R.id.groups:
-
-			boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
-
-			if (isCategoriesEnabled) {
-				CategoryFragment categoryFragment = CategoryFragment.newInstance(view.getId() == R.id.rooms ? CategoryFragment.UseType.ROOM : CategoryFragment.UseType.GROUP);
-
-				((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.pick_category));
-				switchFragment(categoryFragment);
-			} else {
-				if (view.getId() == R.id.rooms) {
-					RoomsActivity.startActivity(String.valueOf(0), getString(R.string.all), getActivity());
-				} else if (view.getId() == R.id.groups) {
-					GroupsActivity.startActivity(String.valueOf(0), getActivity());
-				}
-			}
 
 			break;
 

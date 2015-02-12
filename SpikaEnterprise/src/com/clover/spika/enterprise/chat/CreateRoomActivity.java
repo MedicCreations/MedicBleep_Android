@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,9 +31,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 public class CreateRoomActivity extends BaseActivity {
 
@@ -63,6 +63,7 @@ public class CreateRoomActivity extends BaseActivity {
 	private String roomPassword = "";
 
 	private boolean isConfirmActive = false;
+	private String categoryName = "";
 
 	public static void start(String categoryId, String categoryName, Context c) {
 		c.startActivity(new Intent(c, CreateRoomActivity.class).putExtra(Const.CATEGORY_NAME, categoryName).putExtra(Const.CATEGORY_ID, categoryId));
@@ -110,7 +111,7 @@ public class CreateRoomActivity extends BaseActivity {
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
-		setScreenTitle(getString(R.string.create_room));
+		setScreenTitle(getString(R.string.create_group));
 
 		closeSearchBtn.setOnClickListener(new OnClickListener() {
 
@@ -125,6 +126,8 @@ public class CreateRoomActivity extends BaseActivity {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
+		
+		setScreenTitle(getString(R.string.preview_group));
 
 		roomIsPrivate = is_private;
 
@@ -150,6 +153,9 @@ public class CreateRoomActivity extends BaseActivity {
 		bundle.putString(Const.ROOM_ALL_IDS, roomAll);
 		bundle.putString(Const.ROOM_THUMB_ID, room_thumb_id);
 		bundle.putString(Const.NAME, roomName);
+		bundle.putString(Const.CATEGORY_NAME, categoryName);
+		bundle.putBoolean(Const.IS_PRIVATE, roomIsPrivate.equals("1") ? true : false );
+		bundle.putString(Const.PASSWORD, password );
 		fragment.setArguments(bundle);
 		getSupportFragmentManager().beginTransaction().add(R.id.mainContent, fragment, ConfirmRoomFragment.class.getSimpleName()).commit();
 
@@ -158,6 +164,10 @@ public class CreateRoomActivity extends BaseActivity {
 
 	public void setCategoryId(String categoryId) {
 		this.categoryId = categoryId;
+	}
+	
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	public void setRoomName(String roomName) {
@@ -297,6 +307,7 @@ public class CreateRoomActivity extends BaseActivity {
 		if (isConfirmActive) {
 			Fragment fragment = getSupportFragmentManager().findFragmentByTag(ConfirmRoomFragment.class.getSimpleName());
 			getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+			setScreenTitle(getString(R.string.create_group));
 			createRoomBtn.setVisibility(View.INVISIBLE);
 			nextStepRoomBtn.setVisibility(View.VISIBLE);
 			isConfirmActive = false;

@@ -19,12 +19,15 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.CreateRoomActivity;
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GroupsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
@@ -88,6 +91,14 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		
 		etSearch.addTextChangedListener(textWatacher);
 		etSearch.setHint(getString(R.string.search_for_groups));
+		
+		((MainActivity)getActivity()).setCreateRoom(new OnCreateRoomListener() {
+			
+			@Override
+			public void onCreateRoom() {
+				CreateRoomActivity.start(getActivity());
+			}
+		});
 
 		return rootView;
 	}
@@ -122,7 +133,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	public void onPause() {
 		super.onPause();
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
 		@Override
@@ -207,4 +218,14 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			
 		}
 	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableCreateRoom();
+		}
+	}
+	
 }

@@ -6,9 +6,11 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.SparseArray;
@@ -90,6 +92,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private TextView filterRooms;
 
 	private int currentFilter = GlobalModel.Type.ALL;
+	
+	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -199,6 +203,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 				return false;
 			}
 		});
+		
+		etSearch.addTextChangedListener(textWatacher);
 
 		getListItems(mCurrentIndex, null, false, currentFilter);
 
@@ -216,6 +222,20 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		return rootView;
 	}
+	
+	private TextWatcher textWatacher = new TextWatcher() {
+		
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		
+		@Override
+		public void afterTextChanged(Editable s) {
+			adapter.manageData(s.toString(), allData);
+		}
+	};
 
 	@Override
 	public void onClosed() {
@@ -278,6 +298,9 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
+		
+		allData.clear();
+		allData.addAll(adapter.getData());
 	}
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
@@ -544,6 +567,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		((CreateRoomActivity) getActivity()).setRoomName(name);
 		((CreateRoomActivity) getActivity()).setCategoryId(mCategoryId);
+		((CreateRoomActivity) getActivity()).setCategoryName(mTvCategoryName.getText().toString());
 
 		if (name.equals("")) {
 			AppDialog dialog = new AppDialog(getActivity(), false);

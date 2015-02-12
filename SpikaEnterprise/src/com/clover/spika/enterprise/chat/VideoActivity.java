@@ -76,8 +76,8 @@ public class VideoActivity extends BaseActivity {
 
 		mVideoView = (VideoView) findViewById(R.id.videoView);
 		mPlayPause = (ImageView) findViewById(R.id.ivPlayPause);
-		mStopVideo = (ImageView) findViewById(R.id.ivStopSound);
-		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
+//		mStopVideo = (ImageView) findViewById(R.id.ivStopSound);
+//		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
 
 		mIsPlaying = VIDEO_IS_STOPPED;
 

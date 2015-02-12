@@ -28,12 +28,25 @@
             android:hint="@string/enterRoomName"
             android:imeOptions="actionDone"
             android:singleLine="true" />
+        
+        <TextView
+            android:id="@+id/tv_room_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/img_room"
+            android:layout_toRightOf="@+id/img_room"
+            android:hint="@string/enterRoomName"
+            android:textColor="@color/devil_gray"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:singleLine="true" />
     </RelativeLayout>
 
     <View
         android:id="@+id/belowRoomLine"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/layoutRoomName"
         android:background="@color/chat_menu_gray" />
 
@@ -69,7 +82,7 @@
     <View
         android:id="@+id/belowPrivateLayout"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/layoutPrivate"
         android:background="@color/chat_menu_gray" />
 
@@ -96,7 +109,7 @@
     <View
         android:id="@+id/belowPasswordLayout"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/layoutPassword"
         android:background="@color/chat_menu_gray" />
 
@@ -123,7 +136,7 @@
     <View
         android:id="@+id/belowPasswordRepeatLayout"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/layoutPasswordRepeat"
         android:background="@color/chat_menu_gray" />
 
@@ -143,19 +156,20 @@
             android:textColor="@color/devil_gray"
             android:textSize="15sp" />
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/tvCategory"
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="15dp"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/tvCategory"
-            android:background="@drawable/icon_tablearrow" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/arrowRightCategory"
+            android:src="@drawable/right_arrow" />
     </RelativeLayout>
 
     <View
         android:id="@+id/belowCategoryLayout"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/layoutCategory"
         android:background="@color/chat_menu_gray" />
 
@@ -176,7 +190,7 @@
     <View
         android:id="@+id/belowUsersLayout"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="10dp"
         android:layout_below="@id/txtUserNames"
         android:background="@color/chat_menu_gray" />
 
@@ -186,6 +200,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/belowUsersLayout"
         android:orientation="horizontal"
+        android:visibility="gone"
         android:weightSum="4" >
 
         <TextView
@@ -242,15 +257,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/filter_layout"
-        android:background="@color/text_dark_gray" >
+        android:background="@color/white" >
 
         <EditText
             android:id="@+id/searchEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:padding="15dp"
             android:layout_toLeftOf="@+id/searchBtn"
             android:layout_toStartOf="@+id/searchBtn"
             android:background="@null"
@@ -259,8 +273,7 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:singleLine="true"
-            android:textColor="@color/white"
-            android:textColorHint="@color/devil_gray" />
+            android:textColor="@color/devil_gray"/>
 
         <ImageButton
             android:id="@+id/searchBtn"
@@ -271,8 +284,16 @@
             android:background="@drawable/selector_transp_blue"
             android:contentDescription="@null"
             android:padding="10dp"
+            android:visibility="gone"
             android:scaleType="centerInside"
             android:src="@drawable/icon_search" />
     </RelativeLayout>
+    
+    <View
+        android:id="@+id/bottomLineAboveListView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/search_layout"
+        android:background="@color/chat_menu_gray" />
 
 </RelativeLayout>

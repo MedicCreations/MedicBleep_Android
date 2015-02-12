@@ -1,14 +1,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/baseLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
 
     <RelativeLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
         android:background="@color/default_blue" >
-        
+
         <ImageButton
             android:id="@+id/goBack"
             android:layout_width="wrap_content"
@@ -24,33 +25,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/settings"
+            android:text="@string/profile"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
         
         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-            android:id="@+id/saveProfile"
+            android:id="@+id/cancelProfile"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/saveProfile"
             android:layout_centerVertical="true"
-            android:textColor="@color/white"
-            android:padding="10dp"
-            android:text="@string/save"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:paddingRight="10dp"
+            android:text="@string/cancel"
+            android:textColor="@color/white_selector"
             android:textSize="16sp" />
 
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/saveProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:focusableInTouchMode="true"
+            android:paddingRight="10dp"
+            android:text="@string/save"
+            android:textColor="@color/white_selector"
+            android:textSize="16sp" />
     </RelativeLayout>
-    
-   
 
     <ListView
         android:id="@+id/listUserDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBarLayout"
-        android:background="@android:color/white" 
-        android:descendantFocusability="beforeDescendants"/>
+        android:background="@android:color/white"
+        android:descendantFocusability="beforeDescendants" />
 
 </RelativeLayout>

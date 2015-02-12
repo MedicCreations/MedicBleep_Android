@@ -1,8 +1,12 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,7 +19,9 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class RecentAdapter extends BaseAdapter {
 
@@ -65,20 +71,24 @@ public class RecentAdapter extends BaseAdapter {
 		return getItem(position).hashCode();
 	}
 
-	public void incrementUnread(String chatId) {
+	public boolean incrementUnread(String chatId) {
+		
+		boolean isFound = false;
 
 		int finalChatId = 0;
 
 		try {
 			finalChatId = Integer.valueOf(chatId);
 		} catch (Exception e) {
-			return;
+			return true;
 		}
 
 		for (int i = 0; i < data.size(); i++) {
 
 			if (data.get(i).getId() == finalChatId) {
 
+				isFound = true;
+				
 				int ureadInt = 0;
 
 				try {
@@ -89,10 +99,17 @@ public class RecentAdapter extends BaseAdapter {
 				ureadInt = ureadInt + 1;
 
 				data.get(i).setUnread(String.valueOf(ureadInt));
+				
+				Chat chat = data.get(i);
+				data.remove(i);
+				data.add(0, chat);
+				
 				notifyDataSetChanged();
 				break;
 			}
 		}
+		
+		return isFound;
 	}
 
 	@Override
@@ -114,7 +131,41 @@ public class RecentAdapter extends BaseAdapter {
 
 		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.recentImage);
 		holder.recentName.setText(getItem(position).getChat_name());
-		holder.lastMessage.setText("last message");
+		
+		((RoundImageView)holder.recentImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+		
+		switch (getItem(position).getLastMessage().getType()) {
+		case Const.MSG_TYPE_DEFAULT:
+			holder.lastMessage.setText(getItem(position).getLastMessage().getText());
+			break;
+		case Const.MSG_TYPE_DELETED:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.deleted));
+			break;
+		case Const.MSG_TYPE_FILE:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.file));
+			break;
+		case Const.MSG_TYPE_GIF:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.smiley));
+			break;
+		case Const.MSG_TYPE_LOCATION:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.location));
+			break;
+		case Const.MSG_TYPE_PHOTO:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.photo));
+			break;
+		case Const.MSG_TYPE_VIDEO:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.video));
+			break;
+		case Const.MSG_TYPE_VOICE:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.audio));
+			break;
+
+		default:
+			holder.lastMessage.setText("");
+			break;
+		}
+		
+		holder.lastMessageTime.setText(getCreatedTime(getItem(position).getLastMessage().getCreated()));
 
 		if (Integer.parseInt(getItem(position).getUnread()) > 0) {
 			holder.unreadText.setVisibility(View.VISIBLE);
@@ -126,6 +177,22 @@ public class RecentAdapter extends BaseAdapter {
 
 		return convertView;
 	}
+	
+	private String getCreatedTime(String created) {
+
+		try {
+
+			Timestamp stamp = new Timestamp(Long.valueOf(created) * 1000);
+			Date date = new Date(stamp.getTime());
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+			return sdf.format(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
 
 	public class ViewHolderCharacter {
 
@@ -133,6 +200,7 @@ public class RecentAdapter extends BaseAdapter {
 		public RobotoRegularTextView recentName;
 		public TextView unreadText;
 		public RobotoRegularTextView lastMessage;
+		public RobotoRegularTextView lastMessageTime;
 
 		public ViewHolderCharacter(View view) {
 
@@ -140,6 +208,7 @@ public class RecentAdapter extends BaseAdapter {
 			recentName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
 			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
+			lastMessageTime = (RobotoRegularTextView) view.findViewById(R.id.lastMessageTime);
 			
 		}
 

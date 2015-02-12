@@ -71,7 +71,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     @Override
     protected void onResume() {
         super.onResume();
-        loadImage();
         getThreads();
     }
 

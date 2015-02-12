@@ -6,38 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     
-    <RelativeLayout
-        android:id="@+id/room"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white" >
-
-        <com.clover.spika.enterprise.chat.views.RoundImageView
-            android:id="@+id/img_room"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/circle_with_white_border"
-            android:padding="10dp"
-            android:src="@drawable/add_photo"
-            tools:src="@drawable/@drawable/add_photo" />
-
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-            android:id="@+id/tv_room_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/img_room"
-            android:layout_toRightOf="@+id/img_room"
-            android:textSize="30sp"
-            android:hint="@string/enterRoomName" />
-    </RelativeLayout>
-
-    <View
-        android:id="@+id/belowRoomLine"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/chat_menu_gray" />
-
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"

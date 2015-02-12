@@ -170,7 +170,7 @@ public class UserApi {
 	}
 
 	public void getProfile(final Context context, final boolean getDetailValues, final String userId, final ApiCallback<UserWrapper> callback) {
-		new BaseAsyncTask<Void, Void, UserWrapper>(context, false) {
+		new BaseAsyncTask<Void, Void, UserWrapper>(context, true) {
 			@Override
 			protected UserWrapper doInBackground(Void... params) {
 				JSONObject jsonObject = new JSONObject();
