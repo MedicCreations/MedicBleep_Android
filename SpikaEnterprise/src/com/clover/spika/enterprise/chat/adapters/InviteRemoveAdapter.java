@@ -27,6 +27,7 @@ import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class InviteRemoveAdapter extends BaseAdapter {
 
@@ -193,6 +194,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		holder.personType.setVisibility(View.GONE);
 
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.profileImg);
+		((RoundImageView)holder.profileImg).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
 		if (item.getType() == Type.CHAT) {
 

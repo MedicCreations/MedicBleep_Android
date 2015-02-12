@@ -18,7 +18,6 @@ import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
-import com.clover.spika.enterprise.chat.VoiceActivity;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -273,10 +272,6 @@ public class ThreadsAdapter extends BaseAdapter {
                 holder.imageViewIcon.setOnClickListener(mOnClickVideo);
                 break;
 
-            case VIEW_TYPE_SOUND:
-                holder.imageViewIcon.setOnClickListener(mOnClickSound);
-                break;
-
             case VIEW_TYPE_FILE:
                 holder.imageViewIcon.setOnClickListener(mOnClickFile);
                 break;
@@ -456,17 +451,6 @@ public class ThreadsAdapter extends BaseAdapter {
                 Intent videoIntent = new Intent(mContext, VideoActivity.class);
                 videoIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
                 mContext.startActivity(videoIntent);
-            }
-        }
-    };
-
-    private View.OnClickListener mOnClickSound = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (v.getTag(R.id.tag_file_id) != null) {
-                Intent soundIntent = new Intent(mContext, VoiceActivity.class);
-                soundIntent.putExtra(Const.FILE_ID, (String) v.getTag(R.id.tag_file_id));
-                mContext.startActivity(soundIntent);
             }
         }
     };

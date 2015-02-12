@@ -64,6 +64,10 @@ public class Chat extends BaseModel {
 	@SerializedName("is_member")
 	@Expose
 	private boolean isMember;
+	
+	@SerializedName("last_message")
+	@Expose
+	private Message lastMessage;
 
 	private boolean isSelected = false;
 	private boolean isNewMsg = false;
@@ -223,6 +227,14 @@ public class Chat extends BaseModel {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public Message getLastMessage() {
+		return lastMessage;
+	}
+
+	public void setLastMessage(Message lastMessage) {
+		this.lastMessage = lastMessage;
 	}
 
 	@Override

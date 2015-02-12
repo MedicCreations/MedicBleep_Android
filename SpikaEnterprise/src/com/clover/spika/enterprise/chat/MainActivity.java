@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivity {
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);
-		slidingMenu.setBehindWidth(80);
+		slidingMenu.setBehindWidth(0.7f);
 
 		slidingMenu.setOnClosedListener(new OnClosedListener() {
 

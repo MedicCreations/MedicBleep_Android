@@ -671,7 +671,7 @@ public class SlidingMenu extends RelativeLayout {
 	 *            The width the Sliding Menu will open to, in pixels
 	 */
 	@SuppressWarnings("deprecation")
-	public void setBehindWidth(int i) {
+	public void setBehindWidth(float i) {
 		int width;
 		Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		try {
@@ -684,9 +684,9 @@ public class SlidingMenu extends RelativeLayout {
 		} catch (Exception e) {
 			width = display.getWidth();
 		}
-		// setBehindOffset(width-i);
+//		setBehindOffset(width * i);
 
-		int percent = (int) (width * 0.80f);
+		int percent = (int) (width * i);
 
 		setBehindOffset(width - percent);
 	}

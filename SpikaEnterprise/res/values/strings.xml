@@ -265,5 +265,8 @@
     <string name="call">Call</string>
     <string name="messenger">Messenger</string>
     <string name="about">About</string>
+    <string name="deleted">Deleted</string>
+    <string name="file">File</string>
+    <string name="smiley">Smiley</string>
 
 </resources>

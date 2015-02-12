@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class GlobalModelAdapter extends BaseAdapter {
 
@@ -93,6 +94,7 @@ public class GlobalModelAdapter extends BaseAdapter {
 		final GlobalModel item = getItem(position);
 
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.itemImage);
+		((RoundImageView)holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
 		if (item.getType() == Type.USER) {
 			holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());

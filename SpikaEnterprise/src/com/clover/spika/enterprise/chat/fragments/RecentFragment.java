@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
@@ -88,6 +89,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		if (mainListView == null) {
 			return;
 		}
+		
+		for(Chat item : data){
+			item.setLastMessage(Message.decryptContent(getActivity(), item.getLastMessage()));
+		}
+		
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();

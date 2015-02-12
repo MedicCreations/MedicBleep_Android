@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -18,12 +19,11 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 
 public class SidebarFragment extends Fragment implements OnClickListener {
 
 	ImageView userImage;
-	RobotoThinTextView userName;
+	TextView userName;
 
 	Button profile;
 	Button lobby;
@@ -58,7 +58,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 
 		setUserImage();
 
-		userName = (RobotoThinTextView) view.findViewById(R.id.userName);
+		userName = (TextView) view.findViewById(R.id.userName);
 		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
 
 		profile = (Button) view.findViewById(R.id.profile);

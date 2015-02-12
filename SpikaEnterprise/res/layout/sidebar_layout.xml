@@ -14,8 +14,8 @@
 
         <RelativeLayout
             android:id="@+id/userImageLayout"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_alignParentLeft="true" >
 
             <ImageView
@@ -42,22 +42,23 @@
             android:paddingRight="10dp"
             android:paddingTop="10dp" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:text="@string/hi"
+                android:textStyle="italic"
                 android:textColor="@android:color/white"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:text="@string/john_doe"
                 android:textColor="@android:color/white"
-                android:textSize="30sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </RelativeLayout>
@@ -87,7 +88,7 @@
                 android:padding="10dp"
                 android:text="@string/messenger"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
             
             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/profile"
@@ -102,7 +103,7 @@
                 android:padding="10dp"
                 android:text="@string/profile"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
 
              <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/information"
@@ -117,7 +118,7 @@
                 android:padding="10dp"
                 android:text="@string/about"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
 
             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/logout"
@@ -133,7 +134,7 @@
                 android:padding="10dp"
                 android:text="@string/logout"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
 
             <View
                 android:layout_width="match_parent"

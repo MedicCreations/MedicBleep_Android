@@ -19,6 +19,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class GroupsAdapter extends BaseAdapter {
 
@@ -102,6 +103,7 @@ public class GroupsAdapter extends BaseAdapter {
 		GlobalModel item = getItem(position);
 
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.groupImage);
+		((RoundImageView)holder.groupImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 		holder.groupName.setText(((Chat) item.getModel()).getChat_name());
 
 		return convertView;

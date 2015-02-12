@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class PeopleAdapter extends BaseAdapter {
 
@@ -102,6 +103,7 @@ public class PeopleAdapter extends BaseAdapter {
 		GlobalModel item = getItem(position);
 
 		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.itemImage);
+		((RoundImageView)holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
 		holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());
 
