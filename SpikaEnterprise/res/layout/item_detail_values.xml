@@ -5,36 +5,54 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:paddingBottom="10dp"
+        android:layout_toLeftOf="@+id/switchLayout"
+        android:orientation="vertical" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
-            android:id="@+id/editDetail"
-            android:layout_width="0dp"
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/editDetailLabel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
             android:background="@null"
-            android:padding="10dp"
-            android:textSize="20sp" />
+            android:textColor="@color/devil_gray"
+            android:textSize="16sp" />
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/editDetailValue"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_weight="1" >
-
-            <Switch
-                android:id="@+id/switchDetailPublic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp" />
-
-            <View
-                android:id="@+id/switchSwitcher"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignBottom="@+id/switchDetailPublic"
-                android:layout_alignTop="@+id/switchDetailPublic" />
-        </RelativeLayout>
+            android:background="@null"
+            android:hint="@string/tap_to_edit"
+            android:textColor="@color/black_selector_no_enable"
+            android:textColorHint="@color/light_light_gray"
+            android:textSize="16sp" />
     </LinearLayout>
+    
+    <RelativeLayout
+        android:id="@+id/switchLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp" >
 
+        <Switch
+            android:id="@+id/switchDetailPublic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp" />
+
+        <View
+            android:id="@+id/switchSwitcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/switchDetailPublic"
+            android:layout_alignTop="@+id/switchDetailPublic"
+            android:layout_alignLeft="@+id/switchDetailPublic"
+            android:layout_alignRight="@+id/switchDetailPublic" />
+    </RelativeLayout>
+    
 </RelativeLayout>

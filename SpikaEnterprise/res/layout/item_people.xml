@@ -9,23 +9,22 @@
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp" >
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/item_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginTop="5dp"
             android:contentDescription="@null"
             android:src="@drawable/default_user_image" />
 
         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/item_name"
             android:layout_width="match_parent"
-            android:layout_alignTop="@id/item_image"
             android:gravity="center_vertical"
-            android:layout_alignBottom="@id/item_image"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toRightOf="@id/item_image"
             android:ellipsize="end"
             android:paddingLeft="5dp"
@@ -39,7 +38,7 @@
             android:layout_alignLeft="@id/item_name"
             android:layout_marginTop="5dp"
             android:layout_height="1dp"
-            android:layout_below="@id/item_name"
+            android:layout_below="@id/item_image"
             android:background="@color/light_light_gray"/>
     </RelativeLayout>
 

@@ -55,7 +55,9 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 
 	@Override
 	public void handlePushNotificationInFragment(String chatId) {
-		//adapter.handlePushNotificationNumber(chatId);
+		if(activeFragment == RECENT_FRAGMENT){
+			recentFragment.handlePushNotificationInFragment(chatId);
+		}
 	}
 
 	@Override

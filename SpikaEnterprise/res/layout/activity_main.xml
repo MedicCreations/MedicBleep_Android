@@ -41,30 +41,44 @@
             android:src="@drawable/icon_search"
             android:visibility="gone" />
         
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <ImageButton
             android:id="@+id/createRoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
             android:background="@drawable/selector_transp_blue"
-            android:textColor="@color/white"
+            android:contentDescription="@null"
             android:padding="10dp"
-            android:text="@string/create"
-            android:textSize="16sp"
+            android:src="@drawable/create_room"
             android:visibility="gone" />
         
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-            android:id="@+id/editProfile"
+        <!-- <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/createRoom"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:includeFontPadding="false"
             android:background="@drawable/selector_transp_blue"
             android:textColor="@color/white"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp"
+            android:gravity="center_vertical"
+            android:text="@string/_plus_character"
+            android:textSize="30sp"
+            android:visibility="gone" /> -->
+        
+        <ImageView
+            android:id="@+id/editProfile"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:padding="10dp"
-            android:text="@string/edit"
-            android:textSize="16sp"
+            android:background="@drawable/selector_transp_blue"
+            android:src="@drawable/icon_info"
+            android:scaleType="fitCenter"
             android:visibility="gone" />
 
         <ImageButton

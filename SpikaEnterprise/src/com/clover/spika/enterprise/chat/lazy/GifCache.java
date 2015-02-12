@@ -55,8 +55,6 @@ public class GifCache {
 	}
 
 	public GifAnimationDrawable get(String id) {
-		Log.d("LOG", "get id; "+id);
-		Log.w("LOG", cache.toString());
 		try {
 			if (!cache.containsKey(id))
 				return null;
@@ -70,10 +68,8 @@ public class GifCache {
 	}
 
 	public void put(String id, GifAnimationDrawable is) {
-		Log.d("LOG", "put id; "+id);
 		try {
 			cache.put(id, is);
-			Log.i("LOG", cache.toString());
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

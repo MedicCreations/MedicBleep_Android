@@ -4,10 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_blue" >
-
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
+        
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#66000000"/>
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/profileImage"
@@ -99,24 +103,6 @@
             android:text="@string/update_password"
             android:textColor="@android:color/white" />
 
-        <com.clover.spika.enterprise.chat.views.DetailsView
-            android:id="@+id/scrollViewDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/updatePassword"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:divider="@android:color/transparent" />
-
-        <ProgressBar
-            android:id="@+id/progressBarDetails"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/updatePassword"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible"
-            tools:visibility="visible" />
     </RelativeLayout>
 
 </ScrollView>

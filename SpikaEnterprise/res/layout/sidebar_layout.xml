@@ -74,7 +74,7 @@
             android:layout_marginRight="15dp"
             android:orientation="vertical" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/lobby"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,71 +85,11 @@
                 android:drawablePadding="10dp"
                 android:gravity="left"
                 android:padding="10dp"
-                android:text="@string/lobby"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
-                android:id="@+id/users"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/selector_transp_blue"
-                android:clickable="true"
-                android:drawableLeft="@drawable/icon_user"
-                android:drawablePadding="10dp"
-                android:gravity="left"
-                android:padding="10dp"
-                android:text="@string/users"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
-                android:id="@+id/rooms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/selector_transp_blue"
-                android:clickable="true"
-                android:drawableLeft="@drawable/icon_door"
-                android:drawablePadding="10dp"
-                android:gravity="left"
-                android:padding="10dp"
-                android:text="@string/rooms"
+                android:text="@string/messenger"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
             
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
-                android:id="@+id/groups"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/selector_transp_blue"
-                android:clickable="true"
-                android:drawableLeft="@drawable/icon_groups"
-                android:drawablePadding="10dp"
-                android:gravity="left"
-                android:padding="10dp"
-                android:text="@string/groups"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-            
-             <com.clover.spika.enterprise.chat.views.RobotoThinButton
-                android:id="@+id/information"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="@drawable/selector_transp_blue"
-                android:clickable="true"
-                android:drawableLeft="@drawable/icon_info"
-                android:drawablePadding="10dp"
-                android:gravity="left"
-                android:padding="10dp"
-                android:text="@string/information"
-                android:textColor="@android:color/white"
-                android:textSize="25sp" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -163,8 +103,23 @@
                 android:text="@string/profile"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
-             
-            <com.clover.spika.enterprise.chat.views.RobotoThinButton
+
+             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_info"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/about"
+                android:textColor="@android:color/white"
+                android:textSize="25sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -20,9 +24,6 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecentFragment extends CustomFragment implements OnItemClickListener {
 
@@ -61,6 +62,10 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
+		
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableCreateRoom();
+		}
 
 		return view;
 	}
@@ -111,6 +116,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		} else {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
+		
 	}
 
 	public void getLobby(int page, final boolean toClear) {
@@ -139,7 +145,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void handlePushNotificationInFragment(String chatId) {
 		if (adapter != null) {
-			adapter.incrementUnread(chatId);
+			boolean isFound = adapter.incrementUnread(chatId);
+			if(!isFound){
+				mCurrentIndex = 0;
+				getLobby(mCurrentIndex, true);
+			}
 		}
 	}
 }

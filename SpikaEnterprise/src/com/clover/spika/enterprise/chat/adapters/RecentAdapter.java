@@ -65,20 +65,24 @@ public class RecentAdapter extends BaseAdapter {
 		return getItem(position).hashCode();
 	}
 
-	public void incrementUnread(String chatId) {
+	public boolean incrementUnread(String chatId) {
+		
+		boolean isFound = false;
 
 		int finalChatId = 0;
 
 		try {
 			finalChatId = Integer.valueOf(chatId);
 		} catch (Exception e) {
-			return;
+			return true;
 		}
 
 		for (int i = 0; i < data.size(); i++) {
 
 			if (data.get(i).getId() == finalChatId) {
 
+				isFound = true;
+				
 				int ureadInt = 0;
 
 				try {
@@ -89,10 +93,17 @@ public class RecentAdapter extends BaseAdapter {
 				ureadInt = ureadInt + 1;
 
 				data.get(i).setUnread(String.valueOf(ureadInt));
+				
+				Chat chat = data.get(i);
+				data.remove(i);
+				data.add(0, chat);
+				
 				notifyDataSetChanged();
 				break;
 			}
 		}
+		
+		return isFound;
 	}
 
 	@Override

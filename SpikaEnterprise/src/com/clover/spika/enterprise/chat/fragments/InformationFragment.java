@@ -37,6 +37,10 @@ public class InformationFragment extends CustomFragment {
 		mWebView.setWebChromeClient(new WebChromeClient());
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableCreateRoom();
+		}
+		
 		return rootView;
 	}
 	

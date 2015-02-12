@@ -1,19 +1,27 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -27,9 +35,6 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class RecordAudioActivity extends BaseActivity {
 
@@ -47,15 +52,11 @@ public class RecordAudioActivity extends BaseActivity {
 	private ExtAudioRecorder mExtAudioRecorder;
 
 	private Chronometer mRecordTime;
-	private Handler mHandlerForProgressBar = new Handler();
-	private Runnable mRunnForProgressBar;
 
 	private int mIsPlaying = STOP; // 0 - play is on stop, 1 - play is on pause,
 									// 2 - playing
 	private MediaPlayer mPlayer = null;
-	private ProgressBar mPbForPlaying;
 	private ImageView mPlayPause;
-	private ImageView mStopSound;
 	private RelativeLayout mRlSoundControler;
 
 	private ImageButton sendAudio;
@@ -64,6 +65,11 @@ public class RecordAudioActivity extends BaseActivity {
 
 	private AsyncTask<Void, Void, Void> recordingAsync;
 	private CountDownTimer mRecordingTimer;
+	
+	private Chronometer firstChornometer;
+	private TextView secondChronometer;
+	private CountDownTimer soundLeft;
+	private SeekBar seekBarSound;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -113,9 +119,7 @@ public class RecordAudioActivity extends BaseActivity {
 		recCircle = (ImageView) findViewById(R.id.recCircle);
 		mRecordTime = (Chronometer) findViewById(R.id.recordTime);
 		mRlSoundControler = (RelativeLayout) findViewById(R.id.soundControler);
-		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
-		mPlayPause = (ImageView) findViewById(R.id.ivPlayPause);
-		mStopSound = (ImageView) findViewById(R.id.ivStopSound);
+		mPlayPause = (ImageView) findViewById(R.id.ivPlayPauseSound);
 
 		startRec = (ImageButton) findViewById(R.id.startRec);
 		startRec.setOnClickListener(new OnClickListener() {
@@ -131,19 +135,47 @@ public class RecordAudioActivity extends BaseActivity {
 				}
 			}
 		});
+		
+		firstChornometer = (Chronometer) findViewById(R.id.firstChrono);
+		secondChronometer = (TextView) findViewById(R.id.secondChrono);
+		seekBarSound = (SeekBar) findViewById(R.id.seekBarSound);
+		
+		mRlSoundControler.setVisibility(View.INVISIBLE);
+		
+		seekBarSound.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				startPlaying(seekBar.getProgress());
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				if(observer != null) observer.stop();
+				observer = null;
+				stopPlaying();
+				if(firstChornometer != null){
+					firstChornometer.stop();
+					firstChornometer.setBase(SystemClock.elapsedRealtime());
+				}
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+		});
 	}
 
 	private void onRecord(boolean start) {
 		if (start) {
 			onPlay(STOP_PLAYING);
-			mPlayPause.setImageResource(R.drawable.play_btn);
+			mPlayPause.setImageResource(R.drawable.play_btn_selector);
 
 			startRecordingAsync();
 
-			startRec.setImageResource(R.drawable.icon_audio_rec);
+			startRec.setImageResource(R.drawable.selector_recording_audio);
 			recCircle.setVisibility(View.VISIBLE);
 			recCircle.setDrawingCacheEnabled(true);
-			AnimUtils.rotationInfinite(recCircle, false, 3000);
+			AnimUtils.rotationInfinite(recCircle, true, 3000);
 		} else {
 
 			if (!mIsRecording) {
@@ -152,7 +184,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 			stopRecording();
 
-			startRec.setImageResource(R.drawable.icon_audio_start);
+			startRec.setImageResource(R.drawable.selector_record_audio);
 			recCircle.setVisibility(View.INVISIBLE);
 		}
 	}
@@ -201,10 +233,11 @@ public class RecordAudioActivity extends BaseActivity {
 
 		sendAudio.setVisibility(View.INVISIBLE);
 
-		mPbForPlaying.setProgress(0);
+		//TODO RESET CHRONNO AND SEEK
+		
 		mRecordTime.setVisibility(View.INVISIBLE);
 
-		mPlayPause.setBackgroundResource(R.drawable.play_btn);
+		mPlayPause.setImageResource(R.drawable.play_btn_selector);
 		if (mPlayer != null) {
 			mPlayer.stop();
 			mPlayer.release();
@@ -225,24 +258,12 @@ public class RecordAudioActivity extends BaseActivity {
 			public void onClick(View v) {
 				if (mIsPlaying == PLAYING) {
 					// pause
-					mPlayPause.setImageResource(R.drawable.play_btn);
+					mPlayPause.setImageResource(R.drawable.play_btn_selector);
 					onPlay(PAUSE_PLAYING);
 				} else {
 					// play
-					mPlayPause.setImageResource(R.drawable.pause_btn);
+					mPlayPause.setImageResource(R.drawable.pause_btn_selector);
 					onPlay(START_PLAYING);
-				}
-			}
-		});
-
-		mStopSound.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (mIsPlaying == PLAYING || mIsPlaying == PAUSE) {
-					// stop
-					mPlayPause.setImageResource(R.drawable.play_btn);
-					onPlay(STOP_PLAYING);
 				}
 			}
 		});
@@ -256,47 +277,112 @@ public class RecordAudioActivity extends BaseActivity {
 												// stop playing
 
 		if (playPauseStop == START_PLAYING) {
-			startPlaying();
+			startPlaying(0);
 		} else if (playPauseStop == PAUSE_PLAYING) {
-			pausePlaying();
+//			pausePlaying();
+			stopPlaying();
 		} else {
 			stopPlaying();
 		}
 	}
+	
+	private class MediaObserver implements Runnable {
+		private AtomicBoolean stop = new AtomicBoolean(false);
 
-	private void startPlaying() {
+		public void stop() {
+			stop.set(true);
+		}
+
+		@Override
+		public void run() {
+			while (!stop.get()) {
+				long elapsedMillis = SystemClock.elapsedRealtime() - firstChornometer.getBase();
+				Log.e("LOG", elapsedMillis+" :ELG");
+				seekBarSound.setProgress((int) elapsedMillis);
+				try {
+					Thread.sleep(33);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	private MediaObserver observer = null;
+
+	private void startPlaying(final int offset) {
 		if (mIsPlaying == STOP) {
 			mPlayer = new MediaPlayer();
 			try {
 				mPlayer.setDataSource(mFilePath);
 				mPlayer.prepare();
-				mPlayer.start();
-				mPbForPlaying.setMax((int) mPlayer.getDuration());
-
-				mRunnForProgressBar = new Runnable() {
-
+				mPlayer.setOnPreparedListener(new OnPreparedListener() {
+					
 					@Override
-					public void run() {
-						mPbForPlaying.setProgress((int) mPlayer.getCurrentPosition());
-						if (mPlayer.getDuration() - 99 > mPlayer.getCurrentPosition()) {
-							mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
-						} else {
-							mPbForPlaying.setProgress((int) mPlayer.getDuration());
+					public void onPrepared(MediaPlayer mp) {
+						seekBarSound.setMax(mp.getDuration());
+						if(offset != 0) {
+							mPlayer.seekTo((int) offset);
+							firstChornometer.setBase((long) (SystemClock.elapsedRealtime() - offset));
 						}
+						startChronoSecond(mp.getDuration(), offset);
 					}
-				};
-				mHandlerForProgressBar.post(mRunnForProgressBar);
+				});
+				mPlayer.setOnCompletionListener(new OnCompletionListener() {
+					
+					@Override
+					public void onCompletion(MediaPlayer mp) {
+						stopChronoAndSeek();
+						stopPlaying();
+						mPlayPause.setImageResource(R.drawable.play_btn_selector);
+					}
+				});
+				mPlayer.start();
+				startChronoAndSeek();
 				mIsPlaying = PLAYING;
-
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else if (mIsPlaying == PAUSE) {
 			mPlayer.start();
-			mHandlerForProgressBar.post(mRunnForProgressBar);
+			//CONTINUE SEEKBAR AND CHRONO
 			mIsPlaying = PLAYING;
 		}
 
+	}
+
+	private void startChronoSecond(int duration, int offset) {
+		soundLeft = new CountDownTimer(duration - offset, 500) {
+			
+			@Override
+			public void onTick(long millisUntilFinished) {
+                int va = (int)( (millisUntilFinished%60000)/1000);
+                secondChronometer.setText(String.format("-00:%02d",va));
+			}
+			
+			@Override
+			public void onFinish() {
+				secondChronometer.setText("00:00");
+			}
+		};
+		soundLeft.start();
+	}
+
+	protected void stopChronoAndSeek() {
+		if(observer != null)observer.stop();
+	    seekBarSound.setProgress(0);
+		firstChornometer.stop();
+		firstChornometer.setBase(SystemClock.elapsedRealtime());
+		if(soundLeft != null)soundLeft.cancel();
+		secondChronometer.setText("00:00");
+	}
+
+	private void startChronoAndSeek() {
+		firstChornometer.setBase(SystemClock.elapsedRealtime());
+		firstChornometer.start();
+		
+		observer = new MediaObserver();
+		new Thread(observer).start();
 	}
 
 	private void stopPlaying() {
@@ -305,15 +391,13 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayer.release();
 		}
 
-		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
-		mPbForPlaying.setProgress(0);
+		stopChronoAndSeek();
 		mPlayer = null;
 		mIsPlaying = STOP;
 	}
 
 	private void pausePlaying() {
 		mPlayer.pause();
-		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 		mIsPlaying = PAUSE;
 	}
 
@@ -335,10 +419,9 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayer.release();
 			mPlayer = null;
 			mIsPlaying = STOP;
-			mPbForPlaying.setProgress(0);
-			mPlayPause.setImageResource(R.drawable.play_btn);
+			//TODO RESET SEEKBAR AND CHRONO
+			mPlayPause.setImageResource(R.drawable.play_btn_selector);
 		}
-		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 	}
 
 	public void onFinish() {
@@ -351,10 +434,9 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayer.release();
 			mPlayer = null;
 			mIsPlaying = STOP;
-			mPbForPlaying.setProgress(0);
-			mPlayPause.setImageResource(R.drawable.play_btn);
+			//TODO RESET SEEKBAR AND CHRONO
+			mPlayPause.setImageResource(R.drawable.play_btn_selector);
 		}
-		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 
 		super.onDestroy();
 	}
