@@ -38,7 +38,7 @@ public class EditProfileActivity extends BaseActivity implements OnClickListener
 		Intent i = getIntent();
 		UserWrapper user = (UserWrapper) i.getSerializableExtra(Const.USER_WRAPPER);
 
-		adapter = new UserDetailsAdapter(this, user.getUserDetailList(), user.getUser().getDetails());
+		adapter = new UserDetailsAdapter(this, user.getUserDetailList(), user.getUser().getDetails(), false);
 
 		listViewDetail.setAdapter(adapter);
 		adapter.notifyDataSetChanged();

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Build;
@@ -51,7 +52,6 @@ public class RecordVideoActivity extends BaseActivity {
 
 	private ProgressBar mPbForPlaying;
 	private ImageView mPlayPause;
-	private ImageView mStopSound;
 
 	private Handler mHandlerForProgressBar = new Handler();
 	private Runnable mRunnForProgressBar;
@@ -95,7 +95,6 @@ public class RecordVideoActivity extends BaseActivity {
 		mVideoView = (VideoView) findViewById(R.id.videoView);
 		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
 		mPlayPause = (ImageView) findViewById(R.id.ivPlayPause);
-		mStopSound = (ImageView) findViewById(R.id.ivStopSound);
 
 		mPlayPause.setOnClickListener(new OnClickListener() {
 
@@ -103,28 +102,16 @@ public class RecordVideoActivity extends BaseActivity {
 			public void onClick(View v) {
 				if (mIsPlaying == 2) {
 					// pause
-					mPlayPause.setImageResource(R.drawable.play_btn);
-					onPlay(1);
+					mPlayPause.setImageResource(R.drawable.play_btn_selector);
+					onPlay(2);
 				} else {
 					// play
-					mPlayPause.setImageResource(R.drawable.pause_btn);
+					mPlayPause.setImageResource(R.drawable.pause_btn_selector);
 					onPlay(0);
 				}
 			}
 		});
-
-		mStopSound.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (mIsPlaying == 2 || mIsPlaying == 1) {
-					// stop
-					mPlayPause.setImageResource(R.drawable.play_btn);
-					onPlay(2);
-				}
-			}
-		});
-
+		
 		Bundle extras = getIntent().getExtras();
 		chatId = extras.getString(Const.CHAT_ID);
 
@@ -313,26 +300,35 @@ public class RecordVideoActivity extends BaseActivity {
 			mVideoView.start();
 			mVideoView.setOnPreparedListener(new OnPreparedListener() {
 
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mDurationOfVideo = mVideoView.getDuration();
+
+                    mPbForPlaying.setMax((int) mDurationOfVideo);
+
+                    mRunnForProgressBar = new Runnable() {
+
+                        @Override
+                        public void run() {
+                            mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
+                            if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
+                                mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
+                            } else {
+                                mPbForPlaying.setProgress(mVideoView.getDuration());
+                            }
+                        }
+                    };
+                    mHandlerForProgressBar.post(mRunnForProgressBar);
+                    mIsPlaying = 2;
+                }
+            });
+			
+			mVideoView.setOnCompletionListener(new OnCompletionListener() {
+				
 				@Override
-				public void onPrepared(MediaPlayer mp) {
-					mDurationOfVideo = mVideoView.getDuration();
-
-					mPbForPlaying.setMax((int) mDurationOfVideo);
-
-					mRunnForProgressBar = new Runnable() {
-
-						@Override
-						public void run() {
-							mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
-							if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
-								mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
-							} else {
-								mPbForPlaying.setProgress(mVideoView.getDuration());
-							}
-						}
-					};
-					mHandlerForProgressBar.post(mRunnForProgressBar);
-					mIsPlaying = 2;
+				public void onCompletion(MediaPlayer mp) {
+					mPlayPause.setImageResource(R.drawable.play_btn_selector);
+					stopPlaying();
 				}
 			});
 
@@ -349,6 +345,7 @@ public class RecordVideoActivity extends BaseActivity {
 		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 		mPbForPlaying.setProgress(0);
 		mIsPlaying = 0;
+		mPlayPause.setImageResource(R.drawable.play_btn_selector);
 	}
 
 	private void pausePlaying() {

@@ -89,7 +89,11 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		}else{
 			getUsers(mCurrentIndex, null, false);
 		}
-
+		
+		if (getActivity() instanceof MainActivity) {
+			((MainActivity) getActivity()).disableCreateRoom();
+		}
+		
 		return rootView;
 	}
 	

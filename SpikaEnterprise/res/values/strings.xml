@@ -258,5 +258,15 @@
     <string name="loading_older_messages">Loading older messages</string>
     <string name="search_for_people">Search for people</string>
     <string name="search_for_groups">Search for groups</string>
+    <string name="_plus_character">+</string>
+    <string name="preview_group">Preview Group</string>
+    <string name="tap_to_edit">Tap to edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="call">Call</string>
+    <string name="messenger">Messenger</string>
+    <string name="about">About</string>
+    <string name="deleted">Deleted</string>
+    <string name="file">File</string>
+    <string name="smiley">Smiley</string>
 
 </resources>

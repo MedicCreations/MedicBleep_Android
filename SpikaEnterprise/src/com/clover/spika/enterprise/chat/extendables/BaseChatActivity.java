@@ -31,7 +31,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -93,7 +92,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected RelativeLayout rlDrawer;
 	protected RelativeLayout rlDrawerEmoji;
 	private RelativeLayout chatLayout;
-	private ImageView partnerIcon;
 	private RobotoThinTextView screenTitle;
 	protected EditText etMessage;
 	protected ListView chatListView;
@@ -132,7 +130,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 		chatListView = (ListView) findViewById(R.id.main_list_view);
 
-		partnerIcon = (ImageView) findViewById(R.id.partnerIcon);
 		screenTitle = (RobotoThinTextView) findViewById(R.id.screenTitle);
 		ImageButton goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(thisClickListener);
@@ -343,7 +340,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					params.bottomMargin = Helper.dpToPx(BaseChatActivity.this, drawerHeight);
 					chatListView.setLayoutParams(params);
 
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 					hideKeyboard(etMessage);
 
 					new Handler().postDelayed(new Runnable() {
@@ -363,7 +359,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawer.setVisibility(View.GONE);
 					rlDrawer.setSelected(false);
 
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
@@ -382,7 +377,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerEmoji.setVisibility(View.GONE);
 					rlDrawerEmoji.setSelected(false);
 
-					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
 					rlDrawerEmoji.setX(0);
 				}
 			});
@@ -393,7 +387,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawer.setSelected(true);
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 				}
 			});
 		}else{
@@ -416,7 +409,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setSelected(true);
-					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 					EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
 					layout.resetDotsIfNeed();
 				}
@@ -428,7 +420,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawer.setVisibility(View.GONE);
 					rlDrawer.setSelected(false);
 
-					footerMore.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
 					rlDrawer.setX(0);
 				}
 			});
@@ -461,7 +452,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					params.bottomMargin = Helper.dpToPx(BaseChatActivity.this, drawerHeight);
 					chatListView.setLayoutParams(params);
 
-					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.hide_more_btn_off));
 					hideKeyboard(etMessage);
 
 					new Handler().postDelayed(new Runnable() {
@@ -483,8 +473,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerEmoji.setVisibility(View.GONE);
 					rlDrawerEmoji.setSelected(false);
 
-					footerEmoji.setImageDrawable(getResources().getDrawable(R.drawable.more_button_selector));
-					
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
@@ -525,17 +513,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	protected void setSettingsItems(int chatType) {
 		settingsAdapter.setSettings(chatType);
-	}
-
-	protected void loadImage() {
-		if (!TextUtils.isEmpty(chatImage)) {
-			partnerIcon.setVisibility(View.VISIBLE);
-			partnerIcon.setOnClickListener(thisClickListener);
-			imageLoader.displayImage(this, chatImageThumb, partnerIcon);
-		} else {
-			partnerIcon.setVisibility(View.INVISIBLE);
-			partnerIcon.setOnClickListener(null);
-		}
 	}
 
 	private void getFromPush(String msg, String chatIdPush, String pushType, String password) {
@@ -686,16 +663,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerEmojiManage();
 				hideSettings();
 
-			} else if (id == R.id.partnerIcon) {
-				if (chatType == Const.C_PRIVATE) {
-					ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
-				} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
-					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
-				} else {
-					ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryName);
-				}
-
-			} else if (id == R.id.goBack) {
+			}  else if (id == R.id.goBack) {
 				kill();
 			} else if (id == R.id.settingsBtn) {
 				if (settingsListView.getVisibility() == View.GONE) {

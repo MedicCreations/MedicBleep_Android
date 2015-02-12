@@ -10,6 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/menu_height"
         android:background="@color/default_blue" >
+        
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#66000000"/>
 
         <ImageButton
             android:id="@+id/goBack"
@@ -30,16 +34,17 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
         
-        <ImageButton
-            android:id="@+id/openChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/showProfile"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentRight="true"
-            android:background="@drawable/selector_transp_blue"
-            android:contentDescription="@null"
+            android:layout_centerVertical="true"
             android:padding="10dp"
-            android:src="@drawable/social_chat"
-            android:visibility="gone" />
+            android:background="@drawable/selector_transp_blue"
+            android:src="@drawable/icon_info"
+            android:scaleType="fitCenter"
+            android:visibility="visible" />
         
     </RelativeLayout>
 
@@ -93,24 +98,61 @@
                         android:visibility="visible" />
                 </FrameLayout>
             </RelativeLayout>
-
-            <com.clover.spika.enterprise.chat.views.DetailsView
-                android:id="@+id/scrollViewDetails"
+            
+            <LinearLayout android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/mainHolder"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:divider="@android:color/transparent" />
+                android:weightSum="2"
+                android:layout_marginTop="30dp"
+                android:layout_below="@id/mainHolder">
+                
+                <LinearLayout android:orientation="vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="1">
+                    
+                    <Button
+                        android:id="@+id/btnVideoCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/video_call_selector"/>
+                    
+                    <TextView android:id="@+id/videoLabel"
+                        android:text="@string/video"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"/>
+                    
+                </LinearLayout>
+                
+                <LinearLayout android:orientation="vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:gravity="center_horizontal"
+                    android:layout_weight="1">
+                    
+                    <Button android:id="@+id/btnVoiceCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/voice_call_selector"/>
+                    
+                    <TextView android:id="@+id/voiceLabel"
+                        android:text="@string/call"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"/>
+                    
+                </LinearLayout>
+                
+            </LinearLayout>
 
-            <ProgressBar
-                android:id="@+id/progressBarDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/mainHolder"
-                android:layout_centerHorizontal="true"
-                android:visibility="invisible"
-                tools:visibility="visible" />
         </RelativeLayout>
     </ScrollView>
 

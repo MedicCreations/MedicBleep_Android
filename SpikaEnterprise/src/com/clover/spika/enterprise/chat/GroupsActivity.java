@@ -106,7 +106,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 						speedSearchAnimation);
 			}
 		});
-
+		
 	}
 
 	@Override

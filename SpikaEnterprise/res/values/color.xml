@@ -29,6 +29,7 @@
     <color name="devil_gray">#666666</color>
     <color name="light_light_gray">#eeeeee</color>
     <color name="dark_gray">#555555</color>
+    <color name="gray_trans">#99999999</color>
 
     <!-- Enterprise style -->
     <color name="default_blue">#43A5DA</color>

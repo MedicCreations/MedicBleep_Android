@@ -9,6 +9,7 @@ import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -36,10 +37,10 @@ public class MainActivity extends BaseActivity {
 	ImageButton closeSearchBtn;
 
 	/* create room */
-	TextView createRoomBtn;
+	ImageButton createRoomBtn;
 
 	/* edit profile */
-	TextView editProfileBtn;
+	ImageView editProfileBtn;
 
 	int screenWidth;
 	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
@@ -79,7 +80,7 @@ public class MainActivity extends BaseActivity {
 		slidingMenu.setBehindScrollScale(0.35f);
 		slidingMenu.setShadowDrawable(null);
 		slidingMenu.setFadeDegree(0.35f);
-		slidingMenu.setBehindWidth(80);
+		slidingMenu.setBehindWidth(0.7f);
 
 		slidingMenu.setOnClosedListener(new OnClosedListener() {
 
@@ -105,8 +106,8 @@ public class MainActivity extends BaseActivity {
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-		createRoomBtn = (TextView) findViewById(R.id.createRoom);
-		editProfileBtn = (TextView) findViewById(R.id.editProfile);
+		createRoomBtn = (ImageButton) findViewById(R.id.createRoom);
+		editProfileBtn = (ImageView) findViewById(R.id.editProfile);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 

@@ -109,9 +109,6 @@
             android:name="com.clover.spika.enterprise.chat.RecordAudioActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.VoiceActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.clover.spika.enterprise.chat.CameraCropActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
@@ -232,6 +229,9 @@
         </activity>
         <activity
             android:name="com.clover.spika.enterprise.chat.share.ChooseLobbyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ShowProfileActivity"
             android:screenOrientation="portrait" />
     </application>
 

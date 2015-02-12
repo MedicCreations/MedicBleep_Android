@@ -114,8 +114,6 @@ public class ChatActivity extends BaseChatActivity {
 		SpikaEnterpriseApp.setVideoPath(null);
 		SpikaEnterpriseApp.deleteSamsungPathImage();
 
-		loadImage();
-
 		if (isResume) {
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
@@ -211,7 +209,6 @@ public class ChatActivity extends BaseChatActivity {
 		if (intent.getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
-			loadImage();
 		} else {
 			if (!isOnCreate) {
 				getIntentData(intent);
@@ -491,7 +488,6 @@ public class ChatActivity extends BaseChatActivity {
 
 		setSettingsItems(chatType);
 
-		loadImage();
 	}
 
 	private void callNewMsgs() {

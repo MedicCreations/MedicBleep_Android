@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
@@ -25,8 +26,6 @@ public class ProfileOtherActivity extends BaseActivity {
 
 	private ImageView profileImage;
 	private TextView profileName;
-	private DetailsView mDetailScrollView;
-	private ImageButton mOpenChat;
 	
 	private String mUserFirstName = "";
 	private String mUserLastName = "";
@@ -77,42 +76,25 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		profileImage = (ImageView) findViewById(R.id.profileImage);
 		profileName = (TextView) findViewById(R.id.profileName);
-		mDetailScrollView = (DetailsView) findViewById(R.id.scrollViewDetails);
-
-		getIntentData(getIntent());
-
-		findViewById(R.id.progressBarDetails).setVisibility(View.VISIBLE);
-
-		new UserApi().getProfile(this, false, mUserId, new ApiCallback<UserWrapper>() {
-			@Override
-			public void onApiResponse(Result<UserWrapper> result) {
-				if (result.isSuccess()) {
-					findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-					mDetailScrollView.createDetailsView(result.getResultData().getUser().getPublicDetails());
-				} else {
-					findViewById(R.id.progressBarDetails).setVisibility(View.INVISIBLE);
-				}
-			}
-		});
 		
-		mOpenChat = (ImageButton) findViewById(R.id.openChat);
-		boolean isFirstUserProfile = getResources().getBoolean(R.bool.first_user_profile);
-		
-		if (isFirstUserProfile){
-			mOpenChat.setVisibility(View.VISIBLE);
-		} else {
-			mOpenChat.setVisibility(View.GONE);
-		}
-		mOpenChat.setOnClickListener(new OnClickListener() {
+		findViewById(R.id.btnVideoCall).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				
-				ChatActivity.startWithUserId(ProfileOtherActivity.this, String.valueOf(mUserId), false, mUserFirstName, mUserLastName);
-				
+				Toast.makeText(ProfileOtherActivity.this, "VIDEO CALL IS NOT IMPLEMENTED YES", 2000).show();
 			}
 		});
 		
+		findViewById(R.id.btnVoiceCall).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(ProfileOtherActivity.this, "VOICE CALL IS NOT IMPLEMENTED YES", 2000).show();
+			}
+		});
+		
+		getIntentData(getIntent());
+
 	}
 
 	private void getIntentData(Intent intent) {
@@ -131,7 +113,25 @@ public class ProfileOtherActivity extends BaseActivity {
 			mUserId = getIntent().getExtras().getString(Const.USER_ID);
 			mUserFirstName = getIntent().getExtras().getString(Const.FIRSTNAME);
 			mUserLastName = getIntent().getExtras().getString(Const.LASTNAME);
+			
+			final String imageId = intent.getExtras().getString(Const.IMAGE);
+			final String chatName = getIntent().getExtras().getString(Const.CHAT_NAME);
+			
+			findViewById(R.id.showProfile).setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent sendIntent = new Intent(ProfileOtherActivity.this, ShowProfileActivity.class);
+					sendIntent.putExtra(Const.USER_IMAGE_NAME, imageId);
+					sendIntent.putExtra(Const.FIRSTNAME, mUserFirstName);
+					sendIntent.putExtra(Const.LASTNAME, mUserLastName);
+					sendIntent.putExtra(Const.CHAT_NAME, chatName);
+					sendIntent.putExtra(Const.USER_ID, mUserId);
+					startActivity(sendIntent);
+				}
+			});
 		}
+		
 	}
 
 	@Override

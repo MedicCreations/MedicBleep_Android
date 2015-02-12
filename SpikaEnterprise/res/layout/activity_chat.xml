@@ -23,21 +23,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toLeftOf="@+id/partnerIcon"
+            android:layout_toLeftOf="@+id/settingsBtn"
             android:layout_toRightOf="@+id/goBack"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
-
-        <com.clover.spika.enterprise.chat.views.RoundImageView
-            android:id="@+id/partnerIcon"
-            android:layout_width="@dimen/menu_height"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/settingsBtn"
-            android:contentDescription="@null" />
 
         <ImageButton
             android:id="@+id/settingsBtn"
@@ -46,8 +38,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@null"
             android:contentDescription="@null"
+            android:background="@drawable/selector_transp_blue"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
@@ -109,7 +101,7 @@
                 android:background="@null"
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
-                android:src="@drawable/more_button_selector" />
+                android:src="@drawable/plus_icon" />
 
             <EditText
                 android:id="@+id/etMessage"
@@ -137,7 +129,7 @@
                 android:background="@null"
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
-                android:src="@drawable/more_button_selector" />
+                android:src="@drawable/smiley_icon" />
         </RelativeLayout>
 
         <RelativeLayout
