@@ -2,45 +2,45 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent">
+    android:background="@color/transparent" >
 
     <RelativeLayout
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp">
+        android:layout_marginLeft="5dp" >
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:id="@+id/layout"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/imageLayoutControl"
-            android:layout_toRightOf="@+id/imageLayout"
-            android:padding="5dp"
-            android:orientation="vertical">
+            android:layout_toLeftOf="@+id/arrowRight"
+            android:orientation="vertical"
+            android:padding="5dp" >
 
             <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/organizationName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:maxLines="1"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/imageLayoutControl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/imageLayout"
+        <ImageView
+            android:id="@+id/arrowRight"
+            android:layout_width="13dp"
+            android:layout_height="20dp"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/imageLayout"
-            android:background="@drawable/icon_tablearrow">
-
-        </RelativeLayout>
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/right_arrow" />
+        
     </RelativeLayout>
 
 </RelativeLayout>

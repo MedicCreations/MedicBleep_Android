@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ShowProfileActivity extends BaseActivity implements OnClickListener {
 
@@ -87,6 +88,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		((TextView) rootView.findViewById(R.id.company)).setText(user.getUser().getOrganization().getName());
 
 		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
+		((RoundImageView)profileImage).setBorderColor(getResources().getColor(R.color.light_light_gray));
 		ImageLoader.getInstance(this).displayImage(this, imageId, profileImage);
 		
 		return rootView;

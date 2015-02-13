@@ -33,6 +33,6 @@
     <bool name="first_user_profile">false</bool>
     
      <!-- Enable Emoji -->
-    <bool name="enable_emoji">false</bool>
+    <bool name="enable_emoji">true</bool>
 
 </resources>
