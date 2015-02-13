@@ -501,7 +501,7 @@ public class Utils {
 		BitmapFactory.decodeFile(photoPath, bmOptions);
 		int photoW = bmOptions.outWidth;
 		int photoH = bmOptions.outHeight;
-
+		
 		int scaleFactor = 1;
 		if ((targetW > 0) || (targetH > 0)) {
 			scaleFactor = Math.min(photoW / targetW, photoH / targetH);
@@ -512,6 +512,79 @@ public class Utils {
 //		bmOptions.inPurgeable = true;
 
 		return BitmapFactory.decodeFile(photoPath, bmOptions);
+	}
+	
+	public static Bitmap scaleBitmapTo1280(String path, int imageSizeMax) {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		BitmapFactory.Options imageOptions = new BitmapFactory.Options();
+		imageOptions.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(inputStream, null, imageOptions);
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Log.d("LOG", "IMAGE ORIGINAL SIZE: "+imageOptions.outWidth+" "+imageOptions.outHeight);
+
+		Bitmap bitmap;
+		try {
+			inputStream = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		float imageScaleWidth = (float) imageOptions.outWidth / imageSizeMax;
+		float imageScaleHeight = (float) imageOptions.outHeight / imageSizeMax;
+		
+		if (imageScaleWidth > 2 && imageScaleHeight > 2) {
+			BitmapFactory.Options imageOptions2 = new BitmapFactory.Options();
+
+			int imageScale = (int) Math.floor((imageScaleWidth > imageScaleHeight ? imageScaleHeight : imageScaleWidth));
+
+			for (int i = 2; i < imageScale; i *= 2) {
+				imageOptions2.inSampleSize = i;
+			}
+
+			bitmap = BitmapFactory.decodeStream(inputStream, null, imageOptions2);
+		} else {
+			bitmap = BitmapFactory.decodeStream(inputStream);
+		}
+		
+		Log.d("LOG", "IMAGE TEMP: "+bitmap.getWidth()+" "+bitmap.getHeight());
+		
+		double destWidth = imageSizeMax;
+		double destHeight = imageSizeMax;
+		
+		if(bitmap.getWidth() > bitmap.getHeight()){
+			destHeight = (double)bitmap.getHeight() / ((double)bitmap.getWidth() / (double)1280);
+		}else if(bitmap.getWidth() < bitmap.getHeight()){
+			destWidth = (double)bitmap.getWidth() / ((double)bitmap.getHeight() / (double)1280);
+		}
+		
+		Log.d("LOG", "DEST SIZE: "+destWidth+" "+destHeight);
+		
+		Bitmap output = Bitmap.createScaledBitmap(bitmap, (int)destWidth, (int)destHeight, false);
+		
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 	
 }

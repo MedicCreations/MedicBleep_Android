@@ -71,13 +71,13 @@ public class MenuItemFragment extends CustomFragment {
 		
 		List<String> imagesToShow = new ArrayList<String>();
 		if(position > 0) {
-			if(filesList.size() > position * 4 - 1) imagesToShow.add(filesList.get(position*4 - 1)); Log.e("LOG", "get "+(position*4 - 1));
+			if(filesList.size() > position * 4 - 1) imagesToShow.add(filesList.get(position*4 - 1));
 		}else{
 			imagesToShow.add(null);
 		}
-		if(filesList.size() > position * 4) imagesToShow.add(filesList.get(position*4)); Log.e("LOG", "get "+(position*4));
-		if(filesList.size() > position * 4 + 1) imagesToShow.add(filesList.get(position*4 + 1)); Log.e("LOG", "get "+(position*4+1));
-		if(filesList.size() > position * 4 + 2) imagesToShow.add(filesList.get(position*4 + 2)); Log.e("LOG", "get "+(position*4+2));
+		if(filesList.size() > position * 4) imagesToShow.add(filesList.get(position*4)); 
+		if(filesList.size() > position * 4 + 1) imagesToShow.add(filesList.get(position*4 + 1)); 
+		if(filesList.size() > position * 4 + 2) imagesToShow.add(filesList.get(position*4 + 2)); 
 		
 		LinearLayout layout = (LinearLayout) superView.findViewById(R.id.layoutLinear);
 		for(int i = 0; i < imagesToShow.size(); i++){
