@@ -222,8 +222,15 @@ public class FileManageApi {
 		}.execute();
 	}
 	
-	public void downloadFileToFile(final File destFile, final String fileId, boolean showProgress, final Context ctx, final ApiCallback<String> listener, final ProgressBarListeners pbListener) {
+	public void downloadFileToFile(final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener, final ProgressBarListeners pbListener) {
 		new BaseAsyncTask<Void, Void, String>(ctx, showProgress) {
+			
+			protected void onPreExecute() {
+				if(showProgress){
+					progressBar = new AppProgressDialogWithBar(ctx);
+					progressBar.showProgress();
+				}
+			};
 
 			protected String doInBackground(Void... params) {
 				HashMap<String, String> getParams = new HashMap<String, String>();
@@ -242,7 +249,36 @@ public class FileManageApi {
 					}
 
 					OutputStream os = new FileOutputStream(file);
-					Helper.copyStream(is, os, en.getContentLength(), pbListener);
+					if(pbListener == null){
+						Helper.copyStream(is, os, en.getContentLength(), new ProgressBarListeners() {
+
+							@Override
+							public void onSetMax(long total) {
+								if (progressBar.getMaxBar() == 1)
+									progressBar.setMaxBar((int) total);
+							}
+
+							@Override
+							public void onProgress(long current) {
+								progressBar.updateBar((int) current);
+							}
+
+							@Override
+							public void onFinish() {
+								progressBar.dismiss();
+
+								((Activity) context).runOnUiThread(new Runnable() {
+									public void run() {
+										progressBar = new AppProgressDialogWithBar(ctx);
+										progressBar.showDecrypting();
+									}
+								});
+							}
+						});
+
+					}else{
+						Helper.copyStream(is, os, en.getContentLength(), pbListener);
+					}
 
 					is.close();
 					os.close();
@@ -271,6 +307,10 @@ public class FileManageApi {
 					}
 
 					listener.onApiResponse(result);
+				}
+				
+				if (progressBar != null && progressBar.isShowing()) {
+					progressBar.dismiss();
 				}
 			}
 

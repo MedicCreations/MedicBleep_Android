@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -134,7 +135,11 @@ public class MainActivity extends BaseActivity {
 
 	public void switchContent(Fragment fragment) {
 		mFragment = (CustomFragment) fragment;
-		getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment).commit();
+		if(getSupportFragmentManager().findFragmentByTag(fragment.getClass().toString()) != null){
+			Log.d("LOG", "same fragment"); // it is same fragment
+		}else{
+			getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment, fragment.getClass().toString()).commit();
+		}
 		getSlidingMenu().showContent();
 	}
 

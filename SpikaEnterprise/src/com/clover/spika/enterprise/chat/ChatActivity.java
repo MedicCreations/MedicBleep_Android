@@ -191,7 +191,7 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (rlDrawer.isSelected()) {
+		if (rlDrawerNew.isSelected()) {
 			forceClose();
 		}else if (rlDrawerEmoji.isSelected()) {
 			forceClose();
@@ -616,10 +616,12 @@ public class ChatActivity extends BaseChatActivity {
 				isRunning = false;
 
 				if (result.isSuccess()) {
-
+					
 					Chat chat = result.getResultData();
 
 					chatParams(chat.getChat());
+					
+					setMenuByChatType();
 
 					if (TextUtils.isEmpty(mUserId)) {
 						mUserId = chat.getUser() == null ? "" : String.valueOf(chat.getUser().getId());

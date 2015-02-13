@@ -1,10 +1,12 @@
 package com.clover.spika.enterprise.chat;
 
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -17,12 +19,13 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 import java.io.File;
 
 public class VideoActivity extends BaseActivity {
 
-	private static String sFileName = null;
+	private String sFileName = null;
 
 	private VideoView mVideoView;
 
@@ -36,7 +39,6 @@ public class VideoActivity extends BaseActivity {
 
 	private ProgressBar mPbForPlaying;
 	private ImageView mPlayPause;
-	private ImageView mStopVideo;
 
 	private Handler mHandlerForProgressBar = new Handler();
 	private Runnable mRunnForProgressBar;
@@ -47,22 +49,29 @@ public class VideoActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record_video);
+		
+		String fileId = getIntent().getExtras().getString(Const.FILE_ID);
+		File videFile = new File(Utils.getFilesFolder() + "/" + fileId);
 
-		new FileManageApi().downloadFile(getIntent().getExtras().getString(Const.FILE_ID), this, new ApiCallback<String>() {
+		if(videFile.exists()){
+			sFileName = videFile.getAbsolutePath();
+		}else{
+			new FileManageApi().downloadFileToFile(videFile, fileId, true, this, new ApiCallback<String>() {
 
-			@Override
-			public void onApiResponse(Result<String> result) {
-				if (result.isSuccess()) {
-					sFileName = result.getResultData();
-					// Play video
-					mPlayPause.setImageResource(R.drawable.pause_btn);
-					onPlay(0);
-				} else {
-					AppDialog dialog = new AppDialog(VideoActivity.this, true);
-					dialog.setFailed(getResources().getString(R.string.e_error_downloading_file));
+				@Override
+				public void onApiResponse(Result<String> result) {
+					if (result.isSuccess()) {
+						sFileName = result.getResultData();
+						// Play video
+						mPlayPause.setImageResource(R.drawable.pause_btn_selector);
+						onPlay(0);
+					} else {
+						AppDialog dialog = new AppDialog(VideoActivity.this, true);
+						dialog.setFailed(getResources().getString(R.string.e_error_downloading_file));
+					}
 				}
-			}
-		});
+			}, null);
+		}
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -72,12 +81,11 @@ public class VideoActivity extends BaseActivity {
 			}
 		});
 
-		findViewById(R.id.sendVideo).setVisibility(View.GONE);
+		findViewById(R.id.sendVideo).setVisibility(View.INVISIBLE);
 
 		mVideoView = (VideoView) findViewById(R.id.videoView);
 		mPlayPause = (ImageView) findViewById(R.id.ivPlayPause);
-//		mStopVideo = (ImageView) findViewById(R.id.ivStopSound);
-//		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
+		mPbForPlaying = (ProgressBar) findViewById(R.id.progressBar);
 
 		mIsPlaying = VIDEO_IS_STOPPED;
 
@@ -87,24 +95,12 @@ public class VideoActivity extends BaseActivity {
 			public void onClick(View v) {
 				if (mIsPlaying == VIDEO_IS_PLAYING) {
 					// pause
-					mPlayPause.setImageResource(R.drawable.play_btn);
-					onPlay(1);
+					mPlayPause.setImageResource(R.drawable.play_btn_selector);
+					onPlay(2);
 				} else {
 					// play
-					mPlayPause.setImageResource(R.drawable.pause_btn);
+					mPlayPause.setImageResource(R.drawable.pause_btn_selector);
 					onPlay(0);
-				}
-			}
-		});
-
-		mStopVideo.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (mIsPlaying == VIDEO_IS_PLAYING || mIsPlaying == VIDEO_IS_PAUSED) {
-					// stop
-					mPlayPause.setImageResource(R.drawable.play_btn);
-					onPlay(2);
 				}
 			}
 		});
@@ -163,6 +159,15 @@ public class VideoActivity extends BaseActivity {
 						mIsPlaying = VIDEO_IS_PLAYING;
 					}
 				});
+				
+				mVideoView.setOnCompletionListener(new OnCompletionListener() {
+					
+					@Override
+					public void onCompletion(MediaPlayer mp) {
+						mPlayPause.setImageResource(R.drawable.play_btn_selector);
+						stopPlaying();
+					}
+				});
 
 			} else if (mIsPlaying == VIDEO_IS_PAUSED) {
 				mVideoView.start();
@@ -186,14 +191,6 @@ public class VideoActivity extends BaseActivity {
 		mVideoView.pause();
 		mHandlerForProgressBar.removeCallbacks(mRunnForProgressBar);
 		mIsPlaying = VIDEO_IS_PAUSED;
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (sFileName != null) {
-			new File(sFileName).delete();
-		}
 	}
 
 }

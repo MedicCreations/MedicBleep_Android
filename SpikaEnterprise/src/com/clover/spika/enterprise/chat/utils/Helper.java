@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.provider.MediaStore.MediaColumns;
 import android.support.annotation.DrawableRes;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
@@ -43,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -583,6 +585,28 @@ public class Helper {
 		chatPasswords.put(chatId, chatPassword);
 		saveMap(ctx, chatPasswords);
 		
+	}
+	
+	public static ArrayList<String> getAllShownImagesPath(Activity activity) {
+		Uri uri;
+		Cursor cursor;
+		int column_index_data, column_index_folder_name;
+		ArrayList<String> listOfAllImages = new ArrayList<String>();
+		String absolutePathOfImage = null;
+		uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+		String[] projection = { MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
+
+		cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+
+		column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
+		column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+		while (cursor.moveToNext()) {
+			absolutePathOfImage = cursor.getString(column_index_data);
+
+			listOfAllImages.add(absolutePathOfImage);
+		}
+		return listOfAllImages;
 	}
 	
 

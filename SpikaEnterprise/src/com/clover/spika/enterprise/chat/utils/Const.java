@@ -60,6 +60,8 @@ public class Const {
 	public static final String VIDEO_INTENT = "VideoIntent";
 	public static final String GALLERY_INTENT = "GalleryIntent";
 	public static final String SHARE_INTENT = "ShareIntent";
+	public static final String PATH_INTENT = "PathIntent";
+	public static final String EXTRA_PATH = "ExtraPath";
 	public static final String ROOM_INTENT = "RoomIntent";
 	public static final String CHAT_INTENT = "ChatIntent";
 	public static final int VIDEO_INTENT_INT = 9000;
