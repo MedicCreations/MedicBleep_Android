@@ -413,6 +413,7 @@ public class UserApi {
 					if (baseModel != null) {
 						if (baseModel.getCode() == Const.API_SUCCESS) {
 							result = new Result<Login>(Result.ApiResponseState.SUCCESS);
+							result.setResultData(baseModel);
 
 							SpikaEnterpriseApp.getSharedPreferences(getContext()).setUserTokenId(baseModel.getToken());
 							if (SpikaEnterpriseApp.getSharedPreferences(getContext()).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {

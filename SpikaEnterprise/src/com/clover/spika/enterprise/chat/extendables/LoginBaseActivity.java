@@ -89,6 +89,7 @@ public abstract class LoginBaseActivity extends Activity {
 						} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
 							
 							Intent intent = new Intent(LoginBaseActivity.this, ChangePasswordActivity.class);
+							intent.putExtra(Const.USERNAME, user);
 							intent.putExtra(Const.TEMP_PASSWORD, pass);
 							startActivity(intent);
 							finish();
