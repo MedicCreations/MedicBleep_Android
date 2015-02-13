@@ -95,7 +95,7 @@ public class MessagesAdapter extends BaseAdapter {
 		imageLoader.setDefaultImage(R.drawable.default_user_image);
 		
 		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
-		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Thin.ttf");
+		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
 	}
 
 	@Override
