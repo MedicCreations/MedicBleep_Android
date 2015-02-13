@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.Serializable;
+import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,6 +16,7 @@ import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Login;
+import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 
@@ -25,6 +29,7 @@ public class ChangePasswordActivity extends BaseActivity {
 	Button confirmBtn;
 
 	String tempPassword;
+	String username;
 
 	boolean isUpdate = false;
 
@@ -39,6 +44,7 @@ public class ChangePasswordActivity extends BaseActivity {
 			isUpdate = true;
 		} else {
 			tempPassword = extras.getString(Const.TEMP_PASSWORD);
+			username = extras.getString(Const.USERNAME);
 		}
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
@@ -68,7 +74,7 @@ public class ChangePasswordActivity extends BaseActivity {
 		newPassword.setError(null);
 		confirmNewPassword.setError(null);
 
-		String password = newPassword.getText().toString();
+		final String password = newPassword.getText().toString();
 		String confirmPassword = confirmNewPassword.getText().toString();
 
 		if (TextUtils.isEmpty(password)) {
@@ -93,7 +99,18 @@ public class ChangePasswordActivity extends BaseActivity {
 				if (result.isSuccess()) {
 
 					if (!isUpdate) {
-						startActivity(new Intent(ChangePasswordActivity.this, MainActivity.class));
+						List<Organization> organizations = result.getResultData().getOrganizations();
+						
+						if (organizations.size() > 1){
+							Intent intent = new Intent(ChangePasswordActivity.this, ChooseOrganizationActivity.class);
+							
+							intent.putExtra(Const.ORGANIZATIONS, (Serializable) organizations);
+							intent.putExtra(Const.USERNAME, username);
+							intent.putExtra(Const.PASSWORD, password);
+		
+							startActivity(intent);
+						}
+						
 					}
 
 					finish();

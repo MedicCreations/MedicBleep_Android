@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
-
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -14,7 +13,6 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.CategoryFragment;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
-
 import java.util.HashMap;
 
 public class ChooseCategoryActivity extends BaseActivity {
@@ -38,7 +36,7 @@ public class ChooseCategoryActivity extends BaseActivity {
 		fTrans.commit();
 
 		TextView screenTitle = (TextView) findViewById(R.id.screenTitle);
-		screenTitle.setText(R.string.choose_category);
+		screenTitle.setText(R.string.select_category);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 

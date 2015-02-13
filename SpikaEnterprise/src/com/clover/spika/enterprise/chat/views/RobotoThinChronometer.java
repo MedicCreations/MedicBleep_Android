@@ -23,7 +23,7 @@ public class RobotoThinChronometer extends Chronometer {
 	}
 
 	private void setFont() {
-		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Thin.ttf");
+		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Regular.ttf");
 		setTypeface(typeface);
 	}
 }
