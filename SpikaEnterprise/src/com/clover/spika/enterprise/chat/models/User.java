@@ -75,10 +75,14 @@ public class User implements Serializable {
 	@SerializedName("details")
 	@Expose
 	private List<Map<String, String>> details;
+	
+	@SerializedName("organization")
+	@Expose
+	private Organization organization;
 
 	private boolean isSelected = false;
 
-	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected) {
+	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected, Organization org) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -89,6 +93,7 @@ public class User implements Serializable {
 		this.isMember = isMember;
 		this.details = details;
 		this.isSelected = isSelected;
+		organization = org;
 	}
 
 	public int getId() {
@@ -170,6 +175,14 @@ public class User implements Serializable {
 
 	public List<Map<String, String>> getDetails() {
 		return details;
+	}
+	
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
 	}
 
 	public Map<String, String> getPublicDetails() {

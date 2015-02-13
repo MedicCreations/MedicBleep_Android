@@ -128,6 +128,11 @@ public class RecentAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.recentImage.setImageDrawable(null);
+		if(getItem(position).getType() == Const.C_PRIVATE){
+			imageLoader.setDefaultImage(R.drawable.default_user_image);
+		}else{
+			imageLoader.setDefaultImage(R.drawable.default_group_image);
+		}
 
 		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.recentImage);
 		holder.recentName.setText(getItem(position).getChat_name());

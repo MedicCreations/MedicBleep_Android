@@ -245,6 +245,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 		dimOther.setOnClickListener(thisClickListener);
 		dimMenu.setOnClickListener(thisClickListener);
 		
+		boolean isEmojiEnable = getResources().getBoolean(R.bool.enable_emoji);
+		if(!isEmojiEnable){
+			findViewById(R.id.footerSmiley).setVisibility(View.GONE);
+		}
+		
 	}
 	
 	protected void setMenuByChatType () {
@@ -376,22 +381,29 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerNew.setSelected(true);
 					hideKeyboard(etMessage);
 					
-					FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
-					FrameLayoutForMenuPager pagerLayout = new FrameLayoutForMenuPager(BaseChatActivity.this);
-					pagerLayout.setViews(new SelectImageListener() {
-
+					new Handler().postDelayed(new Runnable() {
+						
 						@Override
-						public void onSelectImage(String path) {
-							if(path.equals("camera")){
-								openCamera();
-							}else{
-								openPathCropActivity(path);
-							}
-						}
-					});
-					flForPager.addView(pagerLayout);
+						public void run() {
+							// TODO Auto-generated method stub
+							FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
+							FrameLayoutForMenuPager pagerLayout = new FrameLayoutForMenuPager(BaseChatActivity.this);
+							pagerLayout.setViews(new SelectImageListener() {
 
-					findViewById(R.id.pbLoading).setVisibility(View.GONE);
+								@Override
+								public void onSelectImage(String path) {
+									if(path.equals("camera")){
+										openCamera();
+									}else{
+										openPathCropActivity(path);
+									}
+								}
+							});
+							flForPager.addView(pagerLayout);
+
+							findViewById(R.id.pbLoading).setVisibility(View.GONE);
+						}
+					}, 200);
 					
 				}
 			});
@@ -552,40 +564,52 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 	
 	private void openCamera() {
-		final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
-		dialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
-		dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+		boolean isChoiceEnabled = getResources().getBoolean(R.bool.enable_full_size_and_crop_image_choice);
+		if(isChoiceEnabled){
+			final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+			dialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
+			dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
-			@Override
-			public void onPositiveButtonClick(View v) {
-				Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
-				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
-				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.CHAT_ID, chatId);
-				intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-				intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-				intent.putExtra(Const.IS_SQUARE, false);
-				startActivity(intent);
-				dialog.dismiss();
-			}
-		});
+				@Override
+				public void onPositiveButtonClick(View v) {
+					Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+					intent.putExtra(Const.FROM_WAll, true);
+					intent.putExtra(Const.CHAT_ID, chatId);
+					intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+					intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+					intent.putExtra(Const.IS_SQUARE, false);
+					startActivity(intent);
+					dialog.dismiss();
+				}
+			});
 
-		dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
+			dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
-			@Override
-			public void onNegativeButtonClick(View v) {
-				Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
-				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
-				intent.putExtra(Const.FROM_WAll, true);
-				intent.putExtra(Const.CHAT_ID, chatId);
-				intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
-				intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
-				startActivity(intent);
-				dialog.dismiss();
-			}
-		});
+				@Override
+				public void onNegativeButtonClick(View v) {
+					Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
+					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+					intent.putExtra(Const.FROM_WAll, true);
+					intent.putExtra(Const.CHAT_ID, chatId);
+					intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+					intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+					startActivity(intent);
+					dialog.dismiss();
+				}
+			});
 
-		dialog.show();
+			dialog.show();
+		}else{
+			Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
+			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+			intent.putExtra(Const.FROM_WAll, true);
+			intent.putExtra(Const.CHAT_ID, chatId);
+			intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+			intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+			startActivity(intent);
+		}
+		
 	}
 	
 	View.OnClickListener thisClickListener = new View.OnClickListener() {
@@ -621,7 +645,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 					cropImageConfirmationDialog.show();
 				} else {
-					openCameraCropActivity();
+//					openCameraCropActivity();
+					openCameraFullSizeActivity();
 				}
 
 			} else if (id == R.id.btnVideo || id == R.id.chooseVideo) {
@@ -687,7 +712,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 	
 	void openPathCropActivity(String path) {
-		Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
+		Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 		intent.putExtra(Const.INTENT_TYPE, Const.PATH_INTENT);
 		intent.putExtra(Const.FROM_WAll, true);
 		intent.putExtra(Const.EXTRA_PATH, path);

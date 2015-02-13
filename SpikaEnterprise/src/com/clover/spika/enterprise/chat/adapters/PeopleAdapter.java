@@ -99,6 +99,7 @@ public class PeopleAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.itemImage.setImageDrawable(null);
+		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		GlobalModel item = getItem(position);
 

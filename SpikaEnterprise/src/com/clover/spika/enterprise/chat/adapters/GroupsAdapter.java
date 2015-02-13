@@ -99,6 +99,7 @@ public class GroupsAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.groupImage.setImageDrawable(null);
+		imageLoader.setDefaultImage(R.drawable.default_group_image);
 		
 		GlobalModel item = getItem(position);
 
