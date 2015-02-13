@@ -2,6 +2,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <SurfaceView
+        android:id="@+id/preventFromFlicking"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
     <RelativeLayout
         android:id="@+id/actionBarLayout"
         android:layout_width="match_parent"
@@ -38,8 +43,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@null"
             android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
@@ -47,6 +52,13 @@
             android:scaleType="centerInside"
             android:src="@drawable/selector_settings_button" />
     </RelativeLayout>
+
+    <View
+        android:id="@+id/blackedTopMenu"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="#99000000"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/mainContent"
@@ -85,9 +97,9 @@
             android:id="@+id/chatLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/menu_height"
             android:layout_alignParentBottom="true"
             android:background="@color/chat_menu_gray"
+            android:minHeight="@dimen/menu_height"
             android:padding="5dp" >
 
             <ImageButton
@@ -108,16 +120,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/footerMore"
                 android:layout_toLeftOf="@+id/footerSmiley"
+                android:layout_toRightOf="@+id/footerMore"
                 android:background="@drawable/chat_mask"
                 android:imeOptions="actionSend"
                 android:inputType="textCapSentences"
+                android:maxLines="3"
                 android:padding="5dp"
-                android:singleLine="false"
-                android:maxLines="3" 
-                android:scrollbars="vertical"/>
-            
+                android:scrollbars="vertical"
+                android:singleLine="false" />
+
             <ImageButton
                 android:id="@+id/footerSmiley"
                 android:layout_width="wrap_content"
@@ -130,6 +142,137 @@
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
                 android:src="@drawable/smiley_icon" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/blackedOther"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#99000000"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/rlNewDrawer"
+            android:layout_width="match_parent"
+            android:layout_height="395dp"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/shape_rounded_white_without_border"
+            android:visibility="gone" >
+
+            <FrameLayout
+                android:id="@+id/layoutForImagesPager"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_margin="5dp" >
+
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/choosePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/layoutForImagesPager"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/choose_photo"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/firstLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/choosePhoto"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseVideo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/firstLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="Choose/Take video"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/secondLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseVideo"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseFile"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/secondLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/choose_file"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/thirdLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseFile"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseLocation"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/thirdLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/location"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/fourthLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseLocation"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseVoice"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/fourthLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/voice"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/fifthLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseVoice"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/voiceCall"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/fifthLine"
+                android:background="@drawable/trans_to_gray_with_bottom_corners"
+                android:gravity="center"
+                android:text="@string/call"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -247,18 +390,17 @@
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:id="@+id/rlDrawerEmoji"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_alignParentBottom="true"
             android:visibility="gone" >
-            
-            <com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout 
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
 
+            <com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </RelativeLayout>
 
         <View
@@ -266,7 +408,6 @@
             android:layout_height="5dp"
             android:layout_alignParentTop="true"
             android:background="@drawable/shadow_gradient" />
-
     </RelativeLayout>
 
     <ListView

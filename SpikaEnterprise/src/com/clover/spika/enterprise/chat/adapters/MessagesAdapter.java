@@ -96,7 +96,7 @@ public class MessagesAdapter extends BaseAdapter {
 		imageLoaderSpice.setSpiceManager(manager);
 
 		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
-		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Thin.ttf");
+		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
 	}
 
 	@Override

@@ -268,5 +268,9 @@
     <string name="deleted">Deleted</string>
     <string name="file">File</string>
     <string name="smiley">Smiley</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="choose_video">Choose Video</string>
+    <string name="voice">Voice</string>
+    <string name="choose_file">Choose File</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.models;
 
+import java.util.List;
+
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -25,6 +27,10 @@ public class Login extends BaseModel {
 	@SerializedName("lastname")
 	@Expose
 	private String _lastname;
+
+	@SerializedName("organizations")
+	@Expose
+	private List<Organization> organizations;
 
 	public String getUserId() {
 		return _userId == null ? "" : _userId;
@@ -83,6 +89,14 @@ public class Login extends BaseModel {
 			return false;
 
 		return true;
+	}
+
+	public List<Organization> getOrganizations() {
+		return organizations;
+	}
+
+	public void setOrganizations(List<Organization> organizations) {
+		this.organizations = organizations;
 	}
 
 	@Override

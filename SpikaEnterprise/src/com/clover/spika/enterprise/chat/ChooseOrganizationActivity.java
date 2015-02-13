@@ -71,11 +71,6 @@ public class ChooseOrganizationActivity extends LoginBaseActivity implements OnI
 	
 	private void login(String organizationId){
 		
-		Logger.d("username: " + username);
-		Logger.d("password: " + password);
-		Logger.d("orgId: " + organizationId);
-		
-		
 		try {
 			executeLoginApi(username, password, organizationId, extras, true);
 		} catch (UnsupportedEncodingException e) {

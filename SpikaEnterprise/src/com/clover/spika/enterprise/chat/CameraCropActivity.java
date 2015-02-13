@@ -140,6 +140,9 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 				intent.setAction(Intent.ACTION_GET_CONTENT);
 				this.startActivityForResult(intent, GALLERY);
 			}
+		}else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.PATH_INTENT)) {
+			String path = getIntent().getStringExtra(Const.EXTRA_PATH);
+			onPhotoTaken(path);
 		} else {
 			try {
 				startCamera();

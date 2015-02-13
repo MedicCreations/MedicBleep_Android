@@ -16,7 +16,6 @@ import org.apache.http.util.TextUtils;
 
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -103,7 +102,6 @@ public class GifLoader {
 		if (file != null) {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
-			Log.d("LOG", "SET TAG");
 			imageView.setTag(file);
 			if (mListener != null)
 				mListener.onFinish();
@@ -111,7 +109,6 @@ public class GifLoader {
 			// queue Photo to download from url
 			queuePhoto(ctx, url, imageView);
 
-			Log.d("LOG", "SET BLAH");
 			// Before downloading image show default image
 			if (defaultImageId != -1) {
 				imageView.setImageResource(defaultImageId);
