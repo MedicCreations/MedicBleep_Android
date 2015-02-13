@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -492,6 +493,25 @@ public class Utils {
 			file.mkdir();
 		}
 		return file;
+	}
+	
+	public static Bitmap resizeBitmap(int targetW, int targetH, String photoPath) {
+		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+		bmOptions.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(photoPath, bmOptions);
+		int photoW = bmOptions.outWidth;
+		int photoH = bmOptions.outHeight;
+
+		int scaleFactor = 1;
+		if ((targetW > 0) || (targetH > 0)) {
+			scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+		}
+
+		bmOptions.inJustDecodeBounds = false;
+		bmOptions.inSampleSize = scaleFactor;
+//		bmOptions.inPurgeable = true;
+
+		return BitmapFactory.decodeFile(photoPath, bmOptions);
 	}
 	
 }
