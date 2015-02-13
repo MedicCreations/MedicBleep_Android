@@ -118,7 +118,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 	}
 
 	private void setListView() {
-		InviteRemoveAdapter adapter = new InviteRemoveAdapter(this, mUsers, this, null);
+		InviteRemoveAdapter adapter = new InviteRemoveAdapter(spiceManager, this, mUsers, this, null);
 		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		listView.getRefreshableView().setAdapter(adapter);
 	}

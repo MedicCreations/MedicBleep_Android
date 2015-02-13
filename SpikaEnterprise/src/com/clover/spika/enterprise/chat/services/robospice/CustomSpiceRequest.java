@@ -24,17 +24,13 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 
 	/**
 	 * This method generates a unique cache key for this request.
-	 * 
-	 * TODO
-	 * 
 	 * @return
 	 */
-	public String createCacheKey() {
+	public String createCacheKey(String cacheKey) {
 
 		try {
 
-			String cacheKeyString = "TestKey";
-			byte[] bytesOfKey = cacheKeyString.getBytes("UTF-8");
+			byte[] bytesOfKey = cacheKey.getBytes("UTF-8");
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] digest = md.digest(bytesOfKey);
 
@@ -63,28 +59,20 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 		return headersBuilder.build();
 	}
 
-	// public HttpEntity<String> getGetheaders(Context ctx) {
-	//
-	// List<MediaType> acceptableMediaTypes = new ArrayList<MediaType>();
-	// acceptableMediaTypes.add(MediaType.ALL);
-	//
-	// HttpHeaders headers = new HttpHeaders();
-	//
-	// headers.setAccept(acceptableMediaTypes);
-	//
-	// headers.setContentType(MediaType.TEXT_HTML);
-	//
-	// headers.set("Encoding", "UTF-8");
-	// headers.set(Const.APP_VERSION, Helper.getAppVersion());
-	// headers.set(Const.PLATFORM, "android");
-	//
-	// String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
-	// if (!TextUtils.isEmpty(token)) {
-	// headers.set("token", token);
-	// }
-	//
-	// HttpEntity<String> httpEntity = new HttpEntity<String>("", headers);
-	// return httpEntity;
-	// }
+	public Headers getGetheaders(Context ctx) {
+		
+		Headers.Builder headersBuilder = new Headers.Builder()
+		.add("Encoding", "UTF-8")
+		.add(Const.APP_VERSION, Helper.getAppVersion())
+		.add(Const.PLATFORM, "android")
+		.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		String token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+		if (!TextUtils.isEmpty(token)) {
+			headersBuilder.add("token", token);
+		}
+		
+		return headersBuilder.build();
+	}
 
 }

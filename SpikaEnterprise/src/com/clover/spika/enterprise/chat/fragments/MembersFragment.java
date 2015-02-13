@@ -73,7 +73,7 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 		super.onViewCreated(view, savedInstanceState);
 
 		if (getListView() != null) {
-			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
+			mUserAdapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 			getListView().setOnItemClickListener(this);
 			getListView().setAdapter(mUserAdapter);
 			mUserAdapter.setCheckBox(false);

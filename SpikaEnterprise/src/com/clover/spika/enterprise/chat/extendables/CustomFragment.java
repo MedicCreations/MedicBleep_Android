@@ -1,14 +1,29 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.octo.android.robospice.SpiceManager;
 
 public class CustomFragment extends Fragment {
 
 	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	private ImageLoaderSpice imageLoaderSpice;
+
+	public ImageLoaderSpice getImageLoader() {
+		return imageLoaderSpice;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		imageLoaderSpice = ImageLoaderSpice.getInstance(getActivity());
+		imageLoaderSpice.setSpiceManager(spiceManager);
+	}
 
 	@Override
 	public void onStart() {

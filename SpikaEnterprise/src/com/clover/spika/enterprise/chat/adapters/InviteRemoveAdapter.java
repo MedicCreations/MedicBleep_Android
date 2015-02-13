@@ -18,7 +18,7 @@ import com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity;
 import com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class InviteRemoveAdapter extends BaseAdapter {
 
@@ -50,20 +51,20 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 	CustomFragment fragment;
 
-	private ImageLoader imageLoader;
+	private ImageLoaderSpice imageLoaderSpice;
 
 	private OnChangeListener<GlobalModel> changedListener;
 	private boolean showCheckBox = true;
 	private boolean disableNameClick = false;
 
-	public InviteRemoveAdapter(Context context, List<GlobalModel> users, OnChangeListener<GlobalModel> listener, CustomFragment fragment) {
+	public InviteRemoveAdapter(SpiceManager manager, Context context, List<GlobalModel> users, OnChangeListener<GlobalModel> listener, CustomFragment fragment) {
 		this.mContext = context;
 		this.setData(users);
 
 		this.fragment = fragment;
 
-		imageLoader = ImageLoader.getInstance(context);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
 
 		this.changedListener = listener;
 	}
@@ -119,36 +120,36 @@ public class InviteRemoveAdapter extends BaseAdapter {
 	public List<GlobalModel> getData() {
 		return data;
 	}
-	
-	public void manageData(String manageWith, List<GlobalModel> allData){
+
+	public void manageData(String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
-		for(int i = 0; i < data.size(); i++){
-			if(data.get(i).getModel() instanceof User){
-				if(((User)data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i).getModel() instanceof User) {
+				if (((User) data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				}else if(((User)data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+				} else if (((User) data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				}else{
+				} else {
 					data.remove(i);
 					i--;
 				}
-			}else if(data.get(i).getModel() instanceof Chat){
-				if(((Chat)data.get(i).getModel()).getChat_name().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+			} else if (data.get(i).getModel() instanceof Chat) {
+				if (((Chat) data.get(i).getModel()).getChat_name().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				}else{
+				} else {
 					data.remove(i);
 					i--;
 				}
-			}else if(data.get(i).getModel() instanceof Group){
-				if(((Group)data.get(i).getModel()).getGroupName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+			} else if (data.get(i).getModel() instanceof Group) {
+				if (((Group) data.get(i).getModel()).getGroupName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				}else{
+				} else {
 					data.remove(i);
 					i--;
 				}
 			}
-			
+
 		}
 		this.notifyDataSetChanged();
 	}
@@ -193,8 +194,8 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		holder.personType.setVisibility(View.GONE);
 
-		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.profileImg);
-		((RoundImageView)holder.profileImg).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+		imageLoaderSpice.displayImage(holder.profileImg, item.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
+		((RoundImageView) holder.profileImg).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
 		if (item.getType() == Type.CHAT) {
 

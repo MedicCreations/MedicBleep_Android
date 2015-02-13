@@ -16,9 +16,12 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.octo.android.robospice.SpiceManager;
 
 public class SidebarFragment extends Fragment implements OnClickListener {
 
@@ -35,6 +38,13 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	ProfileFragment profileFragment;
 	HomeFragment lobbyFragment;
 	InformationFragment informationFragment;
+	
+	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	private ImageLoaderSpice imageLoaderSpice;
+
+	public ImageLoaderSpice getImageLoader() {
+		return imageLoaderSpice;
+	}
 
 	public SidebarFragment() {
 	}
@@ -42,18 +52,34 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(getActivity());
+		imageLoaderSpice.setSpiceManager(spiceManager);
 		image = Helper.getUserImage(getActivity());
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		spiceManager.start(getActivity());
+	}
+
+	@Override
+	public void onStop() {
+		if (spiceManager.isStarted()) {
+			spiceManager.shouldStop();
+		}
+		super.onStop();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
-		
+
 		RobotoRegularTextView tvAppVersion = (RobotoRegularTextView) view.findViewById(R.id.app_version);
 		String version = Helper.getAppVersion();
 		tvAppVersion.setText(tvAppVersion.getText() + version);
-		
+
 		userImage = (ImageView) view.findViewById(R.id.userImage);
 
 		setUserImage();
@@ -86,9 +112,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 	}
 
 	private void setUserImage() {
-		if (getActivity() instanceof MainActivity) {
-			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), image, userImage);
-		}
+		getImageLoader().displayImage(userImage, image, ImageLoaderSpice.DEFAULT_USER_IMAGE);
 	}
 
 	@Override

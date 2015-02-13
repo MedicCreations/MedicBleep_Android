@@ -56,7 +56,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new GroupsAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_group_image);
+		adapter = new GroupsAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 	}
 

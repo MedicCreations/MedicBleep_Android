@@ -62,7 +62,7 @@ public class ChatActivity extends BaseChatActivity {
 
 		noItems = (TextView) findViewById(R.id.noItems);
 
-		adapter = new MessagesAdapter(this, new ArrayList<Message>());
+		adapter = new MessagesAdapter(spiceManager, this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
 		chatListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override

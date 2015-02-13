@@ -52,8 +52,6 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
-	public static final String TOKEN = "Token";
-
 	public static JSONObject httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
 		return httpPostRequest("", postParams, token);
 	}
@@ -180,7 +178,7 @@ public class NetworkManagement {
 
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-		httppost.setHeader(TOKEN, prefs.getToken());
+		httppost.setHeader(Const.TOKEN_BIG_T, prefs.getToken());
 
 		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httppost.setHeader(Const.PLATFORM, "android");
@@ -236,7 +234,7 @@ public class NetworkManagement {
 		Logger.custom("RawRequest", httpGet.getURI().toString());
 		
 		httpGet.setHeader("Encoding", "UTF-8");
-		httpGet.setHeader(TOKEN, prefs.getToken());
+		httpGet.setHeader(Const.TOKEN_BIG_T, prefs.getToken());
 
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");

@@ -109,9 +109,12 @@ public class RoomsSpice {
 				uriVariables.put(Const.ROOM_ALL_IDS, roomAllIds);
 			}
 
-			Request request = new Request.Builder().addHeader("Encoding", "UTF-8").addHeader(Const.APP_VERSION, Helper.getAppVersion()).addHeader(Const.PLATFORM, "android")
-					.addHeader("token", SpikaEnterpriseApp.getSharedPreferences(ctx).getToken())
-					.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams)).get().build();
+			Request request = new Request.Builder()
+			.addHeader("Encoding", "UTF-8")
+			.addHeader(Const.APP_VERSION, Helper.getAppVersion())
+			.addHeader(Const.PLATFORM, "android")
+			.addHeader("token", SpikaEnterpriseApp.getSharedPreferences(ctx).getToken())
+			.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams)).get().build();
 
 			Call connection = getOkHttpClient().newCall(request);
 

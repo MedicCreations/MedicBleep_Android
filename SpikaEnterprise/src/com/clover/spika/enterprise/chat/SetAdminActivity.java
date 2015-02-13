@@ -64,7 +64,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 
 		noItems = (TextView) findViewById(R.id.noItems);
 		mainListView = (PullToRefreshListView) findViewById(R.id.main_list_view);
-		adapter = new InviteRemoveAdapter(this, new ArrayList<GlobalModel>(), null, null);
+		adapter = new InviteRemoveAdapter(spiceManager, this, new ArrayList<GlobalModel>(), null, null);
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);

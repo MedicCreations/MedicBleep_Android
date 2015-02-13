@@ -138,7 +138,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
 		invitedPeople.setMovementMethod(new ScrollingMovementMethod());
 
-		adapter = new InviteRemoveAdapter(this, new ArrayList<GlobalModel>(), this, null);
+		adapter = new InviteRemoveAdapter(spiceManager, this, new ArrayList<GlobalModel>(), this, null);
 
 		mainList = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		mainList.setAdapter(adapter);

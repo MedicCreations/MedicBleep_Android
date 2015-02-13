@@ -64,7 +64,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
             chatListView.setOnItemClickListener(this);
             chatListView.setOnItemLongClickListener(this);
-            chatListView.setAdapter(new ThreadsAdapter(this));
+            chatListView.setAdapter(new ThreadsAdapter(spiceManager, this));
         }
     }
 

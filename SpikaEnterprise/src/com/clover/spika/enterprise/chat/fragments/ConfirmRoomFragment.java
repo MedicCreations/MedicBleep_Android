@@ -21,6 +21,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.RoomsSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
@@ -50,13 +51,13 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	private String roomAllIds;
 	private String roomThumbId;
 	private String roomNameData;
-	
+
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
+		adapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 		if (getArguments() != null)
 			roomNameData = getArguments().getString(Const.NAME, "");
-		
+
 		View header = fillHeader(inflater);
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
@@ -99,7 +100,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		mainListView.getRefreshableView().addHeaderView(header);
-		
+
 		mainListView.setAdapter(adapter);
 
 		getUsers();
@@ -108,51 +109,53 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 		return rootView;
 	}
-	
-	private View fillHeader(LayoutInflater inflater){
+
+	private View fillHeader(LayoutInflater inflater) {
 		View rootView = inflater.inflate(R.layout.pull_to_refresh_header_create_room, null, false);
-		
+
 		ImageView imgRoom = (ImageView) rootView.findViewById(R.id.img_room);
 		TextView roomName = (TextView) rootView.findViewById(R.id.tv_room_name);
 		rootView.findViewById(R.id.et_room_name).setVisibility(View.GONE);
 		if (!TextUtils.isEmpty(roomThumbId)) {
-			((CreateRoomActivity) getActivity()).getImageLoader().displayImage(getActivity(), roomThumbId, imgRoom);
+			getImageLoader().displayImage(imgRoom, roomThumbId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
 		}
 		roomName.setText(roomNameData);
 		roomName.setVisibility(View.VISIBLE);
-		
+
 		Switch switchPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
 		switchPrivate.setChecked(getArguments().getBoolean(Const.IS_PRIVATE, false));
 		switchPrivate.setEnabled(false);
-		
+
 		EditText password = (EditText) rootView.findViewById(R.id.etPassword);
 		password.setEnabled(false);
 		password.setText(getArguments().getString(Const.PASSWORD, ""));
-		
+
 		rootView.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.GONE);
 		rootView.findViewById(R.id.belowPasswordRepeatLayout).setVisibility(View.GONE);
-		
+
 		TextView tvCategory = (TextView) rootView.findViewById(R.id.tvCategory);
 		tvCategory.setText(getArguments().getString(Const.CATEGORY_NAME, "No Category"));
 		rootView.findViewById(R.id.arrowRightCategory).setVisibility(View.GONE);
-		
+
 		rootView.findViewById(R.id.txtUserNames).setVisibility(View.GONE);
 		rootView.findViewById(R.id.belowUsersLayout).setVisibility(View.GONE);
-		
+
 		EditText etSearch = (EditText) rootView.findViewById(R.id.searchEt);
 		etSearch.addTextChangedListener(textWatacher);
-		
+
 		return rootView;
 	}
-	
+
 	private TextWatcher textWatacher = new TextWatcher() {
-		
+
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {}
-		
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
 		@Override
 		public void afterTextChanged(Editable s) {
 			adapter.manageData(s.toString(), allData);
@@ -184,7 +187,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-		
+
 		allData.clear();
 		allData.addAll(adapter.getData());
 	}

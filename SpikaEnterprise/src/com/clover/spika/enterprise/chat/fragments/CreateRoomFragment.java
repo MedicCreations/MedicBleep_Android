@@ -40,6 +40,7 @@ import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -98,7 +99,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
+		adapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), this, this);
 		mCurrentIndex = 0;
 	}
 
@@ -245,7 +246,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 			room_thumb_id = Helper.getRoomThumbId(getActivity());
 
 			if (room_file_id != "") {
-				((CreateRoomActivity) getActivity()).getImageLoader().displayImage(getActivity(), room_thumb_id, imgRoom);
+				getImageLoader().displayImage(imgRoom, room_thumb_id, ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
 			}
 
 			((CreateRoomActivity) getActivity()).setRoom_file_id(room_file_id);

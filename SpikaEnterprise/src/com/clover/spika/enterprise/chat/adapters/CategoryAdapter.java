@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.models.Category;

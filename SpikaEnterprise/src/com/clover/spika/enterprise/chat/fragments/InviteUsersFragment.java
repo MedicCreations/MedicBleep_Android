@@ -99,7 +99,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		super.onViewCreated(view, savedInstanceState);
 
 		if (view != null) {
-			adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
+			adapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), this, this);
 
 			noItems = (TextView) view.findViewById(R.id.noItems);
 			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);

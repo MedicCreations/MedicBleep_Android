@@ -83,6 +83,7 @@ public class Const {
 	public static final long MAX_FILE_SIZE = 8 * 1024 * 1024;
 
 	// custom params key
+	public static final String TOKEN_BIG_T = "Token";
 	public static final String TOKEN = "token";
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";

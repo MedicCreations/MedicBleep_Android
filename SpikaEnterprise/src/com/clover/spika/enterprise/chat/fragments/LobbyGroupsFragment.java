@@ -57,7 +57,7 @@ public class LobbyGroupsFragment extends CustomFragment implements OnItemClickLi
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new RecentAdapter(getActivity(), new ArrayList<Chat>(), false);
+		adapter = new RecentAdapter(spiceManager, getActivity(), new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);

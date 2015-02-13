@@ -57,7 +57,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new RecentAdapter(getActivity(), new ArrayList<Chat>(), true);
+		adapter = new RecentAdapter(spiceManager, getActivity(), new ArrayList<Chat>(), true);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);

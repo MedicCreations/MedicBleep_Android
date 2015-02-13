@@ -55,7 +55,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new PeopleAdapter(getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
+		adapter = new PeopleAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), R.drawable.default_user_image);
 		mCurrentIndex = 0;
 	}
 

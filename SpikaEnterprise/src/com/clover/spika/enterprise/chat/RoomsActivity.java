@@ -68,7 +68,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rooms);
 
-		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
+		adapter = new GlobalModelAdapter(spiceManager, this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);

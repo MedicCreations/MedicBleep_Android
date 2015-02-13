@@ -22,7 +22,6 @@ import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.ConfirmRoomFragment;
 import com.clover.spika.enterprise.chat.fragments.CreateRoomFragment;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -48,9 +47,6 @@ public class CreateRoomActivity extends BaseActivity {
 	OnSearchListener mSearchListener;
 	OnCreateRoomListener mCreateRoomListener;
 	OnNextStepRoomListener mNextStepListener;
-
-	/* Main ImageLoader */
-	ImageLoader imageLoader;
 
 	/* Fragment currently in use */
 	TextView screenTitle;
@@ -98,9 +94,6 @@ public class CreateRoomActivity extends BaseActivity {
 				onBackPressed();
 			}
 		});
-
-		imageLoader = ImageLoader.getInstance(this);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -207,10 +200,6 @@ public class CreateRoomActivity extends BaseActivity {
 		if (screenTitle != null) {
 			screenTitle.setText(title);
 		}
-	}
-
-	public ImageLoader getImageLoader() {
-		return imageLoader;
 	}
 
 	/**

@@ -52,7 +52,6 @@ import com.clover.spika.enterprise.chat.api.EmojiApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
@@ -102,8 +101,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private Animation animHideSettings;
 	private Animation animHideSettingsHack;
 
-	private ImageLoader imageLoader;
-	
 	private List<Stickers> stickersList = new ArrayList<Stickers>();
 	
 	private SelectEmojiListener mEmojiListener = null;
@@ -112,8 +109,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
-
-		imageLoader = ImageLoader.getInstance(this);
 
 		Button file = (Button) findViewById(R.id.bntFile);
 		file.setOnClickListener(thisClickListener);
@@ -304,10 +299,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	protected void setTitle(String title) {
 		screenTitle.setText(title);
-	}
-
-	protected ImageLoader getImageLoader() {
-		return imageLoader;
 	}
 
 	/* Animation expand started form 0,0 */

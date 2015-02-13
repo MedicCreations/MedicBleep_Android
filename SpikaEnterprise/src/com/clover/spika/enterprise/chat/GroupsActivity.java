@@ -68,7 +68,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		setContentView(R.layout.activity_groups);
 		// setSearch(this);
 
-		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
+		adapter = new GlobalModelAdapter(spiceManager, this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);

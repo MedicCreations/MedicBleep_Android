@@ -13,27 +13,26 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class GroupsAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<GlobalModel> data = new ArrayList<GlobalModel>();
 
-	private ImageLoader imageLoader;
+	private ImageLoaderSpice imageLoaderSpice;
 
-	public GroupsAdapter(Context context, Collection<GlobalModel> users, int defaultImage) {
+	public GroupsAdapter(SpiceManager manager, Context context, Collection<GlobalModel> users, int defaultImage) {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = ImageLoader.getInstance(context);
-		imageLoader.setDefaultImage(R.drawable.default_group_image);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
 	}
 
 	public Context getContext() {
@@ -49,12 +48,12 @@ public class GroupsAdapter extends BaseAdapter {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
-	
-	public List<GlobalModel> getData(){
+
+	public List<GlobalModel> getData() {
 		return data;
 	}
-	
-	public void manageData(String manageWith, List<GlobalModel> allData){
+
+	public void manageData(String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
@@ -99,11 +98,11 @@ public class GroupsAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.groupImage.setImageDrawable(null);
-		
+
 		GlobalModel item = getItem(position);
 
-		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.groupImage);
-		((RoundImageView)holder.groupImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+		imageLoaderSpice.displayImage(holder.groupImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
+		((RoundImageView) holder.groupImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 		holder.groupName.setText(((Chat) item.getModel()).getChat_name());
 
 		return convertView;
@@ -119,7 +118,7 @@ public class GroupsAdapter extends BaseAdapter {
 
 			groupImage = (ImageView) view.findViewById(R.id.item_image);
 			groupName = (RobotoRegularTextView) view.findViewById(R.id.item_name);
-			
+
 		}
 
 	}

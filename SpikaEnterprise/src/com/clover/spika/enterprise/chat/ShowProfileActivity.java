@@ -14,7 +14,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -26,21 +26,21 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 	private ListView listViewDetail;
 	private UserDetailsAdapter adapter;
 	private UserWrapper userData;
-	
+
 	private String mUserId = "";
 	private boolean isMyProfile = true;
-	
+
 	private boolean isInEditMode = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);	
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_profile);
-		
-		if(getIntent().hasExtra(Const.USER_ID)){
+
+		if (getIntent().hasExtra(Const.USER_ID)) {
 			mUserId = getIntent().getStringExtra(Const.USER_ID);
 			isMyProfile = false;
-		}else{
+		} else {
 			mUserId = Helper.getUserId(this);
 		}
 
@@ -56,42 +56,44 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 			@Override
 			public void onApiResponse(Result<UserWrapper> result) {
 				if (result.isSuccess()) {
-					
+
 					userData = result.getResultData();
 					setData(result.getResultData());
 
-				} 
+				}
 			}
 		});
-		
+
 		saveProfile.setText(getString(R.string.edit));
 		findViewById(R.id.cancelProfile).setOnClickListener(this);
-		
+
 		View header = fillHeader(getLayoutInflater());
 		listViewDetail.addHeaderView(header);
-		
-		if(!isMyProfile) saveProfile.setVisibility(View.GONE);
-		
+
+		if (!isMyProfile)
+			saveProfile.setVisibility(View.GONE);
+
 	}
-	
-	private View fillHeader(LayoutInflater inflater){
+
+	private View fillHeader(LayoutInflater inflater) {
 		View rootView = inflater.inflate(R.layout.header_in_profile_settings, null, false);
-		
+
 		String firstName = getIntent().getStringExtra(Const.FIRSTNAME);
 		String lastName = getIntent().getStringExtra(Const.LASTNAME);
 		String imageId = getIntent().getStringExtra(Const.USER_IMAGE_NAME);
-		
-		if(firstName == null){
+
+		if (firstName == null) {
 			String chatName = getIntent().getStringExtra(Const.CHAT_NAME);
 			((TextView) rootView.findViewById(R.id.name)).setText(chatName);
-		}else{
+		} else {
 			((TextView) rootView.findViewById(R.id.name)).setText(firstName + " " + lastName);
 		}
 		((TextView) rootView.findViewById(R.id.company)).setText("Company");
 
 		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		ImageLoader.getInstance(this).displayImage(this, imageId, profileImage);
-		
+
+		getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_USER_IMAGE);
+
 		return rootView;
 	}
 
@@ -102,41 +104,41 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		listViewDetail.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 	}
-	
+
 	private void setEditModeData() {
 		((TextView) findViewById(R.id.saveProfile)).setText(getString(R.string.save));
 		findViewById(R.id.cancelProfile).setVisibility(View.VISIBLE);
 		isInEditMode = true;
-		
+
 		adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), false);
 		adapter.setShowNotEdit(false);
 		adapter.notifyDataSetChanged();
 	}
-	
+
 	private void backToShow(boolean withReload) {
 		((TextView) findViewById(R.id.saveProfile)).setText(getString(R.string.edit));
 		findViewById(R.id.cancelProfile).setVisibility(View.GONE);
 		isInEditMode = false;
-		
-		if(withReload){
+
+		if (withReload) {
 			new UserApi().getProfile(this, true, Helper.getUserId(this), new ApiCallback<UserWrapper>() {
 				@Override
 				public void onApiResponse(Result<UserWrapper> result) {
 					if (result.isSuccess()) {
-						
+
 						userData = result.getResultData();
 						adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
 						adapter.setShowNotEdit(true);
 						adapter.notifyDataSetChanged();
-					} 
+					}
 				}
 			});
-		}else{
+		} else {
 			adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
 			adapter.setShowNotEdit(true);
 			adapter.notifyDataSetChanged();
 		}
-		
+
 	}
 
 	@Override
@@ -146,9 +148,9 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 			finish();
 			break;
 		case R.id.saveProfile:
-			if(!isInEditMode){
+			if (!isInEditMode) {
 				setEditModeData();
-			}else{
+			} else {
 				new UserApi().updateUserDetails(adapter.getList(), this, new ApiCallback<BaseModel>() {
 
 					@Override

@@ -73,7 +73,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
 		mainListView.setOnItemClickListener(this);
 
-		adapter = new RecentAdapter(this, new ArrayList<Chat>(), false);
+		adapter = new RecentAdapter(spiceManager, this, new ArrayList<Chat>(), false);
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);

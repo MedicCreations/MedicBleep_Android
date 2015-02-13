@@ -13,25 +13,26 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class PeopleAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<GlobalModel> data = new ArrayList<GlobalModel>();
 
-	private ImageLoader imageLoader;
+	private ImageLoaderSpice imageLoaderSpice;
 
-	public PeopleAdapter(Context context, Collection<GlobalModel> users, int defaultImage) {
+	public PeopleAdapter(SpiceManager manager, Context context, Collection<GlobalModel> users, int defaultImage) {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = ImageLoader.getInstance(context);
-		imageLoader.setDefaultImage(defaultImage);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
 	}
 
 	public Context getContext() {
@@ -47,20 +48,20 @@ public class PeopleAdapter extends BaseAdapter {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
-	
-	public List<GlobalModel> getData(){
+
+	public List<GlobalModel> getData() {
 		return data;
 	}
-	
-	public void manageData(String manageWith, List<GlobalModel> allData){
+
+	public void manageData(String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
-		for(int i = 0; i < data.size(); i++){
-			if(((User)data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+		for (int i = 0; i < data.size(); i++) {
+			if (((User) data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
-			}else if(((User)data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())){
+			} else if (((User) data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
-			}else{
+			} else {
 				data.remove(i);
 				i--;
 			}
@@ -102,8 +103,8 @@ public class PeopleAdapter extends BaseAdapter {
 
 		GlobalModel item = getItem(position);
 
-		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.itemImage);
-		((RoundImageView)holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+		imageLoaderSpice.displayImage(holder.itemImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
+		((RoundImageView) holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
 		holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());
 

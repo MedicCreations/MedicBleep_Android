@@ -34,7 +34,7 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
@@ -54,7 +54,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	PushBroadcastReceiver myPushRecevier;
 	IntentFilter intentFilter;
 
-	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	public SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	private ImageLoaderSpice imageLoaderSpice;
+
+	public ImageLoaderSpice getImageLoader() {
+		return imageLoaderSpice;
+	}
 
 	@Override
 	protected void onStart() {
@@ -102,9 +107,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (ImageLoader.getInstance(this) == null) {
-			ImageLoader.init(this);
-		}
+		imageLoaderSpice = ImageLoaderSpice.getInstance(this);
+		imageLoaderSpice.setSpiceManager(spiceManager);
 
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
