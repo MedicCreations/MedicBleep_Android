@@ -101,7 +101,7 @@ public class ChatActivity extends BaseChatActivity {
 			}
 
 			@Override
-			public void onSimpleClick(Message message) {
+			public void onSimpleClick(Message message, int pos) {
 				if (message.getType() != Const.MSG_TYPE_DELETED) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);

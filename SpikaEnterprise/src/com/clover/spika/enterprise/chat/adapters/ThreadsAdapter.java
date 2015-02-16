@@ -1,32 +1,61 @@
 package com.clover.spika.enterprise.chat.adapters;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.VideoActivity;
+import com.clover.spika.enterprise.chat.adapters.MessagesAdapter.OnMessageLongAndSimpleClickCustomListener;
+import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ThreadsAdapter extends BaseAdapter {
 
@@ -48,6 +77,19 @@ public class ThreadsAdapter extends BaseAdapter {
     private List<TreeNode> mMessageList = new ArrayList<TreeNode>();
 
     private ImageLoader imageLoader;
+    Typeface typeface;
+    private int displayWidth = 0;
+    
+    //*************SOUND
+    private boolean isDownloadingSound = false;
+	private MediaPlayer currentMediaPlayer = null;
+	private String currentPlayingPath = null;
+	private Button activePlayIcon = null;
+	private Chronometer activeChronometer = null;
+	private SeekBar activeSeekbar = null;
+	//*************************
+	
+    private MessagesAdapter.OnMessageLongAndSimpleClickCustomListener mListener;
 
     public ThreadsAdapter(Context context) {
         if (context instanceof Activity) {
@@ -57,7 +99,10 @@ public class ThreadsAdapter extends BaseAdapter {
             DisplayMetrics dm = new DisplayMetrics();
             ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
             int maxIndent = dm.widthPixels / 2;
+            displayWidth = dm.widthPixels;
             mMaxIndentLevel = maxIndent / INDENTATION_PADDING;
+            
+            typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
         } else {
             throw new IllegalArgumentException("Context must be an Activity context to proceed.");
         }
@@ -88,6 +133,10 @@ public class ThreadsAdapter extends BaseAdapter {
     private int getIndentPadding(int level) {
         level = level > mMaxIndentLevel ? mMaxIndentLevel : level;
         return INDENTATION_PADDING  * level;
+    }
+    
+    public void setListener(OnMessageLongAndSimpleClickCustomListener lis){
+    	mListener = lis;
     }
 
     @Override
@@ -158,10 +207,30 @@ public class ThreadsAdapter extends BaseAdapter {
                 case VIEW_TYPE_PHOTO:
                     convertView = inflatePhoto(holder, parent);
                     break;
+                    
+                case VIEW_TYPE_SOUND:
+                	convertView = inflateSound(holder, parent);
+                	final Message mess = mMessageList.get(position).getMessage();
+                	final int pos = position;
+                	convertView.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							if(mListener != null) mListener.onSimpleClick(mess, pos);
+						}
+					});
+                	convertView.setOnLongClickListener(new View.OnLongClickListener() {
+						
+						@Override
+						public boolean onLongClick(View v) {
+							if(mListener != null) mListener.onLongClick(mess);
+							return false;
+						}
+					});
+                	break;
 
                 case VIEW_TYPE_LOCATION:
                 case VIEW_TYPE_VIDEO:
-                case VIEW_TYPE_SOUND:
                 case VIEW_TYPE_FILE:
                     convertView = inflateMedia(holder, parent, type);
                     break;
@@ -178,8 +247,6 @@ public class ThreadsAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        setItemBackground(position, convertView);
 
         TreeNode node = mMessageList.get(position);
 
@@ -218,20 +285,14 @@ public class ThreadsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private void setItemBackground(int position, View view) {
-        if (position % 2 == 1) {
-            view.setBackgroundColor(mContext.getResources().getColor(R.color.gray_in_adapter));
-        } else {
-            view.setBackgroundColor(Color.WHITE);
-        }
-    }
-
     private View inflateMessage(final ViewHolder holder, final ViewGroup parent) {
         View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_message, parent, false);
 
         holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        ((RoundImageView)holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
         holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
         holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
+        holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 
         return convertView;
     }
@@ -248,9 +309,11 @@ public class ThreadsAdapter extends BaseAdapter {
         View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_photo, parent, false);
 
         holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        ((RoundImageView)holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
         holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
         holder.imageViewPhoto = (ImageView) convertView.findViewById(R.id.image_view_photo);
         holder.imageViewPhoto.setOnClickListener(mOnClickPhoto);
+        holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 
         return convertView;
     }
@@ -259,23 +322,36 @@ public class ThreadsAdapter extends BaseAdapter {
         View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_media, parent, false);
 
         holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        ((RoundImageView)holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
         holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
         holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
-        holder.imageViewIcon = (ImageView) convertView.findViewById(R.id.image_view_icon);
+        holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 
         switch (viewType) {
             case VIEW_TYPE_LOCATION:
-                holder.imageViewIcon.setOnClickListener(mOnClickLocation);
+                holder.textViewMessage.setOnClickListener(mOnClickLocation);
                 break;
 
             case VIEW_TYPE_VIDEO:
-                holder.imageViewIcon.setOnClickListener(mOnClickVideo);
+                holder.textViewMessage.setOnClickListener(mOnClickVideo);
                 break;
 
             case VIEW_TYPE_FILE:
-                holder.imageViewIcon.setOnClickListener(mOnClickFile);
+                holder.textViewMessage.setOnClickListener(mOnClickFile);
                 break;
         }
+
+        return convertView;
+    }
+    
+    private View inflateSound(final ViewHolder holder, final ViewGroup parent) {
+        View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_sound, parent, false);
+
+        holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        ((RoundImageView)holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
+        holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
+        holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
+        holder.soundControl = (RelativeLayout) convertView.findViewById(R.id.rlSoundControl);
 
         return convertView;
     }
@@ -284,140 +360,216 @@ public class ThreadsAdapter extends BaseAdapter {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
         holder.textViewMessage.setText(node.getMessage().getText());
-
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+        
+        int textWidth = node.getMessage().getTextWidth();
+        
+        if(textWidth == -1){
+			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+        
+        int timeWidth = node.getMessage().getTimeWidth();
+		
+		if(timeWidth == -1){
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+		
+		if(textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())){
+			((LayoutParams)holder.textViewMessage.getLayoutParams()).weight = 1;
+		}else{
+			((LayoutParams)holder.textViewMessage.getLayoutParams()).weight = 0;
+		}
 
         if (position == this.mSelectedItem) {
             holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
-            holder.textViewMessage.setTextColor(Color.WHITE);
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
             holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
             holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
     }
 
     private void populatePhoto(ViewHolder holder, TreeNode node, int position) {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
-
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
         imageLoader.displayImage(mContext, node.getMessage().getThumb_id(), holder.imageViewPhoto);
         holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
 
+        
         if (position == this.mSelectedItem) {
             holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
             holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
     }
 
     private void populateLocation(ViewHolder holder, TreeNode node, int position) {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
-        holder.textViewMessage.setText(
-                "\"" + node.getMessage().getLatitude() + ", " + node.getMessage().getLongitude() +  "\"");
-
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
-
-        holder.imageViewIcon.setImageResource(R.drawable.icon_location);
-        holder.imageViewIcon.setTag(R.id.tag_latitude, node.getMessage().getLatitude());
-        holder.imageViewIcon.setTag(R.id.tag_longitude, node.getMessage().getLongitude());
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+        holder.textViewMessage.setText(mContext.getResources().getString(R.string.location_tap_to_view));
+        
+        holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_location, 0);
+        holder.textViewMessage.setTag(R.id.tag_latitude, node.getMessage().getLatitude());
+        holder.textViewMessage.setTag(R.id.tag_longitude, node.getMessage().getLongitude());
+        
+        Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_location);
+        int widthOfIcon = iconLoc.getWidth();
+        
+        int textWidth = node.getMessage().getTextWidth();
+        
+        if(textWidth == -1){
+			textWidth = calculateNeedTextWidth(mContext.getResources().getString(R.string.location_tap_to_view), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+        
+        int timeWidth = node.getMessage().getTimeWidth();
+		
+		if(timeWidth == -1){
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+		
+		if(textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())){
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
+		}else{
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
+		}
 
         if (position == this.mSelectedItem) {
             holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
-            holder.textViewMessage.setTextColor(Color.WHITE);
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
             holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
             holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
     }
 
     private void populateVideo(ViewHolder holder, TreeNode node, int position) {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+        holder.textViewMessage.setText(mContext.getResources().getString(R.string.video_tap_to_play));
 
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
-
-        holder.imageViewIcon.setImageResource(R.drawable.icon_video);
-        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+        holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_video, 0);
+        holder.textViewMessage.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+        
+        Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_video);
+        int widthOfIcon = iconLoc.getWidth();
+        
+        int textWidth = node.getMessage().getTextWidth();
+        
+        if(textWidth == -1){
+			textWidth = calculateNeedTextWidth(mContext.getResources().getString(R.string.video_tap_to_play), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+        
+        int timeWidth = node.getMessage().getTimeWidth();
+		
+		if(timeWidth == -1){
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+		
+		if(textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())){
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
+		}else{
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
+		}
 
         if (position == this.mSelectedItem) {
-            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+        	holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
-            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+        	holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
+        
     }
 
     private void populateSound(ViewHolder holder, TreeNode node, int position) {
-        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+    	imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
-
-        holder.imageViewIcon.setImageResource(R.drawable.icon_voice);
-        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
-
+        setVoiceControls(node.getMessage(), holder.soundControl);
+        
         if (position == this.mSelectedItem) {
-            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+        	holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
-            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+        	holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
     }
 
     private void populateFile(ViewHolder holder, TreeNode node, int position) {
         imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
         holder.textViewUser.setText(node.getMessage().getName());
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
         holder.textViewMessage.setText(node.getMessage().getText());
 
-        if (node.getMessage().isMe()) {
-            holder.textViewUser.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.textViewUser.setTypeface(null, Typeface.NORMAL);
-        }
 
-        holder.imageViewIcon.setImageResource(R.drawable.icon_file);
-        holder.imageViewIcon.setTag(R.id.tag_file_id, node.getMessage());
+        holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_file, 0);
+        holder.textViewMessage.setTag(R.id.tag_file_id, node.getMessage());
+        
+        Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_file);
+        int widthOfIcon = iconLoc.getWidth();
+        
+        int textWidth = node.getMessage().getTextWidth();
+        
+        if(textWidth == -1){
+			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+        
+        int timeWidth = node.getMessage().getTimeWidth();
+		
+		if(timeWidth == -1){
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+		
+		if(textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())){
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
+		}else{
+			((LayoutParams)((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
+		}
 
         if (position == this.mSelectedItem) {
-            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+        	holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
             holder.textViewUser.setTextColor(Color.WHITE);
-            holder.textViewMessage.setTextColor(Color.WHITE);
+            holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+            holder.threadTime.setTextColor(Color.WHITE);
         } else {
-            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+        	holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
             holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
             holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
         }
+        
     }
 
     private View.OnClickListener mOnClickPhoto = new View.OnClickListener() {
@@ -470,8 +622,267 @@ public class ThreadsAdapter extends BaseAdapter {
 
         ImageView imageViewUser;
         ImageView imageViewPhoto;
-        ImageView imageViewIcon;
         TextView textViewMessage;
         TextView textViewUser;
+        TextView threadTime;
+        RelativeLayout soundControl;
     }
+    
+    private String getCreatedTime(String created) {
+
+		try {
+
+			Timestamp stamp = new Timestamp(Long.valueOf(created) * 1000);
+			Date date = new Date(stamp.getTime());
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+			return sdf.format(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+    
+    private int calculateNeedTextWidth(String text, Context c){
+		Paint paint = new Paint();
+		Rect bounds = new Rect();
+
+		int text_width = 0;
+
+		paint.setTypeface(typeface);// your preference here
+		paint.setTextSize(Utils.getPxFromSp(20, c.getResources()));// have this the same as your text size
+
+		paint.getTextBounds(text, 0, text.length(), bounds);
+
+		text_width =  bounds.width();
+		
+		return text_width;
+	}
+    
+    //***********SOUND CONTROLERS
+    private double totalOfDownload = -1;
+	private void setVoiceControls(final Message msg, final RelativeLayout holder) {
+		
+		final Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
+		final SeekBar seekControl = (SeekBar) holder.getChildAt(Const.SoundControl.SEEKBAR);
+		final Chronometer chronoControl = (Chronometer) holder.getChildAt(Const.SoundControl.CHRONOMETER);
+		
+		playPause.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+		});
+		
+		seekControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				if(observer != null) observer.stop();
+				observer = null;
+				if(activeSeekbar != null && activeSeekbar != seekBar) activeSeekbar.setProgress(0);
+				if(currentMediaPlayer != null){
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+				}
+				currentMediaPlayer = null;
+				if(activeChronometer != null){
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+				}
+				if(activePlayIcon != null){
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+				}
+				seekBar.setMax(100);
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+		});
+	}
+	
+	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder){
+		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
+		if(sound.exists()){
+			if(currentMediaPlayer == null){
+				
+				play(chronoControl, sound, playPause, seekControl, startOffset);
+				
+			}else{
+				if(currentPlayingPath != null && currentPlayingPath.equals(sound.getAbsolutePath())){
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
+				}else{
+					if(observer != null) observer.stop();
+					observer = null;
+					activeSeekbar.setProgress(0);
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					activePlayIcon.setBackgroundResource(R.drawable.play_button);
+					activeChronometer.stop();
+					activeChronometer.setBase(SystemClock.elapsedRealtime());
+					
+					play(chronoControl, sound, playPause, seekControl, startOffset);
+					
+				}
+			}
+			
+		}else{
+			if(isDownloadingSound){
+				return;
+			}
+			isDownloadingSound = true;
+			totalOfDownload = -1;
+			
+			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+		}
+	}
+	
+	private class MediaObserver implements Runnable {
+		private AtomicBoolean stop = new AtomicBoolean(false);
+
+		public void stop() {
+			stop.set(true);
+		}
+
+		@Override
+		public void run() {
+			while (!stop.get()) {
+				long elapsedMillis = SystemClock.elapsedRealtime() - activeChronometer.getBase();
+				Log.e("LOG", elapsedMillis+" :ELG");
+				activeSeekbar.setProgress((int) elapsedMillis);
+				try {
+					Thread.sleep(33);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	private MediaObserver observer = null;
+	
+	private void play(final Chronometer chronoControl, File sound, final Button playPause, final SeekBar seekControl, final int startOffset){
+		currentMediaPlayer = new MediaPlayer();
+		if (activeChronometer != null) activeChronometer.stop();
+		try {
+			
+			currentMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					seekControl.setMax(mp.getDuration());
+					if(startOffset != 0) {
+						double offset = (((double)seekControl.getMax() * (double)startOffset) / (double)100);
+						currentMediaPlayer.seekTo((int) offset);
+						chronoControl.setBase((long) (SystemClock.elapsedRealtime() - offset));
+					}
+				}
+			});
+			
+			currentMediaPlayer.setDataSource(sound.getAbsolutePath());
+			currentMediaPlayer.prepare();
+			currentMediaPlayer.start();
+			chronoControl.setBase(SystemClock.elapsedRealtime());
+			chronoControl.start();
+			activeChronometer = chronoControl;
+			activeSeekbar = seekControl;
+			
+			observer = new MediaObserver();
+			new Thread(observer).start();
+			
+			currentMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					observer.stop();
+				    activeSeekbar.setProgress(0);
+					currentPlayingPath = null;
+					currentMediaPlayer.stop();
+					currentMediaPlayer.release();
+					currentMediaPlayer = null;
+					chronoControl.stop();
+					chronoControl.setBase(SystemClock.elapsedRealtime());
+					playPause.setBackgroundResource(R.drawable.play_button);
+				}
+			});
+			
+			currentPlayingPath = sound.getAbsolutePath();
+			playPause.setBackgroundResource(R.drawable.pause_button);
+			activePlayIcon = playPause;
+		} catch (IOException e) {
+			e.printStackTrace();
+			currentMediaPlayer = null;
+		}
+	}
+	
+	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId){
+		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
+		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
+		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
+		pbLoading.setVisibility(View.VISIBLE);
+		pbLoadingBar.setVisibility(View.VISIBLE);
+		percentTv.setVisibility(View.VISIBLE);
+		playPause.setVisibility(View.INVISIBLE);
+		seekControl.setVisibility(View.INVISIBLE);
+		chronoControl.setVisibility(View.INVISIBLE);
+		new FileManageApi().downloadFileToFile(sound, fileId, false, mContext, new ApiCallback<String>() {
+			
+			@Override
+			public void onApiResponse(Result<String> result) {
+				pbLoading.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setVisibility(View.INVISIBLE);
+				pbLoadingBar.setProgress(0);
+				percentTv.setVisibility(View.INVISIBLE);
+				percentTv.setText("0%");
+				playPause.setVisibility(View.VISIBLE);
+				seekControl.setVisibility(View.VISIBLE);
+				chronoControl.setVisibility(View.VISIBLE);
+				
+				isDownloadingSound = false;
+			}
+		}, new ProgressBarListeners() {
+			
+			@Override
+			public void onSetMax(long total) {
+				if(totalOfDownload == -1) {
+					totalOfDownload = total;
+					pbLoadingBar.setMax((int) totalOfDownload);
+				}
+			}
+			
+			@Override
+			public void onProgress(long current) {
+				if(totalOfDownload != -1){
+					pbLoadingBar.setProgress((int) current);
+					final String percent = String.valueOf(((int)(100 * current / (double)totalOfDownload)));
+					((Activity)mContext).runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							percentTv.setText(String.valueOf(percent + "%"));	
+						}
+					});
+				}
+			}
+			
+			@Override
+			public void onFinish() {}
+		});
+	}
+    //***************************
 }

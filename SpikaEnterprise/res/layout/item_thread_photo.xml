@@ -1,51 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <RelativeLayout
         android:id="@+id/relative_layout_thread_item_holder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp" >
 
-        <ImageView
-            android:id="@+id/image_view_user"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            tools:src="@drawable/default_user_image" />
-
-        <RelativeLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/text_view_user"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/image_view_user"
-            android:layout_toRightOf="@id/image_view_user">
+            android:layout_alignLeft="@+id/messageRl"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/text_gray_image"
+            android:textSize="12sp"
+            tools:text="Stiven Spilberg" />
 
-            <TextView
-                android:id="@+id/text_view_user"
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/image_view_user"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_below="@id/text_view_user"
+            android:layout_marginLeft="10dp"
+            android:contentDescription="@null"
+            android:src="@drawable/default_user_image" />
+
+        <LinearLayout
+            android:id="@+id/messageRl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/image_view_user"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/image_view_user"
+            android:gravity="left"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="left"
+                android:background="@drawable/shape_you_chat_bubble"
+                android:orientation="vertical" >
+
+                <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                    android:id="@+id/image_view_photo"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop" />
+            </LinearLayout>
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/timeThread"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_gray_image"
-                android:textSize="14sp"
-                tools:text="Stiven Spilberg" />
-
-            <ImageView
-                android:id="@+id/image_view_photo"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:layout_below="@id/text_view_user"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="5dp"
-                android:padding="5dp"
-                android:scaleType="centerCrop" />
-
-        </RelativeLayout>
-
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/text_time_gray"
+                android:textSize="13sp" />
+        </LinearLayout>
     </RelativeLayout>
-
 
 </RelativeLayout>

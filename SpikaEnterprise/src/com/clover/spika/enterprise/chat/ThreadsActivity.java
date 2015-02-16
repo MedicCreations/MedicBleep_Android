@@ -2,10 +2,13 @@ package com.clover.spika.enterprise.chat;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
+import com.clover.spika.enterprise.chat.adapters.MessagesAdapter.OnMessageLongAndSimpleClickCustomListener;
 import com.clover.spika.enterprise.chat.adapters.ThreadsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.ChatApi;
@@ -13,13 +16,14 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
-        ApiCallback<Integer> {
+        ApiCallback<Integer>, OnMessageLongAndSimpleClickCustomListener {
 
     public static final String EXTRA_USER_ID = "com.clover.spika.enterprise.extra_user_id";
     public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
@@ -47,7 +51,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     private String mRootId;
     private String mMessageId;
     private String mUserId;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +68,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
             chatListView.setOnItemClickListener(this);
             chatListView.setOnItemLongClickListener(this);
-            chatListView.setAdapter(new ThreadsAdapter(this));
+            ThreadsAdapter adapter = new ThreadsAdapter(this);
+            adapter.setListener(this);
+            chatListView.setAdapter(adapter);
         }
     }
 
@@ -90,6 +96,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
                             break;
                         }
                     }
+                    
+                    findViewById(R.id.mainContent).setBackgroundColor(Color.WHITE);
                 }
             }
         });
@@ -176,6 +184,21 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
             }
         }
         return true;
+    }
+    
+    @Override
+    public void onLongClick(Message message) {
+		mMessageId = message.getId();
+		if (message.isMe()) {
+			deleteMessage(message.getId());
+		}
+    }
+    
+    @Override
+    public void onSimpleClick(Message message, int position) {
+    	ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+        threadsAdapter.setSelectedItem(position);
+        mMessageId = threadsAdapter.getItem(position).getMessage().getId();
     }
 
     public void onApiResponse(Result<Integer> result) {
