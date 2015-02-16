@@ -39,7 +39,7 @@ public class ChooseCategoryActivity extends BaseActivity {
 		fTrans.commit();
 
 		TextView screenTitle = (TextView) findViewById(R.id.screenTitle);
-		screenTitle.setText(R.string.choose_category);
+		screenTitle.setText(R.string.select_category);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 

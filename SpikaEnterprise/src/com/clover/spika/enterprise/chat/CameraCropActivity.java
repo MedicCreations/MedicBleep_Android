@@ -53,8 +53,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	Bitmap croppedImage;
 
 	// thumbnail width and height
-	private static final int THUMB_WIDTH = 100;
-	private static final int THUMB_HEIGHT = 100;
+	private static final int THUMB_WIDTH = 140;
+	private static final int THUMB_HEIGHT = 140;
 	// compressed max size
 	private static final double MAX_SIZE = 640;
 

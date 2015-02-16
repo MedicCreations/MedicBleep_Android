@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 
 public class ShowProfileActivity extends BaseActivity implements OnClickListener {
 
@@ -67,15 +68,11 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		saveProfile.setText(getString(R.string.edit));
 		findViewById(R.id.cancelProfile).setOnClickListener(this);
 
-		View header = fillHeader(getLayoutInflater());
-		listViewDetail.addHeaderView(header);
-
 		if (!isMyProfile)
 			saveProfile.setVisibility(View.GONE);
-
 	}
 
-	private View fillHeader(LayoutInflater inflater) {
+	private View fillHeader(LayoutInflater inflater, UserWrapper user) {
 		View rootView = inflater.inflate(R.layout.header_in_profile_settings, null, false);
 
 		String firstName = getIntent().getStringExtra(Const.FIRSTNAME);
@@ -88,16 +85,20 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		} else {
 			((TextView) rootView.findViewById(R.id.name)).setText(firstName + " " + lastName);
 		}
-		((TextView) rootView.findViewById(R.id.company)).setText("Company");
+		((TextView) rootView.findViewById(R.id.company)).setText(user.getUser().getOrganization().getName());
 
 		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 
+		((RoundImageView) profileImage).setBorderColor(getResources().getColor(R.color.light_light_gray));
 		getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_USER_IMAGE);
 
 		return rootView;
 	}
 
 	protected void setData(UserWrapper user) {
+		View header = fillHeader(getLayoutInflater(), user);
+		listViewDetail.addHeaderView(header);
+
 		adapter = new UserDetailsAdapter(this, user.getUserDetailList(), user.getUser().getDetails(), true);
 		adapter.setShowNotEdit(true);
 

@@ -98,7 +98,6 @@ public class GroupsAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.groupImage.setImageDrawable(null);
-
 		GlobalModel item = getItem(position);
 
 		imageLoaderSpice.displayImage(holder.groupImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_GROUP_IMAGE);

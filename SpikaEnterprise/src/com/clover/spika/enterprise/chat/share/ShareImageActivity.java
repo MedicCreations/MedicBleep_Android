@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.clover.spika.enterprise.chat.CameraCropActivity;
+import com.clover.spika.enterprise.chat.CameraFullPhotoActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 
@@ -19,7 +19,7 @@ public class ShareImageActivity extends BaseActivity {
 		
 		Log.e("LOG", uri.toString());
 		
-		startActivity(new Intent(this, CameraCropActivity.class)
+		startActivity(new Intent(this, CameraFullPhotoActivity.class)
 				.putExtra(Const.INTENT_TYPE, Const.SHARE_INTENT)
 				.putExtra(Intent.EXTRA_STREAM, (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM))
 				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

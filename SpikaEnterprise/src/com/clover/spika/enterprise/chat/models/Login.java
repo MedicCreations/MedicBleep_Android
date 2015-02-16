@@ -3,73 +3,22 @@ package com.clover.spika.enterprise.chat.models;
 import java.util.List;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class Login extends BaseModel {
 
-	@SerializedName("user_id")
-	@Expose
-	private String _userId;
-
-	@SerializedName("token")
-	@Expose
-	private String _token;
-
-	@SerializedName("image")
-	@Expose
-	private String _image;
-
-	@SerializedName("firstname")
-	@Expose
-	private String _firstname;
-
-	@SerializedName("lastname")
-	@Expose
-	private String _lastname;
-
-	@SerializedName("organizations")
-	@Expose
-	private List<Organization> organizations;
+	public String user_id;
+	public String token;
+	public String image;
+	public String firstname;
+	public String lastname;
+	public List<Organization> organizations;
 
 	public String getUserId() {
-		return _userId == null ? "" : _userId;
-	}
-
-	public void setUserId(String userId) {
-		this._userId = userId;
+		return user_id == null ? "" : user_id;
 	}
 
 	public String getToken() {
-		return _token == null ? "" : _token;
-	}
-
-	public void setToken(String token) {
-		this._token = token;
-	}
-
-	public String getImage() {
-		return _image;
-	}
-
-	public void setImage(String image) {
-		this._image = image;
-	}
-
-	public String getFirstname() {
-		return _firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this._firstname = firstname;
-	}
-
-	public String getLastname() {
-		return _lastname;
-	}
-
-	public void setLastname(String lastname) {
-		this._lastname = lastname;
+		return token == null ? "" : token;
 	}
 
 	@Override
@@ -83,32 +32,24 @@ public class Login extends BaseModel {
 
 		Login login = (Login) o;
 
-		if (_token != null ? !_token.equals(login._token) : login._token != null)
+		if (token != null ? !token.equals(login.token) : login.token != null)
 			return false;
-		if (_userId != null ? !_userId.equals(login._userId) : login._userId != null)
+		if (user_id != null ? !user_id.equals(login.user_id) : login.user_id != null)
 			return false;
 
 		return true;
 	}
 
-	public List<Organization> getOrganizations() {
-		return organizations;
-	}
-
-	public void setOrganizations(List<Organization> organizations) {
-		this.organizations = organizations;
-	}
-
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + (_userId != null ? _userId.hashCode() : 0);
-		result = 31 * result + (_token != null ? _token.hashCode() : 0);
+		result = 31 * result + (user_id != null ? user_id.hashCode() : 0);
+		result = 31 * result + (token != null ? token.hashCode() : 0);
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "Login{" + "userId='" + _userId + '\'' + ", token='" + _token + '\'' + "} " + super.toString();
+		return "Login{" + "userId='" + user_id + '\'' + ", token='" + token + '\'' + "} " + super.toString();
 	}
 }

@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBarLayout"
-        android:background="@android:color/white" >
+        android:background="@color/default_blue_light" >
 
         <ListView
             android:id="@+id/main_list_view"

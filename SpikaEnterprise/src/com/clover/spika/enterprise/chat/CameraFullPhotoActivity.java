@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,22 +37,17 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
 public class CameraFullPhotoActivity extends BaseActivity implements OnClickListener {
 
 	// thumbnail width and height
-	private static final int THUMB_WIDTH = 100;
-	private static final int THUMB_HEIGHT = 100;
+	private static final int THUMB_WIDTH = 140;
+	private static final int THUMB_HEIGHT = 140;
 	// compressed max size
 	private static final double MAX_SIZE = 640;
 
@@ -101,7 +103,16 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
 	@SuppressLint("InlinedApi")
 	private void getImageIntents() {
-		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
+		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.SHARE_INTENT)) {
+			Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+			if (uri.toString().contains("file://")) {
+				String selected_image_path = uri.toString().substring(7);
+				onPhotoTaken(selected_image_path);
+			} else {
+				String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
+				onPhotoTaken(selected_image_path);
+			}
+		} else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
 			if (mIsOverJellyBean) {
 				Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -113,6 +124,9 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				intent.setAction(Intent.ACTION_GET_CONTENT);
 				this.startActivityForResult(intent, GALLERY);
 			}
+		} else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.PATH_INTENT)) {
+			String path = getIntent().getStringExtra(Const.EXTRA_PATH);
+			onPhotoTaken(path);
 		} else {
 			try {
 				startCamera();
@@ -385,15 +399,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 	}
 
 	private void createThumb(String path, Bitmap b) {
-		int width = THUMB_WIDTH, height = THUMB_HEIGHT;
-
-		if (b.getWidth() > b.getHeight()) {
-			height = (int) ((double) THUMB_WIDTH / (double) ((double) b.getWidth() / (double) b.getHeight()));
-		} else if (b.getWidth() < b.getHeight()) {
-			width = (int) ((double) THUMB_HEIGHT / (double) ((double) b.getHeight() / (double) b.getWidth()));
-		}
-
-		Bitmap sb = Bitmap.createScaledBitmap(b, width, height, true);
+		Bitmap sb = ThumbnailUtils.extractThumbnail(b, THUMB_WIDTH, THUMB_HEIGHT);
 		saveBitmapToFile(sb, path);
 	}
 
@@ -438,6 +444,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 					}
 				});
 			} else {
+				resizeTo1280();
 				prepareFileForUpload();
 			}
 		} else if (id == R.id.btnCancel) {
@@ -456,6 +463,10 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		int dstHeight = (int) (curHeight * resizeCoefficient);
 
 		mBitmap = Bitmap.createScaledBitmap(mBitmap, dstWidth, dstHeight, false);
+	}
+
+	void resizeTo1280() {
+		mBitmap = Utils.scaleBitmapTo1280(mFilePath, 1280);
 	}
 
 	void prepareFileForUpload() {
@@ -497,7 +508,11 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
 
-					if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)) {
+					if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.SHARE_INTENT)) {
+						// update user
+						ChooseLobbyActivity.start(CameraFullPhotoActivity.this, fileId, result.getResultData().getFileId());
+						finish();
+					} else if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)) {
 						// get fileid and thumbid for create room
 						Helper.setRoomFileId(getApplicationContext(), fileId);
 						Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());

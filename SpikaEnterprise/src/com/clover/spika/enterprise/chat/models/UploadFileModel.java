@@ -1,21 +1,17 @@
 package com.clover.spika.enterprise.chat.models;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
-public class UploadFileModel extends BaseModel{
+public class UploadFileModel extends BaseModel {
 
-    @SerializedName("file_id")
-    @Expose
-    private String fileId;
-    
+	private String file_id;
+
 	public String getFileId() {
-		return fileId;
+		return file_id;
 	}
 
 	public void setFileId(String fileId) {
-		this.fileId = fileId;
+		this.file_id = fileId;
 	}
 
 }

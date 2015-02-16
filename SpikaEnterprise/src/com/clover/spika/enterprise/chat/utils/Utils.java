@@ -59,6 +59,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
+
 /**
  * Utils
  * 
@@ -530,6 +533,99 @@ public class Utils {
 		// bmOptions.inPurgeable = true;
 
 		return BitmapFactory.decodeFile(photoPath, bmOptions);
+	}
+
+	public static Bitmap scaleBitmapTo1280(String path, int imageSizeMax) {
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		BitmapFactory.Options imageOptions = new BitmapFactory.Options();
+		imageOptions.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(inputStream, null, imageOptions);
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Bitmap bitmap;
+		try {
+			inputStream = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		float imageScaleWidth = (float) imageOptions.outWidth / imageSizeMax;
+		float imageScaleHeight = (float) imageOptions.outHeight / imageSizeMax;
+
+		if (imageScaleWidth > 2 && imageScaleHeight > 2) {
+			BitmapFactory.Options imageOptions2 = new BitmapFactory.Options();
+
+			int imageScale = (int) Math.floor((imageScaleWidth > imageScaleHeight ? imageScaleHeight : imageScaleWidth));
+
+			for (int i = 2; i < imageScale; i *= 2) {
+				imageOptions2.inSampleSize = i;
+			}
+
+			bitmap = BitmapFactory.decodeStream(inputStream, null, imageOptions2);
+		} else {
+			bitmap = BitmapFactory.decodeStream(inputStream);
+		}
+
+		double destWidth = imageSizeMax;
+		double destHeight = imageSizeMax;
+
+		if (bitmap.getWidth() > bitmap.getHeight()) {
+			destHeight = (double) bitmap.getHeight() / ((double) bitmap.getWidth() / (double) 1280);
+		} else if (bitmap.getWidth() < bitmap.getHeight()) {
+			destWidth = (double) bitmap.getWidth() / ((double) bitmap.getHeight() / (double) 1280);
+		}
+
+		Bitmap output = Bitmap.createScaledBitmap(bitmap, (int) destWidth, (int) destHeight, false);
+
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
+
+	public static void phoneIntent(Context c, String tel) {
+		try {
+			String uri = "tel:" + tel;
+			Intent intentPhoneDoc = new Intent(Intent.ACTION_DIAL);
+			intentPhoneDoc.setData(Uri.parse(uri));
+			c.startActivity(intentPhoneDoc);
+		} catch (ActivityNotFoundException e) {
+			AppDialog dialog = new AppDialog(c, false);
+			dialog.setInfo(c.getString(R.string.aplication_for_calling_mail_did_t_found));
+		}
+	}
+
+	public static void emailIntent(Context c, String email, String message, String subject) {
+		try {
+			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null));
+			if (subject != null)
+				emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+			if (message != null)
+				emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+			c.startActivity(Intent.createChooser(emailIntent, "Send email..."));
+		} catch (ActivityNotFoundException e) {
+			AppDialog dialog = new AppDialog(c, false);
+			dialog.setInfo(c.getString(R.string.aplication_for_sending_mail_did_t_found));
+		}
 	}
 
 }

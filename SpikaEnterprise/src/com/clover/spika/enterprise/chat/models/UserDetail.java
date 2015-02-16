@@ -1,37 +1,17 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
 public class UserDetail implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("id")
-	@Expose
-	private int id;
-
-	@SerializedName("key")
-	@Expose
-	private String key;
-
-	@SerializedName("label")
-	@Expose
-	private String label;
-
-	@SerializedName("keyboard_type")
-	@Expose
-	private int keyboard_type;
-
-	@SerializedName("value")
-	@Expose
-	private String value;
-
-	@SerializedName("public_value")
-	@Expose
-	private boolean public_value;
+	public int id;
+	public String key;
+	public String label;
+	public int keyboard_type;
+	public String value;
+	public boolean public_value;
 
 	private int position;
 

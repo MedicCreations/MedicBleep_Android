@@ -131,6 +131,12 @@ public class RecentAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.recentImage.setImageDrawable(null);
+		
+		if(getItem(position).getType() == Const.C_PRIVATE){
+			defaultImage = R.drawable.default_user_image;
+		}else{
+			defaultImage = R.drawable.default_group_image;
+		}
 
 		Chat item = getItem(position);
 

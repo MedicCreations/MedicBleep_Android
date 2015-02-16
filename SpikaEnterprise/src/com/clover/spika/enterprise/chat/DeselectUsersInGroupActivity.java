@@ -114,7 +114,7 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 				}
 			}
 
-			User finalUser = new User(item.getId(), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false, null, toCheck);
+			User finalUser = new User(item.getId(), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false, null, toCheck, item.getOrganization());
 
 			GlobalModel finalModel = new GlobalModel();
 			finalModel.setType(Type.USER);

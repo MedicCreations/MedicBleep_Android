@@ -49,7 +49,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 	public void setStickersList(List<Stickers> stickersList, Context c, SelectEmojiListener lis){
 		this.stickersList.addAll(stickersList);
 		StickersHolder holder = new StickersHolder();
-		holder.setStickersList(stickersList);
+		holder.stickers = stickersList;
 		int number = 1 + stickersList.size() / 8;
 		viewPager.setAdapter(new EmojiPageAdapter(((BaseActivity)c).getSupportFragmentManager(), number, holder, lis));
 		

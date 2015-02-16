@@ -89,6 +89,24 @@ public class ChatActivity extends BaseChatActivity {
 				return true;
 			}
 		});
+		
+		adapter.setOnLongAndSimpleClickCustomListener(new MessagesAdapter.OnMessageLongAndSimpleClickCustomListener() {
+			
+			@Override
+			public void onLongClick(Message message) {
+				if (message.isMe()) {
+					deleteMessage(message.getId());
+				}
+			}
+
+			@Override
+			public void onSimpleClick(Message message) {
+				if (message.getType() != Const.MSG_TYPE_DELETED) {
+					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
+				}
+			}
+		});
 
 		isOnCreate = true;
 
@@ -104,7 +122,11 @@ public class ChatActivity extends BaseChatActivity {
 		});
 
 	}
-
+	
+	public void setIsResume(boolean isResume){
+		this.isResume = isResume;
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();

@@ -119,8 +119,8 @@ public class LobbyGroupsFragment extends CustomFragment implements OnItemClickLi
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getGroupsLobby().getTotalCount();
-					setData(result.getResultData().getGroupsLobby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().groups.getTotalCount();
+					setData(result.getResultData().groups.getChatsList(), toClear);
 				}
 			}
 		});
@@ -132,7 +132,7 @@ public class LobbyGroupsFragment extends CustomFragment implements OnItemClickLi
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password);
 		}
 	}
 

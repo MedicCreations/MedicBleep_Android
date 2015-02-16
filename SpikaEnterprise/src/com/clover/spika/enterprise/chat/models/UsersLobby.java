@@ -1,39 +1,31 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class UsersLobby {
 
-	@SerializedName("total_count")
-	@Expose
-	private int totalCount;
-
-	@SerializedName("user_chats")
-	@Expose
-	private List<Chat> chatsList;
+	public int total_count;
+	public List<Chat> user_chats;
 
 	public UsersLobby() {
-		chatsList = new ArrayList<Chat>();
+		user_chats = new ArrayList<Chat>();
 	}
 
 	public int getTotalCount() {
-		return totalCount;
+		return total_count;
 	}
 
 	public void setTotalCount(int totalCount) {
-		this.totalCount = totalCount;
+		this.total_count = totalCount;
 	}
 
 	public List<Chat> getChatsList() {
-		return chatsList;
+		return user_chats;
 	}
 
 	public void setChatsList(List<Chat> chatsList) {
-		this.chatsList = chatsList;
+		this.user_chats = chatsList;
 	}
 
 }

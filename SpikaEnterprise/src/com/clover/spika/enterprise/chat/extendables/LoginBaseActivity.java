@@ -173,7 +173,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(), result.getToken());
+					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.firstname, result.lastname, result.getToken());
 
 					new GoogleUtils().getPushToken(LoginBaseActivity.this);
 

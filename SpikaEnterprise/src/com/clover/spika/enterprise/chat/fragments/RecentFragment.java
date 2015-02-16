@@ -63,7 +63,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
@@ -89,11 +89,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		if (mainListView == null) {
 			return;
 		}
-		
-		for(Chat item : data){
-			item.setLastMessage(Message.decryptContent(getActivity(), item.getLastMessage()));
+
+		for (Chat item : data) {
+			item.last_message = Message.decryptContent(getActivity(), item.last_message);
 		}
-		
+
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();
@@ -122,7 +122,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		} else {
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
-		
+
 	}
 
 	public void getLobby(int page, final boolean toClear) {
@@ -131,8 +131,8 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getAllLobby().getTotalCount();
-					setData(result.getResultData().getAllLobby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().all_chats.total_count;
+					setData(result.getResultData().all_chats.chats, toClear);
 				}
 			}
 		});
@@ -144,7 +144,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	public void handlePushNotificationInFragment(String chatId) {
 		if (adapter != null) {
 			boolean isFound = adapter.incrementUnread(chatId);
-			if(!isFound){
+			if (!isFound) {
 				mCurrentIndex = 0;
 				getLobby(mCurrentIndex, true);
 			}

@@ -30,6 +30,7 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -62,6 +63,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSortingById;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
 import com.octo.android.robospice.SpiceManager;
 
@@ -87,6 +89,8 @@ public class MessagesAdapter extends BaseAdapter {
 	private Button activePlayIcon = null;
 	private Chronometer activeChronometer = null;
 	private SeekBar activeSeekbar = null;
+	
+	private OnMessageLongAndSimpleClickCustomListener listenerLongAndSimpleClick;
 
 	public MessagesAdapter(SpiceManager manager, Context context, List<Message> arrayList) {
 		this.ctx = context;
@@ -204,8 +208,10 @@ public class MessagesAdapter extends BaseAdapter {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getFile_id());
 						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
 					}
 				});
+				holder.meViewImage.setOnLongClickListener(setLongClickListener(msg));
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
 
 				holder.meFlForGif.setVisibility(View.VISIBLE);
@@ -228,9 +234,12 @@ public class MessagesAdapter extends BaseAdapter {
 						intent.putExtra(Const.IMAGE, msg.getText());
 						intent.putExtra(Const.TYPE, msg.getType());
 						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
 					}
 				});
-
+				
+				holder.meGifView.setOnLongClickListener(setLongClickListener(msg));
+				
 			} else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 				holder.meWatchVideo.setVisibility(View.VISIBLE);
 				holder.meWatchVideo.setOnClickListener(new OnClickListener() {
@@ -242,6 +251,8 @@ public class MessagesAdapter extends BaseAdapter {
 						ctx.startActivity(intent);
 					}
 				});
+				
+				holder.meWatchVideo.setOnLongClickListener(setLongClickListener(msg));
 			} else if (msg.getType() == Const.MSG_TYPE_LOCATION) {
 				holder.meViewLocation.setVisibility(View.VISIBLE);
 				holder.meViewLocation.setOnClickListener(new OnClickListener() {
@@ -258,12 +269,15 @@ public class MessagesAdapter extends BaseAdapter {
 						}
 					}
 				});
+				holder.meViewLocation.setOnLongClickListener(setLongClickListener(msg));
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
 
 				resetVoiceControls(holder.meListenSound);
 				holder.meListenSound.setVisibility(View.VISIBLE);
 				setVoiceControls(msg, holder.meListenSound);
-
+				
+				holder.meListenSound.setOnLongClickListener(setLongClickListener(msg));
+				
 			} else if (msg.getType() == Const.MSG_TYPE_FILE) {
 
 				holder.meDownloadFile.setVisibility(View.VISIBLE);
@@ -279,6 +293,8 @@ public class MessagesAdapter extends BaseAdapter {
 						}
 					}
 				});
+				
+				holder.meDownloadFile.setOnLongClickListener(setLongClickListener(msg));
 
 			} else if (msg.getType() == Const.MSG_TYPE_DELETED) {
 				holder.meMsgContent.setVisibility(View.VISIBLE);
@@ -288,7 +304,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
-				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_root_white);
+				holder.meThreadIndicator.setImageResource(R.drawable.right_thread_arrow);
 			} else if (msg.getRootId() > 0) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
 				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
@@ -359,6 +375,7 @@ public class MessagesAdapter extends BaseAdapter {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getFile_id());
 						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
@@ -383,6 +400,7 @@ public class MessagesAdapter extends BaseAdapter {
 						intent.putExtra(Const.IMAGE, msg.getText());
 						intent.putExtra(Const.TYPE, msg.getType());
 						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
 					}
 				});
 
@@ -448,7 +466,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
 				holder.youThreadIndicator.setVisibility(View.VISIBLE);
-				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_root);
+				holder.youThreadIndicator.setImageResource(R.drawable.left_thread_arrow);
 			} else if (msg.getRootId() > 0) {
 				holder.youThreadIndicator.setVisibility(View.VISIBLE);
 				holder.youThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
@@ -490,10 +508,38 @@ public class MessagesAdapter extends BaseAdapter {
 		} else {
 			convertView.setPadding(0, 0, 0, 0);
 		}
+		
+		convertView.setOnLongClickListener(new View.OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if(listenerLongAndSimpleClick != null) listenerLongAndSimpleClick.onLongClick(msg);
+				return false;
+			}
+		});
+		
+		convertView.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(listenerLongAndSimpleClick != null) listenerLongAndSimpleClick.onSimpleClick(msg);
+			}
+		});
 
 		return convertView;
 	}
-
+	
+	private OnLongClickListener setLongClickListener(final Message msg){
+		return new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if(listenerLongAndSimpleClick != null) listenerLongAndSimpleClick.onLongClick(msg);
+				return false;
+			}
+		};
+	}
+	
 	private void resetVoiceControls(RelativeLayout holder) {
 		Button playPause = (Button) holder.getChildAt(Const.SoundControl.PLAY_BUTTON);
 		playPause.setBackgroundResource(R.drawable.play_button);
@@ -769,6 +815,8 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean isMe(String userId) {
 
+		Log.d("Vida", "USER1: " + userId);
+		Log.d("Vida", "USER2: " + Helper.getUserId(ctx));
 		if (Helper.getUserId(ctx).equals(userId)) {
 			return true;
 		}
@@ -934,7 +982,16 @@ public class MessagesAdapter extends BaseAdapter {
 			big.setVisible(true, true);
 		}
 	}
-
+	
+	public void setOnLongAndSimpleClickCustomListener(OnMessageLongAndSimpleClickCustomListener lis) {
+		listenerLongAndSimpleClick = lis;
+	}
+	
+	public interface OnMessageLongAndSimpleClickCustomListener{
+		public void onLongClick(Message message);
+		public void onSimpleClick(Message message);
+	}
+	
 	public class ViewHolderChatMsg {
 
 		// start: message item for my message
@@ -1027,7 +1084,9 @@ public class MessagesAdapter extends BaseAdapter {
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
 			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
-
+		
+			((RoundImageView)profileImage).setBorderColor(ctx.getResources().getColor(R.color.light_light_gray));
+			
 			youFlForGif = (FrameLayout) view.findViewById(R.id.youFlForWebView);
 			youGifView = (ImageView) view.findViewById(R.id.youGifView);
 			// end: you msg
@@ -1042,4 +1101,5 @@ public class MessagesAdapter extends BaseAdapter {
 			// end: date separator
 		}
 	}
+
 }

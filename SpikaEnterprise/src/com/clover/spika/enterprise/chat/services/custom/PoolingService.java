@@ -43,10 +43,10 @@ public class PoolingService extends Service {
 
 				if (result.isSuccess()) {
 
-					List<LocalPush> data = result.getResultData().getChats();
+					List<LocalPush> data = result.getResultData().chats;
 
 					for (LocalPush push : data) {
-						PushHandle.handlePushNotification(push.getChatId(), push.getOrganizationId(), push.getFirstName(), push.getPassword(), String.valueOf(push.getType()), getBaseContext());
+						PushHandle.handlePushNotification(push.chat_id, push.organization_id, push.firstname, push.password, String.valueOf(push.type), getBaseContext());
 					}
 				}
 

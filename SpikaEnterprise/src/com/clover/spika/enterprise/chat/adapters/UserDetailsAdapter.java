@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.http.util.TextUtils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnDismissDialogListene
 import com.clover.spika.enterprise.chat.models.HelperModel;
 import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class UserDetailsAdapter extends BaseAdapter {
 
@@ -144,6 +146,28 @@ public class UserDetailsAdapter extends BaseAdapter {
 		
 		if(isShowNotEdit){
 			((View) holder.switchDetailPublic.getParent()).setVisibility(View.GONE);
+			if(userDetail.getKey().equals("email")){
+				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
+				holder.editValue.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Utils.emailIntent(mContext, userDetail.getValue(), "", "");
+					}
+				});
+			}else if(userDetail.getKey().equals("mobile_number") || userDetail.getKey().equals("phone_number")){
+				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
+				holder.editValue.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Utils.phoneIntent(mContext, userDetail.getValue());
+					}
+				});
+			}else{
+				holder.editValue.setTextColor(Color.BLACK);
+				holder.editValue.setOnClickListener(null);
+			}
 		}else{
 			holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 			((View) holder.switchDetailPublic.getParent()).setVisibility(View.VISIBLE);

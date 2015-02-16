@@ -131,8 +131,8 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getAllLobby().getTotalCount();
-					setData(result.getResultData().getAllLobby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().all_chats.total_count;
+					setData(result.getResultData().all_chats.chats, toClear);
 				}
 			}
 		});
@@ -204,7 +204,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 				handleProgress(false);
 
 				if (result == Const.API_SUCCESS) {
-					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.getPassword());
+					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.password);
 				} else {
 					AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
 					dialog.setFailed(result);

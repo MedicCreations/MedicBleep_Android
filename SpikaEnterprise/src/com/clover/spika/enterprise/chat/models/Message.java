@@ -7,67 +7,32 @@ import android.os.Parcelable;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Parcelable {
 
-	private boolean isMe = false;
-	private boolean isFailed = false;
+	public boolean isMe = false;
+	public boolean isFailed = false;
+	public String id;
+	public String chat_id;
+	public String user_id;
+	public String firstname;
+	public String lastname;
+	public String image;
+	public String text;
+	public String file_id;
+	public String thumb_id;
+	public String longitude;
+	public String latitude;
+	public int type;
+	public String created;
+	public String modified;
+	public int root_id;
+	public int parent_id;
+	public String child_list;
+	public String image_thumb;
 
-	@SerializedName("id")
-	private String id;
-
-	@SerializedName("chat_id")
-	private String chat_id;
-
-	@SerializedName("user_id")
-	private String user_id;
-
-	@SerializedName("firstname")
-	private String firstname;
-
-	@SerializedName("lastname")
-	private String lastname;
-
-	@SerializedName("image")
-	private String image;
-
-	@SerializedName("text")
-	private String text;
-
-	@SerializedName("file_id")
-	private String file_id;
-
-	@SerializedName("thumb_id")
-	private String thumb_id;
-
-	@SerializedName("longitude")
-	private String longitude;
-
-	@SerializedName("latitude")
-	private String latitude;
-
-	@SerializedName("type")
-	private int type;
-
-	@SerializedName("created")
-	private String created;
-
-	@SerializedName("modified")
-	private String modified;
-
-	@SerializedName("root_id")
-	private int rootId;
-
-	@SerializedName("parent_id")
-	private int parentId;
-
-	@SerializedName("child_list")
-	private String childListText;
-	
-	@SerializedName("image_thumb")
-	private String imageThumb;
-	
 	private int textWidth = -1;
 	private int timeWidth = -1;
 
@@ -211,25 +176,25 @@ public class Message implements Parcelable {
 	}
 
 	public int getRootId() {
-		return rootId;
+		return root_id;
 	}
 
 	public int getParentId() {
-		return parentId;
+		return parent_id;
 	}
 
 	public String getChildListText() {
-		return childListText;
+		return child_list;
 	}
-	
+
 	public String getImageThumb() {
-		return imageThumb;
+		return image_thumb;
 	}
 
 	public void setImageThumb(String imageThumb) {
-		this.imageThumb = imageThumb;
+		this.image_thumb = imageThumb;
 	}
-	
+
 	public int getTextWidth() {
 		return textWidth;
 	}
@@ -259,15 +224,15 @@ public class Message implements Parcelable {
 			return false;
 		if (isMe != message.isMe)
 			return false;
-		if (parentId != message.parentId)
+		if (parent_id != message.parent_id)
 			return false;
-		if (rootId != message.rootId)
+		if (root_id != message.root_id)
 			return false;
 		if (type != message.type)
 			return false;
 		if (chat_id != null ? !chat_id.equals(message.chat_id) : message.chat_id != null)
 			return false;
-		if (childListText != null ? !childListText.equals(message.childListText) : message.childListText != null)
+		if (child_list != null ? !child_list.equals(message.child_list) : message.child_list != null)
 			return false;
 		if (created != null ? !created.equals(message.created) : message.created != null)
 			return false;
@@ -315,9 +280,9 @@ public class Message implements Parcelable {
 		result = 31 * result + type;
 		result = 31 * result + (created != null ? created.hashCode() : 0);
 		result = 31 * result + (modified != null ? modified.hashCode() : 0);
-		result = 31 * result + rootId;
-		result = 31 * result + parentId;
-		result = 31 * result + (childListText != null ? childListText.hashCode() : 0);
+		result = 31 * result + root_id;
+		result = 31 * result + parent_id;
+		result = 31 * result + (child_list != null ? child_list.hashCode() : 0);
 		return result;
 	}
 
@@ -326,7 +291,7 @@ public class Message implements Parcelable {
 		return "Message{" + "isMe=" + isMe + ", isFailed=" + isFailed + ", id='" + id + '\'' + ", chat_id='" + chat_id + '\'' + ", user_id='" + user_id + '\'' + ", firstname='"
 				+ firstname + '\'' + ", lastname='" + lastname + '\'' + ", image='" + image + '\'' + ", text='" + text + '\'' + ", file_id='" + file_id + '\'' + ", thumb_id='"
 				+ thumb_id + '\'' + ", longitude='" + longitude + '\'' + ", latitude='" + latitude + '\'' + ", type=" + type + ", created='" + created + '\'' + ", modified='"
-				+ modified + '\'' + ", rootId=" + rootId + ", parentId=" + parentId + ", childListText='" + childListText + '\'' + '}';
+				+ modified + '\'' + ", rootId=" + root_id + ", parentId=" + parent_id + ", childListText='" + child_list + '\'' + '}';
 	}
 
 	public static Message decryptContent(Context ctx, Message msg) {
@@ -392,9 +357,9 @@ public class Message implements Parcelable {
 		dest.writeInt(this.type);
 		dest.writeString(this.created);
 		dest.writeString(this.modified);
-		dest.writeInt(this.rootId);
-		dest.writeInt(this.parentId);
-		dest.writeString(this.childListText);
+		dest.writeInt(this.root_id);
+		dest.writeInt(this.parent_id);
+		dest.writeString(this.child_list);
 	}
 
 	private Message(Parcel in) {
@@ -414,9 +379,9 @@ public class Message implements Parcelable {
 		this.type = in.readInt();
 		this.created = in.readString();
 		this.modified = in.readString();
-		this.rootId = in.readInt();
-		this.parentId = in.readInt();
-		this.childListText = in.readString();
+		this.root_id = in.readInt();
+		this.root_id = in.readInt();
+		this.child_list = in.readString();
 	}
 
 	public static final Creator<Message> CREATOR = new Creator<Message>() {

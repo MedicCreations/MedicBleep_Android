@@ -5,80 +5,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class User implements Serializable {
 
-	private static final long serialVersionUID = -3552133443458915941L;
+	private static final long serialVersionUID = 1L;
 
-	@SerializedName("id")
-	@Expose
-	private int id;
+	public int id;
+	public int user_id = 0;
+	public String firstName;
+	public String lastName;
+	public String type;
+	public String image;
+	public String image_thumb;
+	public boolean is_member;
+	public boolean is_admin;
+	public String name;
+	public String groupName;
+	public String chat_id;
+	public int is_user;
+	public int is_group;
+	public int is_room;
+	public List<Map<String, String>> details;
+	public Organization organization;
+	public boolean isSelected = false;
 
-	@SerializedName("user_id")
-	@Expose
-	private int user_id = 0;
-
-	@SerializedName("firstname")
-	@Expose
-	private String firstName;
-
-	@SerializedName("lastname")
-	@Expose
-	private String lastName;
-
-	@SerializedName("type")
-	@Expose
-	private String type;
-
-	@SerializedName("image")
-	@Expose
-	private String image;
-
-	@SerializedName("image_thumb")
-	@Expose
-	private String image_thumb;
-
-	@SerializedName("is_member")
-	@Expose
-	private boolean is_member;
-
-	@SerializedName("is_admin")
-	@Expose
-	private boolean is_admin;
-
-	@SerializedName("name")
-	@Expose
-	private String name;
-
-	@SerializedName("groupname")
-	@Expose
-	private String groupName;
-
-	@SerializedName("chat_id")
-	@Expose
-	private String chat_id;
-
-	@SerializedName("is_user")
-	@Expose
-	private int is_user;
-
-	@SerializedName("is_group")
-	@Expose
-	private int is_group;
-
-	@SerializedName("is_room")
-	@Expose
-	private int is_room;
-
-	@SerializedName("details")
-	@Expose
-	private List<Map<String, String>> details;
-
-	private boolean isSelected = false;
-
-	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected) {
+	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected,
+			Organization org) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -89,6 +40,7 @@ public class User implements Serializable {
 		this.is_member = isMember;
 		this.details = details;
 		this.isSelected = isSelected;
+		organization = org;
 	}
 
 	public int getId() {
@@ -170,6 +122,14 @@ public class User implements Serializable {
 
 	public List<Map<String, String>> getDetails() {
 		return details;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
 	}
 
 	public Map<String, String> getPublicDetails() {

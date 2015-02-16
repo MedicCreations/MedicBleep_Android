@@ -102,7 +102,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 
 				if (result.getCode() == Const.API_SUCCESS) {
 					if (getActivity() instanceof ManageUsersActivity) {
-						((ManageUsersActivity) getActivity()).setNewChat(result.getChat());
+						((ManageUsersActivity) getActivity()).setNewChat(result.chat);
 					}
 					mCurrentIndex = 0;
 					mUserAdapter.clearData();

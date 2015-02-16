@@ -120,8 +120,8 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
 				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getUsersLoby().getTotalCount();
-					setData(result.getResultData().getUsersLoby().getChatsList(), toClear);
+					mTotalCount = result.getResultData().users.getTotalCount();
+					setData(result.getResultData().users.getChatsList(), toClear);
 				}
 			}
 		});
@@ -133,7 +133,7 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password);
 		}
 	}
 

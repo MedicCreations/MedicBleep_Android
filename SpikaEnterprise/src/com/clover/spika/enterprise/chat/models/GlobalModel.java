@@ -4,7 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GlobalModel {
 
@@ -15,10 +15,10 @@ public class GlobalModel {
 		public static final int ALL = 4;
 	}
 
-	private int type;
-	private User user;
-	private Group group;
-	private Chat chat;
+	public int type;
+	public User user;
+	public Group group;
+	public Chat chat;
 
 	public GlobalModel() {
 	}
@@ -26,7 +26,7 @@ public class GlobalModel {
 	public GlobalModel(JSONObject object) {
 
 		try {
-			setType(object.getInt(Const.TYPE));
+			type = object.getInt(Const.TYPE);
 			setModel(object);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -35,12 +35,12 @@ public class GlobalModel {
 
 	public Object getModel() {
 
-		if (getType() == Type.USER) {
-			return getUser();
-		} else if (getType() == Type.GROUP) {
-			return getGroup();
-		} else if (getType() == Type.CHAT) {
-			return getChat();
+		if (type == Type.USER) {
+			return user;
+		} else if (type == Type.GROUP) {
+			return group;
+		} else if (type == Type.CHAT) {
+			return chat;
 		}
 
 		return null;
@@ -52,21 +52,20 @@ public class GlobalModel {
 
 		try {
 
-			if (getType() == Type.USER) {
+			if (type == Type.USER) {
 
 				model = object.getJSONObject(Const.USER);
-				setUser(new Gson().fromJson(model.toString(), User.class));
+				user = new ObjectMapper().readValue(model.toString(), User.class);
 
-			} else if (getType() == Type.GROUP) {
+			} else if (type == Type.GROUP) {
 
 				model = object.getJSONObject(Const.GROUP);
-				setGroup(new Gson().fromJson(model.toString(), Group.class));
+				group = new ObjectMapper().readValue(model.toString(), Group.class);
 
-			} else if (getType() == Type.CHAT) {
+			} else if (type == Type.CHAT) {
 
 				model = object.getJSONObject(Const.CHAT);
-				setChat(new Gson().fromJson(model.toString(), Chat.class));
-
+				chat = new ObjectMapper().readValue(model.toString(), Chat.class);
 			}
 
 		} catch (Exception e) {
@@ -76,12 +75,12 @@ public class GlobalModel {
 
 	public int getId() {
 
-		if (getType() == Type.USER) {
-			return getUser().getId();
-		} else if (getType() == Type.GROUP) {
-			return getGroup().getId();
-		} else if (getType() == Type.CHAT) {
-			return getChat().getId();
+		if (type == Type.USER) {
+			return user.getId();
+		} else if (type == Type.GROUP) {
+			return group.getId();
+		} else if (type == Type.CHAT) {
+			return chat.getId();
 		}
 
 		return -1;
@@ -89,12 +88,12 @@ public class GlobalModel {
 
 	public boolean getSelected() {
 
-		if (getType() == Type.USER) {
-			return getUser().isSelected();
-		} else if (getType() == Type.GROUP) {
-			return getGroup().isSelected();
-		} else if (getType() == Type.CHAT) {
-			return getChat().isSelected();
+		if (type == Type.USER) {
+			return user.isSelected();
+		} else if (type == Type.GROUP) {
+			return group.isSelected();
+		} else if (type == Type.CHAT) {
+			return chat.isSelected;
 		}
 
 		return false;
@@ -102,23 +101,23 @@ public class GlobalModel {
 
 	public void setSelected(boolean isSelected) {
 
-		if (getType() == Type.USER) {
-			getUser().setSelected(isSelected);
-		} else if (getType() == Type.GROUP) {
-			getGroup().setSelected(isSelected);
-		} else if (getType() == Type.CHAT) {
-			getChat().setSelected(isSelected);
+		if (type == Type.USER) {
+			user.setSelected(isSelected);
+		} else if (type == Type.GROUP) {
+			group.setSelected(isSelected);
+		} else if (type == Type.CHAT) {
+			chat.isSelected = isSelected;
 		}
 	}
 
 	public boolean isMember() {
 
-		if (getType() == Type.USER) {
-			return getUser().isMember();
-		} else if (getType() == Type.GROUP) {
-			return getGroup().isMember();
-		} else if (getType() == Type.CHAT) {
-			return getChat().isMember();
+		if (type == Type.USER) {
+			return user.isMember();
+		} else if (type == Type.GROUP) {
+			return group.isMember();
+		} else if (type == Type.CHAT) {
+			return chat.is_member;
 		}
 
 		return false;
@@ -126,46 +125,15 @@ public class GlobalModel {
 
 	public String getImageThumb() {
 
-		if (getType() == Type.USER) {
-			return getUser().getImageThumb();
-		} else if (getType() == Type.GROUP) {
-			return getGroup().getImage_thumb();
-		} else if (getType() == Type.CHAT) {
-			return getChat().getImageThumb();
+		if (type == Type.USER) {
+			return user.image_thumb;
+		} else if (type == Type.GROUP) {
+			return group.image_thumb;
+		} else if (type == Type.CHAT) {
+			return chat.image_thumb;
 		}
 
 		return null;
 	}
 
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	private User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	private Group getGroup() {
-		return group;
-	}
-
-	private void setGroup(Group group) {
-		this.group = group;
-	}
-
-	private Chat getChat() {
-		return chat;
-	}
-
-	private void setChat(Chat chat) {
-		this.chat = chat;
-	}
 }

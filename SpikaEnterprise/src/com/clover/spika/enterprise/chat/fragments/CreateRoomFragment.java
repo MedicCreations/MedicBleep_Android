@@ -508,8 +508,10 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private void setCategory(String catName) {
 		if (mCategoryId != null && !mCategoryId.equals("0")) {
 			mTvCategoryName.setText(catName);
+			mTvCategoryName.setTextColor(getResources().getColor(R.color.default_blue));
 		} else {
 			mTvCategoryName.setText(getString(R.string.select_category));
+			mTvCategoryName.setTextColor(getResources().getColor(R.color.devil_gray));
 		}
 	}
 
