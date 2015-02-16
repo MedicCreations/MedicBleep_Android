@@ -64,8 +64,8 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
-import com.clover.stpika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
-import com.clover.stpika.enterprise.chat.views.menu.SelectImageListener;
+import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
+import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
