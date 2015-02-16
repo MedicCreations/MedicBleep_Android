@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -385,6 +386,12 @@ public class ChatActivity extends BaseChatActivity {
 		
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
+			Log.d("LOG", "old: "+chatId +", new: "+intent.getExtras().getString(Const.CHAT_ID));
+			
+			if(chatId != null && intent.getExtras().getString(Const.CHAT_ID) !=null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))){
+				adapter.clearItems();
+			}
+			
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
