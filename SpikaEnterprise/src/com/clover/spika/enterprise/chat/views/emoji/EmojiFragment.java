@@ -7,15 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.GifLoader;
-import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -66,42 +62,16 @@ public class EmojiFragment extends CustomFragment {
 			
 			LinearLayout ll = (LinearLayout) superView.findViewById(idRes);
 			
-			final ImageView iv = new ImageView(getActivity());
-			iv.setScaleType(ScaleType.FIT_XY);
-			iv.setVisibility(View.GONE);
+			final ClickableWebView webView = new ClickableWebView(getActivity());
+			ll.addView(webView);
 			
-			final ProgressBar pbLoading = new ProgressBar(getActivity());
-			ll.addView(pbLoading);
+			webView.getLayoutParams().width = imageSize;
+			webView.getLayoutParams().height = imageSize;
 			
-			GifLoader gif = new GifLoader(getActivity());
-//			gif.displayImage(getActivity(), listLocal.get(i).getUrl(), iv, new OnImageDisplayFinishListener() {
-//				
-//				@Override
-//				public void onFinish() {
-//					GifAnimationDrawable big;
-//					try {
-////						big = new GifAnimationDrawable((File) iv.getTag(), getActivity());
-//						big = (GifAnimationDrawable) iv.getTag();
-//						big.setOneShot(false);
-//						iv.setImageDrawable(big);
-//						big.setVisible(true, true);
-//						
-//						pbLoading.setVisibility(View.GONE);
-//						iv.setVisibility(View.VISIBLE);
-//					} catch (NullPointerException e) {
-//						e.printStackTrace();
-//					} 
-//				}
-//			});
-			
-			
-			ll.addView(iv);
-			
-			iv.getLayoutParams().width = imageSize;
-			iv.getLayoutParams().height = imageSize;
+			GifLoader.getInstance(getActivity()).displayImage(getActivity(), listLocal.get(i).getUrl(), webView, null);
 			
 			final Stickers object = listLocal.get(i);
-			iv.setOnClickListener(new View.OnClickListener() {
+			webView.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {

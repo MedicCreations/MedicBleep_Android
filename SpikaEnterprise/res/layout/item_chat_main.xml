@@ -216,7 +216,8 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp" >
                     
-                    <WebView android:id="@+id/meWebView"
+                    <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                        android:id="@+id/meWebView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
 
@@ -408,8 +409,13 @@
                         android:id="@+id/youFlForWebView"
                         android:layout_width="150dp"
                         android:layout_height="150dp" >
+                        
+                        <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
+                            android:id="@+id/youWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"/>
 
-                        <ProgressBar
+                        <!-- <ProgressBar
                             android:id="@+id/youPbGif"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
@@ -421,7 +427,7 @@
                             android:layout_height="150dp"
                             android:layout_gravity="left"
                             android:contentDescription="@null"
-                            android:scaleType="fitCenter" />
+                            android:scaleType="fitCenter" /> -->
                     </FrameLayout>
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView

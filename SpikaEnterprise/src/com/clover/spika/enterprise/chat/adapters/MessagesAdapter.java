@@ -165,7 +165,8 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meWebView.setVisibility(View.GONE);
 		holder.meFlForGif.setVisibility(View.GONE);
 		
-		holder.youGifView.setVisibility(View.GONE);
+//		holder.youGifView.setVisibility(View.GONE);
+		holder.youWebView.setVisibility(View.GONE);
 		holder.youFlForGif.setVisibility(View.GONE);
 		
 		holder.meMsgLayoutBack.setBackgroundResource(R.drawable.shape_my_chat_bubble);
@@ -220,9 +221,26 @@ public class MessagesAdapter extends BaseAdapter {
 				
 //				holder.meGifView.setVisibility(View.VISIBLE);
 				holder.meWebView.setVisibility(View.VISIBLE);
+				holder.meWebView.getSettings().setAllowFileAccess(true);
+				holder.meWebView.getSettings().setJavaScriptEnabled(true);
+				holder.meWebView.getSettings().setBuiltInZoomControls(true);
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
 				
 				gifLoader.displayImage(ctx, msg.getText(), holder.meWebView, null);
+				
+				holder.meWebView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.TYPE, msg.getType());
+						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
+					}
+				});
+				
+				holder.meWebView.setOnLongClickListener(setLongClickListener(msg));
 				
 //				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.meGifView, new OnImageDisplayFinishListener() {
 //					
@@ -390,6 +408,29 @@ public class MessagesAdapter extends BaseAdapter {
 					}
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
+				
+				holder.youFlForGif.setVisibility(View.VISIBLE);
+				
+//				holder.youGifView.setVisibility(View.VISIBLE);
+				holder.youWebView.setVisibility(View.VISIBLE);
+				holder.youWebView.getSettings().setAllowFileAccess(true);
+				holder.youWebView.getSettings().setJavaScriptEnabled(true);
+				holder.youWebView.getSettings().setBuiltInZoomControls(true);
+				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
+				
+				gifLoader.displayImage(ctx, msg.getText(), holder.youWebView, null);
+				
+				holder.youWebView.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ctx, PhotoActivity.class);
+						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.TYPE, msg.getType());
+						ctx.startActivity(intent);
+						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
+					}
+				});
 				
 //				holder.youFlForGif.setVisibility(View.VISIBLE);
 //				
@@ -1030,7 +1071,8 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView youMsgTime;
 		public ImageView profileImage;
 		public FrameLayout youFlForGif;
-		public ImageView youGifView;
+		public WebView youWebView;
+//		public ImageView youGifView;
 		// end: you msg
 
 		// start: loading bar
@@ -1087,7 +1129,8 @@ public class MessagesAdapter extends BaseAdapter {
 			((RoundImageView)profileImage).setBorderColor(ctx.getResources().getColor(R.color.light_light_gray));
 			
 			youFlForGif = (FrameLayout) view.findViewById(R.id.youFlForWebView);
-			youGifView = (ImageView) view.findViewById(R.id.youGifView);
+//			youGifView = (ImageView) view.findViewById(R.id.youGifView);
+			youWebView = (WebView) view.findViewById(R.id.youWebView);
 			// end: you msg
 
 			// start: loading bar

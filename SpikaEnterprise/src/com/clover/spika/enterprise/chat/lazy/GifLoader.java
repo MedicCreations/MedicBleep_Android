@@ -65,16 +65,6 @@ public class GifLoader {
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
 	}
-	
-//	public GifLoader(Context context, GifCache cache) {
-//
-//		fileCache = new FileCache(context);
-//		gifCache = cache;
-//
-//		// Creates a thread pool that reuses a fixed number of
-//		// threads operating off a shared unbounded queue.
-//		executorService = Executors.newFixedThreadPool(5);
-//	}
 
 	public void displayImage(Context ctx, String url, WebView webView) {
 

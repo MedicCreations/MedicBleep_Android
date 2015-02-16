@@ -620,10 +620,8 @@ public class Utils {
 	
 	public static String generateGifHTML(final String path){
 		String imagePath = "file://"+path;
-		String html = "<html><head></head><body><img src=\""+ imagePath + "\"></body></html>";
-		Log.d("LOG", "HTML "+html);
+		String html = "<!DOCTYPE html><html><head></head><body><img alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\""+ imagePath + "\"></body></html>";
 		return html;
-//		wv.loadDataWithBaseURL("", html, "text/html","utf-8", ""); 
 		
 	}
 	
