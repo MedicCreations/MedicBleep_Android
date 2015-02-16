@@ -24,20 +24,6 @@
 
 package com.clover.spika.enterprise.chat.utils;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,6 +39,25 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Random;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 /**
  * Utils
@@ -585,6 +590,30 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return output;
+	}
+	
+	public static void phoneIntent(Context c, String tel){
+		try {
+			String uri = "tel:" + tel;
+			Intent intentPhoneDoc = new Intent(Intent.ACTION_DIAL);
+			intentPhoneDoc.setData(Uri.parse(uri));
+			c.startActivity(intentPhoneDoc);
+		} catch (ActivityNotFoundException e) {
+			AppDialog dialog = new AppDialog(c, false);
+			dialog.setInfo(c.getString(R.string.aplication_for_calling_mail_did_t_found));
+		}
+	}
+	
+	public static void emailIntent(Context c, String email, String message, String subject){
+		try {
+			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto",email, null));
+			if(subject != null) emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+			if(message != null) emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+			c.startActivity(Intent.createChooser(emailIntent, "Send email..."));
+		} catch (ActivityNotFoundException e) {
+			AppDialog dialog = new AppDialog(c, false);
+			dialog.setInfo(c.getString(R.string.aplication_for_sending_mail_did_t_found));
+		}
 	}
 	
 }
