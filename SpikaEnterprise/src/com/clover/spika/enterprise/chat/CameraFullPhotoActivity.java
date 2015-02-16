@@ -19,9 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -29,8 +29,11 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -520,17 +523,27 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 	private void sendMessage(final String fileId, final String thumbId) {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
 
 				AppDialog dialog = new AppDialog(CameraFullPhotoActivity.this, true);
 
-				if (result.isSuccess()) {
+				if (result == Const.API_SUCCESS) {
 					dialog.setSucceed();
 				} else {
-					dialog.setFailed(result.getResultData());
+					dialog.setFailed(result);
 				}
 			}
 		});

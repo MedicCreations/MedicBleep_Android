@@ -34,7 +34,7 @@ public class LoginSpice {
 
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -69,7 +69,7 @@ public class LoginSpice {
 
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).add(Const.ORGANIZATION_ID, organizationId).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -102,7 +102,7 @@ public class LoginSpice {
 
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeader(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

@@ -43,7 +43,7 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 		return null;
 	}
 
-	public Headers getPostHeader(Context ctx) {
+	public Headers getPostHeaders(Context ctx) {
 
 		Headers.Builder headersBuilder = new Headers.Builder()
 		.add("Encoding", "UTF-8")
@@ -59,7 +59,7 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 		return headersBuilder.build();
 	}
 
-	public Headers getGetheaders(Context ctx) {
+	public Headers getGetHeaders(Context ctx) {
 		
 		Headers.Builder headersBuilder = new Headers.Builder()
 		.add("Encoding", "UTF-8")

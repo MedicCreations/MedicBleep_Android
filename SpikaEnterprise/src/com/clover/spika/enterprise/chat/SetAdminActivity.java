@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -21,9 +21,12 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,11 +139,22 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put(Const.CHAT_ID, chatId);
 			params.put(Const.ADMIN_ID, String.valueOf(user.getId()));
-			new ChatApi().updateChatAll(params, true, SetAdminActivity.this, new ApiCallback<BaseModel>() {
+			
+			handleProgress(true);
+			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params, this);
+			spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
 
 				@Override
-				public void onApiResponse(Result<BaseModel> result) {
-					if (result.isSuccess()) {
+				public void onRequestFailure(SpiceException ex) {
+					handleProgress(false);
+					Utils.onFailedUniversal(null, SetAdminActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(BaseModel result) {
+					handleProgress(false);
+					
+					if (result.getCode() == Const.API_SUCCESS) {
 
 						Intent intent = new Intent();
 
@@ -154,7 +168,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 						finish();
 					} else {
 						AppDialog dialog = new AppDialog(SetAdminActivity.this, false);
-						dialog.setFailed(result.getResultData().getCode());
+						dialog.setFailed(result.getCode());
 					}
 				}
 			});

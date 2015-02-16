@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -49,14 +48,15 @@ import com.clover.spika.enterprise.chat.RecordAudioActivity;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.EmojiApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -65,6 +65,7 @@ import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.clover.stpika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
 import com.clover.stpika.enterprise.chat.views.menu.SelectImageListener;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -99,7 +100,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private RobotoThinTextView screenTitle;
 	protected EditText etMessage;
 	protected ListView chatListView;
-	
+
 	private View dimMenu;
 	private View dimOther;
 
@@ -110,7 +111,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private Animation animHideSettingsHack;
 
 	private List<Stickers> stickersList = new ArrayList<Stickers>();
-	
+
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
 
@@ -131,7 +132,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		location.setOnClickListener(thisClickListener);
 		Button record = (Button) findViewById(R.id.btnRecord);
 		record.setOnClickListener(thisClickListener);
-		
+
 		findViewById(R.id.chooseLocation).setOnClickListener(thisClickListener);
 		findViewById(R.id.choosePhoto).setOnClickListener(thisClickListener);
 		findViewById(R.id.chooseVideo).setOnClickListener(thisClickListener);
@@ -158,16 +159,16 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 		rlDrawerNew = (RelativeLayout) findViewById(R.id.rlNewDrawer);
 		rlDrawerNew.setSelected(false);
-		
+
 		dimMenu = findViewById(R.id.blackedTopMenu);
 		dimOther = findViewById(R.id.blackedOther);
-		
+
 		rlDrawerEmoji = (RelativeLayout) findViewById(R.id.rlDrawerEmoji);
 		rlDrawerEmoji.setSelected(false);
 
 		footerMore = (ImageButton) findViewById(R.id.footerMore);
 		footerMore.setOnClickListener(thisClickListener);
-		
+
 		footerEmoji = (ImageButton) findViewById(R.id.footerSmiley);
 		footerEmoji.setOnClickListener(thisClickListener);
 
@@ -236,21 +237,25 @@ public abstract class BaseChatActivity extends BaseActivity {
 				}
 			}
 		});
-		
+
 		dimOther.setOnClickListener(thisClickListener);
 		dimMenu.setOnClickListener(thisClickListener);
-		
+
 	}
-	
-	protected void setMenuByChatType () {
-		if(!isMenuSetted){
+
+	protected void setMenuByChatType() {
+		if (!isMenuSetted) {
 			isMenuSetted = true;
-			if(chatType != Const.C_PRIVATE){
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount()-1)); // remove call
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount()-1)); // remove divider above call
+			if (chatType != Const.C_PRIVATE) {
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
+																									// call
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
+																									// divider
+																									// above
+																									// call
 				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 344);
 				drawerNewHeight = Helper.dpToPx(this, 344);
-				rlDrawerNew.getChildAt(rlDrawerNew.getChildCount()-1).setBackgroundResource(R.drawable.trans_to_gray_with_bottom_corners);
+				rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1).setBackgroundResource(R.drawable.trans_to_gray_with_bottom_corners);
 			}
 		}
 	}
@@ -351,9 +356,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 			settingsListView.startAnimation(animHideSettings);
 		}
 	}
-	
+
 	private void rlDrawerNewManage() {
-		if(rlDrawerEmoji.isSelected()){
+		if (rlDrawerEmoji.isSelected()) {
 			rlDrawerEmojiManage(true);
 			return;
 		}
@@ -366,16 +371,16 @@ public abstract class BaseChatActivity extends BaseActivity {
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerNew.setSelected(true);
 					hideKeyboard(etMessage);
-					
+
 					FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
 					FrameLayoutForMenuPager pagerLayout = new FrameLayoutForMenuPager(BaseChatActivity.this);
 					pagerLayout.setViews(new SelectImageListener() {
 
 						@Override
 						public void onSelectImage(String path) {
-							if(path.equals("camera")){
+							if (path.equals("camera")) {
 								openCamera();
-							}else{
+							} else {
 								openPathCropActivity(path);
 							}
 						}
@@ -383,20 +388,21 @@ public abstract class BaseChatActivity extends BaseActivity {
 					flForPager.addView(pagerLayout);
 
 					findViewById(R.id.pbLoading).setVisibility(View.GONE);
-					
+
 				}
 			});
-			
+
 			AnimUtils.fadeAnim(dimMenu, 0, 1, drawerDuration);
 			AnimUtils.fadeAnim(dimOther, 0, 1, drawerDuration);
 		} else {
-			
+
 			FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
 			((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
-			if(flForPager.getChildCount() > 1 ) flForPager.removeView(flForPager.getChildAt(1));
-			
+			if (flForPager.getChildCount() > 1)
+				flForPager.removeView(flForPager.getChildAt(1));
+
 			findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
-			
+
 			AnimUtils.translationY(rlDrawerNew, 0, Helper.dpToPx(this, drawerNewHeight), drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
@@ -413,9 +419,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	private void rlDrawerEmojiManage(boolean toOpenMenu) {
-		if(stickersList.size() == 0){
+		if (stickersList.size() == 0) {
 			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
-				
+
 				@Override
 				public void onApiResponse(Result<StickersHolder> result) {
 					stickersList.addAll(result.getResultData().getStickersList());
@@ -470,7 +476,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		if (rlDrawerNew.isSelected()) {
 			rlDrawerNewManage();
 			hideKeyboard(etMessage);
-		}else if(rlDrawerEmoji.isSelected()){
+		} else if (rlDrawerEmoji.isSelected()) {
 			rlDrawerEmojiManage(false);
 			hideKeyboard(etMessage);
 		}
@@ -513,11 +519,26 @@ public abstract class BaseChatActivity extends BaseActivity {
 		deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
 			@Override
 			public void onPositiveButtonClick(View v) {
-				new ChatApi().deleteMessage(messageId, BaseChatActivity.this, new ApiCallback<BaseModel>() {
+
+				handleProgress(true);
+				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(messageId, BaseChatActivity.this);
+				spiceManager.execute(deleteMessage, new CustomSpiceListener<BaseModel>() {
+
 					@Override
-					public void onApiResponse(Result<BaseModel> result) {
-						if (result.isSuccess()) {
+					public void onRequestFailure(SpiceException ex) {
+						handleProgress(false);
+						Utils.onFailedUniversal(null, BaseChatActivity.this);
+					}
+
+					@Override
+					public void onRequestSuccess(BaseModel result) {
+						handleProgress(false);
+
+						if (result.getCode() == Const.API_SUCCESS) {
 							onMessageDeleted();
+						} else {
+							AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+							dialog.setFailed(result.getCode());
 						}
 					}
 				});
@@ -535,13 +556,13 @@ public abstract class BaseChatActivity extends BaseActivity {
 	public void onBackPressed() {
 		if (rlDrawerNew.isSelected()) {
 			forceClose();
-		} else if(rlDrawerEmoji.isSelected()){
+		} else if (rlDrawerEmoji.isSelected()) {
 			forceClose();
-		}else {
+		} else {
 			super.onBackPressed();
 		}
 	}
-	
+
 	private void openCamera() {
 		final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 		dialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
@@ -578,7 +599,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 		dialog.show();
 	}
-	
+
 	View.OnClickListener thisClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -627,7 +648,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
 				startActivity(intent);
 
-			} else if (id == R.id.btnRecord  || id == R.id.chooseVoice) {
+			} else if (id == R.id.btnRecord || id == R.id.chooseVoice) {
 				Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
 				intent.putExtra(Const.CHAT_ID, chatId);
 				intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
@@ -647,7 +668,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerEmojiManage(false);
 				hideSettings();
 
-			}  else if (id == R.id.goBack) {
+			} else if (id == R.id.goBack) {
 				kill();
 			} else if (id == R.id.settingsBtn) {
 				if (settingsListView.getVisibility() == View.GONE) {
@@ -676,7 +697,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
 		startActivity(intent);
 	}
-	
+
 	void openPathCropActivity(String path) {
 		Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
 		intent.putExtra(Const.INTENT_TYPE, Const.PATH_INTENT);
@@ -737,11 +758,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 			}
 		}
 	};
-	
-	public void setEmojiListener(SelectEmojiListener lis){
+
+	public void setEmojiListener(SelectEmojiListener lis) {
 		mEmojiListener = lis;
 	}
-	
+
 	/**
 	 * Called when admin wants to activate chat
 	 */

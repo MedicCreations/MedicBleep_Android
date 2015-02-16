@@ -23,17 +23,19 @@ import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class RecordVideoActivity extends BaseActivity {
 
@@ -111,7 +113,7 @@ public class RecordVideoActivity extends BaseActivity {
 				}
 			}
 		});
-		
+
 		Bundle extras = getIntent().getExtras();
 		chatId = extras.getString(Const.CHAT_ID);
 
@@ -127,16 +129,28 @@ public class RecordVideoActivity extends BaseActivity {
 	private void sendMsg(String fileId) {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, RecordVideoActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
+
+				if (result == Const.API_SUCCESS) {
+
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
 					dialog.setSucceed();
 				} else {
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, false);
-					dialog.setFailed(result.getResultData());
+					dialog.setFailed(result);
 				}
 			}
 		});
@@ -300,31 +314,31 @@ public class RecordVideoActivity extends BaseActivity {
 			mVideoView.start();
 			mVideoView.setOnPreparedListener(new OnPreparedListener() {
 
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mDurationOfVideo = mVideoView.getDuration();
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mDurationOfVideo = mVideoView.getDuration();
 
-                    mPbForPlaying.setMax((int) mDurationOfVideo);
+					mPbForPlaying.setMax((int) mDurationOfVideo);
 
-                    mRunnForProgressBar = new Runnable() {
+					mRunnForProgressBar = new Runnable() {
 
-                        @Override
-                        public void run() {
-                            mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
-                            if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
-                                mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
-                            } else {
-                                mPbForPlaying.setProgress(mVideoView.getDuration());
-                            }
-                        }
-                    };
-                    mHandlerForProgressBar.post(mRunnForProgressBar);
-                    mIsPlaying = 2;
-                }
-            });
-			
+						@Override
+						public void run() {
+							mPbForPlaying.setProgress(mVideoView.getCurrentPosition());
+							if (mDurationOfVideo - 99 > mVideoView.getCurrentPosition()) {
+								mHandlerForProgressBar.postDelayed(mRunnForProgressBar, 100);
+							} else {
+								mPbForPlaying.setProgress(mVideoView.getDuration());
+							}
+						}
+					};
+					mHandlerForProgressBar.post(mRunnForProgressBar);
+					mIsPlaying = 2;
+				}
+			});
+
 			mVideoView.setOnCompletionListener(new OnCompletionListener() {
-				
+
 				@Override
 				public void onCompletion(MediaPlayer mp) {
 					mPlayPause.setImageResource(R.drawable.play_btn_selector);

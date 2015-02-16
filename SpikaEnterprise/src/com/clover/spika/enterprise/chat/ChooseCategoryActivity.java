@@ -6,14 +6,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.CategoryFragment;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.HashMap;
 
@@ -56,11 +57,22 @@ public class ChooseCategoryActivity extends BaseActivity {
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put(Const.CHAT_ID, chatId);
 			params.put(Const.CATEGORY_ID, categoryId);
-			new ChatApi().updateChatAll(params, true, this, new ApiCallback<BaseModel>() {
+
+			handleProgress(true);
+			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params, this);
+			spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
 
 				@Override
-				public void onApiResponse(Result<BaseModel> result) {
-					if (result.isSuccess()) {
+				public void onRequestFailure(SpiceException ex) {
+					handleProgress(false);
+					Utils.onFailedUniversal(null, ChooseCategoryActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(BaseModel result) {
+					handleProgress(false);
+
+					if (result.getCode() == Const.API_SUCCESS) {
 						Intent data = new Intent();
 						data.putExtra(Const.CATEGORY_ID, categoryId);
 						data.putExtra(Const.CATEGORY_NAME, categoryName);
@@ -68,10 +80,11 @@ public class ChooseCategoryActivity extends BaseActivity {
 						finish();
 					} else {
 						AppDialog dialog = new AppDialog(ChooseCategoryActivity.this, false);
-						dialog.setFailed(result.getResultData().getCode());
+						dialog.setFailed(result.getCode());
 					}
 				}
 			});
+
 		} else {
 			setResult(RESULT_OK, new Intent().putExtra(Const.CATEGORY_ID, categoryId).putExtra(Const.CATEGORY_NAME, categoryName));
 			finish();

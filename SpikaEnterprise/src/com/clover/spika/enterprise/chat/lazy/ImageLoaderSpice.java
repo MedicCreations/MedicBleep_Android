@@ -176,7 +176,7 @@ public class ImageLoaderSpice {
 			// Get from web
 			String url = Const.BASE_URL + Const.F_USER_GET_FILE + "?" + Const.FILE_ID + "=" + fileId;
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetheaders(ctx)).url(url).get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(url).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

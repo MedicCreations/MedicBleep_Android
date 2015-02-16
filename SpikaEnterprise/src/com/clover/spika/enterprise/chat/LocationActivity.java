@@ -11,14 +11,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.LocationApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 /**
  * LocationActivity
@@ -86,11 +89,11 @@ public class LocationActivity extends BaseActivity {
 
 			latitude = extras.getDouble(Const.LATITUDE);
 			longitude = extras.getDouble(Const.LONGITUDE);
-			
+
 			sendLocation.setImageResource(android.R.drawable.ic_menu_directions);
 
 			sendLocation.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					getRoute(latitude, longitude);
@@ -170,32 +173,41 @@ public class LocationActivity extends BaseActivity {
 	}
 
 	private void sendMsg() {
-        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
-        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_LOCATION, chatId, null, null, null,
-                String.valueOf(longitude), String.valueOf(latitude), rootId, messageId, this, new ApiCallback<Integer>() {
+		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_LOCATION, chatId, null, null, null, String.valueOf(longitude), String.valueOf(latitude),
+				rootId, messageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, LocationActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
 
 				AppDialog dialog = new AppDialog(LocationActivity.this, true);
 
-				if (result.isSuccess()) {
+				if (result == Const.API_SUCCESS) {
 					dialog.setSucceed();
 				} else {
-					dialog.setFailed(result.getResultData());
+					dialog.setFailed(result);
 				}
 			}
 		});
 	}
-	
-	private void getRoute(double latitude, double longintude){
-		
-		String url = "http://maps.google.com/maps?daddr="+latitude+","+longintude+"&hl=zh&t=m&dirflg=d";
-		
-		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-				Uri.parse(url));
-    	startActivity(intent);
+
+	private void getRoute(double latitude, double longintude) {
+
+		String url = "http://maps.google.com/maps?daddr=" + latitude + "," + longintude + "&hl=zh&t=m&dirflg=d";
+
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
+		startActivity(intent);
 	}
 
 	@Override

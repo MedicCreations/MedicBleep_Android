@@ -19,8 +19,8 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
@@ -404,42 +404,49 @@ public class ChatActivity extends BaseChatActivity {
 			boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
 			mUserId = intent.getExtras().getString(Const.USER_ID);
 
-			new ChatApi().startChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
-					new ApiCallback<Chat>() {
+			handleProgress(true);
+			ChatSpice.StartChat startChat = new ChatSpice.StartChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME),
+					this);
+			spiceManager.execute(startChat, new CustomSpiceListener<Chat>() {
 
-						@Override
-						public void onApiResponse(Result<Chat> result) {
+				@Override
+				public void onRequestFailure(SpiceException ex) {
+					handleProgress(false);
+					Utils.onFailedUniversal(null, ChatActivity.this);
+				}
 
-							if (result.isSuccess()) {
+				@Override
+				public void onRequestSuccess(Chat result) {
+					handleProgress(false);
 
-								chatParams(result.getResultData().getChat());
+					if (result.getCode() == Const.API_SUCCESS) {
 
-								chatId = String.valueOf(result.getResultData().getId());
-								chatName = result.getResultData().getChat_name();
+						chatParams(result.getChat());
 
-								setTitle(chatName);
+						chatId = String.valueOf(result.getId());
+						chatName = result.getChat_name();
 
-								adapter.clearItems();
-								totalItems = Integer.valueOf(result.getResultData().getTotal_count());
-								adapter.addItems(result.getResultData().getMessagesList(), true);
-								adapter.setSeenBy(result.getResultData().getSeen_by());
-								adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
-								if (adapter.getCount() > 0) {
-									chatListView.setSelectionFromTop(adapter.getCount(), 0);
-								}
-							} else {
-								AppDialog dialog = new AppDialog(ChatActivity.this, false);
+						setTitle(chatName);
 
-								if (result.getResultData() != null) {
-									dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
-								} else {
-									dialog.setFailed("");
-								}
-							}
-
-							setNoItemsVisibility();
+						adapter.clearItems();
+						totalItems = Integer.valueOf(result.getTotal_count());
+						adapter.addItems(result.getMessagesList(), true);
+						adapter.setSeenBy(result.getSeen_by());
+						adapter.setTotalCount(Integer.valueOf(result.getTotal_count()));
+						if (adapter.getCount() > 0) {
+							chatListView.setSelectionFromTop(adapter.getCount(), 0);
 						}
-					});
+					} else {
+						AppDialog dialog = new AppDialog(ChatActivity.this, false);
+
+						if (result != null) {
+							dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getCode()));
+						}
+					}
+
+					setNoItemsVisibility();
+				}
+			});
 		}
 	}
 
@@ -540,11 +547,23 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
-		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
+
+				if (result == Const.API_SUCCESS) {
+
 					etMessage.setText("");
 					hideKeyboard(etMessage);
 					forceClose();
@@ -552,8 +571,8 @@ public class ChatActivity extends BaseChatActivity {
 					callNewMsgs();
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(result.getResultData());
-					if (result.getResultData() == Const.E_CHAT_INACTIVE) {
+					dialog.setFailed(result);
+					if (result == Const.E_CHAT_INACTIVE) {
 						isActive = 0;
 						etMessage.setText("");
 						hideKeyboard(etMessage);
@@ -606,19 +625,28 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		}
 
-		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, new ApiCallback<Chat>() {
+		handleProgress(processing);
+		ChatSpice.GetMessages getMessages = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this);
+		spiceManager.execute(getMessages, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<Chat> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
 
 				isRunning = false;
 
-				if (result.isSuccess()) {
-					
-					Chat chat = result.getResultData();
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					Chat chat = result;
 
 					chatParams(chat.getChat());
-					
+
 					setMenuByChatType();
 
 					if (TextUtils.isEmpty(mUserId)) {
@@ -668,11 +696,22 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void leaveChat() {
-		new ChatApi().leaveChat(chatId, true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.LeaveChat leaveChat = new ChatSpice.LeaveChat(chatId, this);
+		spiceManager.execute(leaveChat, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -698,11 +737,22 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void deactivateChat() {
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, null, null, null, ChatActivity.this);
+		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -721,17 +771,27 @@ public class ChatActivity extends BaseChatActivity {
 
 			@Override
 			public void onPositiveButtonClick(View v) {
-				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
+
+				handleProgress(true);
+				ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DELETE, null, null, null, ChatActivity.this);
+				spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 					@Override
-					public void onApiResponse(Result<BaseModel> result) {
-						if (result.isSuccess()) {
-							dialog.dismiss();
-							AppDialog dialogSS = new AppDialog(ChatActivity.this, true);
-							dialogSS.setSucceed();
+					public void onRequestFailure(SpiceException ex) {
+						handleProgress(false);
+						Utils.onFailedUniversal(null, ChatActivity.this);
+					}
+
+					@Override
+					public void onRequestSuccess(BaseModel result) {
+						handleProgress(false);
+
+						if (result.getCode() == Const.API_SUCCESS) {
+							AppDialog dialog = new AppDialog(ChatActivity.this, true);
+							dialog.setSucceed();
 						} else {
-							AppDialog dialogSS = new AppDialog(ChatActivity.this, false);
-							dialogSS.setFailed(null);
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+							dialog.setFailed(null);
 						}
 					}
 				});
@@ -750,11 +810,22 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void activateChat() {
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, null, null, null, this);
+		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
