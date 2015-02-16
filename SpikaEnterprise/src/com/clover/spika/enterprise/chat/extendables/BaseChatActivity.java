@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -113,6 +112,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private ImageLoader imageLoader;
 	
 	private List<Stickers> stickersList = new ArrayList<Stickers>();
+	
+	private boolean isMenuInAnimation = false;
 	
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
@@ -367,11 +368,13 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 	
 	private void rlDrawerNewManage() {
+		if(isMenuInAnimation) return;
 		if(rlDrawerEmoji.isSelected()){
 			rlDrawerEmojiManage(true);
 			return;
 		}
 		if (!rlDrawerNew.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerNew.setVisibility(View.VISIBLE);
 			dimMenu.setVisibility(View.VISIBLE);
 			dimOther.setVisibility(View.VISIBLE);
@@ -385,7 +388,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 						
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
 							FrameLayoutForMenuPager pagerLayout = new FrameLayoutForMenuPager(BaseChatActivity.this);
 							pagerLayout.setViews(new SelectImageListener() {
@@ -402,6 +404,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 							flForPager.addView(pagerLayout);
 
 							findViewById(R.id.pbLoading).setVisibility(View.GONE);
+							isMenuInAnimation = false;
 						}
 					}, 200);
 					
@@ -411,9 +414,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.fadeAnim(dimMenu, 0, 1, drawerDuration);
 			AnimUtils.fadeAnim(dimOther, 0, 1, drawerDuration);
 		} else {
-			
+			isMenuInAnimation = true;
 			FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
-			((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
+			if(flForPager.getChildCount() > 1 && flForPager.getChildAt(1) instanceof FrameLayoutForMenuPager) ((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
 			if(flForPager.getChildCount() > 1 ) flForPager.removeView(flForPager.getChildAt(1));
 			
 			findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
@@ -425,6 +428,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerNew.setSelected(false);
 					dimMenu.setVisibility(View.GONE);
 					dimOther.setVisibility(View.GONE);
+					isMenuInAnimation = false;
 
 				}
 			});
@@ -433,7 +437,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void rlDrawerEmojiManage(boolean toOpenMenu) {
+	private void rlDrawerEmojiManage(final boolean toOpenMenu) {
+		if(isMenuInAnimation) return;
 		if(stickersList.size() == 0){
 			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
 				
@@ -446,6 +451,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			});
 		}
 		if (!rlDrawerEmoji.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerEmoji.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawerEmoji, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
 				@Override
@@ -464,19 +470,22 @@ public abstract class BaseChatActivity extends BaseActivity {
 							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
 							EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
 							layout.resetDotsIfNeed();
+							isMenuInAnimation = false;
 						}
 					}, 100);
 				}
 			});
 			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
 		} else {
+			isMenuInAnimation = true;
 			AnimUtils.translationY(rlDrawerEmoji, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setVisibility(View.GONE);
 					rlDrawerEmoji.setSelected(false);
 
-					rlDrawerNewManage();
+					isMenuInAnimation = false;
+					if(toOpenMenu) rlDrawerNewManage();
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);

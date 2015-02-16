@@ -9,6 +9,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
@@ -716,8 +717,10 @@ public class ChatActivity extends BaseChatActivity {
 	private void setNoItemsVisibility() {
 		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
+			findViewById(R.id.mainContent).setBackgroundColor(getResources().getColor(R.color.default_blue_light));
 		} else {
 			noItems.setVisibility(View.GONE);
+			findViewById(R.id.mainContent).setBackgroundColor(Color.WHITE);
 		}
 	}
 
