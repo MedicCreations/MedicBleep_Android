@@ -44,7 +44,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -55,7 +54,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.WebView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -618,9 +616,10 @@ public class Utils {
 		}
 	}
 	
-	public static String generateGifHTML(final String path){
+	public static String generateGifHTML(String path, String style){
 		String imagePath = "file://"+path;
-		String html = "<!DOCTYPE html><html><head></head><body><img alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\""+ imagePath + "\"></body></html>";
+		if(style == null) style = "";
+		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\""+ imagePath + "\"></body></html>";
 		return html;
 		
 	}

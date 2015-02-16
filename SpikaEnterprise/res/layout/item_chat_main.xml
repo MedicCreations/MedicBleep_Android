@@ -219,7 +219,8 @@
                     <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
                         android:id="@+id/meWebView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        android:scrollbars="none"/>
 
                     <!-- <ProgressBar
                         android:id="@+id/mePbGif"
@@ -413,7 +414,8 @@
                         <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
                             android:id="@+id/youWebView"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"/>
+                            android:layout_height="match_parent"
+                            android:scrollbars="none"/>
 
                         <!-- <ProgressBar
                             android:id="@+id/youPbGif"

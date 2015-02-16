@@ -66,12 +66,12 @@ public class GifLoader {
 		executorService = Executors.newFixedThreadPool(5);
 	}
 
-	public void displayImage(Context ctx, String url, WebView webView) {
+	public void displayImage(Context ctx, String url, WebView webView, String style) {
 
-		displayImage(ctx, url, webView, null);
+		displayImage(ctx, url, webView, style, null);
 	}
 
-	public void displayImage(Context ctx, String url, WebView webView, OnImageDisplayFinishListener lis) {
+	public void displayImage(Context ctx, String url, WebView webView, String style, OnImageDisplayFinishListener lis) {
 		
 		mListener = lis;
 
@@ -91,12 +91,13 @@ public class GifLoader {
 		if (file != null) {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
-			webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath()), "text/html","utf-8", ""); //set WEB view //TODO
+			webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath(), style), "text/html","utf-8", ""); //set WEB view //TODO
+			webView.setTag(file.getAbsolutePath());
 			if (mListener != null)
 				mListener.onFinish();
 		} else {
 			// queue Photo to download from url
-			queuePhoto(ctx, url, webView);
+			queuePhoto(ctx, url, webView, style);
 
 			// Before downloading image show default image
 			if (defaultImageId != -1) {
@@ -105,9 +106,9 @@ public class GifLoader {
 		}
 	}
 
-	private void queuePhoto(Context ctx, String url, WebView webView) {
+	private void queuePhoto(Context ctx, String url, WebView webView, String style) {
 		// Store image and url in PhotoToLoad object
-		PhotoToLoad p = new PhotoToLoad(url, webView);
+		PhotoToLoad p = new PhotoToLoad(url, webView, style);
 
 		// pass PhotoToLoad object to PhotosLoader runnable class
 		// and submit PhotosLoader runnable to executers to run runnable
@@ -120,10 +121,12 @@ public class GifLoader {
 	private class PhotoToLoad {
 		public String url;
 		public WebView webView;
+		public String style;
 
-		public PhotoToLoad(String url, WebView webView) {
+		public PhotoToLoad(String url, WebView webView, String style) {
 			this.url = url;
 			this.webView = webView;
+			this.style = style;
 		}
 	}
 
@@ -252,7 +255,8 @@ public class GifLoader {
 
 			// Show bitmap on UI
 			if (file != null) {
-				photoToLoad.webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath()), "text/html","utf-8", ""); //TODO current webivew
+				photoToLoad.webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath(), photoToLoad.style), "text/html","utf-8", ""); //TODO current webivew
+				photoToLoad.webView.setTag(file.getAbsolutePath());
 				if (mListener != null)
 					mListener.onFinish();
 			}

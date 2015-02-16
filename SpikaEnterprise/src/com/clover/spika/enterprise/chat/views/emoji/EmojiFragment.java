@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 import com.clover.spika.enterprise.chat.R;
@@ -63,12 +64,16 @@ public class EmojiFragment extends CustomFragment {
 			LinearLayout ll = (LinearLayout) superView.findViewById(idRes);
 			
 			final ClickableWebView webView = new ClickableWebView(getActivity());
+			webView.setVerticalScrollBarEnabled(false);
+			webView.setHorizontalScrollBarEnabled(false);
+			webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 			ll.addView(webView);
 			
 			webView.getLayoutParams().width = imageSize;
 			webView.getLayoutParams().height = imageSize;
 			
-			GifLoader.getInstance(getActivity()).displayImage(getActivity(), listLocal.get(i).getUrl(), webView, null);
+			String style = "style=\"border: solid #eee 1px;border-radius: 10px;\"";
+			GifLoader.getInstance(getActivity()).displayImage(getActivity(), listLocal.get(i).getUrl(), webView, style, null);
 			
 			final Stickers object = listLocal.get(i);
 			webView.setOnClickListener(new View.OnClickListener() {

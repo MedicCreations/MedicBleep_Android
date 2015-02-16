@@ -223,10 +223,12 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meWebView.setVisibility(View.VISIBLE);
 				holder.meWebView.getSettings().setAllowFileAccess(true);
 				holder.meWebView.getSettings().setJavaScriptEnabled(true);
+				holder.meWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.meWebView.getSettings().setBuiltInZoomControls(true);
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
 				
-				gifLoader.displayImage(ctx, msg.getText(), holder.meWebView, null);
+				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
+				gifLoader.displayImage(ctx, msg.getText(), holder.meWebView, style, null);
 				
 				holder.meWebView.setOnClickListener(new OnClickListener() {
 					
@@ -234,6 +236,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.FILE, (String) holder.meWebView.getTag());
 						intent.putExtra(Const.TYPE, msg.getType());
 						ctx.startActivity(intent);
 						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
@@ -413,12 +416,14 @@ public class MessagesAdapter extends BaseAdapter {
 				
 //				holder.youGifView.setVisibility(View.VISIBLE);
 				holder.youWebView.setVisibility(View.VISIBLE);
+				holder.youWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.youWebView.getSettings().setAllowFileAccess(true);
 				holder.youWebView.getSettings().setJavaScriptEnabled(true);
 				holder.youWebView.getSettings().setBuiltInZoomControls(true);
 				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
 				
-				gifLoader.displayImage(ctx, msg.getText(), holder.youWebView, null);
+				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
+				gifLoader.displayImage(ctx, msg.getText(), holder.youWebView, style, null);
 				
 				holder.youWebView.setOnClickListener(new OnClickListener() {
 					
@@ -426,6 +431,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getText());
+						intent.putExtra(Const.FILE, (String) holder.youWebView.getTag());
 						intent.putExtra(Const.TYPE, msg.getType());
 						ctx.startActivity(intent);
 						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
