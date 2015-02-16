@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.WebView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -614,6 +616,15 @@ public class Utils {
 			AppDialog dialog = new AppDialog(c, false);
 			dialog.setInfo(c.getString(R.string.aplication_for_sending_mail_did_t_found));
 		}
+	}
+	
+	public static String generateGifHTML(final String path){
+		String imagePath = "file://"+path;
+		String html = "<html><head></head><body><img src=\""+ imagePath + "\"></body></html>";
+		Log.d("LOG", "HTML "+html);
+		return html;
+//		wv.loadDataWithBaseURL("", html, "text/html","utf-8", ""); 
+		
 	}
 	
 }

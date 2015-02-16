@@ -74,25 +74,25 @@ public class EmojiFragment extends CustomFragment {
 			ll.addView(pbLoading);
 			
 			GifLoader gif = new GifLoader(getActivity());
-			gif.displayImage(getActivity(), listLocal.get(i).getUrl(), iv, new OnImageDisplayFinishListener() {
-				
-				@Override
-				public void onFinish() {
-					GifAnimationDrawable big;
-					try {
-//						big = new GifAnimationDrawable((File) iv.getTag(), getActivity());
-						big = (GifAnimationDrawable) iv.getTag();
-						big.setOneShot(false);
-						iv.setImageDrawable(big);
-						big.setVisible(true, true);
-						
-						pbLoading.setVisibility(View.GONE);
-						iv.setVisibility(View.VISIBLE);
-					} catch (NullPointerException e) {
-						e.printStackTrace();
-					} 
-				}
-			});
+//			gif.displayImage(getActivity(), listLocal.get(i).getUrl(), iv, new OnImageDisplayFinishListener() {
+//				
+//				@Override
+//				public void onFinish() {
+//					GifAnimationDrawable big;
+//					try {
+////						big = new GifAnimationDrawable((File) iv.getTag(), getActivity());
+//						big = (GifAnimationDrawable) iv.getTag();
+//						big.setOneShot(false);
+//						iv.setImageDrawable(big);
+//						big.setVisible(true, true);
+//						
+//						pbLoading.setVisibility(View.GONE);
+//						iv.setVisibility(View.VISIBLE);
+//					} catch (NullPointerException e) {
+//						e.printStackTrace();
+//					} 
+//				}
+//			});
 			
 			
 			ll.addView(iv);

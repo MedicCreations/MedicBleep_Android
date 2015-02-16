@@ -215,8 +215,12 @@
                     android:id="@+id/meFlForWebView"
                     android:layout_width="150dp"
                     android:layout_height="150dp" >
+                    
+                    <WebView android:id="@+id/meWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
 
-                    <ProgressBar
+                    <!-- <ProgressBar
                         android:id="@+id/mePbGif"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
@@ -228,7 +232,7 @@
                         android:layout_height="150dp"
                         android:layout_gravity="right"
                         android:contentDescription="@null"
-                        android:scaleType="fitCenter" />
+                        android:scaleType="fitCenter" /> -->
                 </FrameLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView

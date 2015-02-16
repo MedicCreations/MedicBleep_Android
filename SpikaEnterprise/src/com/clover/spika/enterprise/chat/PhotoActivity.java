@@ -55,26 +55,26 @@ public class PhotoActivity extends BaseActivity {
 			imageUrl = intent.getExtras().getString(Const.IMAGE, "");
 
 			if(intent.hasExtra(Const.TYPE) && intent.getIntExtra(Const.TYPE, -1) == Const.MSG_TYPE_GIF){
-				GifLoader.getInstance(this).displayImage(this, imageUrl, mImageView, new OnImageDisplayFinishListener() {
-					
-					@Override
-					public void onFinish() {
-						Log.d("LOG", "finish");
-						pbLoading.setVisibility(View.GONE);
-						GifAnimationDrawable big;
-						try {
-							if(mImageView.getTag() != null){
-								big = (GifAnimationDrawable) mImageView.getTag();
-								
-								big.setOneShot(false);
-								mImageView.setImageDrawable(big);
-								big.setVisible(true, true);
-							}
-						} catch (NullPointerException e) {
-							e.printStackTrace();
-						}
-					}
-				});
+//				GifLoader.getInstance(this).displayImage(this, imageUrl, mImageView, new OnImageDisplayFinishListener() {
+//					
+//					@Override
+//					public void onFinish() {
+//						Log.d("LOG", "finish");
+//						pbLoading.setVisibility(View.GONE);
+//						GifAnimationDrawable big;
+//						try {
+//							if(mImageView.getTag() != null){
+//								big = (GifAnimationDrawable) mImageView.getTag();
+//								
+//								big.setOneShot(false);
+//								mImageView.setImageDrawable(big);
+//								big.setVisible(true, true);
+//							}
+//						} catch (NullPointerException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//				});
 			}else{
 				mImageView.setVisibility(View.GONE);
 				ImageLoader.getInstance(this).displayImage(this, imageUrl, mImageView, new OnImageDisplayFinishListener() {

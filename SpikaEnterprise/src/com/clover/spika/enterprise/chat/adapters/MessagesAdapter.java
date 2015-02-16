@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -55,7 +56,6 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
-import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -75,6 +75,7 @@ public class MessagesAdapter extends BaseAdapter {
 	private SparseIntArray dateSeparator = new SparseIntArray();
 
 	private ImageLoader imageLoader;
+	private GifLoader gifLoader;
 
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
@@ -97,6 +98,8 @@ public class MessagesAdapter extends BaseAdapter {
 
 		imageLoader = ImageLoader.getInstance(context);
 		imageLoader.setDefaultImage(0);
+		
+		gifLoader = GifLoader.getInstance(ctx);
 		
 		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
 		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
@@ -158,7 +161,8 @@ public class MessagesAdapter extends BaseAdapter {
 
 		holder.loading_bar.setVisibility(View.GONE);
 		
-		holder.meGifView.setVisibility(View.GONE);
+//		holder.meGifView.setVisibility(View.GONE);
+		holder.meWebView.setVisibility(View.GONE);
 		holder.meFlForGif.setVisibility(View.GONE);
 		
 		holder.youGifView.setVisibility(View.GONE);
@@ -214,28 +218,32 @@ public class MessagesAdapter extends BaseAdapter {
 				
 				holder.meFlForGif.setVisibility(View.VISIBLE);
 				
-				holder.meGifView.setVisibility(View.VISIBLE);
+//				holder.meGifView.setVisibility(View.VISIBLE);
+				holder.meWebView.setVisibility(View.VISIBLE);
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
-				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.meGifView, new OnImageDisplayFinishListener() {
-					
-					@Override
-					public void onFinish() {
-						setGif(holder.meGifView, (ProgressBar) holder.meFlForGif.getChildAt(0));
-					}
-				});
 				
-				holder.meGifView.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getText());
-						intent.putExtra(Const.TYPE, msg.getType());
-						ctx.startActivity(intent);
-						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
-					}
-				});
-				holder.meGifView.setOnLongClickListener(setLongClickListener(msg));
+				gifLoader.displayImage(ctx, msg.getText(), holder.meWebView, null);
+				
+//				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.meGifView, new OnImageDisplayFinishListener() {
+//					
+//					@Override
+//					public void onFinish() {
+//						setGif(holder.meGifView, (ProgressBar) holder.meFlForGif.getChildAt(0));
+//					}
+//				});
+//				
+//				holder.meGifView.setOnClickListener(new OnClickListener() {
+//					
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, PhotoActivity.class);
+//						intent.putExtra(Const.IMAGE, msg.getText());
+//						intent.putExtra(Const.TYPE, msg.getType());
+//						ctx.startActivity(intent);
+//						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
+//					}
+//				});
+//				holder.meGifView.setOnLongClickListener(setLongClickListener(msg));
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 				holder.meWatchVideo.setVisibility(View.VISIBLE);
@@ -383,29 +391,29 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 			} else if (msg.getType() == Const.MSG_TYPE_GIF) {
 				
-				holder.youFlForGif.setVisibility(View.VISIBLE);
-				
-				holder.youGifView.setVisibility(View.VISIBLE);
-				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
-				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.youGifView, new OnImageDisplayFinishListener() {
-					
-					@Override
-					public void onFinish() {
-						setGif(holder.youGifView, (ProgressBar) holder.youFlForGif.getChildAt(0));
-					}
-				});
-				
-				holder.youGifView.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getText());
-						intent.putExtra(Const.TYPE, msg.getType());
-						ctx.startActivity(intent);
-						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
-					}
-				});
+//				holder.youFlForGif.setVisibility(View.VISIBLE);
+//				
+//				holder.youGifView.setVisibility(View.VISIBLE);
+//				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
+//				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.youGifView, new OnImageDisplayFinishListener() {
+//					
+//					@Override
+//					public void onFinish() {
+//						setGif(holder.youGifView, (ProgressBar) holder.youFlForGif.getChildAt(0));
+//					}
+//				});
+//				
+//				holder.youGifView.setOnClickListener(new OnClickListener() {
+//					
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, PhotoActivity.class);
+//						intent.putExtra(Const.IMAGE, msg.getText());
+//						intent.putExtra(Const.TYPE, msg.getType());
+//						ctx.startActivity(intent);
+//						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
+//					}
+//				});
 				
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
@@ -991,7 +999,8 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
 		public FrameLayout meFlForGif;
-		public ImageView meGifView;
+//		public ImageView meGifView;
+		public WebView meWebView;
 		// end: me msg
 
 		public RelativeLayout meListenSound;
@@ -1045,7 +1054,8 @@ public class MessagesAdapter extends BaseAdapter {
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			
 			meFlForGif = (FrameLayout) view.findViewById(R.id.meFlForWebView);
-			meGifView = (ImageView) view.findViewById(R.id.meGifView);
+//			meGifView = (ImageView) view.findViewById(R.id.meGifView);
+			meWebView = (WebView) view.findViewById(R.id.meWebView);
 			// end: me msg
 
 			meListenSound = (RelativeLayout) view.findViewById(R.id.meRlSound);
