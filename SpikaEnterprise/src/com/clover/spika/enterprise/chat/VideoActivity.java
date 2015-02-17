@@ -1,12 +1,14 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -20,8 +22,6 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.File;
 
 public class VideoActivity extends BaseActivity {
 
@@ -104,7 +104,21 @@ public class VideoActivity extends BaseActivity {
 				}
 			}
 		});
-
+		
+		findViewById(R.id.shareVideo).setVisibility(View.VISIBLE);
+		findViewById(R.id.shareVideo).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Uri uri = Uri.fromFile(new File(sFileName));
+				Intent shareIntent = new Intent();
+				shareIntent.setAction(Intent.ACTION_SEND);
+				shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+				shareIntent.setType("video/*");
+				startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.share_via)));
+			}
+		});
+		
 	}
 
 	private void onPlay(int playPauseStop) {
