@@ -581,7 +581,7 @@ public class MessagesAdapter extends BaseAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				if(listenerLongAndSimpleClick != null) listenerLongAndSimpleClick.onSimpleClick(msg, 0);
+				if(listenerLongAndSimpleClick != null) listenerLongAndSimpleClick.onSimpleClick(msg);
 			}
 		});
 
@@ -1034,7 +1034,7 @@ public class MessagesAdapter extends BaseAdapter {
 	
 	public interface OnMessageLongAndSimpleClickCustomListener{
 		public void onLongClick(Message message);
-		public void onSimpleClick(Message message, int position);
+		public void onSimpleClick(Message message);
 	}
 	
 	public class ViewHolderChatMsg {

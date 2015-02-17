@@ -55,6 +55,10 @@ public class RecentAdapter extends BaseAdapter {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
+	
+	public List<Chat> getData(){
+		return data;
+	}
 
 	@Override
 	public int getCount() {

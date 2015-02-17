@@ -236,62 +236,137 @@ public class Chat extends BaseModel {
 	public void setLastMessage(Message lastMessage) {
 		this.lastMessage = lastMessage;
 	}
-
+	
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if (!super.equals(obj))
 			return false;
-		if (!super.equals(o))
+		if (getClass() != obj.getClass())
 			return false;
-
-		Chat chat1 = (Chat) o;
-
-		if (adapterCount != chat1.adapterCount)
+		Chat other = (Chat) obj;
+		if (adapterCount != other.adapterCount)
 			return false;
-		if (isClear != chat1.isClear)
+		if (adminId == null) {
+			if (other.adminId != null)
+				return false;
+		} else if (!adminId.equals(other.adminId))
 			return false;
-		if (isNewMsg != chat1.isNewMsg)
+		if (category == null) {
+			if (other.category != null)
+				return false;
+		} else if (!category.equals(other.category))
 			return false;
-		if (isPagging != chat1.isPagging)
+		if (chat == null) {
+			if (other.chat != null)
+				return false;
+		} else if (!chat.equals(other.chat))
 			return false;
-		if (isRefresh != chat1.isRefresh)
+		if (chat_id != other.chat_id)
 			return false;
-		if (isSend != chat1.isSend)
+		if (chat_name == null) {
+			if (other.chat_name != null)
+				return false;
+		} else if (!chat_name.equals(other.chat_name))
 			return false;
-		if (chat != null ? !chat.equals(chat1.chat) : chat1.chat != null)
+		if (id != other.id)
 			return false;
-		if (chat_id != chat1.chat_id)
+		if (image == null) {
+			if (other.image != null)
+				return false;
+		} else if (!image.equals(other.image))
 			return false;
-		if (chat_name != null ? !chat_name.equals(chat1.chat_name) : chat1.chat_name != null)
+		if (imageThumb == null) {
+			if (other.imageThumb != null)
+				return false;
+		} else if (!imageThumb.equals(other.imageThumb))
 			return false;
-		if (messages != null ? !messages.equals(chat1.messages) : chat1.messages != null)
+		if (isActive != other.isActive)
 			return false;
-		if (seen_by != null ? !seen_by.equals(chat1.seen_by) : chat1.seen_by != null)
+		if (isClear != other.isClear)
 			return false;
-		if (total_count != chat1.total_count)
+		if (isMember != other.isMember)
 			return false;
-		if (user != null ? !user.equals(chat1.user) : chat1.user != null)
+		if (isNewMsg != other.isNewMsg)
 			return false;
-
+		if (isPagging != other.isPagging)
+			return false;
+		if (isPrivate != other.isPrivate)
+			return false;
+		if (isRefresh != other.isRefresh)
+			return false;
+		if (isSelected != other.isSelected)
+			return false;
+		if (isSend != other.isSend)
+			return false;
+		if (lastMessage == null) {
+			if (other.lastMessage != null)
+				return false;
+		} else if (!lastMessage.equals(other.lastMessage))
+			return false;
+		if (messages == null) {
+			if (other.messages != null)
+				return false;
+		} else if (!messages.equals(other.messages))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (seen_by == null) {
+			if (other.seen_by != null)
+				return false;
+		} else if (!seen_by.equals(other.seen_by))
+			return false;
+		if (total_count != other.total_count)
+			return false;
+		if (type != other.type)
+			return false;
+		if (unread == null) {
+			if (other.unread != null)
+				return false;
+		} else if (!unread.equals(other.unread))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
+		final int prime = 31;
 		int result = super.hashCode();
-		result = 31 * result + (chat != null ? chat.hashCode() : 0);
-		result = 31 * result + (chat_name != null ? chat_name.hashCode() : 0);
-		result = 31 * result + (seen_by != null ? seen_by.hashCode() : 0);
-		result = 31 * result + (messages != null ? messages.hashCode() : 0);
-		result = 31 * result + (user != null ? user.hashCode() : 0);
-		result = 31 * result + (isNewMsg ? 1 : 0);
-		result = 31 * result + (isRefresh ? 1 : 0);
-		result = 31 * result + (isClear ? 1 : 0);
-		result = 31 * result + (isSend ? 1 : 0);
-		result = 31 * result + (isPagging ? 1 : 0);
-		result = 31 * result + adapterCount;
+		result = prime * result + adapterCount;
+		result = prime * result + ((adminId == null) ? 0 : adminId.hashCode());
+		result = prime * result + ((category == null) ? 0 : category.hashCode());
+		result = prime * result + ((chat == null) ? 0 : chat.hashCode());
+		result = prime * result + chat_id;
+		result = prime * result + ((chat_name == null) ? 0 : chat_name.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((image == null) ? 0 : image.hashCode());
+		result = prime * result + ((imageThumb == null) ? 0 : imageThumb.hashCode());
+		result = prime * result + isActive;
+		result = prime * result + (isClear ? 1231 : 1237);
+		result = prime * result + (isMember ? 1231 : 1237);
+		result = prime * result + (isNewMsg ? 1231 : 1237);
+		result = prime * result + (isPagging ? 1231 : 1237);
+		result = prime * result + isPrivate;
+		result = prime * result + (isRefresh ? 1231 : 1237);
+		result = prime * result + (isSelected ? 1231 : 1237);
+		result = prime * result + (isSend ? 1231 : 1237);
+		result = prime * result + ((lastMessage == null) ? 0 : lastMessage.hashCode());
+		result = prime * result + ((messages == null) ? 0 : messages.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((seen_by == null) ? 0 : seen_by.hashCode());
+		result = prime * result + total_count;
+		result = prime * result + type;
+		result = prime * result + ((unread == null) ? 0 : unread.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 

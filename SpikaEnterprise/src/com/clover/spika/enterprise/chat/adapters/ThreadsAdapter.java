@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -43,10 +44,11 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.PhotoActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.ThreadsActivity;
 import com.clover.spika.enterprise.chat.VideoActivity;
-import com.clover.spika.enterprise.chat.adapters.MessagesAdapter.OnMessageLongAndSimpleClickCustomListener;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -66,8 +68,9 @@ public class ThreadsAdapter extends BaseAdapter {
     private static final int VIEW_TYPE_SOUND = 4;
     private static final int VIEW_TYPE_FILE = 5;
     private static final int VIEW_TYPE_DELETED = 6;
+    private static final int VIEW_TYPE_GIF = 7;
 
-    private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_DELETED + 1;
+    private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_GIF + 1;
 
     private static final int INDENTATION_PADDING = 50;
 
@@ -89,8 +92,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private SeekBar activeSeekbar = null;
 	//*************************
 	
-    private MessagesAdapter.OnMessageLongAndSimpleClickCustomListener mListener;
-
     public ThreadsAdapter(Context context) {
         if (context instanceof Activity) {
             this.mContext = context;
@@ -135,10 +136,6 @@ public class ThreadsAdapter extends BaseAdapter {
         return INDENTATION_PADDING  * level;
     }
     
-    public void setListener(OnMessageLongAndSimpleClickCustomListener lis){
-    	mListener = lis;
-    }
-
     @Override
     public int getItemViewType(int position) {
         switch (getItem(position).getMessage().getType()) {
@@ -147,6 +144,9 @@ public class ThreadsAdapter extends BaseAdapter {
 
             case Const.MSG_TYPE_PHOTO:
                 return VIEW_TYPE_PHOTO;
+                
+            case Const.MSG_TYPE_GIF:
+                return VIEW_TYPE_GIF;
 
             case Const.MSG_TYPE_LOCATION:
                 return VIEW_TYPE_LOCATION;
@@ -208,25 +208,12 @@ public class ThreadsAdapter extends BaseAdapter {
                     convertView = inflatePhoto(holder, parent);
                     break;
                     
+                case VIEW_TYPE_GIF:
+                    convertView = inflateGif(holder, parent);
+                    break;
+                    
                 case VIEW_TYPE_SOUND:
                 	convertView = inflateSound(holder, parent);
-                	final Message mess = mMessageList.get(position).getMessage();
-                	final int pos = position;
-                	convertView.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							if(mListener != null) mListener.onSimpleClick(mess, pos);
-						}
-					});
-                	convertView.setOnLongClickListener(new View.OnLongClickListener() {
-						
-						@Override
-						public boolean onLongClick(View v) {
-							if(mListener != null) mListener.onLongClick(mess);
-							return false;
-						}
-					});
                 	break;
 
                 case VIEW_TYPE_LOCATION:
@@ -257,6 +244,10 @@ public class ThreadsAdapter extends BaseAdapter {
             case VIEW_TYPE_PHOTO:
                 populatePhoto(holder, node, position);
                 break;
+                
+            case VIEW_TYPE_GIF:
+                populateGif(holder, node, position);
+                break;
 
             case VIEW_TYPE_LOCATION:
                 populateLocation(holder, node, position);
@@ -281,6 +272,26 @@ public class ThreadsAdapter extends BaseAdapter {
         }
 
         convertView.setPadding(getIndentPadding(node.getLevel()), 0, 0, 0);
+        
+        if(type == VIEW_TYPE_GIF || type == VIEW_TYPE_SOUND){
+        	final int pos = position;
+            convertView.setOnClickListener(new OnClickListener() {
+    			
+    			@Override
+    			public void onClick(View v) {
+    				if(mContext instanceof ThreadsActivity)((ThreadsActivity)mContext).onItemClick(null, null, pos, getItemId(pos));
+    			}
+    		});
+            
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+    			
+    			@Override
+    			public boolean onLongClick(View v) {
+    				if(mContext instanceof ThreadsActivity)((ThreadsActivity)mContext).onItemLongClick(null, null, pos, getItemId(pos));
+    				return false;
+    			}
+    		});
+        }
 
         return convertView;
     }
@@ -314,6 +325,25 @@ public class ThreadsAdapter extends BaseAdapter {
         holder.imageViewPhoto = (ImageView) convertView.findViewById(R.id.image_view_photo);
         holder.imageViewPhoto.setOnClickListener(mOnClickPhoto);
         holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
+
+        return convertView;
+    }
+    
+    private View inflateGif(final ViewHolder holder, final ViewGroup parent) {
+        View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_gif, parent, false);
+
+        holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
+        ((RoundImageView)holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
+        holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
+        holder.gifWebView = (WebView) convertView.findViewById(R.id.webViewGif);
+        holder.gifWebView.setOnClickListener(mOnClickGif);
+        holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
+        
+        holder.gifWebView.getSettings().setAllowFileAccess(true);
+		holder.gifWebView.getSettings().setJavaScriptEnabled(true);
+		holder.gifWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+		holder.gifWebView.getSettings().setBuiltInZoomControls(true);
+		holder.gifWebView.setBackgroundColor(Color.TRANSPARENT);
 
         return convertView;
     }
@@ -403,6 +433,25 @@ public class ThreadsAdapter extends BaseAdapter {
         imageLoader.displayImage(mContext, node.getMessage().getThumb_id(), holder.imageViewPhoto);
         holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
 
+        
+        if (position == this.mSelectedItem) {
+            holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
+            holder.textViewUser.setTextColor(Color.WHITE);
+            holder.threadTime.setTextColor(Color.WHITE);
+        } else {
+            holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+            holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+            holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+        }
+    }
+    
+    private void populateGif(ViewHolder holder, TreeNode node, int position) {
+        imageLoader.displayImage(mContext, node.getMessage().getImage(), holder.imageViewUser);
+        holder.textViewUser.setText(node.getMessage().getName());
+        holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+
+        String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-left:5%;margin-top:5%\"";
+        GifLoader.getInstance(mContext).displayImage(mContext, node.getMessage().getText(), holder.gifWebView, style);
         
         if (position == this.mSelectedItem) {
             holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -583,6 +632,19 @@ public class ThreadsAdapter extends BaseAdapter {
             }
         }
     };
+    
+    private View.OnClickListener mOnClickGif = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getTag() != null) {
+                Intent photoIntent = new Intent(mContext, PhotoActivity.class);
+                photoIntent.putExtra(Const.IMAGE, "Gif");
+                photoIntent.putExtra(Const.FILE, (String) v.getTag());
+                photoIntent.putExtra(Const.TYPE, Const.MSG_TYPE_GIF);
+                mContext.startActivity(photoIntent);
+            }
+        }
+    };
 
     private View.OnClickListener mOnClickLocation = new View.OnClickListener() {
         @Override
@@ -626,6 +688,7 @@ public class ThreadsAdapter extends BaseAdapter {
         TextView textViewUser;
         TextView threadTime;
         RelativeLayout soundControl;
+        WebView gifWebView;
     }
     
     private String getCreatedTime(String created) {
