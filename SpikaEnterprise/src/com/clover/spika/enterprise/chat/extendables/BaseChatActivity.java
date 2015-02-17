@@ -20,8 +20,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -64,8 +65,8 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
-import com.clover.stpika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
-import com.clover.stpika.enterprise.chat.views.menu.SelectImageListener;
+import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
+import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -114,6 +115,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 	
 	private List<Stickers> stickersList = new ArrayList<Stickers>();
 	
+	private boolean isMenuInAnimation = false;
+	
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
 
@@ -143,6 +146,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		findViewById(R.id.chooseVoice).setOnClickListener(thisClickListener);
 		findViewById(R.id.voiceCall).setOnClickListener(thisClickListener);
 		findViewById(R.id.chooseFile).setOnClickListener(thisClickListener);
+		findViewById(R.id.footerSend).setOnClickListener(thisClickListener);
 
 		chatListView = (ListView) findViewById(R.id.main_list_view);
 
@@ -160,6 +164,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(thisClickListener);
 		setEditTextEditorAction();
+		etMessage.addTextChangedListener(thisTextChangeWatcher);
 
 		rlDrawerNew = (RelativeLayout) findViewById(R.id.rlNewDrawer);
 		rlDrawerNew.setSelected(false);
@@ -367,11 +372,13 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 	
 	private void rlDrawerNewManage() {
+		if(isMenuInAnimation) return;
 		if(rlDrawerEmoji.isSelected()){
 			rlDrawerEmojiManage(true);
 			return;
 		}
 		if (!rlDrawerNew.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerNew.setVisibility(View.VISIBLE);
 			dimMenu.setVisibility(View.VISIBLE);
 			dimOther.setVisibility(View.VISIBLE);
@@ -385,7 +392,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 						
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
 							FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
 							FrameLayoutForMenuPager pagerLayout = new FrameLayoutForMenuPager(BaseChatActivity.this);
 							pagerLayout.setViews(new SelectImageListener() {
@@ -402,6 +408,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 							flForPager.addView(pagerLayout);
 
 							findViewById(R.id.pbLoading).setVisibility(View.GONE);
+							isMenuInAnimation = false;
 						}
 					}, 200);
 					
@@ -411,9 +418,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.fadeAnim(dimMenu, 0, 1, drawerDuration);
 			AnimUtils.fadeAnim(dimOther, 0, 1, drawerDuration);
 		} else {
-			
+			isMenuInAnimation = true;
 			FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
-			((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
+			if(flForPager.getChildCount() > 1 && flForPager.getChildAt(1) instanceof FrameLayoutForMenuPager) ((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
 			if(flForPager.getChildCount() > 1 ) flForPager.removeView(flForPager.getChildAt(1));
 			
 			findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
@@ -425,6 +432,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerNew.setSelected(false);
 					dimMenu.setVisibility(View.GONE);
 					dimOther.setVisibility(View.GONE);
+					isMenuInAnimation = false;
 
 				}
 			});
@@ -433,7 +441,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void rlDrawerEmojiManage(boolean toOpenMenu) {
+	private void rlDrawerEmojiManage(final boolean toOpenMenu) {
+		if(isMenuInAnimation) return;
 		if(stickersList.size() == 0){
 			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
 				
@@ -446,6 +455,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			});
 		}
 		if (!rlDrawerEmoji.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerEmoji.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawerEmoji, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
 				@Override
@@ -464,19 +474,22 @@ public abstract class BaseChatActivity extends BaseActivity {
 							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
 							EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
 							layout.resetDotsIfNeed();
+							isMenuInAnimation = false;
 						}
 					}, 100);
 				}
 			});
 			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
 		} else {
+			isMenuInAnimation = true;
 			AnimUtils.translationY(rlDrawerEmoji, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setVisibility(View.GONE);
 					rlDrawerEmoji.setSelected(false);
 
-					rlDrawerNewManage();
+					isMenuInAnimation = false;
+					if(toOpenMenu) rlDrawerNewManage();
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
@@ -612,6 +625,26 @@ public abstract class BaseChatActivity extends BaseActivity {
 		
 	}
 	
+	private TextWatcher thisTextChangeWatcher = new TextWatcher() {
+		
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		
+		@Override
+		public void afterTextChanged(Editable s) {
+			if(TextUtils.isEmpty(s.toString())){
+				findViewById(R.id.footerSend).setVisibility(View.GONE);
+				findViewById(R.id.footerSmiley).setVisibility(View.VISIBLE);
+			}else{
+				findViewById(R.id.footerSend).setVisibility(View.VISIBLE);
+				findViewById(R.id.footerSmiley).setVisibility(View.INVISIBLE);
+			}
+		}
+	};
+	
 	View.OnClickListener thisClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -693,6 +726,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerNewManage();
 			} else if (id == R.id.blackedTopMenu) {
 				rlDrawerNewManage();
+			} else if (id == R.id.footerSend) {
+				onEditorSendEvent(etMessage.getText().toString());
 			}
 		}
 	};

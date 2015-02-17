@@ -1,8 +1,10 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.File;
+import java.io.IOException;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -10,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -55,26 +56,20 @@ public class PhotoActivity extends BaseActivity {
 			imageUrl = intent.getExtras().getString(Const.IMAGE, "");
 
 			if(intent.hasExtra(Const.TYPE) && intent.getIntExtra(Const.TYPE, -1) == Const.MSG_TYPE_GIF){
-				GifLoader.getInstance(this).displayImage(this, imageUrl, mImageView, new OnImageDisplayFinishListener() {
-					
-					@Override
-					public void onFinish() {
-						Log.d("LOG", "finish");
-						pbLoading.setVisibility(View.GONE);
-						GifAnimationDrawable big;
-						try {
-							if(mImageView.getTag() != null){
-								big = (GifAnimationDrawable) mImageView.getTag();
-								
-								big.setOneShot(false);
-								mImageView.setImageDrawable(big);
-								big.setVisible(true, true);
-							}
-						} catch (NullPointerException e) {
-							e.printStackTrace();
-						}
-					}
-				});
+				if(intent.getStringExtra(Const.FILE) == null){
+					return;
+				}
+				try {
+					GifAnimationDrawable gif = new GifAnimationDrawable(new File(intent.getStringExtra(Const.FILE)), this);
+					gif.setOneShot(false);
+					mImageView.setImageDrawable(gif);
+					gif.setVisible(true, true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				pbLoading.setVisibility(View.GONE);
+				mImageView.setVisibility(View.VISIBLE);
 			}else{
 				mImageView.setVisibility(View.GONE);
 				ImageLoader.getInstance(this).displayImage(this, imageUrl, mImageView, new OnImageDisplayFinishListener() {

@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,9 +15,11 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
         ApiCallback<Integer> {
@@ -47,11 +50,11 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     private String mRootId;
     private String mMessageId;
     private String mUserId;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         if (getIntent().getExtras() != null) {
             mUserId = getIntent().getStringExtra(EXTRA_USER_ID);
             mRootId = getIntent().getStringExtra(EXTRA_ROOT_ID);
@@ -64,7 +67,16 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
             chatListView.setOnItemClickListener(this);
             chatListView.setOnItemLongClickListener(this);
-            chatListView.setAdapter(new ThreadsAdapter(this));
+            ThreadsAdapter adapter = new ThreadsAdapter(this);
+            chatListView.setAdapter(adapter);
+            
+            setEmojiListener(new SelectEmojiListener() {
+    			
+    			@Override
+    			public void onEmojiSelect(Stickers selectedStickers) {
+    				sendEmoji(selectedStickers.getUrl());
+    			}
+    		});
         }
     }
 
@@ -90,6 +102,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
                             break;
                         }
                     }
+                    
+                    findViewById(R.id.mainContent).setBackgroundColor(Color.WHITE);
                 }
             }
         });
@@ -102,6 +116,10 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     private void sendFile(String fileName, String fileId) {
         new ChatApi().sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null,
                 mRootId, mMessageId, this, this);
+    }
+    
+    private void sendEmoji(String text) {
+        new ChatApi().sendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this, this);
     }
 
     @Override
@@ -182,6 +200,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
         if (result.isSuccess()) {
             etMessage.setText("");
             hideKeyboard(etMessage);
+            forceClose();
 
             getThreads();
         } else {

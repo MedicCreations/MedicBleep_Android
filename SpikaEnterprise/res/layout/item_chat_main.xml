@@ -4,34 +4,33 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
     android:layout_marginTop="5dp"
-    android:background="@color/transparent"
+    android:background="@color/white"
     android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/loading_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:background="@color/dark_gray"
         android:gravity="center"
-        android:background="@color/dark_gray" >
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
 
         <ProgressBar
             android:id="@+id/loadingPaging"
             android:layout_width="35dp"
-            android:layout_height="35dp"
-             />
-        
-        <TextView android:id="@+id/loadingPagingText"
+            android:layout_height="35dp" />
+
+        <TextView
+            android:id="@+id/loadingPagingText"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:gravity="center_vertical"
-            android:textSize="14sp"
-            android:text="@string/loading_older_messages"
-            android:layout_toRightOf="@id/loadingPaging"
             android:layout_marginLeft="5dp"
-            android:textColor="@android:color/white"/>
-
+            android:layout_toRightOf="@id/loadingPaging"
+            android:gravity="center_vertical"
+            android:text="@string/loading_older_messages"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -69,14 +68,31 @@
             android:gravity="right"
             android:orientation="horizontal" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:id="@+id/timeMe"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="10dp"
-                android:textColor="@color/text_time_gray"
-                android:textSize="15sp" />
+                android:gravity="bottom"
+                android:minHeight="50dp"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/me_image_view_threads_indicator"
+                    android:layout_width="20dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="right|top"
+                    android:layout_marginBottom="10dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/right_thread_arrow" />
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/timeMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_time_gray"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/defaultMsgLayoutMe"
@@ -94,18 +110,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
-                    <ImageView
-                        android:id="@+id/me_image_view_threads_indicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_centerVertical="true"
-                        android:contentDescription="@null" />
-
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/meMsgContent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@id/me_image_view_threads_indicator"
                         android:autoLink="all"
                         android:gravity="right"
                         android:linksClickable="true"
@@ -207,8 +215,14 @@
                     android:id="@+id/meFlForWebView"
                     android:layout_width="150dp"
                     android:layout_height="150dp" >
+                    
+                    <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                        android:id="@+id/meWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="none"/>
 
-                    <ProgressBar
+                    <!-- <ProgressBar
                         android:id="@+id/mePbGif"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
@@ -220,7 +234,7 @@
                         android:layout_height="150dp"
                         android:layout_gravity="right"
                         android:contentDescription="@null"
-                        android:scaleType="fitCenter" />
+                        android:scaleType="fitCenter" /> -->
                 </FrameLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
@@ -290,19 +304,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" >
 
-                        <ImageView
-                            android:id="@+id/you_image_view_threads_indicator"
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"
-                            android:layout_centerVertical="true"
-                            android:contentDescription="@null"
-                            tools:src="@drawable/ic_thread_reply" />
-
                         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                             android:id="@+id/youMsgContent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_toRightOf="@id/you_image_view_threads_indicator"
                             android:autoLink="all"
                             android:gravity="left"
                             android:linksClickable="true"
@@ -405,8 +410,14 @@
                         android:id="@+id/youFlForWebView"
                         android:layout_width="150dp"
                         android:layout_height="150dp" >
+                        
+                        <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
+                            android:id="@+id/youWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="none"/>
 
-                        <ProgressBar
+                        <!-- <ProgressBar
                             android:id="@+id/youPbGif"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
@@ -418,7 +429,7 @@
                             android:layout_height="150dp"
                             android:layout_gravity="left"
                             android:contentDescription="@null"
-                            android:scaleType="fitCenter" />
+                            android:scaleType="fitCenter" /> -->
                     </FrameLayout>
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
@@ -433,15 +444,31 @@
                         android:textSize="17sp" />
                 </LinearLayout>
 
-                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                    android:id="@+id/timeYou"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_marginRight="10dp"
-                    android:gravity="left"
-                    android:textColor="@color/text_time_gray"
-                    android:textSize="15sp" />
+                    android:gravity="left|bottom"
+                    android:minHeight="50dp"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:id="@+id/you_image_view_threads_indicator"
+                        android:layout_width="20dp"
+                        android:layout_height="17dp"
+                        android:layout_gravity="left|top"
+                        android:layout_marginBottom="10dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/left_thread_arrow" />
+
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        android:id="@+id/timeYou"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_time_gray"
+                        android:textSize="15sp" />
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 

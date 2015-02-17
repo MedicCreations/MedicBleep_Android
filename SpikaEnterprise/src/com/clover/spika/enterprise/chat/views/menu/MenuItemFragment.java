@@ -1,16 +1,14 @@
-package com.clover.stpika.enterprise.chat.views.menu;
+package com.clover.spika.enterprise.chat.views.menu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-import android.graphics.Point;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.hardware.Camera.Parameters;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -18,10 +16,10 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -102,27 +100,32 @@ public class MenuItemFragment extends CustomFragment {
 					}
 				});
 			}else{
-				LinearLayout ll = new LinearLayout(getActivity());
+				RelativeLayout rl = new RelativeLayout(getActivity());
 				
-				layout.addView(ll);
+				layout.addView(rl);
 				
 				ImageView iv = new ImageView(getActivity());
-				ll.addView(iv);
+				rl.addView(iv);
+				ProgressBar pb = new ProgressBar(getActivity());
+				rl.addView(pb);
+				((LayoutParams)pb.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
 				
 				int imageSize = itemSizeHeight > itemSizeWidth ? itemSizeHeight : itemSizeWidth;
 				
 				iv.getLayoutParams().height = itemSizeHeight - 10;
 				iv.getLayoutParams().width = itemSizeWidth - 10;
 				iv.setScaleType(ScaleType.CENTER_CROP);
+				((LayoutParams)iv.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
 				
-				iv.setImageBitmap(Utils.resizeBitmap(imageSize, imageSize, imagesToShow.get(i)));
+				new Resize(imageSize, iv, pb, imagesToShow.get(i)).execute();
+//				iv.setImageBitmap(Utils.resizeBitmap(imageSize, imageSize, imagesToShow.get(i)));
 				
-				ll.getLayoutParams().width = itemSizeWidth;
-				ll.getLayoutParams().height = itemSizeHeight;
-				ll.setGravity(Gravity.CENTER);
+				rl.getLayoutParams().width = itemSizeWidth;
+				rl.getLayoutParams().height = itemSizeHeight;
+				rl.setGravity(Gravity.CENTER);
 				
 				final String path = imagesToShow.get(i);
-				ll.setOnClickListener(new View.OnClickListener() {
+				rl.setOnClickListener(new View.OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
@@ -142,6 +145,36 @@ public class MenuItemFragment extends CustomFragment {
 		}, 200);
 		
 		return superView;
+	}
+	
+	class Resize extends AsyncTask<Void, Void, Void> {
+		
+		Bitmap bitmap;
+		int size;
+		ImageView iv;
+		ProgressBar pb;
+		String imageToShow;
+		
+		public Resize(int size, ImageView iv, ProgressBar pb, String imageToShow) {
+			this.size = size;
+			this.iv = iv;
+			this.imageToShow = imageToShow;
+			this.pb = pb;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			bitmap = Utils.resizeBitmap(size, size, imageToShow);
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			pb.setVisibility(View.GONE);
+			iv.setImageBitmap(bitmap);
+			super.onPostExecute(result);
+		}
+		
 	}
 	
 	@Override

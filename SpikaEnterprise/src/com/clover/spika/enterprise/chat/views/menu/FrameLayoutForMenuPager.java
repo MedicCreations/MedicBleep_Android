@@ -1,4 +1,4 @@
-package com.clover.stpika.enterprise.chat.views.menu;
+package com.clover.spika.enterprise.chat.views.menu;
 
 import java.util.List;
 

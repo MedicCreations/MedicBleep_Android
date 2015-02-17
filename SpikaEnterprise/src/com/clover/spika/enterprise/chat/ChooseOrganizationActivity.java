@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -51,6 +52,7 @@ public class ChooseOrganizationActivity extends LoginBaseActivity implements OnI
 			
 			@Override
 			public void onClick(View v) {
+				startActivity(new Intent(ChooseOrganizationActivity.this, LoginActivity.class));
 				finish();
 			}
 		});

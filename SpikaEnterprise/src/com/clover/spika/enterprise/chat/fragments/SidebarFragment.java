@@ -113,7 +113,7 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 				informationFragment = new InformationFragment();
 			}
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information));
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.about)); 
 			switchFragment(informationFragment);
 
 			break;

@@ -64,12 +64,6 @@ public class OrganizationAdapter extends BaseAdapter{
 
 		holder.organizationName.setText(organization.getName());
 
-		if (position % 2 == 0) {
-			holder.itemLayout.setBackgroundColor(context.getResources().getColor(R.color.gray_in_adapter));
-		} else {
-			holder.itemLayout.setBackgroundColor(Color.WHITE);
-		}
-
 		return convertView;
 	}
 	

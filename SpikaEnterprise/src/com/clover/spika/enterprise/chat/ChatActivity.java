@@ -9,10 +9,12 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -88,6 +90,24 @@ public class ChatActivity extends BaseChatActivity {
 				return true;
 			}
 		});
+		
+		adapter.setOnLongAndSimpleClickCustomListener(new MessagesAdapter.OnMessageLongAndSimpleClickCustomListener() {
+			
+			@Override
+			public void onLongClick(Message message) {
+				if (message.isMe()) {
+					deleteMessage(message.getId());
+				}
+			}
+
+			@Override
+			public void onSimpleClick(Message message) {
+				if (message.getType() != Const.MSG_TYPE_DELETED) {
+					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
+					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
+				}
+			}
+		});
 
 		isOnCreate = true;
 		
@@ -103,7 +123,11 @@ public class ChatActivity extends BaseChatActivity {
 		});
 		
 	}
-
+	
+	public void setIsResume(boolean isResume){
+		this.isResume = isResume;
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -362,6 +386,12 @@ public class ChatActivity extends BaseChatActivity {
 		
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
+			Log.d("LOG", "old: "+chatId +", new: "+intent.getExtras().getString(Const.CHAT_ID));
+			
+			if(chatId != null && intent.getExtras().getString(Const.CHAT_ID) !=null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))){
+				adapter.clearItems();
+			}
+			
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
@@ -694,8 +724,10 @@ public class ChatActivity extends BaseChatActivity {
 	private void setNoItemsVisibility() {
 		if (adapter.getCount() == 0) {
 			noItems.setVisibility(View.VISIBLE);
+			findViewById(R.id.mainContent).setBackgroundColor(getResources().getColor(R.color.default_blue_light));
 		} else {
 			noItems.setVisibility(View.GONE);
+			findViewById(R.id.mainContent).setBackgroundColor(Color.WHITE);
 		}
 	}
 

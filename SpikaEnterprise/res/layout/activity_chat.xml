@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/actionBarLayout"
-        android:background="@android:color/white" >
+        android:background="@color/default_blue_light" >
 
         <ListView
             android:id="@+id/main_list_view"
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/no_messages"
-            android:textColor="@color/default_blue"
+            android:textColor="@color/white"
             android:textSize="30sp"
             android:visibility="gone" />
 
@@ -129,7 +129,7 @@
                 android:padding="5dp"
                 android:scrollbars="vertical"
                 android:singleLine="false" />
-
+            
             <ImageButton
                 android:id="@+id/footerSmiley"
                 android:layout_width="wrap_content"
@@ -142,6 +142,20 @@
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
                 android:src="@drawable/smiley_icon" />
+            
+            <ImageButton
+                android:id="@+id/footerSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:src="@drawable/send_button" />
         </RelativeLayout>
 
         <View
@@ -395,6 +409,7 @@
             android:id="@+id/rlDrawerEmoji"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:background="@android:color/white"
             android:layout_alignParentBottom="true"
             android:visibility="gone" >
 
