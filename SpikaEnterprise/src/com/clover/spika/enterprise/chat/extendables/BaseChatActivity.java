@@ -20,7 +20,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -144,6 +146,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		findViewById(R.id.chooseVoice).setOnClickListener(thisClickListener);
 		findViewById(R.id.voiceCall).setOnClickListener(thisClickListener);
 		findViewById(R.id.chooseFile).setOnClickListener(thisClickListener);
+		findViewById(R.id.footerSend).setOnClickListener(thisClickListener);
 
 		chatListView = (ListView) findViewById(R.id.main_list_view);
 
@@ -161,6 +164,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(thisClickListener);
 		setEditTextEditorAction();
+		etMessage.addTextChangedListener(thisTextChangeWatcher);
 
 		rlDrawerNew = (RelativeLayout) findViewById(R.id.rlNewDrawer);
 		rlDrawerNew.setSelected(false);
@@ -621,6 +625,26 @@ public abstract class BaseChatActivity extends BaseActivity {
 		
 	}
 	
+	private TextWatcher thisTextChangeWatcher = new TextWatcher() {
+		
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		
+		@Override
+		public void afterTextChanged(Editable s) {
+			if(TextUtils.isEmpty(s.toString())){
+				findViewById(R.id.footerSend).setVisibility(View.GONE);
+				findViewById(R.id.footerSmiley).setVisibility(View.VISIBLE);
+			}else{
+				findViewById(R.id.footerSend).setVisibility(View.VISIBLE);
+				findViewById(R.id.footerSmiley).setVisibility(View.INVISIBLE);
+			}
+		}
+	};
+	
 	View.OnClickListener thisClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -702,6 +726,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerNewManage();
 			} else if (id == R.id.blackedTopMenu) {
 				rlDrawerNewManage();
+			} else if (id == R.id.footerSend) {
+				onEditorSendEvent(etMessage.getText().toString());
 			}
 		}
 	};
