@@ -272,7 +272,8 @@
     <string name="choose_video">Choose Video</string>
     <string name="voice">Voice</string>
     <string name="choose_file">Choose File</string>
-    <string name="aplication_for_sending_mail_did_t_found">Aplication for sending mail did\'t found</string>
-    <string name="aplication_for_calling_mail_did_t_found">Aplication for callling mail did\'t found</string>
+    <string name="aplication_for_sending_mail_did_t_found">Application for sending mail did\'t found</string>
+    <string name="aplication_for_calling_mail_did_t_found">Application for callling mail did\'t found</string>
+    <string name="share_via">Share via</string>
 
 </resources>
