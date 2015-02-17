@@ -25,7 +25,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/img_room"
             android:layout_toRightOf="@+id/img_room"
-            android:hint="@string/enterRoomName"
+            android:hint="@string/enterGroupName"
             android:imeOptions="actionDone"
             android:singleLine="true" />
         
@@ -36,7 +36,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/img_room"
             android:layout_toRightOf="@+id/img_room"
-            android:hint="@string/enterRoomName"
+            android:hint="@string/enterGroupName"
             android:textColor="@color/devil_gray"
             android:textSize="20sp"
             android:visibility="gone"
@@ -55,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/belowRoomLine"
-        android:background="@color/white" >
+        android:background="@color/white"
+        android:visibility="gone" >
 
         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/tvPrivate"
@@ -84,14 +85,16 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_below="@id/layoutPrivate"
-        android:background="@color/chat_menu_gray" />
+        android:background="@color/chat_menu_gray" 
+        android:visibility="gone"/>
 
     <RelativeLayout
         android:id="@+id/layoutPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/belowPrivateLayout"
-        android:background="@color/white" >
+        android:background="@color/white"
+        android:visibility="gone" >
 
         <com.clover.spika.enterprise.chat.views.RobotoThinEditText
             android:id="@+id/etPassword"
@@ -111,14 +114,16 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_below="@id/layoutPassword"
-        android:background="@color/chat_menu_gray" />
+        android:background="@color/chat_menu_gray"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/layoutPasswordRepeat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/belowPasswordLayout"
-        android:background="@color/white" >
+        android:background="@color/white" 
+        android:visibility="gone">
 
         <com.clover.spika.enterprise.chat.views.RobotoThinEditText
             android:id="@+id/etPasswordRepeat"
@@ -138,14 +143,16 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_below="@id/layoutPasswordRepeat"
-        android:background="@color/chat_menu_gray" />
+        android:background="@color/chat_menu_gray"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/layoutCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/belowPasswordRepeatLayout"
-        android:background="@color/white" >
+        android:background="@color/white"
+        android:visibility="gone" >
 
         <TextView
             android:id="@+id/tvCategory"
@@ -171,7 +178,8 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_below="@id/layoutCategory"
-        android:background="@color/chat_menu_gray" />
+        android:background="@color/chat_menu_gray"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/txtUserNames"
