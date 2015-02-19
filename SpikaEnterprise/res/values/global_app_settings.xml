@@ -28,11 +28,14 @@
 
     <!-- Enable polling in the app -->
     <bool name="enable_polling">false</bool>
-    
+
     <!-- Enable first user profile than chat -->
     <bool name="first_user_profile">false</bool>
-    
-     <!-- Enable Emoji -->
+
+    <!-- Enable Emoji -->
     <bool name="enable_emoji">true</bool>
+
+    <!-- Enable Static Emoji -->
+    <bool name="enable_static_emoji">true</bool>
 
 </resources>
