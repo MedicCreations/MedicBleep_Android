@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -127,8 +128,15 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     @Override
-    protected void onEditorSendEvent(String text) {
-        sendMessage(text);
+    protected void onEditorSendEvent(final String text) {
+    	hideKeyboard(etMessage);
+		new Handler().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				sendMessage(text);
+			}
+		});
     }
 
     @Override
@@ -199,7 +207,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     public void onApiResponse(Result<Integer> result) {
         if (result.isSuccess()) {
             etMessage.setText("");
-            hideKeyboard(etMessage);
             forceClose();
 
             getThreads();
