@@ -578,7 +578,6 @@ public class ChatActivity extends BaseChatActivity {
 			public void onApiResponse(Result<Integer> result) {
 				if (result.isSuccess()) {
 					etMessage.setText("");
-					hideKeyboard(etMessage);
 					forceClose();
 
 					callNewMsgs();
@@ -588,7 +587,6 @@ public class ChatActivity extends BaseChatActivity {
 					if (result.getResultData() == Const.E_CHAT_INACTIVE) {
 						isActive = 0;
 						etMessage.setText("");
-						hideKeyboard(etMessage);
 						etMessage.setFocusable(false);
 					}
 				}
@@ -717,8 +715,16 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	@Override
-	protected void onEditorSendEvent(String text) {
-		sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
+	protected void onEditorSendEvent(final String text) {
+		hideKeyboard(etMessage);
+		new Handler().post(new Runnable() {
+			
+			@Override
+			public void run() {
+				sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
+			}
+		});
+		
 	}
 
 	private void setNoItemsVisibility() {

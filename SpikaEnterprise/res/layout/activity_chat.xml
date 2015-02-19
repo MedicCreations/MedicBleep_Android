@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:id="@+id/rootView" >
 
     <SurfaceView
         android:id="@+id/preventFromFlicking"
@@ -108,20 +109,32 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
                 android:adjustViewBounds="true"
                 android:background="@null"
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
                 android:src="@drawable/plus_icon" />
+            
+            <ImageButton
+                android:id="@+id/footerSmileyStatic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/footerMore"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/smiley_static" />
 
-            <EditText
+            <github.ankushsachdeva.emojicon.EmojiconEditText
                 android:id="@+id/etMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/footerSmiley"
-                android:layout_toRightOf="@+id/footerMore"
+                android:layout_toRightOf="@+id/footerSmileyStatic"
                 android:background="@drawable/chat_mask"
                 android:imeOptions="actionSend"
                 android:inputType="textCapSentences"

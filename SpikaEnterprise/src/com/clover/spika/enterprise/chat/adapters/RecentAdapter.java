@@ -206,18 +206,18 @@ public class RecentAdapter extends BaseAdapter {
 	public class ViewHolderCharacter {
 
 		public ImageView recentImage;
-		public RobotoRegularTextView recentName;
+		public TextView recentName;
 		public TextView unreadText;
-		public RobotoRegularTextView lastMessage;
-		public RobotoRegularTextView lastMessageTime;
+		public TextView lastMessage;
+		public TextView lastMessageTime;
 
 		public ViewHolderCharacter(View view) {
 
 			recentImage = (ImageView) view.findViewById(R.id.recentImage);
-			recentName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
+			recentName = (TextView) view.findViewById(R.id.recentName);
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
-			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
-			lastMessageTime = (RobotoRegularTextView) view.findViewById(R.id.lastMessageTime);
+			lastMessage = (TextView) view.findViewById(R.id.lastMessage);
+			lastMessageTime = (TextView) view.findViewById(R.id.lastMessageTime);
 			
 		}
 

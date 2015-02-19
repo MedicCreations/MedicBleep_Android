@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import github.ankushsachdeva.emojicon.EmojiconGridView.OnEmojiconClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnEmojiconBackspaceClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnSoftKeyboardOpenCloseListener;
+import github.ankushsachdeva.emojicon.emoji.Emojicon;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,12 +35,14 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -76,6 +84,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected static final int SETTINGS_POSITION_SECOND = 1;
 	protected static final int SETTINGS_POSITION_THIRD = 2;
 	protected static final int SETTINGS_POSITION_FOURTH = 3;
+	
+	private static final int MENU_OPEN = 1;
+	private static final int STATIC_SMILEY_OPEN = 2;
+	private static final int NONE_OPEN = 0;
 
 	protected String chatImage = null;
 	protected String chatImageThumb = null;
@@ -97,6 +109,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private ImageButton footerEmoji;
 	protected RelativeLayout rlDrawerNew;
 	protected RelativeLayout rlDrawerEmoji;
+	protected EmojiconsPopup staticEmojiPopup;
 	private RelativeLayout chatLayout;
 	private RobotoThinTextView screenTitle;
 	protected EditText etMessage;
@@ -255,6 +268,89 @@ public abstract class BaseChatActivity extends BaseActivity {
 			findViewById(R.id.footerSmiley).setVisibility(View.GONE);
 		}
 		
+		boolean isStaticEmojiEnable = getResources().getBoolean(R.bool.enable_static_emoji);
+		if(!isStaticEmojiEnable){
+			findViewById(R.id.footerSmileyStatic).setVisibility(View.GONE);
+		}
+		
+		staticEmojiPopup = new EmojiconsPopup(findViewById(R.id.rootView), this);
+		staticEmojiPopup.setSizeForSoftKeyboard();
+		
+		final ImageButton staticSmileyButton = (ImageButton) findViewById(R.id.footerSmileyStatic);
+		staticSmileyButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				staticEmojiManage(staticSmileyButton);
+			}
+		});
+		
+		// Set on emojicon click listener
+		staticEmojiPopup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				etMessage.append(emojicon.getEmoji());
+			}
+		});
+
+		// Set on backspace click listener
+		staticEmojiPopup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				etMessage.dispatchKeyEvent(event);
+			}
+		});
+
+		// If the emoji popup is dismissed, change emojiButton to smiley icon
+		staticEmojiPopup.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				changeEmojiKeyboardIcon(staticSmileyButton, R.drawable.smiley_static);
+			}
+		});
+
+		// If the text keyboard closes, also dismiss the emoji popup
+		staticEmojiPopup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
+
+			@Override
+			public void onKeyboardOpen(int keyBoardHeight) {
+
+			}
+
+			@Override
+			public void onKeyboardClose() {
+				if (staticEmojiPopup.isShowing())
+					staticEmojiPopup.dismiss();
+			}
+		});
+
+		// On emoji clicked, add it to edittext
+		staticEmojiPopup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				etMessage.append(emojicon.getEmoji());
+			}
+		});
+
+		// On backspace clicked, emulate the KEYCODE_DEL key event
+		staticEmojiPopup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				etMessage.dispatchKeyEvent(event);
+			}
+		});
+		
+	}
+	
+	private void changeEmojiKeyboardIcon(ImageButton iconToBeChanged, int drawableResourceId){
+		iconToBeChanged.setImageResource(drawableResourceId);
 	}
 	
 	protected void setMenuByChatType () {
@@ -374,7 +470,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private void rlDrawerNewManage() {
 		if(isMenuInAnimation) return;
 		if(rlDrawerEmoji.isSelected()){
-			rlDrawerEmojiManage(true);
+			rlDrawerEmojiManage(MENU_OPEN);
 			return;
 		}
 		if (!rlDrawerNew.isSelected()) {
@@ -441,7 +537,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void rlDrawerEmojiManage(final boolean toOpenMenu) {
+	private void rlDrawerEmojiManage(final int openOther) {
 		if(isMenuInAnimation) return;
 		if(stickersList.size() == 0){
 			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
@@ -489,7 +585,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerEmoji.setSelected(false);
 
 					isMenuInAnimation = false;
-					if(toOpenMenu) rlDrawerNewManage();
+					if(openOther == MENU_OPEN) rlDrawerNewManage();
+					else if(openOther == STATIC_SMILEY_OPEN) staticEmojiManage((ImageButton) findViewById(R.id.footerSmileyStatic));
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
@@ -499,13 +596,44 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.translationY(chatListView, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
 		}
 	}
+	
+	private void staticEmojiManage(ImageButton buttonView){
+		if(rlDrawerEmoji.isSelected()){
+			rlDrawerEmojiManage(STATIC_SMILEY_OPEN);
+			return;
+		}
+		if(!staticEmojiPopup.isShowing()){
+			
+			//If keyboard is visible, simply show the emoji popup
+			if(staticEmojiPopup.isKeyBoardOpen()){
+				staticEmojiPopup.showAtBottom();
+				changeEmojiKeyboardIcon(buttonView, R.drawable.keyboard_icon);
+			}
+			
+			//else, open the text keyboard first and immediately after that show the emoji popup
+			else{
+				etMessage.setFocusableInTouchMode(true);
+				etMessage.requestFocus();
+				staticEmojiPopup.showAtBottomPending();
+				final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				inputMethodManager.showSoftInput(etMessage, InputMethodManager.SHOW_IMPLICIT);
+				changeEmojiKeyboardIcon(buttonView, R.drawable.keyboard_icon);
+			}
+		}
+		
+		//If popup is showing, simply dismiss it to show the undelying text keyboard 
+		else{
+			staticEmojiPopup.dismiss();
+		}
+		
+	}
 
 	protected void forceClose() {
 		if (rlDrawerNew.isSelected()) {
 			rlDrawerNewManage();
 			hideKeyboard(etMessage);
 		}else if(rlDrawerEmoji.isSelected()){
-			rlDrawerEmojiManage(false);
+			rlDrawerEmojiManage(NONE_OPEN);
 			hideKeyboard(etMessage);
 		}
 	}
@@ -711,7 +839,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				hideSettings();
 
 			} else if (id == R.id.footerSmiley && isActive == 1) {
-				rlDrawerEmojiManage(false);
+				rlDrawerEmojiManage(NONE_OPEN);
 				hideSettings();
 
 			}  else if (id == R.id.goBack) {
