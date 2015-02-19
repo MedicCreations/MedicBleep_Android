@@ -42,6 +42,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -856,6 +857,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerNewManage();
 			} else if (id == R.id.footerSend) {
 				onEditorSendEvent(etMessage.getText().toString());
+			} else if (id == R.id.voiceCall) {
+				//make call
+				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YES", 2000).show();
 			}
 		}
 	};
