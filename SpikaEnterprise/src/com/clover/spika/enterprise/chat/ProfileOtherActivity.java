@@ -89,7 +89,7 @@ public class ProfileOtherActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(ProfileOtherActivity.this, "VOICE CALL IS NOT IMPLEMENTED YES", 2000).show();
+				Toast.makeText(ProfileOtherActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
 			}
 		});
 		
