@@ -338,6 +338,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meThreadIndicator.setImageDrawable(null);
 				holder.meThreadIndicator.setVisibility(View.GONE);
 			}
+			
 		} else {
 			// Chat member messages, not mine
 
@@ -420,9 +421,8 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youWebView.getSettings().setAllowFileAccess(true);
 				holder.youWebView.getSettings().setJavaScriptEnabled(true);
 				holder.youWebView.getSettings().setBuiltInZoomControls(true);
-				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
 				
-				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
+				String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-top:5%; margin-left:5%;\"";
 				gifLoader.displayImage(ctx, msg.getText(), holder.youWebView, style, null);
 				
 				holder.youWebView.setOnClickListener(new OnClickListener() {
