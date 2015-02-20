@@ -859,7 +859,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				onEditorSendEvent(etMessage.getText().toString());
 			} else if (id == R.id.voiceCall) {
 				//make call
-				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YES", 2000).show();
+				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
 			}
 		}
 	};
