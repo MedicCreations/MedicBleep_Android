@@ -76,6 +76,7 @@ import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
 import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
+import com.zzz.test.webrtc.ConnectActivity;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -860,6 +861,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			} else if (id == R.id.voiceCall) {
 				//make call
 				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
+				startActivity(new Intent(BaseChatActivity.this, ConnectActivity.class));
 			}
 		}
 	};

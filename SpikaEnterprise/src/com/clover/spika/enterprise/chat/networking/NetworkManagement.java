@@ -351,5 +351,16 @@ public class NetworkManagement {
 			return sClosableInstance;
 		}
 	}
+	
+	public static String httpGetRequestWithRawResponse(String url) throws IOException {
+
+		HttpGet httpGet = new HttpGet(url);
+		Logger.custom("RawRequest", httpGet.getURI().toString());
+
+		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
+		HttpEntity entity = response.getEntity();
+
+		return getString(entity.getContent());
+	}
 
 }
