@@ -601,7 +601,8 @@ public class Helper {
 
 		column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
 		column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-		while (cursor.moveToNext()) {
+		cursor.moveToLast();
+		while (cursor.moveToPrevious()) {
 			absolutePathOfImage = cursor.getString(column_index_data);
 
 			listOfAllImages.add(absolutePathOfImage);
