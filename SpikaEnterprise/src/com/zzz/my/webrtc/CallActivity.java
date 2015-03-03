@@ -1,0 +1,689 @@
+/*
+ * libjingle
+ * Copyright 2015 Google Inc.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
+ *  3. The name of the author may not be used to endorse or promote products
+ *     derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ * EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package com.zzz.my.webrtc;
+
+import org.webrtc.IceCandidate;
+import org.webrtc.SessionDescription;
+import org.webrtc.StatsReport;
+import org.webrtc.VideoRenderer;
+import org.webrtc.VideoRendererGui;
+import org.webrtc.VideoRendererGui.ScalingType;
+
+import android.app.AlertDialog;
+import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.opengl.GLSurfaceView;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.google.gson.Gson;
+import com.zzz.my.webrtc.AppRTCClient.SignalingParameters;
+import com.zzz.my.webrtc.PeerConnectionClient.PeerConnectionParameters;
+import com.zzz.my.webrtc.WebSocketChannelClient.WebSocketChannelEvents;
+import com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState;
+import com.zzz.socket.models.WebRtcSDPCandidate;
+import com.zzz.socket.models.WebRtcSDPMessage;
+
+
+/**
+ * Activity for peer connection call setup, call waiting and call view.
+ */
+public class CallActivity extends BaseActivity implements AppRTCClient.SignalingEvents, PeerConnectionClient.PeerConnectionEvents, CallFragment.OnCallEvents {
+
+	public static final String EXTRA_ROOMID = "org.appspot.apprtc.ROOMID";
+	public static final String EXTRA_LOOPBACK = "org.appspot.apprtc.LOOPBACK";
+	public static final String EXTRA_HWCODEC = "org.appspot.apprtc.HWCODEC";
+	public static final String EXTRA_VIDEO_BITRATE = "org.appspot.apprtc.VIDEO_BITRATE";
+	public static final String EXTRA_VIDEO_WIDTH = "org.appspot.apprtc.VIDEO_WIDTH";
+	public static final String EXTRA_VIDEO_HEIGHT = "org.appspot.apprtc.VIDEO_HEIGHT";
+	public static final String EXTRA_VIDEO_FPS = "org.appspot.apprtc.VIDEO_FPS";
+	public static final String EXTRA_VIDEOCODEC = "org.appspot.apprtc.VIDEOCODEC";
+	public static final String EXTRA_CPUOVERUSE_DETECTION = "org.appspot.apprtc.CPUOVERUSE_DETECTION";
+	public static final String EXTRA_DISPLAY_HUD = "org.appspot.apprtc.DISPLAY_HUD";
+	public static final String EXTRA_CMDLINE = "org.appspot.apprtc.CMDLINE";
+	public static final String EXTRA_RUNTIME = "org.appspot.apprtc.RUNTIME";
+	private static final String TAG = "CallRTCClient";
+	// Peer connection statistics callback period in ms.
+	private static final int STAT_CALLBACK_PERIOD = 1000;
+	// Local preview screen position before call is connected.
+	private static final int LOCAL_X_CONNECTING = 0;
+	private static final int LOCAL_Y_CONNECTING = 0;
+	private static final int LOCAL_WIDTH_CONNECTING = 100;
+	private static final int LOCAL_HEIGHT_CONNECTING = 100;
+	// Local preview screen position after call is connected.
+	private static final int LOCAL_X_CONNECTED = 72;
+	private static final int LOCAL_Y_CONNECTED = 72;
+	private static final int LOCAL_WIDTH_CONNECTED = 25;
+	private static final int LOCAL_HEIGHT_CONNECTED = 25;
+	// Remote video screen position
+	private static final int REMOTE_X = 0;
+	private static final int REMOTE_Y = 0;
+	private static final int REMOTE_WIDTH = 100;
+	private static final int REMOTE_HEIGHT = 100;
+
+	private PeerConnectionClient peerConnectionClient = null;
+	private AppRTCClient appRtcClient;
+	private SignalingParameters signalingParameters;
+	private AppRTCAudioManager audioManager = null;
+	private VideoRenderer.Callbacks localRender;
+	private VideoRenderer.Callbacks remoteRender;
+	private ScalingType scalingType;
+	private Toast logToast;
+	private boolean commandLineRun;
+	private int runTimeMs;
+	private boolean activityRunning;
+	private PeerConnectionParameters peerConnectionParameters;
+	private boolean hwCodecAcceleration;
+	private String videoCodec;
+	private boolean iceConnected;
+	private boolean isError;
+	private boolean callControlFragmentVisible = true;
+
+	// Controls
+	private GLSurfaceView videoView;
+	CallFragment callFragment;
+	
+	
+	private WebSocketChannelClient wsClient;
+	private boolean initiator = false;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
+		Log.d("LOG", "1");
+
+		// Set window styles for fullscreen-window size. Needs to be done before
+		// adding content.
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		setContentView(R.layout.webrtc_activity_call);
+
+		iceConnected = false;
+		signalingParameters = null;
+		scalingType = ScalingType.SCALE_ASPECT_FILL;
+
+		// Create UI controls.
+		videoView = (GLSurfaceView) findViewById(R.id.glview_call); 
+		callFragment = new CallFragment();
+		Log.d("LOG", "2");
+
+		// Create video renderers.
+		VideoRendererGui.setView(videoView, new Runnable() {
+			@Override
+			public void run() {
+				Log.d("LOG", "3");
+				createPeerConnectionFactory();
+			}
+		});
+		remoteRender = VideoRendererGui.create(REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
+		localRender = VideoRendererGui.create(LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType, true);
+		Log.d("LOG", "4");
+
+		// Show/hide call control fragment on view click.
+		videoView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				toggleCallControlFragmentVisibility();
+			}
+		});
+
+		Log.d("LOG", "5");
+		// Get Intent parameters.
+		final Intent intent = getIntent();
+		
+		hwCodecAcceleration = intent.getBooleanExtra(EXTRA_HWCODEC, true);
+		if (intent.hasExtra(EXTRA_VIDEOCODEC)) {
+			videoCodec = intent.getStringExtra(EXTRA_VIDEOCODEC);
+		} else {
+			videoCodec = PeerConnectionClient.VIDEO_CODEC_VP8; // use VP8 by
+																// default.
+		}
+		peerConnectionParameters = new PeerConnectionParameters(intent.getIntExtra(EXTRA_VIDEO_WIDTH, 0), intent.getIntExtra(EXTRA_VIDEO_HEIGHT, 0), intent.getIntExtra(EXTRA_VIDEO_FPS, 0),
+				intent.getIntExtra(EXTRA_VIDEO_BITRATE, 0), intent.getBooleanExtra(EXTRA_CPUOVERUSE_DETECTION, true));
+		
+		LooperExecutor executor = new LooperExecutor();
+		
+		// Create connection client and connection parameters.
+		wsClient = new WebSocketChannelClient(executor, new WebSocketChannelEvents() {
+			
+			@Override
+			public void onWebSocketOpen() {
+				Log.d("LOG", "BEFORE REGISTER");
+				Log.d(TAG, "Websocket connection completed. Registering...");
+				wsClient.register();
+				acceptCall();
+			}
+			
+			@Override
+			public void onWebSocketMessage(String message) {
+				Log.i("LOG", "REC MESS SOCKET");
+				if (wsClient.getState() != WebSocketConnectionState.REGISTERED) {
+					Log.e(TAG, "Got WebSocket message in non registered state.");
+					return;
+				}
+				try {
+					WebRtcSDPMessage item = new Gson().fromJson(message, WebRtcSDPMessage.class);
+					if (item.getArgs().get(0).getType().equals("answer")){
+						Log.w("LOG", "SDP ANSWER");
+						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("ANSWER"), item.getArgs().get(0).getPayload().getSdp());
+						onRemoteDescription(sdp);
+					}else if (item.getArgs().get(0).getType().equals("offer")){
+						Log.w("LOG", "SDP OFFER");
+						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), item.getArgs().get(0).getPayload().getSdp());
+						onRemoteDescription(sdp);
+					}else if (item.getArgs().get(0).getType().equals("candidate")){
+						Log.w("LOG", "HERE IS SOME CANDIDATE");
+						WebRtcSDPCandidate candidateModel = item.getArgs().get(0).getPayload().getCandidate();
+						IceCandidate candidate = new IceCandidate(candidateModel.getSdmMid(), Integer.valueOf(candidateModel.getSdpMLineIndex()), candidateModel.getCandidate());
+						onRemoteIceCandidate(candidate);
+					}else if (item.getArgs().get(0).getType().equals("bye")) {
+						onChannelClose();
+					}
+				} catch (Exception e) {
+					Log.e("LOG", "PPP: "+e.toString()); 
+				}
+			}
+			
+			@Override
+			public void onWebSocketError(String description) {
+				onChannelClose();
+			}
+			
+			@Override
+			public void onWebSocketClose() {
+				reportError("WebSocket error: ");
+			}
+		}, this);
+		
+		WebRtcSDPMessage item = (WebRtcSDPMessage) getIntent().getSerializableExtra(Const.CANDIDATE);
+		appRtcClient = new WebSocketRTCClient(this, executor, this, item, wsClient);
+
+		// Send intent arguments to fragment.
+		callFragment.setArguments(intent.getExtras());
+		// Activate call fragment and start the call.
+		getFragmentManager().beginTransaction().add(R.id.call_fragment_container, callFragment).commit();
+
+		// For command line execution run connection for <runTimeMs> and exit.
+		if (commandLineRun && runTimeMs > 0) {
+			videoView.postDelayed(new Runnable() {
+				public void run() {
+					disconnect();
+				}
+			}, runTimeMs);
+		}
+	}
+	
+	private void reportError(final String errorMessage) {
+		Log.e(TAG, errorMessage);
+		onChannelError(errorMessage);
+	}
+	
+	@Override
+    protected void onStart() {
+    	super.onStart();
+    	intentFilterSocket = new IntentFilter("CALL");
+		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
+    };
+    
+    @Override
+	protected void onStop() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
+		super.onStop();
+    }
+    
+    IntentFilter intentFilterSocket;
+	BroadcastReceiver rec = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
+			startCall(item);
+			
+		}
+	};
+
+	@Override
+	protected void onServiceBaseConnected() {
+		wsClient.connect();
+	};
+	
+	public void acceptCall(){
+		if(getIntent().hasExtra(Const.SESSION_ID)) {
+			Log.e("LOG", "ACCEPT CALL IN CALL ACTIVITY");
+			mService.callAccept(getIntent().getStringExtra(Const.SESSION_ID));
+		}else{
+			Log.e("LOG", "START CALL IN CALL ACTIVITY");
+			startCall(null);
+		}
+	}
+	
+
+	// Activity interfaces
+	@Override
+	public void onPause() {
+		super.onPause();
+		videoView.onPause();
+		activityRunning = false;
+		if (peerConnectionClient != null) {
+			peerConnectionClient.stopVideoSource();
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+//		videoView.onResume();
+		activityRunning = true;
+		if (peerConnectionClient != null) {
+			peerConnectionClient.startVideoSource();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		disconnect();
+		super.onDestroy();
+		if (logToast != null) {
+			logToast.cancel();
+		}
+		activityRunning = false;
+	}
+
+	// CallFragment.OnCallEvents interface implementation.
+	@Override
+	public void onCallHangUp() {
+		disconnect();
+	}
+
+	@Override
+	public void onCameraSwitch() {
+		if (peerConnectionClient != null) {
+			peerConnectionClient.switchCamera();
+		}
+	}
+
+	@Override
+	public void onVideoScalingSwitch(ScalingType scalingType) {
+		this.scalingType = scalingType;
+		updateVideoView();
+	}
+
+	// Helper functions.
+	private void toggleCallControlFragmentVisibility() {
+		if (!iceConnected || !callFragment.isAdded()) {
+			return;
+		}
+		// Show/hide call control fragment
+		callControlFragmentVisible = !callControlFragmentVisible;
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		if (callControlFragmentVisible) {
+			ft.show(callFragment);
+		} else {
+			ft.hide(callFragment);
+		}
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.commit();
+	}
+
+	private void updateVideoView() {
+		VideoRendererGui.update(remoteRender, REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType);
+		if (iceConnected) {
+			VideoRendererGui.update(localRender, LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED, ScalingType.SCALE_ASPECT_FIT);
+		} else {
+			VideoRendererGui.update(localRender, LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType);
+		}
+	}
+
+	private void startCall(WebRtcSDPMessage webRtcMessage) {
+		Log.d("LOG", "1.1");
+		if (appRtcClient == null) {
+			Log.e(TAG, "AppRTC client is not allocated for a call.");
+			return;
+		}
+		Log.d("LOG", "1.2");
+		// Start room connection.
+		signalingParameters = appRtcClient.setRoomParameters(webRtcMessage);
+		
+		onConnectedToRoom(signalingParameters);
+		Log.d("LOG", "1.3");
+
+		// Create and audio manager that will take care of audio routing,
+		// audio modes, audio device enumeration etc.
+		audioManager = AppRTCAudioManager.create(this, new Runnable() {
+			// This method will be called each time the audio state (number and
+			// type of devices) has been changed.
+			@Override
+			public void run() {
+				onAudioManagerChangedState();
+			}
+		});
+		// Store existing audio settings and change audio mode to
+		// MODE_IN_COMMUNICATION for best possible VoIP performance.
+		Log.d(TAG, "Initializing the audio manager...");
+		audioManager.init();
+		Log.d("LOG", "1.4");
+	}
+
+	// Should be called from UI thread
+	private void callConnected() {
+		// Update video view.
+		updateVideoView();
+		// Enable statistics callback.
+		peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
+	}
+
+	private void onAudioManagerChangedState() {
+		// TODO(henrika): disable video if
+		// AppRTCAudioManager.AudioDevice.EARPIECE
+		// is active.
+	}
+
+	// Create peer connection factory when EGL context is ready.
+	private void createPeerConnectionFactory() { 
+		Log.e("LOG", "3.01");
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Log.d("LOG", "3.1");
+				if (peerConnectionClient == null) {
+					peerConnectionClient = new PeerConnectionClient();
+					peerConnectionClient.createPeerConnectionFactory(CallActivity.this, videoCodec, hwCodecAcceleration, VideoRendererGui.getEGLContext(), CallActivity.this);
+				}
+				Log.d("LOG", "3.2");
+				if (signalingParameters != null) {
+					Log.w(TAG, "EGL context is ready after room connection.");
+					Log.d("LOG", "3.3");
+					onConnectedToRoomInternal(signalingParameters);
+				}
+				Log.d("LOG", "3.4");
+			}
+		});
+	}
+ 
+	// Disconnect from remote resources, dispose of local resources, and exit.
+	private void disconnect() {
+		if (appRtcClient != null) {
+			appRtcClient.disconnectFromRoom();
+			appRtcClient = null;
+		}
+		if (peerConnectionClient != null) {
+			peerConnectionClient.close();
+			peerConnectionClient = null;
+		}
+		if (audioManager != null) {
+			audioManager.close();
+			audioManager = null;
+		}
+		if (iceConnected && !isError) {
+			setResult(RESULT_OK);
+		} else {
+			setResult(RESULT_CANCELED);
+		}
+		finish();
+	}
+
+	private void disconnectWithErrorMessage(final String errorMessage) {
+		if (commandLineRun || !activityRunning) {
+			Log.e(TAG, "Critical error: " + errorMessage);
+			disconnect();
+		} else {
+			new AlertDialog.Builder(this).setTitle(getText(R.string.channel_error_title)).setMessage(errorMessage).setCancelable(false)
+					.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+							disconnect();
+						}
+					}).create().show();
+		}
+	}
+
+	// Log |msg| and Toast about it.
+	private void logAndToast(String msg) {
+		Log.d(TAG, msg);
+		if (logToast != null) {
+			logToast.cancel();
+		}
+		logToast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+		logToast.show();
+	}
+
+	// -----Implementation of AppRTCClient.AppRTCSignalingEvents ---------------
+	// All callbacks are invoked from websocket signaling looper thread and
+	// are routed to UI thread.
+	private void onConnectedToRoomInternal(final SignalingParameters params) {
+		Log.i("LOG", "ON CONNECTED TO ROOM INTERNAL");
+		signalingParameters = params;
+		if (peerConnectionClient == null) {
+			Log.w(TAG, "Room is connected, but EGL context is not ready yet.");
+			return;
+		}
+		logAndToast("Creating peer connection...");
+		peerConnectionClient.createPeerConnection(localRender, remoteRender, signalingParameters, peerConnectionParameters);
+
+		if (signalingParameters.initiator) {
+			logAndToast("Creating OFFER...");
+			Log.d("LOG", "creating offer");
+			// Create offer. Offer SDP will be sent to answering client in
+			// PeerConnectionEvents.onLocalDescription event.
+			peerConnectionClient.createOffer();
+		} else {
+			if (params.offerSdp != null) {
+				peerConnectionClient.setRemoteDescription(params.offerSdp);
+				logAndToast("Creating ANSWER...");
+				Log.d("LOG", "creating ANSWER");
+				// Create answer. Answer SDP will be sent to offering client in
+				// PeerConnectionEvents.onLocalDescription event.
+				peerConnectionClient.createAnswer();
+			}
+			if (params.iceCandidates != null) {
+				// Add remote ICE candidates from room.
+				for (IceCandidate iceCandidate : params.iceCandidates) {
+					peerConnectionClient.addRemoteIceCandidate(iceCandidate);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onConnectedToRoom(final SignalingParameters params) {
+		Log.i("LOG", "ON CONNECTED TO ROOM");
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				onConnectedToRoomInternal(params);
+			}
+		});
+	}
+
+	@Override
+	public void onRemoteDescription(final SessionDescription sdp) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (peerConnectionClient == null) {
+					Log.e(TAG, "Received remote SDP for non-initilized peer connection.");
+					return;
+				}
+				logAndToast("Received remote " + sdp.type + " ...");
+				peerConnectionClient.setRemoteDescription(sdp);
+				if (!signalingParameters.initiator) {
+					logAndToast("Creating ANSWER...");
+					// Create answer. Answer SDP will be sent to offering client
+					// in
+					// PeerConnectionEvents.onLocalDescription event.
+					peerConnectionClient.createAnswer();
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onRemoteIceCandidate(final IceCandidate candidate) {
+		Log.d("LOG", "ON REMOTE ICE CANDIDATE: " + candidate.toString());
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (peerConnectionClient == null) {
+					Log.e(TAG, "Received ICE candidate for non-initilized peer connection.");
+					return;
+				}
+				Log.d("LOG", "ADD ICE CANDIDATE: " + candidate.toString());
+				peerConnectionClient.addRemoteIceCandidate(candidate);
+			}
+		});
+	}
+
+	@Override
+	public void onChannelClose() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				logAndToast("Remote end hung up; dropping PeerConnection");
+				disconnect();
+			}
+		});
+	}
+
+	@Override
+	public void onChannelError(final String description) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (!isError) {
+					isError = true;
+					disconnectWithErrorMessage(description);
+				}
+			}
+		});
+	}
+
+	// -----Implementation of
+	// PeerConnectionClient.PeerConnectionEvents.---------
+	// Send local peer connection SDP and ICE candidates to remote party.
+	// All callbacks are invoked from peer connection client looper thread and
+	// are routed to UI thread.
+	@Override
+	public void onLocalDescription(final SessionDescription sdp) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (appRtcClient != null) {
+					logAndToast("Sending " + sdp.type + " ...");
+					if (signalingParameters.initiator) {
+						appRtcClient.sendOfferSdp(sdp);
+					} else {
+						appRtcClient.sendAnswerSdp(sdp);
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onIceCandidate(final IceCandidate candidate) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (appRtcClient != null) {
+					appRtcClient.sendLocalIceCandidate(candidate);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onIceConnected() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				logAndToast("ICE connected");
+				iceConnected = true;
+				callConnected();
+			}
+		});
+	}
+
+	@Override
+	public void onIceDisconnected() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				logAndToast("ICE disconnected");
+				iceConnected = false;
+				disconnect();
+			}
+		});
+	}
+
+	@Override
+	public void onPeerConnectionClosed() {
+	}
+
+	@Override
+	public void onPeerConnectionStatsReady(final StatsReport[] reports) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (!isError && iceConnected) {
+					callFragment.updateEncoderStatistics(reports);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onPeerConnectionError(final String description) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (!isError) {
+					isError = true;
+					disconnectWithErrorMessage(description);
+				}
+			}
+		});
+	}
+}

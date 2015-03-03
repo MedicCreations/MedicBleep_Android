@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.File;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +10,8 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
 import com.clover.spika.enterprise.chat.utils.Preferences;
-
-import java.io.File;
+import com.zzz.socket.io.SocketIOService;
+import com.zzz.test.socket.SocketService;
 
 public class SpikaEnterpriseApp extends Application {
 
@@ -20,6 +22,8 @@ public class SpikaEnterpriseApp extends Application {
 	private String mSamsungPath = null;
 
 	private Intent poolingIntent;
+	private Intent socketIntent;
+	private Intent socketIOIntent;
 
 	@Override
 	public void onCreate() {
@@ -36,6 +40,20 @@ public class SpikaEnterpriseApp extends Application {
 		} else {
 			stopService(poolingIntent);
 		}
+		
+//		socketIntent = new Intent(this, SocketService.class);
+//		startService(socketIntent);
+		
+	}
+	
+	public void startSocket(){
+		socketIntent = new Intent(this, SocketService.class);
+		startService(socketIntent);
+	}
+	
+	public void startSocketIO(){
+		socketIOIntent = new Intent(this, SocketIOService.class);
+		startService(socketIOIntent);
 	}
 
 	public static Preferences getSharedPreferences(Context ctx) {

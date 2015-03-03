@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.FrameLayout;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.zzz.test.socket.EchoClientActivity;
 
 public class HomeFragment extends CustomFragment implements View.OnClickListener{
 	
@@ -85,7 +83,6 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 			btnGroups.setSelected(true);
 			setSelected(btnGroups);
 			setFragment(GROUPS_FRAGMENT);
-			startActivity(new Intent(getActivity(), EchoClientActivity.class));
 			break;
 
 		default:

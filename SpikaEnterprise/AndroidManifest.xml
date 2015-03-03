@@ -94,7 +94,12 @@
         </receiver>
 
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
-
+        
+        <service android:name="com.zzz.test.socket.SocketService" />
+        <service android:name="com.zzz.socket.io.SocketIOService" />
+        
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
+        
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
             android:screenOrientation="portrait" />
@@ -187,8 +192,6 @@
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
-
         <activity
             android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
             android:screenOrientation="portrait" />
@@ -241,6 +244,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.zzz.test.socket.EchoClientActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.zzz.my.webrtc.CallActivity"
             android:screenOrientation="portrait" />
     </application>
 

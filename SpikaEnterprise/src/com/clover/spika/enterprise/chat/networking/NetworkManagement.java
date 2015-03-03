@@ -274,6 +274,8 @@ public class NetworkManagement {
 	 * @return
 	 */
 	public static boolean hasNetworkConnection(Context context) {
+		
+		if(context == null) return true;
 
 		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();

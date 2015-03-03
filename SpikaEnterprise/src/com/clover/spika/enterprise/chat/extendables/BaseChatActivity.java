@@ -42,7 +42,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -68,6 +67,7 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -76,7 +76,6 @@ import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
 import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
-import com.zzz.test.webrtc.ConnectActivity;
 
 public abstract class BaseChatActivity extends BaseActivity {
 
@@ -134,6 +133,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
+	protected User currentUser = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -860,8 +860,12 @@ public abstract class BaseChatActivity extends BaseActivity {
 				onEditorSendEvent(etMessage.getText().toString());
 			} else if (id == R.id.voiceCall) {
 				//make call
-				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
-				startActivity(new Intent(BaseChatActivity.this, ConnectActivity.class));
+				rlDrawerNewManage();
+				showCallingPopup(currentUser, null, false, false);
+//				mService.SSS();
+//				ConnectToSocket.getInstance().callOffer(String.valueOf(getUserId()));
+//				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
+//				startActivity(new Intent(BaseChatActivity.this, ConnectActivity.class));
 			}
 		}
 	};

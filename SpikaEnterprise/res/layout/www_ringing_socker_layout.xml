@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notificationLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue" >
+    
+    <com.clover.spika.enterprise.chat.views.RoundImageView
+        android:id="@+id/imageRing"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:contentDescription="@null"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:scaleType="centerCrop" />
+    
+    <TextView android:id="@+id/nameRing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:layout_below="@id/imageRing"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"/>
+    
+    <TextView android:id="@+id/actionRing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:layout_below="@id/nameRing"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"/>
+    
+    <LinearLayout android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content">
+        
+        <Button android:id="@+id/callDeclineRing"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/selector_call_decline"/>
+        
+        <Button android:id="@+id/videoAcceptRing"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/video_call_selector"/>
+        
+        <Button android:id="@+id/callAcceptRing"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/voice_call_selector"/>
+        
+    </LinearLayout>
+
+</RelativeLayout>

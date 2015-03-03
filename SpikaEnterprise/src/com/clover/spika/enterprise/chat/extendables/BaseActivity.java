@@ -1,17 +1,24 @@
 package com.clover.spika.enterprise.chat.extendables;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +31,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,11 +43,18 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.LocalPush;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.zzz.socket.models.WebRtcSDPMessage;
+import com.zzz.test.socket.SocketService;
+import com.zzz.test.socket.SocketService.LocalBinder;
+import com.zzz.test.webrtc.CallActivity;
+import com.zzz.test.webrtc.ConnectActivity;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -406,5 +421,237 @@ public class BaseActivity extends SlidingFragmentActivity {
 		AnimUtils.fadeAnim(sidebar, 0, 1, animSpeed);
 		AnimUtils.translationX(title, -width, 0, animSpeed, null);
 	}
+	
+	//SOCKET SERVICE
+	protected SocketService mService;
+	protected boolean mBound = false;
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
 
+        @Override
+        public void onServiceConnected(ComponentName className,
+                IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            LocalBinder binder = (LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            onServiceBaseConnected();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+        	mBound = false;
+        }
+    };
+    
+    protected void onServiceBaseConnected(){
+    	
+    };
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	Intent intent = new Intent(this, SocketService.class);
+    	bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    	
+    	intentFilterSocket = new IntentFilter(Const.SOCKET_ACTION);
+		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
+    };
+    
+    @Override
+	protected void onStop() {
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+		}
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
+		super.onStop();
+    }
+    
+    IntentFilter intentFilterSocket;
+	BroadcastReceiver rec = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int typeOfReceiver = intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1);
+			if(typeOfReceiver == Const.CHECK_USER_AVAILABLE){
+				String typeOfAvailable = intent.getStringExtra(Const.AVAILABLE_TYPE);
+				String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				
+				Log.d("LOG", "SESSION: "+sessionId+", TYPE: "+typeOfAvailable);
+				
+				if(typeOfAvailable.equals(Const.USER_AVAILABLE)){
+					mService.call(sessionId, true);
+					updateTextViewAction("Calling");
+				}else{
+					//TODO show error
+				}
+			}else if(typeOfReceiver == Const.CALL_USER){
+				final String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				
+				Log.d("LOG", "SESSION: "+sessionId+", TYPE: CALLING");
+				
+//				new Handler().postDelayed(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						mService.callCancel(sessionId);
+//					}
+//				}, 30000);
+				
+			}else if(typeOfReceiver == Const.CALL_RECEIVE){
+				String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				User user = (User) intent.getSerializableExtra(Const.USER);
+				
+				Log.d("LOG", "SESSION: "+sessionId+", TYPE: RINGING");
+				mService.callRinging(sessionId);
+				
+				showCallingPopup(user, sessionId, true, false);
+				
+			}else if(typeOfReceiver == Const.CALL_ANSWER){
+				String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				User user = (User) intent.getSerializableExtra(Const.USER);
+				
+				Log.d("LOG", "SESSION: "+sessionId+", TYPE: ANSWER");
+				
+				mService.leaveMyRoom();
+				
+			}else if(typeOfReceiver == Const.CALL_CONNECT){
+				Log.d("LOG", "CALL CONNECT");
+				
+				Intent intent2 = new Intent(BaseActivity.this, com.zzz.my.webrtc.CallActivity.class);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
+				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+
+				startActivityForResult(intent2, 1);
+				
+//				startActivity(new Intent(BaseActivity.this, ConnectActivity.class));
+			}else if(typeOfReceiver == Const.CALL_ENDED){
+				updateTextViewAction("Call ended");
+				dissmisCallingPopup();
+			}else if(typeOfReceiver == Const.CALL_ACCEPTED){
+//				WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
+//				updateTextViewAction("Call accepted");
+//				Uri uri = Uri.parse("https://www.spikaent.com:32443");
+//				Intent intent2 = new Intent(BaseActivity.this, CallActivity.class);
+//				intent2.setData(uri);
+//				intent2.putExtra(CallActivity.EXTRA_ROOMID, String.valueOf(item.getArgs().get(0).getPayload().getUser().getId()));
+//				intent2.putExtra(CallActivity.EXTRA_LOOPBACK, false);
+//				intent2.putExtra(Const.CANDIDATE, item);
+//				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
+//				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
+//				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
+//				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
+//				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+
+//				startActivityForResult(intent2, 1);
+			}
+			
+		}
+	};
+	
+	private View popupCall = null;
+	
+	protected void updateTextViewAction(String text) {
+		if(popupCall == null) return;
+		
+		TextView tv = (TextView) ((ViewGroup)popupCall).getChildAt(2);
+		tv.setText(text);
+	}
+	
+	protected void showCallingPopup(final User user, final String sessionId, final boolean receive, boolean isVideo){
+		final ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
+		popupCall = LayoutInflater.from(this).inflate(R.layout.www_ringing_socker_layout, null);
+		
+		TextView name = (TextView) popupCall.findViewById(R.id.nameRing);
+		name.setText(user.getFirstName() + " " + user.getLastName());
+		
+		TextView action = (TextView) popupCall.findViewById(R.id.actionRing);
+		
+		action.setText("Calling");
+		if(!receive) action.setText("Connecting");
+		
+		ImageLoader.getInstance(this).setDefaultImage(R.drawable.default_user_image);
+		ImageView image = (ImageView) popupCall.findViewById(R.id.imageRing);
+		((RoundImageView)image).setBorderColor(getResources().getColor(R.color.light_light_gray));
+		ImageLoader.getInstance(this).displayImage(this, user.getImage(), image);
+		
+		popupCall.findViewById(R.id.callDeclineRing).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				updateTextViewAction("Call ending");
+				mService.callDecline(sessionId);
+			}
+		});
+		
+		if(!receive){
+			popupCall.findViewById(R.id.callAcceptRing).setVisibility(View.GONE);
+			popupCall.findViewById(R.id.videoAcceptRing).setVisibility(View.GONE);
+		}
+		
+		popupCall.findViewById(R.id.callAcceptRing).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				//ACCEPT
+//				mService.callAccept(sessionId);
+				
+				Intent intent2 = new Intent(BaseActivity.this, com.zzz.my.webrtc.CallActivity.class);
+				intent2.putExtra(Const.SESSION_ID, sessionId);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
+				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+
+				startActivityForResult(intent2, 1);
+				
+//				startActivity(new Intent(BaseActivity.this, ConnectActivity.class));
+			}
+		});
+
+		popupCall.findViewById(R.id.videoAcceptRing).setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				//VIDEO ACCEPT
+			}
+		});
+		
+		AnimUtils.translationY(popupCall, -getResources().getDisplayMetrics().heightPixels, 0, 300, new AnimatorListenerAdapter() {
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				if(!receive) mService.callOffer(String.valueOf(user.getId()));
+			}
+			
+		});
+		
+		contentRoot.addView(popupCall);
+
+	}
+	
+	private void dissmisCallingPopup(){
+		AnimUtils.translationY(popupCall, 0, getResources().getDisplayMetrics().heightPixels, 300, new AnimatorListenerAdapter() {
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				if(popupCall != null)((ViewGroup) popupCall.getParent()).removeView(popupCall);
+				popupCall = null;
+			}
+			
+		});
+	}
+	
+	public SocketService getService(){
+		return mService;
+	}
+	
 }

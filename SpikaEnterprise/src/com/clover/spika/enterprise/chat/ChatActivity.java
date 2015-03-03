@@ -328,7 +328,7 @@ public class ChatActivity extends BaseChatActivity {
 								public void onApiResponse(Result<Login> result) {
 									if (result.isSuccess()) {
 
-										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
+										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getImageThumb(), result
 												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
 
 										new GoogleUtils().getPushToken(ChatActivity.this, result.getResultData().getToken());
@@ -445,6 +445,8 @@ public class ChatActivity extends BaseChatActivity {
 							if (result.isSuccess()) {
 
 								chatParams(result.getResultData().getChat());
+								
+								currentUser = result.getResultData().getUser();
 
 								chatId = String.valueOf(result.getResultData().getId());
 								chatName = result.getResultData().getChat_name();
@@ -646,6 +648,8 @@ public class ChatActivity extends BaseChatActivity {
 				if (result.isSuccess()) {
 					
 					Chat chat = result.getResultData();
+					
+					currentUser = result.getResultData().getUser();
 
 					chatParams(chat.getChat());
 					

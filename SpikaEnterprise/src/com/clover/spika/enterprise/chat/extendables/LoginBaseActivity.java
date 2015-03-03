@@ -1,5 +1,10 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -23,11 +28,6 @@ import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 public abstract class LoginBaseActivity extends Activity {
 	
@@ -133,20 +133,20 @@ public abstract class LoginBaseActivity extends Activity {
 
 					Logger.d("Success");
 
-					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getFirstname(),
+					Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getImageThumb(), result.getResultData().getFirstname(),
 							result.getResultData().getLastname(), result.getResultData().getToken());
 
 					new GoogleUtils().getPushToken(LoginBaseActivity.this, result.getResultData().getToken());
 
-					Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
+					final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
 					if (extras != null) {
 						intent.putExtras(extras);
 					}
-
+					
 					startActivity(intent);
 					finish();
-					
+
 				} else {
 
 					Logger.d("Not Success");
