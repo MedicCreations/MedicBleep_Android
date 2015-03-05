@@ -1,7 +1,6 @@
 package com.clover.spika.enterprise.chat.extendables;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import android.animation.Animator;
@@ -10,10 +9,12 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,6 +42,7 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
@@ -50,11 +52,9 @@ import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.zzz.socket.models.WebRtcSDPMessage;
+import com.zzz.my.webrtc.CallActivity;
 import com.zzz.test.socket.SocketService;
 import com.zzz.test.socket.SocketService.LocalBinder;
-import com.zzz.test.webrtc.CallActivity;
-import com.zzz.test.webrtc.ConnectActivity;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -65,6 +65,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	PushBroadcastReceiver myPushRecevier;
 	IntentFilter intentFilter;
+	
+	protected boolean shouldReceiveBroadcast = true;
+	protected boolean isActive = true;
+	
+	private View popupCall = null;
+	private boolean isVideo = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -108,6 +114,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		isActive = true;
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(myPushRecevier, intentFilter);
 
@@ -119,6 +127,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
 			}
 		}
+		
 	}
 
 	@Override
@@ -130,16 +139,32 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		PasscodeUtility.getInstance().setSessionValid(true);
+		
+		if(requestCode == Const.CALL_ACTIVITY_REQUEST){
+			new Handler().postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					mService.callEnd(null);
+					mService.leaveOtherRoom();
+					updateTextViewAction("Call ended");
+					dissmisCallingPopup();
+				}
+			}, 500);
+			
+		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		isActive = false;
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(myPushRecevier);
 
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();
+		
 	}
 
 	public void pushCall(String msg, String chatIdPush, String pushType, String password) {
@@ -195,7 +220,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 					@Override
 					public void onClick(View v) {
-						ChatActivity.startWithChatId(context, chatId, password);
+						ChatActivity.startWithChatId(context, chatId, password, null);
 					}
 				});
 
@@ -474,6 +499,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			if(!shouldReceiveBroadcast) return;
 			int typeOfReceiver = intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1);
 			if(typeOfReceiver == Const.CHECK_USER_AVAILABLE){
 				String typeOfAvailable = intent.getStringExtra(Const.AVAILABLE_TYPE);
@@ -484,21 +510,35 @@ public class BaseActivity extends SlidingFragmentActivity {
 				if(typeOfAvailable.equals(Const.USER_AVAILABLE)){
 					mService.call(sessionId, true);
 					updateTextViewAction("Calling");
+				}else if(typeOfAvailable.equals(Const.USER_NOT_CONNECTED)){
+					if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+					if(mPlayer != null) mPlayer.stop();
+					AppDialog dialog = new AppDialog(BaseActivity.this, false);
+					dialog.setInfo("User is not connected to our servers.");
+					dialog.setOnDismissListener(new OnDismissListener() {
+						
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							callEnded();
+						}
+					});
 				}else{
-					//TODO show error
+					if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+					if(mPlayer != null) mPlayer.stop();
+					AppDialog dialog = new AppDialog(BaseActivity.this, false);
+					dialog.setInfo("User is busy.");
+					dialog.setOnDismissListener(new OnDismissListener() {
+						
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							callEnded();
+						}
+					});
 				}
 			}else if(typeOfReceiver == Const.CALL_USER){
 				final String sessionId = intent.getStringExtra(Const.SESSION_ID);
 				
 				Log.d("LOG", "SESSION: "+sessionId+", TYPE: CALLING");
-				
-//				new Handler().postDelayed(new Runnable() {
-//					
-//					@Override
-//					public void run() {
-//						mService.callCancel(sessionId);
-//					}
-//				}, 30000);
 				
 			}else if(typeOfReceiver == Const.CALL_RECEIVE){
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
@@ -511,50 +551,62 @@ public class BaseActivity extends SlidingFragmentActivity {
 				
 			}else if(typeOfReceiver == Const.CALL_ANSWER){
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
-				User user = (User) intent.getSerializableExtra(Const.USER);
-				
 				Log.d("LOG", "SESSION: "+sessionId+", TYPE: ANSWER");
 				
 				mService.leaveMyRoom();
 				
 			}else if(typeOfReceiver == Const.CALL_CONNECT){
 				Log.d("LOG", "CALL CONNECT");
+				if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+				if(mPlayer != null) mPlayer.stop();
 				
-				Intent intent2 = new Intent(BaseActivity.this, com.zzz.my.webrtc.CallActivity.class);
-				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
+				User user = (User) intent.getSerializableExtra(Const.USER);
+				
+				Intent intent2 = new Intent(BaseActivity.this, CallActivity.class);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 1000);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.IS_VIDEO_ACCEPT, isVideo);
+				intent2.putExtra(Const.USER, user);
 
-				startActivityForResult(intent2, 1);
+				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 				
-//				startActivity(new Intent(BaseActivity.this, ConnectActivity.class));
+			}else if(typeOfReceiver == Const.CALL_RINGING){
+				Log.d("LOG", "CALL RINGING");
+				updateTextViewAction("Ringing");
+				mPlayer = MediaPlayer.create(BaseActivity.this, R.raw.ringing_voice);
+				mPlayer.start();
+			}else if(typeOfReceiver == Const.CALL_CANCELED){
+				if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+				if(mPlayer != null) mPlayer.stop();
+				Log.d("LOG", "CALL CANCELED");
+				updateTextViewAction("Call Canceled");
+				new Handler().postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						callEnded();
+					}
+				}, 500);
 			}else if(typeOfReceiver == Const.CALL_ENDED){
-				updateTextViewAction("Call ended");
-				dissmisCallingPopup();
+				if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+				if(mPlayer != null) mPlayer.stop();
+				Log.d("LOG", "CALL ENDED");
+				callEnded();
 			}else if(typeOfReceiver == Const.CALL_ACCEPTED){
-//				WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
-//				updateTextViewAction("Call accepted");
-//				Uri uri = Uri.parse("https://www.spikaent.com:32443");
-//				Intent intent2 = new Intent(BaseActivity.this, CallActivity.class);
-//				intent2.setData(uri);
-//				intent2.putExtra(CallActivity.EXTRA_ROOMID, String.valueOf(item.getArgs().get(0).getPayload().getUser().getId()));
-//				intent2.putExtra(CallActivity.EXTRA_LOOPBACK, false);
-//				intent2.putExtra(Const.CANDIDATE, item);
-//				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
-//				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
-//				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
-//				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
-//				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
-
-//				startActivityForResult(intent2, 1);
+				Log.d("LOG", "CALL ACCEPTED");
+				//LOGIC WHEN CALL IS ACCEPTED IS IN CALL ACTIVITY
 			}
 			
 		}
 	};
 	
-	private View popupCall = null;
+	protected void callEnded() {
+		updateTextViewAction("Call ended");
+		dissmisCallingPopup();
+	}
 	
 	protected void updateTextViewAction(String text) {
 		if(popupCall == null) return;
@@ -563,7 +615,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 		tv.setText(text);
 	}
 	
+	private Handler callTimeoutHandler = new Handler();
+	private Runnable callTimeoutRunnable;
+	private MediaPlayer mPlayer = null;
+	
 	protected void showCallingPopup(final User user, final String sessionId, final boolean receive, boolean isVideo){
+		this.isVideo = isVideo;
 		final ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
 		popupCall = LayoutInflater.from(this).inflate(R.layout.www_ringing_socker_layout, null);
 		
@@ -584,8 +641,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 			
 			@Override
 			public void onClick(View v) {
+				if(mPlayer != null) mPlayer.stop();
+				
+				if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 				updateTextViewAction("Call ending");
 				mService.callDecline(sessionId);
+				callEnded();
 			}
 		});
 		
@@ -599,19 +660,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 			@Override
 			public void onClick(View v) {
 				//ACCEPT
-//				mService.callAccept(sessionId);
+				if(mPlayer != null) mPlayer.stop();
 				
-				Intent intent2 = new Intent(BaseActivity.this, com.zzz.my.webrtc.CallActivity.class);
+				Intent intent2 = new Intent(BaseActivity.this, CallActivity.class);
 				intent2.putExtra(Const.SESSION_ID, sessionId);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.IS_VIDEO_ACCEPT, false);
 
-				startActivityForResult(intent2, 1);
+				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 				
-//				startActivity(new Intent(BaseActivity.this, ConnectActivity.class));
 			}
 		});
 
@@ -619,7 +680,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			@Override
 			public void onClick(View v) {
-				//VIDEO ACCEPT
+				if(mPlayer != null) mPlayer.stop();
+				
+				Intent intent2 = new Intent(BaseActivity.this, CallActivity.class);
+				intent2.putExtra(Const.SESSION_ID, sessionId);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, 322);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, 400);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
+				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
+				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.IS_VIDEO_ACCEPT, true);
+
+				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 			}
 		});
 		
@@ -634,10 +706,37 @@ public class BaseActivity extends SlidingFragmentActivity {
 		});
 		
 		contentRoot.addView(popupCall);
-
+		
+		if(receive) {
+			mPlayer = MediaPlayer.create(this, R.raw.ringing_voice);
+			mPlayer.start();
+			return;
+		}
+		callTimeoutRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				mService.callCancel(sessionId);
+				if(mPlayer != null) mPlayer.stop();
+				AppDialog dialog = new AppDialog(BaseActivity.this, false);
+				dialog.setInfo("User is busy.");
+				dialog.setOnDismissListener(new OnDismissListener() {
+					
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						callEnded();
+					}
+				});
+			}
+		};
+		callTimeoutHandler.postDelayed(callTimeoutRunnable, 30000);
 	}
 	
+	private boolean isAllreadyDissmis = false;
 	private void dissmisCallingPopup(){
+		if (popupCall == null) return;
+		if(isAllreadyDissmis) return;
+		isAllreadyDissmis = true;
 		AnimUtils.translationY(popupCall, 0, getResources().getDisplayMetrics().heightPixels, 300, new AnimatorListenerAdapter() {
 			
 			@Override
@@ -645,6 +744,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				super.onAnimationEnd(animation);
 				if(popupCall != null)((ViewGroup) popupCall.getParent()).removeView(popupCall);
 				popupCall = null;
+				isAllreadyDissmis = false;
 			}
 			
 		});
@@ -652,6 +752,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 	
 	public SocketService getService(){
 		return mService;
+	}
+	
+	public void callUser(User user, boolean isVideo){
+		showCallingPopup(user, null, false, isVideo);
 	}
 	
 }

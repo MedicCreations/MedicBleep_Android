@@ -1,21 +1,16 @@
 package com.zzz.test.socket;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Currency;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webrtc.IceCandidate;
-import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnection.IceServer;
 
 import zzz.my.autobahn.WebSocketConnection;
+import zzz.my.autobahn.WebSocketConnectionHandler;
+import zzz.my.autobahn.WebSocketException;
 import android.app.Service;
 import android.content.Intent;
-import android.net.rtp.RtpStream;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,14 +23,12 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.google.gson.Gson;
+import com.zzz.my.webrtc.LooperExecutor;
+import com.zzz.my.webrtc.WebSocketChannelClient;
 import com.zzz.socket.models.CallMessage;
 import com.zzz.socket.models.CheckAvailableRoom;
 import com.zzz.socket.models.SocketParser;
 import com.zzz.socket.models.WebRtcSDPMessage;
-import com.zzz.test.webrtc.WebSocketChannelClient.WebSocketChannelEvents;
-import com.zzz.test.webrtc.WebSocketChannelClient.WebSocketConnectionState;
-
-import con.zzz.test.webrtc.utils.LooperExecutor;
 
 public class SocketService extends Service {
 	
@@ -54,12 +47,12 @@ public class SocketService extends Service {
 	
 	private String wsString;
 	
-	private com.zzz.my.webrtc.WebSocketChannelClient.WebSocketChannelEvents events = null;
-	private com.zzz.my.webrtc.LooperExecutor executor = null;
+	private WebSocketChannelClient.WebSocketChannelEvents events = null;
+	private LooperExecutor executor = null;
 	private boolean isWebRtc = false;
-	private com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState state;
+	private WebSocketChannelClient.WebSocketConnectionState state;
 	
-	private zzz.my.autobahn.WebSocketConnection mConn = new zzz.my.autobahn.WebSocketConnection();
+	private WebSocketConnection mConn = new WebSocketConnection();
 	private final IBinder mBinder = new LocalBinder();
 	
 	/**
@@ -89,14 +82,18 @@ public class SocketService extends Service {
 		return wsString;
 	}
 	
-	public void setWebRtcParameters(com.zzz.my.webrtc.WebSocketChannelClient.WebSocketChannelEvents events, com.zzz.my.webrtc.LooperExecutor executor, com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState state){
+	public void setWebRtcParameters(WebSocketChannelClient.WebSocketChannelEvents events, LooperExecutor executor, WebSocketChannelClient.WebSocketConnectionState state){
 		this.events = events;
 		this.executor = executor;
 		this.state = state;
 		isWebRtc = true;
 	}
 	
-	public void setState(com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState state){
+	public void setIsInWebRtc(boolean isIn){
+		isWebRtc = isIn;
+	}
+	
+	public void setState(WebSocketChannelClient.WebSocketConnectionState state){
 		this.state = state;
 	}
 
@@ -114,28 +111,6 @@ public class SocketService extends Service {
 				connect();
 			}
 		});
-		
-//		new SocketClient().getSessionId(true, new ApiCallback<String>() {
-//			
-//			@Override
-//			public void onApiResponse(Result<String> result) {
-//				Log.d("LOG", "res: "+result.toString());
-//				sessionId = result.getResultData();
-//				if(sessionId == null){
-//					return;
-//				} 
-//				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
-//				Log.d("LOG", "sessionId: "+sessionId);
-//				user = Helper.getUser(SocketService.this);
-//				
-//				work(sessionId);
-//			}
-//			
-//		});
-		
-//		user = (User) intent.getSerializableExtra(Const.USER);
-//		String sessionId = intent.getStringExtra("SSS");
-//		work(sessionId);
 		
 		Log.d("LOG", "ON COMMAND START");
 		
@@ -180,7 +155,7 @@ public class SocketService extends Service {
 
 		try {
 			
-			mConn.connect(uri, new zzz.my.autobahn.WebSocketConnectionHandler() {
+			mConn.connect(uri, new WebSocketConnectionHandler() {
 				
 				@Override
 				public void onTextMessage(String payload) {
@@ -213,59 +188,13 @@ public class SocketService extends Service {
 				public void onBinaryMessage(byte[] payload) {}
 			});
 			
-//			mConn.connect(uri, new WebSocketConnectionObserver() {
-//
-//				@Override
-//				public void onTextMessage(String arg0) {
-//					Log.d("LOG", "MESSAGE RECEIVED: "+arg0);
-//					Log.w("LOG", "TIME: "+System.currentTimeMillis());
-//					Log.v("LOG", "AFTER: "+(System.currentTimeMillis() - openedTime));
-//					onMessageReceive(arg0);
-//				}
-//
-//				@Override
-//				public void onRawTextMessage(byte[] arg0) {
-//					Log.d("LOG", "RAW MESSAGE RECEIVED: "+arg0);
-//					Log.w("LOG", "TIME: "+System.currentTimeMillis());
-//					Log.v("LOG", "AFTER: "+(System.currentTimeMillis() - openedTime));
-//				}
-//
-//				@Override
-//				public void onOpen() {
-//					Log.d("LOG", "OPEN IN TIME: "+System.currentTimeMillis());
-//					openedTime = System.currentTimeMillis();
-//					
-//					new Handler().postDelayed(new Runnable() {
-//						
-//						@Override
-//						public void run() {
-//							String joinMess = joinRoomMessage(String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(), user.getLastName(), "join", 0);
-//							mConn.sendTextMessage(joinMess);
-//							
-//						}
-//					}, 100);
-//				}
-//
-//				@Override
-//				public void onClose(WebSocketCloseNotification arg0, String arg1) {
-//					Log.d("LOG", "CLOSE IN TIME: "+System.currentTimeMillis());
-//					Log.v("LOG", "CLOSED AFTER: "+(System.currentTimeMillis() - openedTime));
-//				}
-//
-//				@Override
-//				public void onBinaryMessage(byte[] arg0) {
-//					Log.d("LOG", "BYTE MESSAGE RECEIVED: "+arg0);
-//					Log.w("LOG", "TIME: "+System.currentTimeMillis());
-//					Log.v("LOG", "AFTER: "+(System.currentTimeMillis() - openedTime));
-//				}
-//			});
-		} catch (zzz.my.autobahn.WebSocketException e) {
+		} catch (WebSocketException e) {
 			e.printStackTrace();
 		}
 
 	}
 	
-	private void onMessageReceive(String message){
+	private void onMessageReceive(String message){ 
 		Intent inBroadcast = new Intent();
 		inBroadcast.setAction(Const.SOCKET_ACTION);
 		
@@ -281,7 +210,7 @@ public class SocketService extends Service {
 					CheckAvailableRoom item = socketParser.parseCheckUser(socketParser.getData());
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CHECK_USER_AVAILABLE);
 					if(item.getClients().size() == 1){
-						inBroadcast.putExtra(Const.AVAILABLE_TYPE, Const.USER_AVAILABLE);
+						inBroadcast.putExtra(Const.AVAILABLE_TYPE, Const.USER_AVAILABLE); 
 						inBroadcast.putExtra(Const.SESSION_ID, (String)item.getClients().keySet().toArray()[0]);
 						activeSessionOfInteractiveUser = (String)item.getClients().keySet().toArray()[0];
 					}else if(item.getClients().size() < 1){
@@ -306,6 +235,7 @@ public class SocketService extends Service {
 				callCancel(activeSessionOfInteractiveUser);
 			}else if(action == Const.ACTION_JOIN_OTHER_ROOM){
 				inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_CONNECT);
+				inBroadcast.putExtra(Const.USER, activeUserInteractive);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
 				action = Const.ACTION_IDLE;
 			}
@@ -315,7 +245,7 @@ public class SocketService extends Service {
 				
 				if(item.getArgs().get(0).getType().equals("callEnd") || item.getArgs().get(0).getType().equals("callDecline")){
 					joinMyRoom();
-					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
+					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED); 
 				}else if(item.getArgs().get(0).getType().equals("callAnswer")){
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ANSWER);
 					inBroadcast.putExtra(Const.USER, item.getArgs().get(0).getPayload().getUser());
@@ -328,11 +258,17 @@ public class SocketService extends Service {
 					activeSessionOfInteractiveUser = item.getArgs().get(0).getFrom();
 					activeUserInteractive = item.getArgs().get(0).getPayload().getUser();
 					inBroadcast.putExtra(Const.SESSION_ID, activeSessionOfInteractiveUser);
+				}else if(item.getArgs().get(0).getType().equals("callRinging")){
+					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_RINGING);
+				}else if(item.getArgs().get(0).getType().equals("callCancel")){
+					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_CANCELED);
 				}
 			} catch (Exception e) {
 				Log.e("LOG", e.toString());
 				if(action == Const.ACTION_LEAVE_MY_ROOM){
 					joinOtherUserRoom(String.valueOf(activeUserInteractive.getId()));
+				}else if(action == Const.ACTION_LEAVE_OTHER_ROOM){
+					joinMyRoom();
 				}
 			}
 			
@@ -352,16 +288,12 @@ public class SocketService extends Service {
 		}
 		
 		if(isWebRtc && socketParser.getType() != SocketParser.TYPE_HEARTBEAT){
-			Log.e("LOG", "U RTC_U SAM"); 
-			Log.d("WEBSOCKET", "WSS->C: " + message);
 			final String message2 = socketParser.getData(); 
 			if(message2.length() < 7) return;
 			executor.execute(new Runnable() {
 				@Override
 				public void run() {
-					Log.d("LOG", "state: "+state.toString());
-					if (state == com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState.CONNECTED || state == com.zzz.my.webrtc.WebSocketChannelClient.WebSocketConnectionState.REGISTERED) {
-						Log.d("LOG", "saljem: "+state.toString());
+					if (state == WebSocketChannelClient.WebSocketConnectionState.CONNECTED || state == WebSocketChannelClient.WebSocketConnectionState.REGISTERED) {
 						events.onWebSocketMessage(message2);
 					}
 				}
@@ -388,15 +320,44 @@ public class SocketService extends Service {
 		id++;
 	}
 	
+	public void sendWebRtcUnMuteOrMute(String type, String name){
+		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", createMuteMessage(type, name)).toString()); 
+		id++;
+	}
+	
 	public void sendWebRtcMessageInit(){
 		String json = "{"
 				+ "\"args\":{"
 					+ "\"type\" : \"init\","
-					+ "\"to\" : \""+ activeSessionOfInteractiveUser +"\","
+					+ "\"to\" : \""+ activeSessionOfInteractiveUser +"\""
 				+ "},"
 				+ "\"name\" : " + "\"message\""
 			+ "}"; 
-		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id - 1), "", createWebRtcMessage(json)).toString()); 
+		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id - 1), "", json).toString()); 
+	}
+	
+	public String createMuteMessage(String type, String name){
+		
+		String action = "message";
+		String json = "{"
+				+ "\"args\":{" 
+					+ "\"type\" : \"" + type + "\","
+					+ "\"to\" : \""+ activeSessionOfInteractiveUser +"\","
+					+ "\"payload\":{"
+						+ "\"name\" : \"" + name + "\","
+						+ "\"user\":{"
+							+ "\"firstname\":\"" + user.getFirstName() + "\","
+							+ "\"image\":\"" + user.getImage() + "\","
+							+ "\"image_thumb\":\"" + user.getImageThumb() + "\","
+							+ "\"lastname\":\"" + user.getLastName() + "\","
+							+ "\"user_id\":\"" + user.getId() + "\""
+						+ "}"
+					+ "}"
+				+ "},"
+				+ "\"name\" : " + "\"" + action + "\""
+			+ "}"; 
+		
+		return json;
 	}
 	
 	public String createWebRtcMessage(String mess){
@@ -404,7 +365,7 @@ public class SocketService extends Service {
 		String sdpMid = "";
 		String sdpMIndex = "";
 		try {
-			JSONObject jo = new JSONObject(mess);
+			JSONObject jo = new JSONObject(mess); 
 			candidate = jo.getString("candidate"); 
 			sdpMid = jo.getString("id");
 			sdpMIndex = jo.getString("label");
@@ -415,7 +376,7 @@ public class SocketService extends Service {
 		
 		String action = "message";
 		String json = "{"
-				+ "\"args\":{"
+				+ "\"args\":{" 
 					+ "\"type\" : \"candidate\","
 					+ "\"to\" : \""+ activeSessionOfInteractiveUser +"\","
 					+ "\"payload\":{"
@@ -423,7 +384,7 @@ public class SocketService extends Service {
 							+ "\"sdpMLineIndex\":\""+sdpMIndex+"\","
 							+ "\"sdpMid\":\""+sdpMid+"\","
 							+ "\"candidate\":\"" + candidate + "\"" 
-						+ "}"
+						+ "},"
 						+ "\"user\":{"
 							+ "\"firstname\":\"" + user.getFirstName() + "\","
 							+ "\"image\":\"" + user.getImage() + "\","
@@ -466,6 +427,33 @@ public class SocketService extends Service {
 		id++;
 	}
 	
+	public void sendWebRtcMessageOfferForAnswer(String sdp){
+		String formatedSdp = sdp.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\r\\\\n");
+		String action = "message";
+		String json = "{"
+				+ "\"args\":{"
+					+ "\"type\" : \"answer\","
+					+ "\"to\" : \""+ activeSessionOfInteractiveUser +"\","
+					+ "\"from\" : \""+ sessionId +"\","
+					+ "\"payload\":{"
+						+ "\"sdp\" : \"" + formatedSdp + "\","
+						+ "\"type\" : \"answer\","
+						+ "\"user\":{"
+							+ "\"firstname\":\"" + user.getFirstName() + "\","
+							+ "\"image\":\"" + user.getImage() + "\","
+							+ "\"image_thumb\":\"" + user.getImageThumb() + "\","
+							+ "\"lastname\":\"" + user.getLastName() + "\","
+							+ "\"user_id\":\"" + user.getId() + "\""
+						+ "}"
+					+ "},"
+					+ "\"roomType\" : \"video\"" 
+				+ "},"
+				+ "\"name\" : " + "\"" + action + "\""
+			+ "}";
+		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString());
+		id++;
+	}
+	
 	public void callOffer(String userId){
 		action = Const.ACTION_CHECK;
 		mConn.sendTextMessage(checkIsRoomAvailableMessage(userId));
@@ -481,6 +469,7 @@ public class SocketService extends Service {
 	
 	public void callCancel(String sessionId){
 		action = Const.ACTION_CALL_CANCEL;
+		if(sessionId == null) sessionId = activeSessionOfInteractiveUser;
 		mConn.sendTextMessage(callMessage(sessionId, "callCancel", id));
 		activeSessionOfInteractiveUser = "-1";
 		activeUserInteractive = null;
@@ -493,6 +482,14 @@ public class SocketService extends Service {
 		if(sessionId == null) sessionId = activeSessionOfInteractiveUser;
 		mConn.sendTextMessage(callMessage(sessionId, "callDecline", id));
 		Log.d("LOG", "CALL DECLINE");
+		id++;
+	}
+	
+	public void callEnd(String sessionId){
+		action = Const.ACTION_CALL_END;
+		if(sessionId == null) sessionId = activeSessionOfInteractiveUser;
+		mConn.sendTextMessage(callMessage(sessionId, "callEnd", id));
+		Log.d("LOG", "CALL END");
 		id++;
 	}
 	
@@ -530,6 +527,14 @@ public class SocketService extends Service {
 		String mess = createLeaveMessage();
 		mConn.sendTextMessage(mess);
 		Log.d("LOG", "LEAVE MY ROOM");
+		id++;
+	}
+	
+	public void leaveOtherRoom(){
+		action = Const.ACTION_LEAVE_OTHER_ROOM;
+		String mess = createLeaveMessage();
+		mConn.sendTextMessage(mess);
+		Log.d("LOG", "LEAVE OTHER ROOM");
 		id++;
 	}
 	

@@ -49,13 +49,10 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 
 public class WebSocketChannelClient {
 	private static final String TAG = "WSChannelRTCClient";
-	private static final int CLOSE_TIMEOUT = 1000;
 	private final WebSocketChannelEvents events;
 	private final LooperExecutor executor;
 	private WebSocketConnection ws;
 	private WebSocketConnectionState state;
-	private final Object closeEventLock = new Object();
-	private boolean closeEvent;
 	// WebSocket send queue. Messages are added to the queue when WebSocket
 	// client is not registered and are consumed in register() call.
 	private final LinkedList<String> wsSendQueue;
@@ -100,19 +97,13 @@ public class WebSocketChannelClient {
 		ws = ((BaseActivity)activity).getService().getWebSocketConnection();
 		((BaseActivity)activity).getService().setState(state);
 		
-		closeEvent = false;
-		
-		Log.d("LOG", "TAJ SAM");
-		
 		executor.requestStart();
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
-				Log.d("LOG", "U EXECURTORU SAM");
 				state = WebSocketConnectionState.CONNECTED;
 				((BaseActivity)activity).getService().setState(state);
 				events.onWebSocketOpen();
-//				((CallActivity)activity).acceptCall();
 			}
 		});
 		
@@ -126,22 +117,13 @@ public class WebSocketChannelClient {
 			Log.w(TAG, "WebSocket register() in state " + state);
 			return;
 		}
-		JSONObject json = new JSONObject();
-		try {
-			json.put("cmd", "register");
-			Log.d(TAG, "C->WSS: " + json.toString());
-			((BaseActivity)activity).getService().sendWebRtcMessage(json.toString());
-			state = WebSocketConnectionState.REGISTERED;
-			((BaseActivity)activity).getService().setState(state);
-			// Send any previously accumulated messages.
-			for (String sendMessage : wsSendQueue) {
-				send(sendMessage);
-			}
-			wsSendQueue.clear();
-		} catch (JSONException e) {
-			reportError("WebSocket register JSON error: " + e.getMessage());
+		state = WebSocketConnectionState.REGISTERED;
+		((BaseActivity) activity).getService().setState(state);
+		// Send any previously accumulated messages.
+		for (String sendMessage : wsSendQueue) {
+			send(sendMessage);
 		}
-		Log.d("LOG", "AFTER REGISTER");
+		wsSendQueue.clear();
 	}
 
 	public void send(String message) {
@@ -164,7 +146,6 @@ public class WebSocketChannelClient {
 				json.put("cmd", "send");
 				json.put("msg", message);
 				message = json.toString();
-				Log.d(TAG, "C->WSS: " + message);
 				((BaseActivity)activity).getService().sendWebRtcMessage(message);
 			} catch (JSONException e) {
 				reportError("WebSocket send JSON error: " + e.getMessage());
@@ -172,38 +153,6 @@ public class WebSocketChannelClient {
 			break;
 		}
 		return;
-	}
-
-	public void disconnect(boolean waitForComplete) {
-		checkIfCalledOnValidThread();
-		Log.d(TAG, "Disonnect WebSocket. State: " + state);
-		if (state == WebSocketConnectionState.REGISTERED) {
-			send("{\"type\": \"bye\"}");
-			state = WebSocketConnectionState.CONNECTED;
-		}
-		// Close WebSocket in CONNECTED or ERROR states only.
-		if (state == WebSocketConnectionState.CONNECTED || state == WebSocketConnectionState.ERROR) {
-			ws.disconnect();
-
-			// Send DELETE to http WebSocket server.
-			state = WebSocketConnectionState.CLOSED;
-
-			// Wait for websocket close event to prevent websocket library from
-			// sending any pending messages to deleted looper thread.
-			if (waitForComplete) {
-				synchronized (closeEventLock) {
-					while (!closeEvent) {
-						try {
-							closeEventLock.wait(CLOSE_TIMEOUT);
-							break;
-						} catch (InterruptedException e) {
-							Log.e(TAG, "Wait error: " + e.toString());
-						}
-					}
-				}
-			}
-		}
-		Log.d(TAG, "Disonnecting WebSocket done.");
 	}
 
 	private void reportError(final String errorMessage) {

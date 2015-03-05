@@ -37,6 +37,7 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -246,11 +247,12 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param chatId
 	 * @param password
 	 */
-	public static void startWithChatId(Context context, String chatId, String password) {
+	public static void startWithChatId(Context context, String chatId, String password, User user) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.PASSWORD, password);
+		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
@@ -264,11 +266,12 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param firstname
 	 * @param lastname
 	 */
-	public static void startWithUserId(Context context, String userId, boolean isGroup, String firstname, String lastname) {
+	public static void startWithUserId(Context context, String userId, boolean isGroup, String firstname, String lastname, User user) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.USER_ID, userId);
 		intent.putExtra(Const.FIRSTNAME, firstname);
+		intent.putExtra(Const.USER, user);
 		intent.putExtra(Const.LASTNAME, lastname);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -301,12 +304,13 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param newImage
 	 * @param newThumbImage
 	 */
-	public static void startUpdateImage(Context context, String newImage, String newThumbImage) {
+	public static void startUpdateImage(Context context, String newImage, String newThumbImage, User user) {
 
 		Intent intentFinal = new Intent(context, ChatActivity.class);
 		intentFinal.putExtra(Const.IMAGE, newImage);
 		intentFinal.putExtra(Const.IMAGE_THUMB, newThumbImage);
 		intentFinal.putExtra(Const.UPDATE_PICTURE, true);
+		intentFinal.putExtra(Const.USER, user);
 		intentFinal.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intentFinal);
 	}
@@ -446,7 +450,8 @@ public class ChatActivity extends BaseChatActivity {
 
 								chatParams(result.getResultData().getChat());
 								
-								currentUser = result.getResultData().getUser();
+								if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
+								if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
 
 								chatId = String.valueOf(result.getResultData().getId());
 								chatName = result.getResultData().getChat_name();
@@ -649,7 +654,8 @@ public class ChatActivity extends BaseChatActivity {
 					
 					Chat chat = result.getResultData();
 					
-					currentUser = result.getResultData().getUser();
+					if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
+					if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
 
 					chatParams(chat.getChat());
 					

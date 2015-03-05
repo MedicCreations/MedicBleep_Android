@@ -10,7 +10,6 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
 import com.clover.spika.enterprise.chat.utils.Preferences;
-import com.zzz.socket.io.SocketIOService;
 import com.zzz.test.socket.SocketService;
 
 public class SpikaEnterpriseApp extends Application {
@@ -23,7 +22,6 @@ public class SpikaEnterpriseApp extends Application {
 
 	private Intent poolingIntent;
 	private Intent socketIntent;
-	private Intent socketIOIntent;
 
 	@Override
 	public void onCreate() {
@@ -41,21 +39,14 @@ public class SpikaEnterpriseApp extends Application {
 			stopService(poolingIntent);
 		}
 		
-//		socketIntent = new Intent(this, SocketService.class);
-//		startService(socketIntent);
-		
 	}
 	
 	public void startSocket(){
+		if(socketIntent != null) return;
 		socketIntent = new Intent(this, SocketService.class);
 		startService(socketIntent);
 	}
 	
-	public void startSocketIO(){
-		socketIOIntent = new Intent(this, SocketIOService.class);
-		startService(socketIOIntent);
-	}
-
 	public static Preferences getSharedPreferences(Context ctx) {
 		return new Preferences(ctx);
 	}

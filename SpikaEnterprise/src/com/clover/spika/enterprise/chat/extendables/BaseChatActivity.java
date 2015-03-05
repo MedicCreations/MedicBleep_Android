@@ -862,10 +862,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 				//make call
 				rlDrawerNewManage();
 				showCallingPopup(currentUser, null, false, false);
-//				mService.SSS();
-//				ConnectToSocket.getInstance().callOffer(String.valueOf(getUserId()));
-//				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
-//				startActivity(new Intent(BaseChatActivity.this, ConnectActivity.class));
 			}
 		}
 	};
@@ -915,7 +911,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 				if (position == SETTINGS_POSITION_FIRST) {
 					if (chatType == Const.C_PRIVATE) {
-						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
+						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName, currentUser);
 					} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 					} else {

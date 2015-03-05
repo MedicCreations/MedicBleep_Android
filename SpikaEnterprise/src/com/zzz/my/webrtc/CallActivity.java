@@ -41,7 +41,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -53,7 +52,7 @@ import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.listeners.OnRoomClickedListener;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.google.gson.Gson;
 import com.zzz.my.webrtc.AppRTCClient.SignalingParameters;
@@ -85,13 +84,11 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	// Peer connection statistics callback period in ms.
 	private static final int STAT_CALLBACK_PERIOD = 1000;
 	// Local preview screen position before call is connected.
-	private static final int LOCAL_X_CONNECTING = 0;
-	private static final int LOCAL_Y_CONNECTING = 0;
 	private static final int LOCAL_WIDTH_CONNECTING = 100;
 	private static final int LOCAL_HEIGHT_CONNECTING = 100;
+	private static final int LOCAL_X_CONNECTING = 0;
+	private static final int LOCAL_Y_CONNECTING = 0;
 	// Local preview screen position after call is connected.
-	private static final int LOCAL_X_CONNECTED = 72;
-	private static final int LOCAL_Y_CONNECTED = 72;
 	private static final int LOCAL_WIDTH_CONNECTED = 25;
 	private static final int LOCAL_HEIGHT_CONNECTED = 25;
 	// Remote video screen position
@@ -124,13 +121,16 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	
 	
 	private WebSocketChannelClient wsClient;
-	private boolean initiator = false;
-
+	
+	private int localXConnected = 0;
+	private int localYConnected = 0;
+	
+	private User activeUser = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
-		Log.d("LOG", "1");
 
 		// Set window styles for fullscreen-window size. Needs to be done before
 		// adding content.
@@ -147,19 +147,20 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		// Create UI controls.
 		videoView = (GLSurfaceView) findViewById(R.id.glview_call); 
 		callFragment = new CallFragment();
-		Log.d("LOG", "2");
 
 		// Create video renderers.
 		VideoRendererGui.setView(videoView, new Runnable() {
 			@Override
 			public void run() {
-				Log.d("LOG", "3");
 				createPeerConnectionFactory();
 			}
 		});
+		
+		localXConnected = 100 - LOCAL_WIDTH_CONNECTED - 5;
+		localYConnected = 2;
+		
 		remoteRender = VideoRendererGui.create(REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
 		localRender = VideoRendererGui.create(LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType, true);
-		Log.d("LOG", "4");
 
 		// Show/hide call control fragment on view click.
 		videoView.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +170,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			}
 		});
 
-		Log.d("LOG", "5");
 		// Get Intent parameters.
 		final Intent intent = getIntent();
 		
@@ -190,31 +190,26 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			
 			@Override
 			public void onWebSocketOpen() {
-				Log.d("LOG", "BEFORE REGISTER");
-				Log.d(TAG, "Websocket connection completed. Registering...");
+				Log.d(TAG, "Websocket connection completed. Registering..."); 
 				wsClient.register();
-				acceptCall();
+				acceptCall();  
 			}
 			
 			@Override
 			public void onWebSocketMessage(String message) {
-				Log.i("LOG", "REC MESS SOCKET");
-				if (wsClient.getState() != WebSocketConnectionState.REGISTERED) {
+				if (wsClient.getState() != WebSocketConnectionState.REGISTERED) { 
 					Log.e(TAG, "Got WebSocket message in non registered state.");
 					return;
-				}
-				try {
+				} 
+				try { 
 					WebRtcSDPMessage item = new Gson().fromJson(message, WebRtcSDPMessage.class);
-					if (item.getArgs().get(0).getType().equals("answer")){
-						Log.w("LOG", "SDP ANSWER");
+					if (item.getArgs().get(0).getType().equals("answer")){ 
 						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("ANSWER"), item.getArgs().get(0).getPayload().getSdp());
 						onRemoteDescription(sdp);
 					}else if (item.getArgs().get(0).getType().equals("offer")){
-						Log.w("LOG", "SDP OFFER");
 						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), item.getArgs().get(0).getPayload().getSdp());
 						onRemoteDescription(sdp);
 					}else if (item.getArgs().get(0).getType().equals("candidate")){
-						Log.w("LOG", "HERE IS SOME CANDIDATE");
 						WebRtcSDPCandidate candidateModel = item.getArgs().get(0).getPayload().getCandidate();
 						IceCandidate candidate = new IceCandidate(candidateModel.getSdmMid(), Integer.valueOf(candidateModel.getSdpMLineIndex()), candidateModel.getCandidate());
 						onRemoteIceCandidate(candidate);
@@ -222,7 +217,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 						onChannelClose();
 					}
 				} catch (Exception e) {
-					Log.e("LOG", "PPP: "+e.toString()); 
+					Log.e("LOG", e.toString()); 
 				}
 			}
 			
@@ -263,8 +258,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	@Override
     protected void onStart() {
     	super.onStart();
-    	intentFilterSocket = new IntentFilter("CALL");
-		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
+    	intentFilterSocketCall = new IntentFilter("CALL");
+		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocketCall);
     };
     
     @Override
@@ -273,14 +268,14 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		super.onStop();
     }
     
-    IntentFilter intentFilterSocket;
+    IntentFilter intentFilterSocketCall;
 	BroadcastReceiver rec = new BroadcastReceiver() {
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
+			activeUser = item.getArgs().get(0).getPayload().getUser();
 			startCall(item);
-			
 		}
 	};
 
@@ -291,12 +286,19 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	
 	public void acceptCall(){
 		if(getIntent().hasExtra(Const.SESSION_ID)) {
-			Log.e("LOG", "ACCEPT CALL IN CALL ACTIVITY");
+			//RECEIVE CALL
 			mService.callAccept(getIntent().getStringExtra(Const.SESSION_ID));
 		}else{
-			Log.e("LOG", "START CALL IN CALL ACTIVITY");
+			//MAKE CALL
+			User user = (User) getIntent().getSerializableExtra(Const.USER);
+			activeUser = user;
 			startCall(null);
 		}
+	}
+	
+	@Override
+	protected void callEnded() {
+		disconnect();
 	}
 	
 
@@ -314,7 +316,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	@Override
 	public void onResume() {
 		super.onResume();
-//		videoView.onResume();
+		videoView.onResume();
 		activityRunning = true;
 		if (peerConnectionClient != null) {
 			peerConnectionClient.startVideoSource();
@@ -349,6 +351,32 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		this.scalingType = scalingType;
 		updateVideoView();
 	}
+	
+	@Override
+	public void onMuteAudio(boolean toMute) {
+		String mute = "unmute";
+		if(toMute) mute = "mute";
+		mService.sendWebRtcUnMuteOrMute("audio", mute);
+		peerConnectionClient.setAudioEnabled(!toMute);
+	}
+	
+	@Override
+	public void onVideoOnOff(boolean toOff) {
+		String mute = "unmute";
+		if(toOff) mute = "mute";
+		mService.sendWebRtcUnMuteOrMute("video", mute);
+		peerConnectionClient.setLocalVideoEnabled(!toOff);
+	}
+	
+	@Override
+	public void onSpeakerOnOff(boolean toOff) {
+		Log.d("NEW", "SPEAKEAR MODE: " + toOff); //TODO
+	}
+	
+	@Override
+	public void onMessages() {
+		Log.d("NEW", "GO TO MESSAGES"); //TODO
+	}
 
 	// Helper functions.
 	private void toggleCallControlFragmentVisibility() {
@@ -368,26 +396,23 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	}
 
 	private void updateVideoView() {
-		VideoRendererGui.update(remoteRender, REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType);
+		VideoRendererGui.update(remoteRender, REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType); 
 		if (iceConnected) {
-			VideoRendererGui.update(localRender, LOCAL_X_CONNECTED, LOCAL_Y_CONNECTED, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED, ScalingType.SCALE_ASPECT_FIT);
+			VideoRendererGui.update(localRender, localXConnected, localYConnected, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED, ScalingType.SCALE_ASPECT_FIT);
 		} else {
 			VideoRendererGui.update(localRender, LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType);
 		}
 	}
 
 	private void startCall(WebRtcSDPMessage webRtcMessage) {
-		Log.d("LOG", "1.1");
 		if (appRtcClient == null) {
-			Log.e(TAG, "AppRTC client is not allocated for a call.");
+			Log.e(TAG, "AppRTC client is not allocated for a call."); 
 			return;
 		}
-		Log.d("LOG", "1.2");
-		// Start room connection.
+		// Start room connection. 
 		signalingParameters = appRtcClient.setRoomParameters(webRtcMessage);
 		
 		onConnectedToRoom(signalingParameters);
-		Log.d("LOG", "1.3");
 
 		// Create and audio manager that will take care of audio routing,
 		// audio modes, audio device enumeration etc.
@@ -403,49 +428,51 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		// MODE_IN_COMMUNICATION for best possible VoIP performance.
 		Log.d(TAG, "Initializing the audio manager...");
 		audioManager.init();
-		Log.d("LOG", "1.4");
 	}
 
 	// Should be called from UI thread
 	private void callConnected() {
-		// Update video view.
+		// Update video view. 
+		if(!getIntent().getBooleanExtra(Const.IS_VIDEO_ACCEPT, false)) peerConnectionClient.setLocalVideoEnabled(false);
 		updateVideoView();
-		// Enable statistics callback.
+		
+		// Enable statistics callback. 
 		peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
+		
+		if(activeUser != null && callFragment != null) callFragment.setUserNameAndStarChrono(activeUser.getFirstName() + " " + activeUser.getLastName());
+		callFragment.setAudioMuteButton(true);
+		callFragment.setVideoOnOffButton(getIntent().getBooleanExtra(Const.IS_VIDEO_ACCEPT, false));
+		
 	}
 
 	private void onAudioManagerChangedState() {
 		// TODO(henrika): disable video if
 		// AppRTCAudioManager.AudioDevice.EARPIECE
 		// is active.
-	}
+	} 
 
 	// Create peer connection factory when EGL context is ready.
 	private void createPeerConnectionFactory() { 
-		Log.e("LOG", "3.01");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				Log.d("LOG", "3.1");
 				if (peerConnectionClient == null) {
 					peerConnectionClient = new PeerConnectionClient();
 					peerConnectionClient.createPeerConnectionFactory(CallActivity.this, videoCodec, hwCodecAcceleration, VideoRendererGui.getEGLContext(), CallActivity.this);
 				}
-				Log.d("LOG", "3.2");
 				if (signalingParameters != null) {
 					Log.w(TAG, "EGL context is ready after room connection.");
-					Log.d("LOG", "3.3");
 					onConnectedToRoomInternal(signalingParameters);
 				}
-				Log.d("LOG", "3.4");
 			}
 		});
 	}
  
 	// Disconnect from remote resources, dispose of local resources, and exit.
 	private void disconnect() {
+		mService.setIsInWebRtc(false);
 		if (appRtcClient != null) {
-			appRtcClient.disconnectFromRoom();
+			appRtcClient.disconnect();
 			appRtcClient = null;
 		}
 		if (peerConnectionClient != null) {
@@ -494,7 +521,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	// All callbacks are invoked from websocket signaling looper thread and
 	// are routed to UI thread.
 	private void onConnectedToRoomInternal(final SignalingParameters params) {
-		Log.i("LOG", "ON CONNECTED TO ROOM INTERNAL");
 		signalingParameters = params;
 		if (peerConnectionClient == null) {
 			Log.w(TAG, "Room is connected, but EGL context is not ready yet.");
@@ -505,7 +531,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 
 		if (signalingParameters.initiator) {
 			logAndToast("Creating OFFER...");
-			Log.d("LOG", "creating offer");
 			// Create offer. Offer SDP will be sent to answering client in
 			// PeerConnectionEvents.onLocalDescription event.
 			peerConnectionClient.createOffer();
@@ -513,7 +538,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			if (params.offerSdp != null) {
 				peerConnectionClient.setRemoteDescription(params.offerSdp);
 				logAndToast("Creating ANSWER...");
-				Log.d("LOG", "creating ANSWER");
 				// Create answer. Answer SDP will be sent to offering client in
 				// PeerConnectionEvents.onLocalDescription event.
 				peerConnectionClient.createAnswer();
@@ -529,7 +553,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 
 	@Override
 	public void onConnectedToRoom(final SignalingParameters params) {
-		Log.i("LOG", "ON CONNECTED TO ROOM");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -554,7 +577,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 					// Create answer. Answer SDP will be sent to offering client
 					// in
 					// PeerConnectionEvents.onLocalDescription event.
-					peerConnectionClient.createAnswer();
+//					Log.d("NEW", "REMOTE DESCRIPTION CREATE ANSWER");
+//					peerConnectionClient.createAnswer();
 				}
 			}
 		});
@@ -562,7 +586,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 
 	@Override
 	public void onRemoteIceCandidate(final IceCandidate candidate) {
-		Log.d("LOG", "ON REMOTE ICE CANDIDATE: " + candidate.toString());
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -570,7 +593,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 					Log.e(TAG, "Received ICE candidate for non-initilized peer connection.");
 					return;
 				}
-				Log.d("LOG", "ADD ICE CANDIDATE: " + candidate.toString());
 				peerConnectionClient.addRemoteIceCandidate(candidate);
 			}
 		});

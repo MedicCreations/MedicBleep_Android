@@ -204,7 +204,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+		
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
@@ -213,9 +213,9 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			boolean isFirstUserProfile = getResources().getBoolean(R.bool.first_user_profile);
 			
 			if (isFirstUserProfile){
-				ProfileOtherActivity.openOtherProfileFromList(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user.getFirstName(), user.getLastName());
+				ProfileOtherActivity.openOtherProfileFromList(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user.getFirstName(), user.getLastName(), user);
 			} else {
-				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName());
+				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName(), user);
 			}
 			
 		}

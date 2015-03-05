@@ -27,16 +27,8 @@
 
 package com.zzz.my.webrtc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
-import java.util.Scanner;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.PeerConnection;
@@ -53,8 +45,6 @@ import com.zzz.socket.models.WebRtcSDPMessage;
  * parameters to use with that room.
  */
 public class RoomParametersFetcher {
-	private static final String TAG = "RoomRTCClient";
-	private final RoomParametersFetcherEvents events;
 	
 	private WebRtcSDPMessage webRtcMessage = null;
 
@@ -74,8 +64,7 @@ public class RoomParametersFetcher {
 		public void onSignalingParametersError(final String description);
 	}
 
-	public RoomParametersFetcher(final RoomParametersFetcherEvents events, WebRtcSDPMessage webRtcMessage) {
-		this.events = events;
+	public RoomParametersFetcher(WebRtcSDPMessage webRtcMessage) {
 		this.webRtcMessage = webRtcMessage;
 	}
 
@@ -104,8 +93,13 @@ public class RoomParametersFetcher {
 			if(webRtcMessage.getArgs().get(0).getPayload() == null){
 				sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), "sdp");
 			}else{
-				if (webRtcMessage.getArgs().get(0).getPayload().getSdp() != null)
-					sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("ANSWER"), webRtcMessage.getArgs().get(0).getPayload().getSdp());
+				if (webRtcMessage.getArgs().get(0).getPayload().getSdp() != null){
+					String newSdp = webRtcMessage.getArgs().get(0).getPayload().getSdp();
+					if(newSdp.contains("a=group:BUNDLE audio video data")){
+						newSdp = newSdp.replace("a=group:BUNDLE audio video data", "a=group:BUNDLE audio video");
+					}
+					sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), newSdp);
+				}
 
 				WebRtcSDPCandidate candModel = webRtcMessage.getArgs().get(0).getPayload().getCandidate();
 				Log.d("LOG", "CANDIDATE: " + webRtcMessage.getArgs().get(0).getPayload().getCandidate());
@@ -121,8 +115,7 @@ public class RoomParametersFetcher {
 		MediaConstraints audioConstraints = createDeafultMediaConstraints();
 		
 		SignalingParameters params2 = new SignalingParameters(turnServersNEW, isInitiator, pcConstraints, videoConstraints, 
-				audioConstraints, null, null, null, sdp, iceCandidatesy);
-//		events.onSignalingParametersReady(params2);
+				audioConstraints, sdp, iceCandidatesy);
 		return params2;
 		
 	}
@@ -142,68 +135,26 @@ public class RoomParametersFetcher {
 		}
 		// DTLS isn't being specified (e.g. for debug=loopback calls), so enable
 		// it for normal calls and disable for loopback calls.
-		pcConstraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
+		pcConstraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true")); 
 	}
 
 	private MediaConstraints createDeafultMediaConstraints() {
 		MediaConstraints constraints = new MediaConstraints();
-		constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
-		constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
-		
-		constraints.optional.add(new MediaConstraints.KeyValuePair("internalSctpDataChannels", "true"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("maxWidth", "640"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("minWidth", "320"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("maxHeight", "480"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("minHeight", "240"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("maxFrameRate", "30"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("minFrameRate", "24"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("maxAspectRatio", "4:3"));
-		constraints.optional.add(new MediaConstraints.KeyValuePair("minAspectRatio", "4:3"));
+//		constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"));
+//		constraints.mandatory.add(new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
+//		
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("internalSctpDataChannels", "true"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("maxWidth", "640"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("minWidth", "320"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("maxHeight", "480"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("minHeight", "240"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("maxFrameRate", "30"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("minFrameRate", "24"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("maxAspectRatio", "4:3"));
+//		constraints.optional.add(new MediaConstraints.KeyValuePair("minAspectRatio", "4:3"));
 		
 		return constraints;
-	}
-
-	// Requests & returns a TURN ICE Server based on a request URL. Must be run
-	// off the main thread!
-	private LinkedList<PeerConnection.IceServer> requestTurnServers(String url) throws IOException, JSONException {
-		LinkedList<PeerConnection.IceServer> turnServers = new LinkedList<PeerConnection.IceServer>();
-		Log.d(TAG, "Request TURN from: " + url);
-		URLConnection connection = (new URL(url)).openConnection();
-		connection.addRequestProperty("user-agent", "Mozilla/5.0");
-		connection.addRequestProperty("origin", "https://apprtc.appspot.com");
-		String response = drainStream(connection.getInputStream());
-		Log.d(TAG, "TURN response: " + response);
-		JSONObject responseJSON = new JSONObject(response);
-		String username = responseJSON.getString("username");
-		String password = responseJSON.getString("password");
-		JSONArray turnUris = responseJSON.getJSONArray("uris");
-		for (int i = 0; i < turnUris.length(); i++) {
-			String uri = turnUris.getString(i);
-			turnServers.add(new PeerConnection.IceServer(uri, username, password));
-		}
-		return turnServers;
-	}
-
-	// Return the list of ICE servers described by a WebRTCPeerConnection
-	// configuration string.
-	private LinkedList<PeerConnection.IceServer> iceServersFromPCConfigJSON(String pcConfig) throws JSONException {
-		JSONObject json = new JSONObject(pcConfig);
-		JSONArray servers = json.getJSONArray("iceServers");
-		LinkedList<PeerConnection.IceServer> ret = new LinkedList<PeerConnection.IceServer>();
-		for (int i = 0; i < servers.length(); ++i) {
-			JSONObject server = servers.getJSONObject(i);
-			String url = server.getString("urls");
-			String credential = server.has("credential") ? server.getString("credential") : "";
-			ret.add(new PeerConnection.IceServer(url, "", credential));
-		}
-		return ret;
-	}
-
-	// Return the contents of an InputStream as a String.
-	private String drainStream(InputStream in) {
-		Scanner s = new Scanner(in).useDelimiter("\\A");
-		return s.hasNext() ? s.next() : "";
 	}
 
 }

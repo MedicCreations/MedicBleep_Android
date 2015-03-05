@@ -27,6 +27,8 @@
 
 package com.zzz.my.webrtc;
 
+import com.zzz.my.webrtc.AppRTCUtils.NonThreadSafe;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -35,8 +37,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.util.Log;
-import con.zzz.test.webrtc.utils.AppRTCUtils;
-import con.zzz.test.webrtc.utils.AppRTCUtils.NonThreadSafe;
 
 /**
  * AppRTCProximitySensor manages functions related to the proximity sensor in

@@ -1,13 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,18 +16,16 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.fragments.HomeFragment;
+import com.clover.spika.enterprise.chat.fragments.PeopleFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
-import com.zzz.test.webrtc.ConnectActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -310,38 +302,11 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 	
-	
-	
-	
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-//		new Handler().postDelayed(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				SpikaEnterpriseApp.getInstance().startSocketIO();
-//			}
-//		}, 5000);
-		
-		new Handler().postDelayed(new Runnable() { 
-			
-			@Override
-			public void run() {
-				Log.d("LOG", "CONNECTING");
-				SpikaEnterpriseApp.getInstance().startSocket();
-			}
-		}, 3000);
-		
-		new Handler().postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-//				startActivity(new Intent(MainActivity.this, ConnectActivity.class));
-			}
-		}, 5000);
+	public PeopleFragment getPeopleFragment(){
+		if(mFragment instanceof HomeFragment){
+			return ((HomeFragment) mFragment).getPeopleFragment();
+		}
+		return null;
 	}
 	
 }

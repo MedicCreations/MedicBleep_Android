@@ -33,6 +33,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.webrtc.AudioTrack;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaCodecVideoEncoder;
@@ -114,6 +115,7 @@ public class PeerConnectionClient {
 	private boolean renderVideo = true;
 	private VideoTrack localVideoTrack = null;
 	private VideoTrack remoteVideoTrack = null; 
+	private AudioTrack localAudioTrack = null;
 
 	/**
 	 * Peer connection parameters.
@@ -240,7 +242,7 @@ public class PeerConnectionClient {
 		});
 	}
 
-	public void close() {
+	public void close() { 
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -297,7 +299,8 @@ public class PeerConnectionClient {
 		}
 
 		if (signalingParameters.audioConstraints != null) {
-			mediaStream.addTrack(factory.createAudioTrack(AUDIO_TRACK_ID, factory.createAudioSource(signalingParameters.audioConstraints)));
+			localAudioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, factory.createAudioSource(signalingParameters.audioConstraints));
+			mediaStream.addTrack(localAudioTrack);
 		}
 		peerConnection.addStream(mediaStream);
 
@@ -399,6 +402,30 @@ public class PeerConnectionClient {
 			}
 		});
 	}
+	
+	public void setLocalVideoEnabled(final boolean enable) {
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				renderVideo = enable;
+				if (localVideoTrack != null) {
+					localVideoTrack.setEnabled(renderVideo);
+				}
+			}
+		});
+	}
+	
+	public void setAudioEnabled(final boolean enable) {
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+				if (localAudioTrack != null) {
+					Log.v("NEW", "LOCAL AUDIO TO ENABLE: " + enable);
+					localAudioTrack.setEnabled(enable);
+				}
+			}
+		});
+	}
 
 	public void createOffer() {
 		executor.execute(new Runnable() {
@@ -457,8 +484,6 @@ public class PeerConnectionClient {
 					sdpDescription = setStartBitrate(VIDEO_CODEC_VP9, sdpDescription, peerConnectionParameters.videoStartBitrate);
 				}
 				Log.d(TAG, "Set remote SDP. isinitiator: " + isInitiator + " type: " + sdp.type);
-//				Log.d(TAG, "SD DESC OLD: " + sdp.description);
-//				Log.d(TAG, "SD DESC NEW: " + sdpDescription);
 				SessionDescription sdpRemote = new SessionDescription(sdp.type, sdpDescription);
 				peerConnection.setRemoteDescription(sdpObserver, sdpRemote);
 			} 
@@ -728,11 +753,11 @@ public class PeerConnectionClient {
 			executor.execute(new Runnable() {
 				@Override
 				public void run() {
-					if (peerConnection != null && !isError) {
+					if (peerConnection != null && !isError) { 
 						Log.d(TAG, "Set local SDP from " + sdp.type);
 						peerConnection.setLocalDescription(sdpObserver, sdp);
 					}
-				}
+				} 
 			});
 		}
 

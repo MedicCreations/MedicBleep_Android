@@ -144,6 +144,8 @@ public abstract class LoginBaseActivity extends Activity {
 						intent.putExtras(extras);
 					}
 					
+					SpikaEnterpriseApp.getInstance().startSocket();
+					
 					startActivity(intent);
 					finish();
 

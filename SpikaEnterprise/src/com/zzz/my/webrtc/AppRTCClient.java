@@ -41,14 +41,6 @@ import com.zzz.socket.models.WebRtcSDPMessage;
  */
 public interface AppRTCClient {
 
-
-  /**
-   * Asynchronously connect to an AppRTC room URL using supplied connection
-   * parameters. Once connection is established onConnectedToRoom()
-   * callback with room parameters is invoked.
-   */
-  public void connectToRoom();
-
   /**
    * Send offer SDP to the other participant.
    */
@@ -64,12 +56,8 @@ public interface AppRTCClient {
    */
   public void sendLocalIceCandidate(final IceCandidate candidate);
 
-  /**
-   * Disconnect from room.
-   */
-  public void disconnectFromRoom();
-  
   public SignalingParameters setRoomParameters(WebRtcSDPMessage webRtcMessage);
+  public void disconnect();
 
   /**
    * Struct holding the signaling parameters of an AppRTC room.
@@ -80,9 +68,6 @@ public interface AppRTCClient {
     public final MediaConstraints pcConstraints;
     public final MediaConstraints videoConstraints;
     public final MediaConstraints audioConstraints;
-    public final String clientId;
-    public final String wssUrl;
-    public final String wssPostUrl;
     public final SessionDescription offerSdp;
     public final List<IceCandidate> iceCandidates;
 
@@ -90,16 +75,12 @@ public interface AppRTCClient {
         List<PeerConnection.IceServer> iceServers,
         boolean initiator, MediaConstraints pcConstraints,
         MediaConstraints videoConstraints, MediaConstraints audioConstraints,
-        String clientId, String wssUrl, String wssPostUrl,
         SessionDescription offerSdp, List<IceCandidate> iceCandidates) {
       this.iceServers = iceServers;
       this.initiator = initiator;
       this.pcConstraints = pcConstraints;
       this.videoConstraints = videoConstraints;
       this.audioConstraints = audioConstraints;
-      this.clientId = clientId;
-      this.wssUrl = wssUrl;
-      this.wssPostUrl = wssPostUrl;
       this.offerSdp = offerSdp;
       this.iceCandidates = iceCandidates;
     }

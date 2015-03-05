@@ -38,7 +38,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.util.Log;
-import con.zzz.test.webrtc.utils.AppRTCUtils;
 
 /**
  * AppRTCAudioManager manages all audio related parts of the AppRTC demo.

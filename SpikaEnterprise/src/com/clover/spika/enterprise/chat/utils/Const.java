@@ -301,6 +301,8 @@ public class Const {
 	public static final int ACTION_LEAVE_MY_ROOM = 7;
 	public static final int ACTION_JOIN_OTHER_ROOM = 8;
 	public static final int ACTION_WAIT_FOR_CANDIDATE = 9;
+	public static final int ACTION_CALL_END = 10;
+	public static final int ACTION_LEAVE_OTHER_ROOM = 11;
 	public static final String USER_AVAILABLE = "UserAvailable";
 	public static final String USER_BUSY = "USerBusy";
 	public static final String USER_NOT_CONNECTED = "UserNotConnected";
@@ -312,7 +314,12 @@ public class Const {
 	public static final int CALL_ANSWER = 5;
 	public static final int CALL_CONNECT = 6;
 	public static final int CALL_ACCEPTED = 7;
+	public static final int CALL_RINGING = 8;
+	public static final int CALL_CANCELED = 9;
 	public static final String CANDIDATE = "Candidate";
+	public static final String IS_VIDEO_ACCEPT = "VideoAccept";
+	
+	public static final int CALL_ACTIVITY_REQUEST = 99;
 	
 	public static final class SoundControl{
 		public static final int PLAY_BUTTON = 0;

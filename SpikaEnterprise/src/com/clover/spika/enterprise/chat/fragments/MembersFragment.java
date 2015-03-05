@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.Settings.Global;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,9 +133,12 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 
 		if (position != -1 && position != mUserAdapter.getCount()) {
 			GlobalModel user = mUserAdapter.getItem(position);
+			
+			User userUser = null;
+			if(user.getType() == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
 			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false, ((User) user.getModel()).getFirstName(),
-					((User) user.getModel()).getLastName());
+					((User) user.getModel()).getLastName(), userUser);
 		}
 	}
 

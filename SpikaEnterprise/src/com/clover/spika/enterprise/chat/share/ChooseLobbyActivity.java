@@ -198,7 +198,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			@Override
 			public void onApiResponse(Result<Integer> result) {
 				if (result.isSuccess()) {
-					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.getPassword());
+					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.getPassword(), chat.getUser());
 				} else {
 					AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
 					dialog.setFailed(result.getResultData());

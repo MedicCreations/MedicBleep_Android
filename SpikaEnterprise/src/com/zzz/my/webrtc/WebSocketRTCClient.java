@@ -56,16 +56,9 @@ import com.zzz.socket.models.WebRtcSDPMessage;
  */
 public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents {
 	private static final String TAG = "WSRTCClient";
-	private static final String ROOM_JOIN = "join";
-	private static final String ROOM_MESSAGE = "message";
-	private static final String ROOM_LEAVE = "leave";
 
 	private enum ConnectionState {
 		NEW, CONNECTED, CLOSED, ERROR
-	};
-
-	private enum MessageType {
-		MESSAGE, LEAVE
 	};
 
 	private final LooperExecutor executor;
@@ -73,8 +66,6 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 	private SignalingEvents events;
 	private WebSocketChannelClient wsClient;
 	private ConnectionState roomState;
-	private String messageUrl;
-	private String leaveUrl;
 	
 	private Activity activity;
 	private WebRtcSDPMessage webRtcMessage = null;
@@ -88,108 +79,14 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 		wsClient = ws;
 	}
 
-	// --------------------------------------------------------------------
-	// AppRTCClient interface implementation.
-	// Asynchronously connect to an AppRTC room URL using supplied connection
-	// parameters, retrieves room parameters and connect to WebSocket server.
-	@Override
-	public void connectToRoom() {
-		Log.d("LOG", "2.1");
-		executor.requestStart();
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				connectToRoomInternal();
-			}
-		});
-	}
-
-	@Override
-	public void disconnectFromRoom() {
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				disconnectFromRoomInternal();
-			}
-		});
-		executor.requestStop();
-	}
-
-	// Connects to room - function runs on a local looper thread.
-	private void connectToRoomInternal() {
-		Log.d("LOG", "2.2");
-		roomState = ConnectionState.NEW;
-		wsClient = new WebSocketChannelClient(executor, this, activity);
-		Log.d("LOG", "2.3");
-
-		RoomParametersFetcherEvents callbacks = new RoomParametersFetcherEvents() {
-			@Override
-			public void onSignalingParametersReady(final SignalingParameters params) {
-				WebSocketRTCClient.this.executor.execute(new Runnable() { 
-					@Override
-					public void run() {
-						Log.d("LOG", "2.4");
-						WebSocketRTCClient.this.signalingParametersReady(params);
-					}
-				});
-			}
-
-			@Override
-			public void onSignalingParametersError(String description) {
-				WebSocketRTCClient.this.reportError(description);
-			}
-		};
-
-		Log.d("LOG", "2.5");
-		new RoomParametersFetcher(callbacks, webRtcMessage).makeRequest();
-		Log.d("LOG", "2.6");
+	public SignalingParameters setRoomParameters(WebRtcSDPMessage webRtcMessage){
+		roomState = ConnectionState.CONNECTED;
+		return new RoomParametersFetcher(webRtcMessage).roomHttpResponseParse();
 	}
 	
-	public SignalingParameters setRoomParameters(WebRtcSDPMessage webRtcMessage){
-		RoomParametersFetcherEvents callbacks = new RoomParametersFetcherEvents() {
-			@Override
-			public void onSignalingParametersReady(final SignalingParameters params) {
-				WebSocketRTCClient.this.executor.execute(new Runnable() { 
-					@Override
-					public void run() {
-						WebSocketRTCClient.this.signalingParametersReady(params);
-					}
-				});
-			}
-
-			@Override
-			public void onSignalingParametersError(String description) {
-				WebSocketRTCClient.this.reportError(description);
-			}
-		};
-		roomState = ConnectionState.CONNECTED;
-		return new RoomParametersFetcher(callbacks, webRtcMessage).roomHttpResponseParse();
-	}
-
-	// Disconnect from room and send bye messages - runs on a local looper
-	// thread.
-	private void disconnectFromRoomInternal() {
-		Log.d(TAG, "Disconnect. Room state: " + roomState);
-		if (roomState == ConnectionState.CONNECTED) {
-			Log.d(TAG, "Closing room.");
-			sendPostMessage(MessageType.LEAVE, leaveUrl, null);
-		}
-		roomState = ConnectionState.CLOSED;
-		if (wsClient != null) {
-			wsClient.disconnect(true);
-		}
-	}
-
-	// Callback issued when room parameters are extracted. Runs on local
-	// looper thread.
-	private void signalingParametersReady(final SignalingParameters signalingParameters) {
-		
-		roomState = ConnectionState.CONNECTED;
-		initiator = signalingParameters.initiator;
-		
-		// Fire connection and signaling parameters events.
-		events.onConnectedToRoom(signalingParameters);
-
+	@Override
+	public void disconnect() {
+		executor.requestStop();
 	}
 
 	// Send local offer SDP to the other participant.
@@ -210,9 +107,12 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 		});
 	}
 
+	boolean isSetAnswer = false;
 	// Send local answer SDP to the other participant.
 	@Override
 	public void sendAnswerSdp(final SessionDescription sdp) {
+		if(isSetAnswer) return;
+		isSetAnswer = true; 
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -223,7 +123,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 				JSONObject json = new JSONObject();
 				jsonPut(json, "sdp", sdp.description);
 				jsonPut(json, "type", "answer");
-				wsClient.send(json.toString());
+				sendAnswerMessage(sdp.description);
 			}
 		});
 	}
@@ -245,14 +145,15 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 						reportError("Sending ICE candidate in non connected state.");
 						return;
 					}
-					sendPostMessage(MessageType.MESSAGE, messageUrl, json.toString());
+					sendPostMessage(json.toString());
 				} else {
 					// Call receiver sends ice candidates to websocket server.
 					if (wsClient.getState() != WebSocketConnectionState.REGISTERED) {
 						reportError("Sending ICE candidate in non registered state.");
 						return;
 					}
-					wsClient.send(json.toString());
+					sendPostMessage(json.toString());
+//					wsClient.send(json.toString());
 				}
 			}
 		});
@@ -264,7 +165,6 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 	// (passed to WebSocket client constructor).
 	@Override
 	public void onWebSocketOpen() {
-		Log.d("LOG", "BEFORE REGISTER");
 		Log.d(TAG, "Websocket connection completed. Registering...");
 		wsClient.register();
 	}
@@ -345,7 +245,11 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 		((BaseActivity)activity).getService().sendWebRtcMessageOffer(sdp);
 	}
 	
-	private void sendPostMessage(final MessageType messageType, final String url, final String message) {
+	private void sendPostMessage(String message) {
 		((BaseActivity)activity).getService().sendWebRtcMessage(message);
+	}
+	
+	private void sendAnswerMessage(String sdp){
+		((BaseActivity)activity).getService().sendWebRtcMessageOfferForAnswer(sdp);
 	}
 }
