@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -23,6 +24,8 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -123,6 +126,24 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 		
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if(intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)){
+			if(intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_RECEIVE){
+				User user = (User) intent.getSerializableExtra(Const.USER);
+				String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				mService.callRinging(sessionId);
+				showCallingPopup(user, sessionId, true, false);
+			}
+		}
+	}
+	
+	@Override
+	protected void openRecordActivity(User user) {
+		if(user != null) ChatActivity.startWithUserIdWithLeaveMessage(this, user);
 	}
 
 	public void setScreenTitle(String title) {

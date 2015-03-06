@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/ic_action_return_from_full_screen" android:state_activated="true"/> <!-- focused -->
+    <item android:drawable="@drawable/ic_action_full_screen"/> <!-- default -->
+
+</selector>

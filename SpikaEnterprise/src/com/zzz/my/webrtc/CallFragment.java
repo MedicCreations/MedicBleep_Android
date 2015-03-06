@@ -42,7 +42,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
@@ -57,7 +56,6 @@ public class CallFragment extends Fragment {
 	private View controlView;
 	private TextView encoderStatView;
 	private TextView roomIdView;
-	private ImageButton videoScalingButton;
 	private ImageButton toggleDebugButton;
 	private OnCallEvents callEvents;
 	private ScalingType scalingType;
@@ -73,6 +71,7 @@ public class CallFragment extends Fragment {
 	private TextView speaker;
 	private TextView messages;
 	private TextView callDecline;
+	private Button videoScalingButton;
 
 	/**
 	 * Call control interface for container activity.
@@ -102,7 +101,8 @@ public class CallFragment extends Fragment {
 		roomIdView = (TextView) controlView.findViewById(R.id.contact_name_call);
 		hudView = (TextView) controlView.findViewById(R.id.hud_stat_call);
 		cameraSwitchButton = (Button) controlView.findViewById(R.id.switchCameraButton);
-		videoScalingButton = (ImageButton) controlView.findViewById(R.id.button_call_scaling_mode);
+		videoScalingButton = (Button) controlView.findViewById(R.id.switchScaleType);
+		videoScalingButton.setActivated(true);
 		toggleDebugButton = (ImageButton) controlView.findViewById(R.id.button_toggle_debug); 
 		
 		tvName = (TextView) controlView.findViewById(R.id.userName);
@@ -134,10 +134,10 @@ public class CallFragment extends Fragment {
 			@Override 
 			public void onClick(View view) {
 				if (scalingType == ScalingType.SCALE_ASPECT_FILL) {
-					videoScalingButton.setBackgroundResource(R.drawable.icon_door);
+					videoScalingButton.setActivated(false);
 					scalingType = ScalingType.SCALE_ASPECT_FIT;
 				} else {
-					videoScalingButton.setBackgroundResource(R.drawable.icon_door);
+					videoScalingButton.setActivated(true);
 					scalingType = ScalingType.SCALE_ASPECT_FILL;
 				}
 				callEvents.onVideoScalingSwitch(scalingType);
@@ -229,7 +229,7 @@ public class CallFragment extends Fragment {
 	public void setSpeakerButton(boolean toActivate){
 		speaker.setActivated(toActivate);
 	}
-
+	
 	@Override
 	public void onStop() {
 		isRunning = false;

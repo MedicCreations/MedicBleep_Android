@@ -350,5 +350,7 @@
     <string name="pref_displayhud_title">Display call statistics.</string>
     <string name="pref_displayhud_dlg">Display call statistics.</string>
     <string name="pref_displayhud_default" translatable="false">false</string>
+    <string name="user_is_not_available_at_the_moment_do_you_want_to_leave_voice_message_">User is not available at the moment. Do you want to leave voice message?</string>
+    <string name="_didn_t_answer_on_your_call_do_you_want_to_leave_voice_message_">" didn't answer on your call. Do you want to leave voice message?"</string>
     
 </resources>

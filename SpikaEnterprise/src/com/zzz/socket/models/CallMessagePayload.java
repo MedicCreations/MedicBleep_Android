@@ -13,6 +13,10 @@ public class CallMessagePayload implements Serializable{
 	@SerializedName("user")
 	@Expose
 	private User user;
+	
+	@SerializedName("name")
+	@Expose
+	private String name;
 
 	public User getUser() {
 		return user;
@@ -21,6 +25,13 @@ public class CallMessagePayload implements Serializable{
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

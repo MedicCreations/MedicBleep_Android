@@ -318,7 +318,9 @@ public class Const {
 	public static final int CALL_CANCELED = 9;
 	public static final String CANDIDATE = "Candidate";
 	public static final String IS_VIDEO_ACCEPT = "VideoAccept";
+	public static final String TO_LEAVE_MESSAGE = "toLeaveMessage";
 	
+	public static final int TIMEOUT_FOR_CALL = 30000;
 	public static final int CALL_ACTIVITY_REQUEST = 99;
 	
 	public static final class SoundControl{

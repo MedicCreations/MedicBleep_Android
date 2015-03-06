@@ -6,6 +6,7 @@ import java.util.List;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,6 +44,8 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
@@ -71,6 +74,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	
 	private View popupCall = null;
 	private boolean isVideo = false;
+	private boolean gotoCallActivity = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -109,8 +113,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+		
 	}
-
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -157,6 +162,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onPause() {
+		if(popupCall != null && !gotoCallActivity) {
+			if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+			updateTextViewAction("Call ending");
+			mService.callDecline(null);
+			callEnded();
+		}
+		gotoCallActivity = false;
 		super.onPause();
 		isActive = false;
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(myPushRecevier);
@@ -501,12 +513,31 @@ public class BaseActivity extends SlidingFragmentActivity {
 		public void onReceive(Context context, Intent intent) {
 			if(!shouldReceiveBroadcast) return;
 			int typeOfReceiver = intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1);
+			OnPositiveButtonClickListener positiveListener = new OnPositiveButtonClickListener() {
+				
+				@Override
+				public void onPositiveButtonClick(View v, Dialog d) {
+					d.dismiss();
+					openRecordActivity(tempActiveUser);
+				}
+			};
+			OnNegativeButtonCLickListener negativeListener = new OnNegativeButtonCLickListener() {
+				
+				@Override
+				public void onNegativeButtonClick(View v, Dialog d) {
+					d.dismiss();
+				}
+			};
+			OnDismissListener dissmisListener = new OnDismissListener() {
+				
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					callEnded();
+				}
+			};
 			if(typeOfReceiver == Const.CHECK_USER_AVAILABLE){
 				String typeOfAvailable = intent.getStringExtra(Const.AVAILABLE_TYPE);
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
-				
-				Log.d("LOG", "SESSION: "+sessionId+", TYPE: "+typeOfAvailable);
-				
 				if(typeOfAvailable.equals(Const.USER_AVAILABLE)){
 					mService.call(sessionId, true);
 					updateTextViewAction("Calling");
@@ -514,26 +545,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 					if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 					if(mPlayer != null) mPlayer.stop();
 					AppDialog dialog = new AppDialog(BaseActivity.this, false);
-					dialog.setInfo("User is not connected to our servers.");
-					dialog.setOnDismissListener(new OnDismissListener() {
-						
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							callEnded();
-						}
-					});
+					dialog.setYesNo(context.getString(R.string.user_is_not_available_at_the_moment_do_you_want_to_leave_voice_message_), "Yes", "No");
+					dialog.setOnPositiveButtonClick(positiveListener);
+					dialog.setOnNegativeButtonClick(negativeListener);
+					dialog.setOnDismissListener(dissmisListener);
 				}else{
 					if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 					if(mPlayer != null) mPlayer.stop();
 					AppDialog dialog = new AppDialog(BaseActivity.this, false);
-					dialog.setInfo("User is busy.");
-					dialog.setOnDismissListener(new OnDismissListener() {
-						
-						@Override
-						public void onDismiss(DialogInterface dialog) {
-							callEnded();
-						}
-					});
+					dialog.setYesNo(context.getString(R.string.user_is_not_available_at_the_moment_do_you_want_to_leave_voice_message_), "Yes", "No");
+					dialog.setOnPositiveButtonClick(positiveListener);
+					dialog.setOnNegativeButtonClick(negativeListener);
+					dialog.setOnDismissListener(dissmisListener);
 				}
 			}else if(typeOfReceiver == Const.CALL_USER){
 				final String sessionId = intent.getStringExtra(Const.SESSION_ID);
@@ -570,6 +593,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, isVideo);
 				intent2.putExtra(Const.USER, user);
+				
+				gotoCallActivity = true;
 
 				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 				
@@ -592,6 +617,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 				}, 500);
 			}else if(typeOfReceiver == Const.CALL_ENDED){
 				if(callTimeoutRunnable != null) callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+				if(mPlayer != null && mPlayer.isPlaying()){
+					AppDialog dialog = new AppDialog(BaseActivity.this, false);
+					dialog.setYesNo(context.getString(R.string.user_is_not_available_at_the_moment_do_you_want_to_leave_voice_message_), "Yes", "No");
+					dialog.setOnPositiveButtonClick(positiveListener);
+					dialog.setOnNegativeButtonClick(negativeListener);
+					dialog.setOnDismissListener(dissmisListener);
+				}
 				if(mPlayer != null) mPlayer.stop();
 				Log.d("LOG", "CALL ENDED");
 				callEnded();
@@ -602,6 +634,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 			
 		}
 	};
+	
+	protected void openRecordActivity(User tempActiveUser2) {
+		//Overide this in activities
+	}
 	
 	protected void callEnded() {
 		updateTextViewAction("Call ended");
@@ -620,6 +656,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private MediaPlayer mPlayer = null;
 	
 	protected void showCallingPopup(final User user, final String sessionId, final boolean receive, boolean isVideo){
+		tempActiveUser = user;
 		this.isVideo = isVideo;
 		final ViewGroup contentRoot = ((ViewGroup) findViewById(android.R.id.content));
 		popupCall = LayoutInflater.from(this).inflate(R.layout.www_ringing_socker_layout, null);
@@ -670,6 +707,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, false);
+				
+				gotoCallActivity = true;
 
 				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 				
@@ -690,6 +729,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, true);
+				
+				gotoCallActivity = true;
 
 				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 			}
@@ -719,19 +760,38 @@ public class BaseActivity extends SlidingFragmentActivity {
 				mService.callCancel(sessionId);
 				if(mPlayer != null) mPlayer.stop();
 				AppDialog dialog = new AppDialog(BaseActivity.this, false);
-				dialog.setInfo("User is busy.");
-				dialog.setOnDismissListener(new OnDismissListener() {
+				dialog.setYesNo(tempActiveUser.getFirstName() + " " + tempActiveUser.getLastName() + getString(R.string._didn_t_answer_on_your_call_do_you_want_to_leave_voice_message_), "Yes", "No");
+				OnPositiveButtonClickListener positiveListener = new OnPositiveButtonClickListener() {
+					
+					@Override
+					public void onPositiveButtonClick(View v, Dialog d) {
+						d.dismiss();
+						openRecordActivity(tempActiveUser);
+					}
+				};
+				OnNegativeButtonCLickListener negativeListener = new OnNegativeButtonCLickListener() {
+					
+					@Override
+					public void onNegativeButtonClick(View v, Dialog d) {
+						d.dismiss();
+					}
+				};
+				OnDismissListener dissmisListener = new OnDismissListener() {
 					
 					@Override
 					public void onDismiss(DialogInterface dialog) {
 						callEnded();
 					}
-				});
+				};
+				dialog.setOnPositiveButtonClick(positiveListener);
+				dialog.setOnNegativeButtonClick(negativeListener);
+				dialog.setOnDismissListener(dissmisListener);
 			}
 		};
-		callTimeoutHandler.postDelayed(callTimeoutRunnable, 30000);
+		callTimeoutHandler.postDelayed(callTimeoutRunnable, Const.TIMEOUT_FOR_CALL);
 	}
 	
+	private User tempActiveUser = null;
 	private boolean isAllreadyDissmis = false;
 	private void dissmisCallingPopup(){
 		if (popupCall == null) return;

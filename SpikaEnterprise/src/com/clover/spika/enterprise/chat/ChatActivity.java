@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -200,18 +201,13 @@ public class ChatActivity extends BaseChatActivity {
 	};
 
 	protected void kill() {
+		
+		finish();
 
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(intent);
 
-		new Handler().postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				finish();
-			}
-		}, 500);
 	}
 
 	@Override
@@ -278,6 +274,19 @@ public class ChatActivity extends BaseChatActivity {
 		if (isGroup) {
 			intent.putExtra(Const.IS_GROUP, true);
 		}
+
+		context.startActivity(intent);
+	}
+	
+	public static void startWithUserIdWithLeaveMessage(Context context, User user) {
+
+		Intent intent = new Intent(context, ChatActivity.class);
+		intent.putExtra(Const.USER_ID, String.valueOf(user.getId()));
+		intent.putExtra(Const.FIRSTNAME, user.getFirstName());
+		intent.putExtra(Const.USER, user);
+		intent.putExtra(Const.LASTNAME, user.getLastName());
+		intent.putExtra(Const.TO_LEAVE_MESSAGE, user.getLastName());
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
 	}
@@ -384,7 +393,7 @@ public class ChatActivity extends BaseChatActivity {
 		}
 	}
 
-	private void handleIntentSecondLevel(Intent intent) {
+	private void handleIntentSecondLevel(final Intent intent) {
 		
 		isOnCreate = false;
 		
@@ -411,7 +420,7 @@ public class ChatActivity extends BaseChatActivity {
 					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 						@Override
-						public void onPositiveButtonClick(View v) {
+						public void onPositiveButtonClick(View v, Dialog d) {
 							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
 							getMessages(true, true, true, false, false, false);
 						}
@@ -419,7 +428,7 @@ public class ChatActivity extends BaseChatActivity {
 					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 						@Override
-						public void onNegativeButtonClick(View v) {
+						public void onNegativeButtonClick(View v, Dialog d) {
 							finish();
 						}
 					});
@@ -466,6 +475,8 @@ public class ChatActivity extends BaseChatActivity {
 								if (adapter.getCount() > 0) {
 									chatListView.setSelectionFromTop(adapter.getCount(), 0);
 								}
+								
+								checkForLeaveVoiceMessage(intent);
 							} else {
 								AppDialog dialog = new AppDialog(ChatActivity.this, false);
 
@@ -479,6 +490,12 @@ public class ChatActivity extends BaseChatActivity {
 							setNoItemsVisibility();
 						}
 					});
+		}
+	}
+
+	protected void checkForLeaveVoiceMessage(Intent intent) {
+		if(intent.hasExtra(Const.TO_LEAVE_MESSAGE)){
+			if(currentUser != null) openRecordActivity(currentUser);
 		}
 	}
 
@@ -771,7 +788,7 @@ public class ChatActivity extends BaseChatActivity {
 		dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 			@Override
-			public void onPositiveButtonClick(View v) {
+			public void onPositiveButtonClick(View v, Dialog d) {
 				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
 
 					@Override
@@ -792,7 +809,7 @@ public class ChatActivity extends BaseChatActivity {
 		dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 			@Override
-			public void onNegativeButtonClick(View v) {
+			public void onNegativeButtonClick(View v, Dialog d) {
 				dialog.dismiss();
 			}
 		});

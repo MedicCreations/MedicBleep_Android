@@ -1,16 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue"
+    android:orientation="vertical" >
 
     <android.opengl.GLSurfaceView
         android:id="@+id/glview_call"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/controlBlueBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="100" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:id="@+id/backBlue1"
+                android:background="@color/default_blue_light" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="25"
+                android:orientation="horizontal"
+                android:weightSum="100" >
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="65"
+                    android:id="@+id/backBlue2"
+                    android:background="@color/default_blue_light" />
+
+                <RelativeLayout
+                    android:id="@+id/backgroundInMyCamera"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="30"
+                    android:background="@color/default_blue_light"
+                    android:visibility="visible" >
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:id="@+id/backBlue3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:background="@color/default_blue_light" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="73"
+                android:id="@+id/backBlue4"
+                android:background="@color/default_blue_light" />
+        </LinearLayout>
+    </FrameLayout>
+    
+    <com.clover.spika.enterprise.chat.views.RoundImageView
+        android:id="@+id/imageInCall"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop" />
 
     <FrameLayout
         android:id="@+id/call_fragment_container"
