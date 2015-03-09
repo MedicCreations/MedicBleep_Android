@@ -1,6 +1,5 @@
 package com.zzz.test.socket;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -12,35 +11,31 @@ import zzz.my.autobahn.WebSocketConnection;
 import zzz.my.autobahn.WebSocketConnectionHandler;
 import zzz.my.autobahn.WebSocketException;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Service;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
-import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.MainActivity;
-import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PushHandle;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.gson.Gson;
-import com.zzz.my.webrtc.CallActivity;
 import com.zzz.my.webrtc.LooperExecutor;
 import com.zzz.my.webrtc.WebSocketChannelClient;
 import com.zzz.socket.models.CallMessage;
@@ -56,7 +51,6 @@ public class SocketService extends Service {
 
 	private int action = Const.ACTION_IDLE;
 
-	private boolean isServiceStarted = false;
 	private User user;
 	private String sessionId = "1";
 	private String activeSessionOfInteractiveUser = "-1";
@@ -89,7 +83,7 @@ public class SocketService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		Log.d("LOG", "ON create " + isServiceStarted);
+		Logger.custom("d", "LOG", "Service Created");
 
 	}
 
@@ -118,40 +112,44 @@ public class SocketService extends Service {
 
 	@Override
 	public int onStartCommand(final Intent intent, final int flags, final int startId) {
+		
+		if(intent != null && intent.getBooleanExtra(Const.IS_APLICATION_OPEN, false)){
+			new Handler().post(new Runnable() {
 
-		if (!isServiceStarted) {
-			isServiceStarted = true;
+				@Override
+				public void run() {
+					connect();
+				}
+			});
+		}else{
+			new Handler().post(new Runnable() {
+
+				@Override
+				public void run() {
+					//because of this error java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.
+					connectWithFakeLoginApi();
+				}
+			});
 		}
-
-		new Handler().post(new Runnable() {
-
-			@Override
-			public void run() {
-				connect();
-			}
-		});
-
-		Log.d("LOG", "ON COMMAND START");
 
 		return Service.START_STICKY;
 	}
 
 	public void connect() {
 		if (mConn != null && mConn.isConnected()) {
-			Log.e("LOG", "CONNECTED");
+			Logger.custom("e", "LOG", "ALLREADY CONNECTED");
 			mConn.disconnect();
 		}
 		new SocketClient().getSessionId(true, new ApiCallback<String>() {
 
 			@Override
 			public void onApiResponse(Result<String> result) {
-				Log.d("LOG", "res: " + result.toString());
 				sessionId = result.getResultData();
 				if (sessionId == null) {
 					return;
 				}
 				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
-				Log.d("LOG", "sessionId: " + sessionId);
+				Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
 				user = Helper.getUser(SocketService.this);
 
 				work(sessionId);
@@ -159,11 +157,45 @@ public class SocketService extends Service {
 
 		});
 	}
+	
+	public void connectWithFakeLoginApi() {
+		if (mConn != null && mConn.isConnected()) {
+			Logger.custom("e", "LOG", "ALLREADY CONNECTED");
+			mConn.disconnect();
+		}
+		new LoginApi().preLoginWithCredentials("FAKE", "FAKE", this, false, new ApiCallback<PreLogin>() {
+			
+			@Override
+			public void onApiResponse(Result<PreLogin> result) {
+				new SocketClient().getSessionId(true, new ApiCallback<String>() {
+
+					@Override
+					public void onApiResponse(Result<String> result) {
+						sessionId = result.getResultData();
+						if (sessionId == null) {
+							return;
+						}
+						sessionId = sessionId.substring(0, sessionId.indexOf(":"));
+						Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
+						user = Helper.getUser(SocketService.this);
+
+						if(user.getId() == -1){
+							SocketService.this.stopSelf();
+						}else{
+							work(sessionId);
+						}
+					}
+
+				});
+			}
+		});
+		
+	}
 
 	private void work(String sessionId) {
 
 		wsString = WS_URL + ":" + WS_PORT + WS_SUFIX_URL + sessionId;
-		Log.d("LOG", wsString);
+		Logger.custom("d", "LOG", "Connected to Socket: " + wsString);
 
 		URI uri = null;
 		try {
@@ -178,7 +210,7 @@ public class SocketService extends Service {
 
 				@Override
 				public void onTextMessage(String payload) {
-					Log.d("WEBSOCKET", "MESSAGE RECEIVED: " + payload);
+					Logger.custom("d", "WEBSOCKET", "MESSAGE RECEIVED: " + payload);
 					onMessageReceive(payload);
 				}
 
@@ -188,7 +220,12 @@ public class SocketService extends Service {
 
 				@Override
 				public void onOpen() {
-					Log.d("WEBSOCKET", "OPEN IN TIME: " + System.currentTimeMillis());
+					Intent inBroadcast = new Intent();
+					inBroadcast.setAction(Const.SOCKET_ACTION);
+					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.WEB_SOCKET_OPENED);
+					LocalBroadcastManager.getInstance(SocketService.this).sendBroadcast(inBroadcast);
+					
+					Logger.custom("d", "WEBSOCKET", "OPEN IN TIME: " + System.currentTimeMillis());
 
 					new Handler().postDelayed(new Runnable() {
 
@@ -201,7 +238,7 @@ public class SocketService extends Service {
 
 				@Override
 				public void onClose(WebSocketCloseNotification code, String reason) {
-					Log.d("WEBSOCKET", "CLOSE IN TIME: " + System.currentTimeMillis());
+					Logger.custom("d", "WEBSOCKET", "CLOSE IN TIME: " + System.currentTimeMillis());
 				}
 
 				@Override
@@ -223,7 +260,6 @@ public class SocketService extends Service {
 		}
 		
 		if(!isActiveApp()){
-			Log.e("LOG", "INACTIVE APP");
 			inactiveAppHandleMessage(socketParser);
 			return;
 		}
@@ -294,7 +330,6 @@ public class SocketService extends Service {
 					inBroadcast.putExtra(Const.MESSAGES, item);
 				}
 			} catch (Exception e) {
-				Log.e("LOG", e.toString());
 				if (action == Const.ACTION_LEAVE_MY_ROOM) {
 					joinOtherUserRoom(String.valueOf(activeUserInteractive.getId()));
 				} else if (action == Const.ACTION_LEAVE_OTHER_ROOM) {
@@ -356,14 +391,14 @@ public class SocketService extends Service {
 				LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
 			}
 		} catch (Exception e) {
-			Log.e("LOG", e.toString());
+			Logger.custom("e", "LOG", e.toString());
 		}
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d("LOG", "ON DESTROY");
-		isServiceStarted = false;
+		
+		Logger.custom("d", "LOG", "On Service Destroy");
 		if (mConn != null)
 			mConn.disconnect();
 		super.onDestroy();
@@ -436,7 +471,6 @@ public class SocketService extends Service {
 			sdpMid = jo.getString("id");
 			sdpMIndex = jo.getString("label");
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -474,13 +508,13 @@ public class SocketService extends Service {
 	public void callOffer(String userId) {
 		action = Const.ACTION_CHECK;
 		mConn.sendTextMessage(checkIsRoomAvailableMessage(userId));
-		Log.d("LOG", "CHECK USER ID " + userId);
+		Logger.custom("d", "LOG", "CHECK USER ID: " + userId);
 	}
 
 	public void call(String sessionId, boolean isVideo) {
 		action = Const.ACTION_CALL;
 		mConn.sendTextMessage(callMessage(sessionId, "callOffer", id));
-		Log.d("LOG", "CALL OFFER");
+		Logger.custom("d", "LOG", "CALL OFFER");
 		id++;
 	}
 
@@ -491,7 +525,7 @@ public class SocketService extends Service {
 		mConn.sendTextMessage(callMessage(sessionId, "callCancel", id));
 		activeSessionOfInteractiveUser = "-1";
 		activeUserInteractive = null;
-		Log.d("LOG", "CALL CANCEL");
+		Logger.custom("d", "LOG", "CALL CANCEL");
 		id++;
 	}
 
@@ -500,7 +534,7 @@ public class SocketService extends Service {
 		if (sessionId == null)
 			sessionId = activeSessionOfInteractiveUser;
 		mConn.sendTextMessage(callMessage(sessionId, "callDecline", id));
-		Log.d("LOG", "CALL DECLINE");
+		Logger.custom("d", "LOG", "CALL DECLINE");
 		id++;
 	}
 
@@ -509,28 +543,28 @@ public class SocketService extends Service {
 		if (sessionId == null)
 			sessionId = activeSessionOfInteractiveUser;
 		mConn.sendTextMessage(callMessage(sessionId, "callEnd", id));
-		Log.d("LOG", "CALL END");
+		Logger.custom("d", "LOG", "CALL END");
 		id++;
 	}
 
 	public void callAccept(String sessionId) {
 		action = Const.ACTION_CALL_ACCEPT;
 		mConn.sendTextMessage(callMessage(sessionId, "callAnswer", id));
-		Log.d("LOG", "CALL ACCEPT");
+		Logger.custom("d", "LOG", "CALL ACCEPT");
 		id++;
 	}
 
 	public void callRinging(String sessionId) {
 		action = Const.ACTION_CALL_RINGING;
 		mConn.sendTextMessage(callMessage(sessionId, "callRinging", id));
-		Log.d("LOG", "CALL RINGING");
+		Logger.custom("d", "LOG", "CALL RINGING");
 		id++;
 	}
 
 	public void joinMyRoom() {
 		User user = Helper.getUser(this);
 		mConn.sendTextMessage(joinRoomMessage(String.valueOf(user.getId()), String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(), user.getLastName(), "join", id));
-		Log.d("LOG", "JOIN MY ROOM");
+		Logger.custom("d", "LOG", "JOIN MY ROOM");
 		id++;
 	}
 
@@ -538,7 +572,7 @@ public class SocketService extends Service {
 		User user = Helper.getUser(this);
 		mConn.sendTextMessage(joinRoomMessage(userId, String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(), user.getLastName(), "join", id));
 		action = Const.ACTION_JOIN_OTHER_ROOM;
-		Log.d("LOG", "JOIN OTHER ROOM");
+		Logger.custom("d", "LOG", "JOIN OTHER ROOM");
 		id++;
 	}
 
@@ -546,7 +580,7 @@ public class SocketService extends Service {
 		action = Const.ACTION_LEAVE_MY_ROOM;
 		String mess = createLeaveMessage();
 		mConn.sendTextMessage(mess);
-		Log.d("LOG", "LEAVE MY ROOM");
+		Logger.custom("d", "LOG", "LEAVE MY ROOM");
 		id++;
 	}
 
@@ -554,7 +588,7 @@ public class SocketService extends Service {
 		action = Const.ACTION_LEAVE_OTHER_ROOM;
 		String mess = createLeaveMessage();
 		mConn.sendTextMessage(mess);
-		Log.d("LOG", "LEAVE OTHER ROOM");
+		Logger.custom("d", "LOG", "LEAVE OTHER ROOM");
 		id++;
 	}
 

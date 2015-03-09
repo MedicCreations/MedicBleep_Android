@@ -235,18 +235,6 @@
             android:name="com.clover.spika.enterprise.chat.ShowProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.zzz.test.webrtc.ConnectActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.zzz.test.webrtc.CallActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.zzz.test.webrtc.SettingsActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.zzz.test.socket.EchoClientActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.zzz.my.webrtc.CallActivity"
             android:screenOrientation="portrait" />
     </application>

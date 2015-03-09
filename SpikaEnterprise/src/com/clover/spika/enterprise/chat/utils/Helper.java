@@ -5,7 +5,6 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream.GetField;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +53,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.User;
+import com.zzz.test.socket.SocketService;
 
 public class Helper {
 
@@ -287,7 +287,11 @@ public class Helper {
 	}
 	
 	public static User getUser(Context ctx){
-		return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false, null);
+		try {
+			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false, null);
+		} catch (Exception e) {
+			return new User(-1, "", "", "", "", "", false, null, false, null);
+		}
 	}
 
 	/**
@@ -539,6 +543,7 @@ public class Helper {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		ctx.stopService(new Intent(ctx, SocketService.class));
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}

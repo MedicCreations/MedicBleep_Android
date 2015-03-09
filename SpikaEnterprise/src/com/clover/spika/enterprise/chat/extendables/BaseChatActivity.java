@@ -865,7 +865,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			} else if (id == R.id.voiceCall) {
 				//make call
 				rlDrawerNewManage();
-				showCallingPopup(currentUser, null, false, false);
+				callUser(currentUser, false);
 			}
 		}
 	};

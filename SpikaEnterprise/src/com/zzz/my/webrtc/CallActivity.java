@@ -27,7 +27,6 @@
 
 package com.zzz.my.webrtc;
 
-import org.apache.http.conn.routing.RouteInfo.LayerType;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
 import org.webrtc.StatsReport;
@@ -43,8 +42,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -54,8 +51,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -262,6 +261,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			}, runTimeMs);
 		}
 		
+		SpikaEnterpriseApp.getInstance().setCallInBackground(true);
+		
 	}
 	
 	@Override
@@ -297,13 +298,10 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d("NEW", "RECEIVER");
 			if(intent.hasExtra(Const.MESSAGES)){
-				Log.d("NEW", "RECEIVER MESSAGE");
 				//MUTE UNMUTE
 				CallMessage mess = (CallMessage) intent.getSerializableExtra(Const.MESSAGES);
 				if(mess.getArgs().get(0).getPayload().getName().equals("video")){
-					Log.d("NEW", "VIDEO");
 					manageRemoteVideo(mess.getArgs().get(0).getType());
 				}
 				return;
@@ -347,7 +345,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 				int id = getResources().getIdentifier("backBlue" + i, "id", getPackageName());
 				findViewById(id).setVisibility(View.VISIBLE);
 			}
-//			callFragment.showBlueScreen(); //TODO
 			manageLocalVideo();
 		}else{
 			isRemoteCameraOn = true;
@@ -356,7 +353,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 				findViewById(id).setVisibility(View.INVISIBLE);
 			}
 			manageLocalVideo();
-//			callFragment.hideBlueScreen(); //TODO
 		}
 	}
 	
@@ -371,7 +367,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 				findViewById(R.id.imageInCall).setVisibility(View.GONE);
 			}
 			VideoRendererGui.update(localRender, 99, 99, 1, 1, ScalingType.SCALE_ASPECT_FILL);
-//			VideoRendererGui.remove(localRender);
 		}else{
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 			findViewById(R.id.imageInCall).setVisibility(View.GONE);
@@ -415,6 +410,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			logToast.cancel();
 		}
 		activityRunning = false;
+		SpikaEnterpriseApp.getInstance().setCallInBackground(false);
 	}
 
 	// CallFragment.OnCallEvents interface implementation.
@@ -469,6 +465,21 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	@Override
 	public void onMessages() {
 		Log.d("NEW", "GO TO MESSAGES"); //TODO
+//		startActivity(new Intent(this, MainActivity.class).putExtra(Const.IS_CALL_ACTIVE, true));
+		
+		try {
+			Class<?> classa = Class.forName(getIntent().getStringExtra(Const.ACTIVE_CLASS));
+			Intent intent = new Intent(this, classa);
+		    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		    intent.putExtra(Const.IS_CALL_ACTIVE, true);
+		    startActivity(intent);
+		} catch (ClassNotFoundException e) {
+			Intent intent = new Intent(this, MainActivity.class);
+		    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		    intent.putExtra(Const.IS_CALL_ACTIVE, true);
+		    startActivity(intent);
+		}
+		
 	}
 
 	// Helper functions.
@@ -533,7 +544,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			peerConnectionClient.setLocalVideoEnabled(false);
 			mService.sendWebRtcUnMuteOrMute("video", "mute");
 		}else{
-//			callFragment.hideBlueScreen(); //TODO
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 			findViewById(R.id.imageInCall).setVisibility(View.GONE);
 		}
@@ -575,6 +585,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	// Disconnect from remote resources, dispose of local resources, and exit.
 	private void disconnect() {
 		mService.setIsInWebRtc(false);
+		mService.callEnd(null);
+		mService.leaveOtherRoom();
 		if (appRtcClient != null) {
 			appRtcClient.disconnect();
 			appRtcClient = null;
@@ -592,6 +604,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		} else {
 			setResult(RESULT_CANCELED);
 		}
+		SpikaEnterpriseApp.getInstance().setCallInBackground(false);
 		finish();
 	}
 
@@ -681,7 +694,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 					// Create answer. Answer SDP will be sent to offering client
 					// in
 					// PeerConnectionEvents.onLocalDescription event.
-//					Log.d("NEW", "REMOTE DESCRIPTION CREATE ANSWER");
 //					peerConnectionClient.createAnswer();
 				}
 			}

@@ -15,12 +15,15 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +43,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
@@ -75,6 +79,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private View popupCall = null;
 	private boolean isVideo = false;
 	private boolean gotoCallActivity = false;
+	
+	private String activeClass = MainActivity.class.getName();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +122,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 		
 	}
 	
+	protected void setActiveClass(String actClass) {
+		activeClass = actClass;
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -150,8 +160,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 				
 				@Override
 				public void run() {
-					mService.callEnd(null);
-					mService.leaveOtherRoom();
 					updateTextViewAction("Call ended");
 					dissmisCallingPopup();
 				}
@@ -300,6 +308,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void startActivity(Intent intent) {
 		super.startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+	}
+	
+	@Override
+	public void startActivityForResult(Intent intent, int requestCode) {
+		super.startActivityForResult(intent, requestCode);
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
@@ -591,6 +605,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.ACTIVE_CLASS, activeClass);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, isVideo);
 				intent2.putExtra(Const.USER, user);
 				
@@ -630,6 +645,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 			}else if(typeOfReceiver == Const.CALL_ACCEPTED){
 				Log.d("LOG", "CALL ACCEPTED");
 				//LOGIC WHEN CALL IS ACCEPTED IS IN CALL ACTIVITY
+			}else if(typeOfReceiver == Const.WEB_SOCKET_OPENED){
+				webSocketOpenedCallback();
 			}
 			
 		}
@@ -639,6 +656,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 		//Overide this in activities
 	}
 	
+	protected void webSocketOpenedCallback() {
+		//Overide this in activities
+	}
+
 	protected void callEnded() {
 		updateTextViewAction("Call ended");
 		dissmisCallingPopup();
@@ -706,6 +727,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.ACTIVE_CLASS, activeClass);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, false);
 				
 				gotoCallActivity = true;
@@ -728,6 +750,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, 300);
 				intent2.putExtra(CallActivity.EXTRA_VIDEO_FPS, 30);
 				intent2.putExtra(CallActivity.EXTRA_RUNTIME, 0);
+				intent2.putExtra(Const.ACTIVE_CLASS, activeClass);
 				intent2.putExtra(Const.IS_VIDEO_ACCEPT, true);
 				
 				gotoCallActivity = true;
@@ -791,6 +814,47 @@ public class BaseActivity extends SlidingFragmentActivity {
 		callTimeoutHandler.postDelayed(callTimeoutRunnable, Const.TIMEOUT_FOR_CALL);
 	}
 	
+	protected void hidePopupCall() {
+		if(popupCall != null) popupCall.setVisibility(View.INVISIBLE);
+	}
+	
+	protected void showPopupCall() {
+		if(popupCall != null) popupCall.setVisibility(View.VISIBLE);
+	}
+	
+	protected TextView viewForReturnToCall = null;
+	protected void setViewWhenCallIsInBackground(final int idFoBaseView, int idOfActionLayout, boolean isMainActivity) {
+		hidePopupCall();
+		
+		viewForReturnToCall = new TextView(this);
+		viewForReturnToCall.setBackgroundColor(getResources().getColor(R.color.green_in_people_row));
+		viewForReturnToCall.setText(getString(R.string.touch_to_return_to_call));
+		viewForReturnToCall.setTextColor(Color.WHITE);
+		viewForReturnToCall.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+		viewForReturnToCall.setGravity(Gravity.CENTER);
+		((ViewGroup) findViewById(idFoBaseView)).addView(viewForReturnToCall);
+		viewForReturnToCall.getLayoutParams().height = (int) getResources().getDimension(R.dimen.menu_height);
+		viewForReturnToCall.getLayoutParams().width = android.widget.RelativeLayout.LayoutParams.MATCH_PARENT;
+		viewForReturnToCall.setId(1);
+		
+		((android.widget.RelativeLayout.LayoutParams)findViewById(idOfActionLayout).getLayoutParams()).addRule(RelativeLayout.BELOW, viewForReturnToCall.getId());
+		
+		viewForReturnToCall.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(BaseActivity.this, CallActivity.class);
+			    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			    intent.putExtra(Const.IS_CALL_ACTIVE, true);
+			    startActivity(intent);
+			    
+			    showPopupCall();
+			    ((ViewGroup) findViewById(idFoBaseView)).removeView(viewForReturnToCall);
+			    viewForReturnToCall = null;
+			}
+		});
+	}
+	
 	private User tempActiveUser = null;
 	private boolean isAllreadyDissmis = false;
 	private void dissmisCallingPopup(){
@@ -815,6 +879,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 	
 	public void callUser(User user, boolean isVideo){
+		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+			AppDialog dialog = new AppDialog(this, false);
+			dialog.setInfo(getString(R.string.other_call_is_in_progress));
+			return;
+		}
 		showCallingPopup(user, null, false, isVideo);
 	}
 	

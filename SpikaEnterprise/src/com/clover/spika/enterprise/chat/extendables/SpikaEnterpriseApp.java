@@ -2,6 +2,8 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import java.io.File;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.zzz.test.socket.SocketService;
 
@@ -22,6 +25,8 @@ public class SpikaEnterpriseApp extends Application {
 
 	private Intent poolingIntent;
 	private Intent socketIntent;
+	
+	private boolean isCallInBackground = false;
 
 	@Override
 	public void onCreate() {
@@ -43,7 +48,9 @@ public class SpikaEnterpriseApp extends Application {
 	
 	public void startSocket(){
 		if(socketIntent != null) return;
+		if(isMyServiceRunning(SocketService.class)) return;
 		socketIntent = new Intent(this, SocketService.class);
+		socketIntent.putExtra(Const.IS_APLICATION_OPEN, true);
 		startService(socketIntent);
 	}
 	
@@ -94,6 +101,24 @@ public class SpikaEnterpriseApp extends Application {
 				f.delete();
 		}
 		setSamsungImagePath(null);
+	}
+	
+	private boolean isMyServiceRunning(Class<?> serviceClass) {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (serviceClass.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+	public boolean isCallInBackground(){
+		return isCallInBackground;
+	}
+	
+	public void setCallInBackground(boolean isInBack){
+		isCallInBackground = isInBack;
 	}
 
 }

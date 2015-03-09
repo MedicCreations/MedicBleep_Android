@@ -124,6 +124,12 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		});
 		
+		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, false);
+		}
+		
+		setActiveClass(ChatActivity.class.getName());
+		
 	}
 	
 	public void setIsResume(boolean isResume){
@@ -233,6 +239,10 @@ public class ChatActivity extends BaseChatActivity {
 			if (!isOnCreate){
 				getIntentData(intent);
 			}
+		}
+		
+		if (intent.getBooleanExtra(Const.IS_CALL_ACTIVE, false)) {
+			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, true);
 		}
 	}
 

@@ -183,8 +183,15 @@ public class PeopleAdapter extends BaseAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				int tempPosition = position + 1;
-				frag.onItemClick(adView, cv, tempPosition, getItemId(position));
+				if((Integer) holder.controlHolder.getTag() == ANIMATING_STATE){
+					// wait to animating finished
+				}else if((Integer) holder.controlHolder.getTag() != CLOSE_STATE){
+					holder.controlHolder.setTag(ANIMATING_STATE);
+					animateToRight(holder.dataHolder, holder.controlHolder);
+				}else{
+					int tempPosition = position + 1;
+					frag.onItemClick(adView, cv, tempPosition, getItemId(position));
+				}
 			}
 		});
 

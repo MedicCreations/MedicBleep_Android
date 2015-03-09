@@ -374,8 +374,8 @@ public class NetworkManagement {
 		HttpGet httpGet = new HttpGet(url);
 		Logger.custom("RawRequest", httpGet.getURI().toString());
 
-//		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-		HttpResponse response = getNewHttpClient().execute(httpGet);
+		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
+//		HttpResponse response = getNewHttpClient().execute(httpGet);
 		HttpEntity entity = response.getEntity();
 
 		return getString(entity.getContent());

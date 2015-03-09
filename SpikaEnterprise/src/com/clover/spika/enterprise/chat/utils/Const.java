@@ -34,7 +34,7 @@ public class Const {
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
 
-	// Change this in production to false
+	// Change this in production to falsename
 	public static final boolean IS_DEBUG = true;
 
 	public static final boolean DEBUG_CRYPTO = false;
@@ -316,12 +316,16 @@ public class Const {
 	public static final int CALL_ACCEPTED = 7;
 	public static final int CALL_RINGING = 8;
 	public static final int CALL_CANCELED = 9;
+	public static final int WEB_SOCKET_OPENED = 10;
 	public static final String CANDIDATE = "Candidate";
 	public static final String IS_VIDEO_ACCEPT = "VideoAccept";
 	public static final String TO_LEAVE_MESSAGE = "toLeaveMessage";
 	
 	public static final int TIMEOUT_FOR_CALL = 30000;
 	public static final int CALL_ACTIVITY_REQUEST = 99;
+	public static final String IS_APLICATION_OPEN = "IsAppOpened";
+	public static final String IS_CALL_ACTIVE = "IsCAllACtive";
+	public static final String ACTIVE_CLASS = "ClassActive";
 	
 	public static final class SoundControl{
 		public static final int PLAY_BUTTON = 0;
