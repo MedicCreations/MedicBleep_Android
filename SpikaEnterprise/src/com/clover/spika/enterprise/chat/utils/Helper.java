@@ -53,7 +53,6 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.User;
-import com.zzz.test.socket.SocketService;
 
 public class Helper {
 
@@ -543,7 +542,7 @@ public class Helper {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-		ctx.stopService(new Intent(ctx, SocketService.class));
+		SpikaEnterpriseApp.getInstance().stopSocket();
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}
