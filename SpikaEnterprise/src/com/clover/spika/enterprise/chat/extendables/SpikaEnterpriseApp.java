@@ -13,7 +13,7 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Preferences;
-import com.zzz.test.socket.SocketService;
+import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
 public class SpikaEnterpriseApp extends Application {
 

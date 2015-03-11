@@ -57,11 +57,11 @@ import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.clover.spika.enterprise.chat.webrtc.CallActivity;
+import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
+import com.clover.spika.enterprise.chat.webrtc.socket.SocketService.LocalBinder;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.zzz.my.webrtc.CallActivity;
-import com.zzz.test.socket.SocketService;
-import com.zzz.test.socket.SocketService.LocalBinder;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
