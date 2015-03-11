@@ -301,7 +301,9 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			if(intent.hasExtra(Const.MESSAGES)){
 				//MUTE UNMUTE
 				CallMessage mess = (CallMessage) intent.getSerializableExtra(Const.MESSAGES);
-				if(mess.getArgs().get(0).getPayload().getName().equals("video")){
+				if(mess.getArgs().get(0).getType().equals("muteRemoteVideo")){
+					manageRemoteSourceVideo(mess.getArgs().get(0).getPayload().isMute());
+				}else if(mess.getArgs().get(0).getPayload().getName().equals("video")){
 					manageRemoteVideo(mess.getArgs().get(0).getType());
 				}
 				return;
@@ -358,6 +360,10 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			}
 			manageLocalVideo();
 		}
+	}
+	
+	protected void manageRemoteSourceVideo(boolean mute) {
+		onVideoOnOff(mute);
 	}
 	
 	private void manageLocalVideo() {
@@ -451,6 +457,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		if(toOff) mute = "mute";
 		mService.sendWebRtcUnMuteOrMute("video", mute);
 		peerConnectionClient.setLocalVideoEnabled(!toOff);
+		if(toOff)peerConnectionClient.stopVideoSource();
+		else peerConnectionClient.startVideoSource();
 		isMyCameraOn = !toOff;
 		manageLocalVideo();
 	}
@@ -554,6 +562,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		// Update video view. 
 		if(!isMyCameraOn) {
 			peerConnectionClient.setLocalVideoEnabled(false);
+			peerConnectionClient.stopVideoSource();
 			mService.sendWebRtcUnMuteOrMute("video", "mute");
 		}else{
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);

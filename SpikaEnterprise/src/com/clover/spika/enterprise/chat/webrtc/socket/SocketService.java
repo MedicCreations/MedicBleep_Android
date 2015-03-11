@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -325,7 +326,7 @@ public class SocketService extends Service {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_RINGING);
 				} else if (item.getArgs().get(0).getType().equals("callCancel")) {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_CANCELED);
-				} else if (item.getArgs().get(0).getType().equals("mute") || item.getArgs().get(0).getType().equals("unmute")) {
+				} else if (item.getArgs().get(0).getType().equals("mute") || item.getArgs().get(0).getType().equals("unmute")  || item.getArgs().get(0).getType().equals("muteRemoteVideo")) {
 					inBroadcast.setAction("CALL");
 					inBroadcast.putExtra(Const.MESSAGES, item);
 				}

@@ -17,6 +17,10 @@ public class CallMessagePayload implements Serializable{
 	@SerializedName("name")
 	@Expose
 	private String name;
+	
+	@SerializedName("mute")
+	@Expose
+	private String mute;
 
 	public User getUser() {
 		return user;
@@ -32,6 +36,10 @@ public class CallMessagePayload implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public boolean isMute(){
+		return mute.equals("1") ? true : false;
 	}
 
 }
