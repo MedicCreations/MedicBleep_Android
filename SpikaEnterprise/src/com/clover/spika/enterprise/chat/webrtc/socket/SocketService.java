@@ -134,7 +134,7 @@ public class SocketService extends Service {
 
 		return Service.START_STICKY;
 	}
-
+	
 	public void connect() {
 		if (mConn != null && mConn.isConnected()) {
 			Logger.custom("e", "LOG", "ALLREADY CONNECTED");
@@ -401,6 +401,7 @@ public class SocketService extends Service {
 		Logger.custom("d", "LOG", "On Service Destroy");
 		if (mConn != null)
 			mConn.disconnect();
+		
 		super.onDestroy();
 	}
 

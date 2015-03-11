@@ -59,6 +59,22 @@ public class SpikaEnterpriseApp extends Application {
 		socketIntent = null;
 	}
 	
+	public void stopSocketWithCon(Context c) {
+		c.stopService(new Intent(c, SocketService.class));
+		socketIntent = null;
+	}
+	
+	public void restartSocket() {
+		stopService(new Intent(this, SocketService.class));
+		if(isMyServiceRunning(SocketService.class)){
+			socketIntent = new Intent(this, SocketService.class);
+			socketIntent.putExtra(Const.IS_APLICATION_OPEN, false);
+			startService(socketIntent);
+		}else{
+			startSocket();
+		}
+	}
+	
 	public static Preferences getSharedPreferences(Context ctx) {
 		return new Preferences(ctx);
 	}

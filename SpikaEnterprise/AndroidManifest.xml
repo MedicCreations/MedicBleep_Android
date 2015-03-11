@@ -97,7 +97,6 @@
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
         
         <service android:name="com.clover.spika.enterprise.chat.webrtc.socket.SocketService" />
-        <service android:name="com.zzz.socket.io.SocketIOService" />
         
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
         
@@ -237,6 +236,14 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.webrtc.CallActivity"
             android:screenOrientation="portrait" />
+        
+        <!-- Change connectivity receiver -->
+        <receiver android:name="com.clover.spika.enterprise.chat.webrtc.socket.ConnectToInternetReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
