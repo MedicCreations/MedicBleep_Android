@@ -558,6 +558,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		}else{
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 			findViewById(R.id.imageInCall).setVisibility(View.GONE);
+			mService.sendWebRtcUnMuteOrMute("video", "unmute");
 		}
 		updateVideoView();
 		
