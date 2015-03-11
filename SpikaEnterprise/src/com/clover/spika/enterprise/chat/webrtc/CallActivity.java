@@ -164,7 +164,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		VideoRendererGui.setView(videoView, new Runnable() {
 			@Override
 			public void run() {
-				createPeerConnectionFactory();
+				createPeerConnectionFactory(); 
 			}
 		});
 		
@@ -312,6 +312,10 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 				}
 			}
 			WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
+			if(item == null){
+				disconnect();
+				return;
+			}
 			activeUser = item.getArgs().get(0).getPayload().getUser();
 			startCall(item);
 			
@@ -532,9 +536,17 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		Log.d(TAG, "Initializing the audio manager...");
 		audioManager.init(); 
 		
-		RoundImageView profile = (RoundImageView) findViewById(R.id.imageInCall);
+		final RoundImageView profile = (RoundImageView) findViewById(R.id.imageInCall);
 		profile.setBorderColor(Color.WHITE);
-		if(activeUser != null)ImageLoader.getInstance(this).displayImage(this, activeUser.getImageThumb(), profile);
+		
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(activeUser != null)ImageLoader.getInstance(CallActivity.this).displayImage(CallActivity.this, activeUser.getImageThumb(), profile);
+			}
+		});
+//		if(activeUser != null)ImageLoader.getInstance(this).displayImage(this, activeUser.getImageThumb(), profile);
 	}
 
 	// Should be called from UI thread
