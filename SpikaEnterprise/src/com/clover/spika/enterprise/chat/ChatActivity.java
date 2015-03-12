@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat;
 import java.util.ArrayList;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -605,14 +607,14 @@ public class ChatActivity extends BaseChatActivity {
 		return Integer.valueOf(mUserId);
 	}
 
-	public void sendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
+	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
 
 			@Override
 			public void onApiResponse(Result<Integer> result) {
 				if (result.isSuccess()) {
 					etMessage.setText("");
-					forceClose();
+					if(type != Const.MSG_TYPE_DEFAULT) forceClose();
 
 					callNewMsgs();
 				} else {
@@ -753,7 +755,7 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void onEditorSendEvent(final String text) {
-		hideKeyboard(etMessage);
+//		hideKeyboard(etMessage);
 		new Handler().post(new Runnable() {
 			
 			@Override
