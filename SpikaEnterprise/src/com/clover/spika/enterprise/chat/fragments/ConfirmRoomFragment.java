@@ -214,12 +214,12 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 				if (list != null && list.getCode() == Const.API_SUCCESS) {
 					List<GlobalModel> globalList = new ArrayList<GlobalModel>();
 
-					if (list.getUserList() != null) {
-						for (User user : list.getUserList()) {
+					if (list.users_array != null) {
+						for (User user : list.users_array) {
 
 							GlobalModel model = new GlobalModel();
-							model.setType(Type.USER);
-							model.setUser(user);
+							model.type = Type.USER;
+							model.user = user;
 							globalList.add(model);
 						}
 					}

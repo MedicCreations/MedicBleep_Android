@@ -4,6 +4,10 @@ public class SettingsItem {
 
 	private String name;
 
+	public SettingsItem() {
+
+	}
+
 	public SettingsItem(String name) {
 		this.name = name;
 	}

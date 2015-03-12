@@ -97,11 +97,11 @@ public class GlobalModelAdapter extends BaseAdapter {
 		imageLoaderSpice.displayImage(holder.itemImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
 		((RoundImageView) holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
-		if (item.getType() == Type.USER) {
+		if (item.type == Type.USER) {
 			holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());
-		} else if (item.getType() == Type.CHAT) {
-			holder.itemName.setText(((Chat) item.getModel()).getChat_name());
-		} else if (item.getType() == Type.GROUP) {
+		} else if (item.type == Type.CHAT) {
+			holder.itemName.setText(((Chat) item.getModel()).chat_name);
+		} else if (item.type == Type.GROUP) {
 			holder.itemName.setText(((Group) item.getModel()).getGroupName());
 		}
 

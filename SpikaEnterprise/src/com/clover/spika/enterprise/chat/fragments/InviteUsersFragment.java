@@ -161,11 +161,11 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+			if (adapter.getUsersForString().get(i).type == Type.GROUP) {
 				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
-				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+			} else if (adapter.getUsersForString().get(i).type == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).chat_name);
+			} else if (adapter.getUsersForString().get(i).type == Type.USER) {
 				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 
@@ -311,7 +311,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 				if (result.getCode() == Const.API_SUCCESS) {
 
 					if (getActivity() instanceof ManageUsersActivity) {
-						((ManageUsersActivity) getActivity()).setNewChat(result.getChat());
+						((ManageUsersActivity) getActivity()).setNewChat(result.chat);
 					}
 
 					mCurrentIndex = 0;

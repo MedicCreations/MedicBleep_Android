@@ -13,6 +13,10 @@ public class Stickers implements Serializable {
 	public String url;
 	public int organization_id;
 
+	public Stickers() {
+
+	}
+
 	public int getId() {
 		return id;
 	}

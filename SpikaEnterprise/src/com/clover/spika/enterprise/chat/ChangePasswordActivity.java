@@ -99,18 +99,18 @@ public class ChangePasswordActivity extends BaseActivity {
 				if (result.isSuccess()) {
 
 					if (!isUpdate) {
-						List<Organization> organizations = result.getResultData().getOrganizations();
-						
-						if (organizations.size() > 1){
+						List<Organization> organizations = result.getResultData().organizations;
+
+						if (organizations.size() > 1) {
 							Intent intent = new Intent(ChangePasswordActivity.this, ChooseOrganizationActivity.class);
-							
+
 							intent.putExtra(Const.ORGANIZATIONS, (Serializable) organizations);
 							intent.putExtra(Const.USERNAME, username);
 							intent.putExtra(Const.PASSWORD, password);
-		
+
 							startActivity(intent);
 						}
-						
+
 					}
 
 					finish();

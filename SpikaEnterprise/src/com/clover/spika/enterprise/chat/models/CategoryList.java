@@ -8,4 +8,7 @@ public class CategoryList extends BaseModel {
 
 	public List<Category> categories;
 
+	public CategoryList() {
+	}
+
 }

@@ -34,6 +34,9 @@ public class Chat extends BaseModel {
 	public boolean isPagging = false;
 	public int adapterCount = -1;
 
+	public Chat() {
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

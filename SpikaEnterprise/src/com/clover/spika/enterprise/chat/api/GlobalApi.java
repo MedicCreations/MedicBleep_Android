@@ -1,22 +1,20 @@
 package com.clover.spika.enterprise.chat.api;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.http.util.TextUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GlobalApi {
 
@@ -46,30 +44,12 @@ public class GlobalApi {
 				}
 
 				try {
-
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_SEARCH_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context)
-							.getToken());
-
-					int code = jsonObject.getInt(Const.CODE);
-					if (code == Const.API_SUCCESS) {
-
-						GlobalResponse response = new GlobalResponse();
-						response.setCode(code);
-						response.setPage(jsonObject.getInt(Const.PAGE));
-						response.setTotalCount(jsonObject.getInt(Const.TOTAL_COUNT));
-
-						List<GlobalModel> globalModels = new ArrayList<GlobalModel>();
-
-						JSONArray jsonArray = jsonObject.getJSONArray(Const.SEARCH_RESULT);
-						for (int i = 0; i < jsonArray.length(); i++) {
-							GlobalModel item = new GlobalModel((JSONObject) jsonArray.get(i));
-							globalModels.add(item);
-						}
-
-						response.setModelsList(globalModels);
-						return response;
-					}
-				} catch (Exception e) {
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_GLOBAL_SEARCH_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					
+					Log.d("Vida", "responseBody: " + responseBody);
+					
+					return new ObjectMapper().readValue(responseBody, GlobalResponse.class);
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
@@ -85,6 +65,8 @@ public class GlobalApi {
 					Result<GlobalResponse> result;
 
 					if (response != null) {
+						
+						Log.d("Vida", "Response: " + response.getCode());
 
 						if (response.getCode() == Const.API_SUCCESS) {
 
@@ -127,30 +109,21 @@ public class GlobalApi {
 				}
 
 				try {
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_GLOBAL_MEMBERS_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 
-					JSONObject jsonObject = NetworkManagement.httpGetRequest(Const.F_GLOBAL_MEMBERS_URL, requestParams, SpikaEnterpriseApp.getSharedPreferences(context)
-							.getToken());
+					ObjectMapper mapper = new ObjectMapper();
 
-					int code = jsonObject.getInt(Const.CODE);
-					if (code == Const.API_SUCCESS) {
-
-						GlobalResponse response = new GlobalResponse();
-						response.setCode(code);
-						response.setPage(jsonObject.getInt(Const.PAGE));
-						response.setTotalCount(jsonObject.getInt(Const.TOTAL_COUNT));
-
-						List<GlobalModel> globalModels = new ArrayList<GlobalModel>();
-
-						JSONArray jsonArray = jsonObject.getJSONArray(Const.MEMBERS_RESULT);
-						for (int i = 0; i < jsonArray.length(); i++) {
-							GlobalModel item = new GlobalModel((JSONObject) jsonArray.get(i));
-							globalModels.add(item);
-						}
-
-						response.setModelsList(globalModels);
-						return response;
+					if (responseBody == null) {
+						return null;
 					}
-				} catch (Exception e) {
+
+					GlobalResponse result = mapper.readValue(responseBody, GlobalResponse.class);
+
+					int code = result.getCode();
+					if (code == Const.API_SUCCESS) {
+						return result;
+					}
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 

@@ -5,21 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public int id;
 	public int user_id = 0;
-	public String firstName;
-	public String lastName;
-	public String type;
+	public String firstname;
+	public String lastname;
+	public int type;
 	public String image;
 	public String image_thumb;
 	public boolean is_member;
 	public boolean is_admin;
 	public String name;
-	public String groupName;
+	public String groupname;
 	public String chat_id;
 	public int is_user;
 	public int is_group;
@@ -28,13 +31,16 @@ public class User implements Serializable {
 	public Organization organization;
 	public boolean isSelected = false;
 
+	public User() {
+	}
+
 	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected,
 			Organization org) {
 		super();
 		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.type = type;
+		this.firstname = firstName;
+		this.lastname = lastName;
+		this.type = Integer.valueOf(type);
 		this.image = image;
 		this.image_thumb = imageThumb;
 		this.is_member = isMember;
@@ -57,19 +63,19 @@ public class User implements Serializable {
 	}
 
 	public String getFirstName() {
-		return firstName == null ? "" : firstName;
+		return firstname == null ? "" : firstname;
 	}
 
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstname = firstName;
 	}
 
 	public String getLastName() {
-		return lastName == null ? "" : lastName;
+		return lastname == null ? "" : lastname;
 	}
 
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.lastname = lastName;
 	}
 
 	public String getImage() {
@@ -88,12 +94,12 @@ public class User implements Serializable {
 		this.image_thumb = imageThumb;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		this.type = Integer.valueOf(type);
 	}
 
 	public boolean isSelected() {
@@ -150,60 +156,12 @@ public class User implements Serializable {
 		return detailsMap;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-		User user = (User) o;
-
-		if (is_member != user.is_member)
-			return false;
-		if (isSelected != user.isSelected)
-			return false;
-		if (details != null ? !details.equals(user.details) : user.details != null)
-			return false;
-		if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null)
-			return false;
-		if (image != null ? !image.equals(user.image) : user.image != null)
-			return false;
-		if (image_thumb != null ? !image_thumb.equals(user.image_thumb) : user.image_thumb != null)
-			return false;
-		if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null)
-			return false;
-		if (type != null ? !type.equals(user.type) : user.type != null)
-			return false;
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = firstName != null ? firstName.hashCode() : 0;
-		result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-		result = 31 * result + (type != null ? type.hashCode() : 0);
-		result = 31 * result + (image != null ? image.hashCode() : 0);
-		result = 31 * result + (image_thumb != null ? image_thumb.hashCode() : 0);
-		result = 31 * result + (is_member ? 1 : 0);
-		result = 31 * result + (details != null ? details.hashCode() : 0);
-		result = 31 * result + (isSelected ? 1 : 0);
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		return "User{" + "id='" + id + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", type='" + type + '\'' + ", image='" + image + '\''
-				+ ", imageThumb='" + image_thumb + '\'' + ", isMember=" + is_member + ", details=" + details + ", isSelected=" + isSelected + '}';
-	}
-
 	public String getGroupName() {
-		return groupName;
+		return groupname;
 	}
 
 	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+		this.groupname = groupName;
 	}
 
 	public String getName() {

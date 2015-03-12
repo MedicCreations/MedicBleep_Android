@@ -94,11 +94,11 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					List<Organization> organizations = result.getOrganizations();
+					List<Organization> organizations = result.organizations;
 
 					if (organizations.size() == 1) {
 						try {
-							executeLoginApi(user, pass, organizations.get(0).getId(), extras, showProgress);
+							executeLoginApi(user, pass, organizations.get(0).id, extras, showProgress);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

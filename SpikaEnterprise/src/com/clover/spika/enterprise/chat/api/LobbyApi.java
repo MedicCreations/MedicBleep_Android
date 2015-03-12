@@ -8,9 +8,7 @@ import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,24 +21,20 @@ public class LobbyApi {
 			@Override
 			protected LobbyModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.PAGE, String.valueOf(page));
 				getParams.put(Const.TYPE, String.valueOf(type));
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_GET_LOBBY, getParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
+
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_GET_LOBBY, getParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
+					return new ObjectMapper().readValue(responseBody, LobbyModel.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				LobbyModel lobbyModel = new LobbyModel();
-				if (jsonObject != null) {
-					lobbyModel = new Gson().fromJson(jsonObject.toString(), LobbyModel.class);
-				}
-
-				return lobbyModel;
+				return null;
 			}
 
 			@Override

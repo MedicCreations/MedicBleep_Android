@@ -15,6 +15,9 @@ public class UserDetail implements Serializable {
 
 	private int position;
 
+	public UserDetail() {
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -10,7 +10,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Request;
@@ -109,26 +109,19 @@ public class RoomsSpice {
 				uriVariables.put(Const.ROOM_ALL_IDS, roomAllIds);
 			}
 
-			Request request = new Request.Builder()
-			.addHeader("Encoding", "UTF-8")
-			.addHeader(Const.APP_VERSION, Helper.getAppVersion())
-			.addHeader(Const.PLATFORM, "android")
-			.addHeader("token", SpikaEnterpriseApp.getSharedPreferences(ctx).getToken())
-			.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams)).get().build();
+			Request request = new Request.Builder().addHeader("Encoding", "UTF-8").addHeader(Const.APP_VERSION, Helper.getAppVersion()).addHeader(Const.PLATFORM, "android")
+					.addHeader("token", SpikaEnterpriseApp.getSharedPreferences(ctx).getToken())
+					.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams)).get().build();
 
 			Call connection = getOkHttpClient().newCall(request);
 
-			// TODO Jackson2 needs to be implemented for arrays
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseString = resBody.string();
 
-			// ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 
-			// ConfirmUsersList ress = mapper.readValue(responseString,
-			// ConfirmUsersList.class);
-
-			return new Gson().fromJson(responseString, ConfirmUsersList.class);
+			return mapper.readValue(responseString, ConfirmUsersList.class);
 		}
 	}
 

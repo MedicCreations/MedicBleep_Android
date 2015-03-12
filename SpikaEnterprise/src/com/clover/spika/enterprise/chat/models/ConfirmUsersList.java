@@ -8,4 +8,7 @@ public class ConfirmUsersList extends BaseModel {
 
 	public List<User> users_array;
 
+	public ConfirmUsersList() {
+	}
+
 }

@@ -89,7 +89,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (String selectedId : userIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).getType() == Type.USER) {
+				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).type == Type.USER) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -97,7 +97,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (String selectedId : groupIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).getType() == Type.GROUP) {
+				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).type == Type.GROUP) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -105,7 +105,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (String selectedId : roomIds) {
 			for (int i = 0; i < data.size(); i++) {
-				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).getType() == Type.CHAT) {
+				if (Integer.parseInt(selectedId) == data.get(i).getId() && data.get(i).type == Type.CHAT) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -135,7 +135,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 					i--;
 				}
 			} else if (data.get(i).getModel() instanceof Chat) {
-				if (((Chat) data.get(i).getModel()).getChat_name().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
 				} else {
 					data.remove(i);
@@ -197,13 +197,13 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		imageLoaderSpice.displayImage(holder.profileImg, item.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
 		((RoundImageView) holder.profileImg).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
-		if (item.getType() == Type.CHAT) {
+		if (item.type == Type.CHAT) {
 
-			holder.personName.setText(((Chat) item.getModel()).getChat_name());
+			holder.personName.setText(((Chat) item.getModel()).chat_name);
 			holder.personType.setVisibility(View.VISIBLE);
 			holder.personType.setText(getContext().getResources().getString(R.string.room));
 
-		} else if (item.getType() == Type.GROUP) {
+		} else if (item.type == Type.GROUP) {
 
 			holder.personName.setText(((Group) item.getModel()).getGroupName());
 			holder.personType.setVisibility(View.VISIBLE);
@@ -227,7 +227,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 
-					if (getItem(position).getType() == Type.GROUP) {
+					if (getItem(position).type == Type.GROUP) {
 
 						ArrayList<String> ids = null;
 						if (usersFromGroups.get(getItem(position).getId()) != null) {
@@ -242,7 +242,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 						DeselectUsersInGroupActivity.startActivity(((Group) getItem(position).getModel()).getGroupName(), getItem(position).getId(), getItem(position)
 								.getSelected(), ids, mContext, FROM_GROUP_MEMBERS, fragment);
-					} else if (getItem(position).getType() == Type.CHAT) {
+					} else if (getItem(position).type == Type.CHAT) {
 
 						ArrayList<String> ids = null;
 
@@ -256,7 +256,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 							}
 						}
 
-						DeselectUsersInRoomActivity.startActivity(((Chat) getItem(position).getModel()).getChat_name(), getItem(position).getId(), getItem(position).getSelected(),
+						DeselectUsersInRoomActivity.startActivity(((Chat) getItem(position).getModel()).chat_name, getItem(position).getId(), getItem(position).getSelected(),
 								ids, mContext, FROM_ROOM_MEMBERS, fragment);
 					}
 				}
@@ -312,28 +312,28 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 	public void addToHelperArrays(GlobalModel item) {
 
-		if (item.getType() == Type.CHAT) {
+		if (item.type == Type.CHAT) {
 			addRoom(item.getId());
 			addAllRoom(item.getId());
-		} else if (item.getType() == Type.GROUP) {
+		} else if (item.type == Type.GROUP) {
 			addGroup(item.getId());
 			addAllGroup(item.getId());
-		} else if (item.getType() == Type.USER) {
+		} else if (item.type == Type.USER) {
 			addUser(item.getId());
 		}
 	}
 
 	private void removeFromHelperArrays(GlobalModel item) {
 
-		if (item.getType() == Type.CHAT) {
+		if (item.type == Type.CHAT) {
 			removeRoom(item.getId());
 			removeAllRoom(item.getId());
 			usersFromRooms.remove(item.getId());
-		} else if (item.getType() == Type.GROUP) {
+		} else if (item.type == Type.GROUP) {
 			removeGroup(item.getId());
 			removeAllGroup(item.getId());
 			usersFromGroups.remove(item.getId());
-		} else if (item.getType() == Type.USER) {
+		} else if (item.type == Type.USER) {
 			removeUser(item.getId());
 		}
 	}
@@ -344,7 +344,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			if (data.get(i).getId() == id) {
 
-				if (data.get(i).getType() == Type.USER) {
+				if (data.get(i).type == Type.USER) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -361,7 +361,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			if (data.get(i).getId() == id) {
 
-				if (data.get(i).getType() == Type.USER) {
+				if (data.get(i).type == Type.USER) {
 					data.get(i).setSelected(false);
 				}
 			}
@@ -378,7 +378,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			if (data.get(i).getId() == id) {
 
-				if (data.get(i).getType() == Type.GROUP) {
+				if (data.get(i).type == Type.GROUP) {
 					data.get(i).setSelected(true);
 				}
 			}
@@ -395,7 +395,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 			if (data.get(i).getId() == id) {
 
-				if (data.get(i).getType() == Type.GROUP) {
+				if (data.get(i).type == Type.GROUP) {
 					data.get(i).setSelected(false);
 				}
 			}
@@ -410,7 +410,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (int i = 0; i < data.size(); i++) {
 
-			if (data.get(i).getType() == Type.CHAT) {
+			if (data.get(i).type == Type.CHAT) {
 
 				if (data.get(i).getId() == id) {
 					data.get(i).setSelected(true);
@@ -427,7 +427,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (int i = 0; i < data.size(); i++) {
 
-			if (data.get(i).getType() == Type.CHAT) {
+			if (data.get(i).type == Type.CHAT) {
 
 				if (data.get(i).getId() == id) {
 					data.get(i).setSelected(false);
@@ -571,7 +571,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		for (GlobalModel item2 : usersToAdd) {
 
-			if ((item2.getType() == Type.GROUP || item2.getType() == Type.CHAT) && item2.getId() == item.getId()) {
+			if ((item2.type == Type.GROUP || item2.type == Type.CHAT) && item2.getId() == item.getId()) {
 				return true;
 			}
 		}

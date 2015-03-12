@@ -4,8 +4,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GlobalModel {
 
 	public class Type {
@@ -67,7 +69,6 @@ public class GlobalModel {
 				model = object.getJSONObject(Const.CHAT);
 				chat = new ObjectMapper().readValue(model.toString(), Chat.class);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

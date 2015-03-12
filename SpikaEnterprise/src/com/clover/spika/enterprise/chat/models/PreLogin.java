@@ -8,4 +8,6 @@ public class PreLogin extends BaseModel {
 
 	public List<Organization> organizations;
 
+	public PreLogin() {
+	}
 }

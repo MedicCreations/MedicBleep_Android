@@ -57,7 +57,7 @@ public class GroupsAdapter extends BaseAdapter {
 		data.clear();
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
-			if (((Chat) data.get(i).getModel()).getChat_name().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
 			} else {
 				data.remove(i);
@@ -102,7 +102,7 @@ public class GroupsAdapter extends BaseAdapter {
 
 		imageLoaderSpice.displayImage(holder.groupImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
 		((RoundImageView) holder.groupImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
-		holder.groupName.setText(((Chat) item.getModel()).getChat_name());
+		holder.groupName.setText(((Chat) item.getModel()).chat_name);
 
 		return convertView;
 	}

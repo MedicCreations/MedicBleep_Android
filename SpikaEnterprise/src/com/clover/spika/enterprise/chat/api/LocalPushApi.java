@@ -8,10 +8,9 @@ import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.HashMap;
 
 public class LocalPushApi {
@@ -24,12 +23,11 @@ public class LocalPushApi {
 
 				try {
 
-					JSONObject jsonObject = NetworkManagement
-							.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences(ctx)
+							.getToken());
+					return new ObjectMapper().readValue(responseBody, LocalPush.class);
 
-					return new Gson().fromJson(jsonObject.toString(), LocalPush.class);
-
-				} catch (Exception e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 

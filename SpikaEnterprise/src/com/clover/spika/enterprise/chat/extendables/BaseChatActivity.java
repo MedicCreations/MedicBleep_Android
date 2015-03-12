@@ -433,9 +433,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 				@Override
 				public void onApiResponse(Result<StickersHolder> result) {
-					stickersList.addAll(result.getResultData().getStickersList());
+					stickersList.addAll(result.getResultData().stickers);
 					EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
-					layout.setStickersList(result.getResultData().getStickersList(), BaseChatActivity.this, mEmojiListener);
+					layout.setStickersList(result.getResultData().stickers, BaseChatActivity.this, mEmojiListener);
 				}
 			});
 		}

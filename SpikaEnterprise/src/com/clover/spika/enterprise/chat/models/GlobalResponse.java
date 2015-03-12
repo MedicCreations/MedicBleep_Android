@@ -2,12 +2,15 @@ package com.clover.spika.enterprise.chat.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GlobalResponse {
 
-	private int code;
-	private int page;
-	private int totalCount;
-	private List<GlobalModel> modelsList;
+	public int code;
+	public int page;
+	public int totalCount;
+	public List<GlobalModel> search_result;
 
 	public GlobalResponse() {
 	}
@@ -37,11 +40,11 @@ public class GlobalResponse {
 	}
 
 	public List<GlobalModel> getModelsList() {
-		return modelsList;
+		return search_result;
 	}
 
 	public void setModelsList(List<GlobalModel> modelsList) {
-		this.modelsList = modelsList;
+		this.search_result = modelsList;
 	}
 
 }

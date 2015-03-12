@@ -90,7 +90,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			@Override
 			public void onRequestSuccess(Chat result) {
 				if (result.getCode() == Const.API_SUCCESS) {
-					threads = new TreeNode(result.getMessagesList());
+					threads = new TreeNode(result.messages);
 					((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
 
 					ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();

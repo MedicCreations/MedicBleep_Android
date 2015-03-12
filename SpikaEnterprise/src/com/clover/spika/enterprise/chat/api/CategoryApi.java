@@ -8,10 +8,7 @@ import com.clover.spika.enterprise.chat.models.CategoryList;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -23,19 +20,22 @@ public class CategoryApi {
 			@Override
 			protected CategoryList doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				try {
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
 
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_GET_CATEGORIES, null, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
+					ObjectMapper mapper = new ObjectMapper();
+
+					if (responseBody == null) {
+						return null;
+					}
+
+					return mapper.readValue(responseBody, CategoryList.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if (jsonObject == null)
-					return null;
-				return new Gson().fromJson(jsonObject.toString(), CategoryList.class);
+
+				return null;
 			}
 
 			@Override
@@ -62,5 +62,4 @@ public class CategoryApi {
 			}
 		}.execute();
 	}
-
 }

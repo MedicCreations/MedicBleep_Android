@@ -14,14 +14,15 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,22 +34,24 @@ public class UserApi {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> postParams = new HashMap<String, String>();
 				postParams.put(Const.IMAGE, image);
 				postParams.put(Const.IMAGE_THUMB, thumb);
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					ObjectMapper mapper = new ObjectMapper();
+					BaseModel result = mapper.readValue(responseBody, BaseModel.class);
+
+					return result;
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+
+				return null;
 			}
 
 			@Override
@@ -81,21 +84,23 @@ public class UserApi {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> postParams = new HashMap<String, String>();
 				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PUSH_TOKEN_LOCAL));
+
 				try {
-					jsonObject = NetworkManagement
-							.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
+
+					ObjectMapper mapper = new ObjectMapper();
+					BaseModel result = mapper.readValue(responseBody, BaseModel.class);
+
+					return result;
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+
+				return null;
 			}
 
 			@Override
@@ -126,24 +131,23 @@ public class UserApi {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> postParams = new HashMap<String, String>();
 				postParams.put(Const.PUSH_TOKEN, "");
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_LOGOUT_API, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+
+					ObjectMapper mapper = new ObjectMapper();
+					BaseModel result = mapper.readValue(responseBody, BaseModel.class);
+
+					return result;
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
 				return null;
-
 			}
 
 			@Override
@@ -173,7 +177,6 @@ public class UserApi {
 		new BaseAsyncTask<Void, Void, UserWrapper>(context, true) {
 			@Override
 			protected UserWrapper doInBackground(Void... params) {
-				JSONObject jsonObject = new JSONObject();
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.USER_ID, userId);
@@ -183,10 +186,10 @@ public class UserApi {
 				}
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-					return new Gson().fromJson(jsonObject.toString(), UserWrapper.class);
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_PROFILE, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					return new ObjectMapper().readValue(responseBody, UserWrapper.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -218,16 +221,13 @@ public class UserApi {
 		new BaseAsyncTask<Void, Void, Information>(context, true) {
 			@Override
 			protected Information doInBackground(Void... params) {
-				JSONObject jsonObject = new JSONObject();
-
-				HashMap<String, String> getParams = new HashMap<String, String>();
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, getParams, SpikaEnterpriseApp.getSharedPreferences(context)
-							.getToken());
-					return new Gson().fromJson(jsonObject.toString(), Information.class);
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_INFORMATION, new HashMap<String, String>(), SpikaEnterpriseApp
+							.getSharedPreferences(context).getToken());
+					return new ObjectMapper().readValue(responseBody, Information.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -285,12 +285,10 @@ public class UserApi {
 
 				try {
 
-					JSONObject jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams,
-							SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					return new ObjectMapper().readValue(responseBody, BaseModel.class);
 
-					return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
-
-				} catch (Exception e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
@@ -329,18 +327,19 @@ public class UserApi {
 			@Override
 			protected BaseModel doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> postParams = new HashMap<String, String>();
 				postParams.put(Const.USERNAME, username);
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_FORGOT_PASSWORD, postParams, null);
-				} catch (Exception e) {
+
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_FORGOT_PASSWORD, postParams, null);
+					return new ObjectMapper().readValue(responseBody, BaseModel.class);
+
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				return new Gson().fromJson(jsonObject.toString(), BaseModel.class);
+				return null;
 			}
 
 			@Override
@@ -375,28 +374,34 @@ public class UserApi {
 			@Override
 			protected Login doInBackground(Void... params) {
 
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				String hashPassword;
+				try {
+					hashPassword = Utils.getHexString(newPassword);
+					postParams.put(Const.NEW_PASSWORD, hashPassword);
+				} catch (NoSuchAlgorithmException | UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+
 				try {
 
-					JSONObject jsonObject = new JSONObject();
-
-					HashMap<String, String> postParams = new HashMap<String, String>();
-					String hashPassword = Utils.getHexString(newPassword);
-					postParams.put(Const.NEW_PASSWORD, hashPassword);
+					String responseBody;
 
 					if (isUpdate) {
-						jsonObject = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams,
-								SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+						responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_USER_PASSWORD, postParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
 					} else {
 
 						String hashTempPassword = Utils.getHexString(tempPassword);
 						postParams.put(Const.TEMP_PASSWORD, hashTempPassword);
 
-						jsonObject = NetworkManagement.httpPostRequest(Const.F_CHANGE_USER_PASSWORD, postParams, null);
+						responseBody = NetworkManagement.httpPostRequest(Const.F_CHANGE_USER_PASSWORD, postParams, null);
 					}
 
-					return new Gson().fromJson(jsonObject.toString(), Login.class);
+					return new ObjectMapper().readValue(responseBody, Login.class);
 
-				} catch (Exception e) {
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
 					e.printStackTrace();
 				}
 
@@ -444,8 +449,6 @@ public class UserApi {
 			@Override
 			protected Chat doInBackground(Void... params) {
 
-				JSONObject jsonObject = new JSONObject();
-
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.CHAT_ID, chatId);
 				getParams.put(Const.USERS_TO_ADD, users);
@@ -455,15 +458,15 @@ public class UserApi {
 				}
 
 				try {
-					jsonObject = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
+
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_INVITE_USERS, getParams, SpikaEnterpriseApp.getSharedPreferences(context).getToken());
+					return new ObjectMapper().readValue(responseBody, Chat.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				return new Gson().fromJson(jsonObject.toString(), Chat.class);
+
+				return null;
 			}
 
 			@Override
@@ -477,7 +480,7 @@ public class UserApi {
 					if (chat != null) {
 						if (chat.getCode() == Const.API_SUCCESS) {
 							result = new Result<Chat>(Result.ApiResponseState.SUCCESS);
-							result.setResultData(chat.getChat());
+							result.setResultData(chat.chat);
 						} else {
 							result = new Result<Chat>(Result.ApiResponseState.FAILURE);
 						}

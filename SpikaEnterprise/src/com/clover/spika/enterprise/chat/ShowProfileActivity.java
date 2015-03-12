@@ -85,7 +85,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		} else {
 			((TextView) rootView.findViewById(R.id.name)).setText(firstName + " " + lastName);
 		}
-		((TextView) rootView.findViewById(R.id.company)).setText(user.getUser().getOrganization().getName());
+		((TextView) rootView.findViewById(R.id.company)).setText(user.getUser().getOrganization().name);
 
 		ImageView profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 

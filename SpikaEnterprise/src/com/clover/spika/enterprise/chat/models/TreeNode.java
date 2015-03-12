@@ -10,102 +10,102 @@ import java.util.TreeSet;
 
 public class TreeNode {
 
-    private int level;
-    private Message message;
-    private TreeSet<TreeNode> children = new TreeSet<TreeNode>(new TreeNodeComparator());
+	private int level;
+	private Message message;
+	private TreeSet<TreeNode> children = new TreeSet<TreeNode>(new TreeNodeComparator());
 
-    public TreeNode(Message data) {
-        this.message = data;
-        this.level = 0;
-    }
+	public TreeNode() {
 
-    private TreeNode(Message data, int level) {
-        this.message = data;
-        this.level = level;
-    }
+	}
 
-    public TreeNode(List<Message> collection) {
-        if (!collection.isEmpty()) {
-            Collections.sort(collection, new MessageIdComparator());
+	public TreeNode(Message data) {
+		this.message = data;
+		this.level = 0;
+	}
 
-            this.level = 0;
-            this.message = collection.get(0);
+	private TreeNode(Message data, int level) {
+		this.message = data;
+		this.level = level;
+	}
 
-            collection.remove(0);
-            addAll(collection);
-        } else {
-            throw new IllegalArgumentException("List must not be empty!");
-        }
-    }
+	public TreeNode(List<Message> collection) {
+		if (!collection.isEmpty()) {
+			Collections.sort(collection, new MessageIdComparator());
 
-    public TreeSet<TreeNode> getChildren() {
-        return children;
-    }
+			this.level = 0;
+			this.message = collection.get(0);
 
-    public Message getMessage() {
-        return message;
-    }
+			collection.remove(0);
+			addAll(collection);
+		} else {
+			throw new IllegalArgumentException("List must not be empty!");
+		}
+	}
 
-    public int getLevel() {
-        return level;
-    }
+	public TreeSet<TreeNode> getChildren() {
+		return children;
+	}
 
-    public void add(Message message) {
-        int parentId = message.getParentId();
+	public Message getMessage() {
+		return message;
+	}
 
-        if (parentId == this.message.getIntegerId()) {
-            children.add(new TreeNode(message, this.level + 1));
-        } else {
-            for (TreeNode node : children) {
-                if (parentId == node.message.getIntegerId()) {
-                    node.children.add(new TreeNode(message, node.level + 1));
-                    break;
-                } else {
-                    node.add(message);
-                }
-            }
-        }
-    }
+	public int getLevel() {
+		return level;
+	}
 
-    public void addAll(List<Message> collection) {
-        Collections.sort(collection, new MessageIdComparator());
+	public void add(Message message) {
+		int parentId = message.getParentId();
 
-        for (Message message : collection) {
-            add(message);
-        }
-    }
+		if (parentId == this.message.getIntegerId()) {
+			children.add(new TreeNode(message, this.level + 1));
+		} else {
+			for (TreeNode node : children) {
+				if (parentId == node.message.getIntegerId()) {
+					node.children.add(new TreeNode(message, node.level + 1));
+					break;
+				} else {
+					node.add(message);
+				}
+			}
+		}
+	}
 
-    public List<TreeNode> asList() {
-        List<TreeNode> nodes = new ArrayList<TreeNode>();
+	public void addAll(List<Message> collection) {
+		Collections.sort(collection, new MessageIdComparator());
 
-        nodes.add(this);
-        for (TreeNode node : this.children) {
-            nodes.addAll(node.asList());
-        }
+		for (Message message : collection) {
+			add(message);
+		}
+	}
 
-        return nodes;
-    }
+	public List<TreeNode> asList() {
+		List<TreeNode> nodes = new ArrayList<TreeNode>();
 
-    @Override
-    public String toString() {
-        return "TreeNode{" +
-                "level=" + level +
-                ", message=" + message +
-                ", children=" + children +
-                '}';
-    }
+		nodes.add(this);
+		for (TreeNode node : this.children) {
+			nodes.addAll(node.asList());
+		}
 
-    private static class TreeNodeComparator implements Comparator<TreeNode> {
-        @Override
-        public int compare(TreeNode lhs, TreeNode rhs) {
-            if (lhs.message.getIntegerId() > rhs.message.getIntegerId()) {
-                return 1;
-            } else if (lhs.message.getIntegerId() < rhs.message.getIntegerId()) {
-                return -1;
-            } else {
-                return 0;
-            }
-        }
-    }
+		return nodes;
+	}
+
+	@Override
+	public String toString() {
+		return "TreeNode{" + "level=" + level + ", message=" + message + ", children=" + children + '}';
+	}
+
+	private static class TreeNodeComparator implements Comparator<TreeNode> {
+		@Override
+		public int compare(TreeNode lhs, TreeNode rhs) {
+			if (lhs.message.getIntegerId() > rhs.message.getIntegerId()) {
+				return 1;
+			} else if (lhs.message.getIntegerId() < rhs.message.getIntegerId()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
 
 }

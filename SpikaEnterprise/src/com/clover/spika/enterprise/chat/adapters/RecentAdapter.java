@@ -95,13 +95,13 @@ public class RecentAdapter extends BaseAdapter {
 				int ureadInt = 0;
 
 				try {
-					ureadInt = Integer.valueOf(data.get(i).getUnread());
+					ureadInt = Integer.valueOf(data.get(i).unread);
 				} catch (Exception ignore) {
 				}
 
 				ureadInt = ureadInt + 1;
 
-				data.get(i).setUnread(String.valueOf(ureadInt));
+				data.get(i).unread = String.valueOf(ureadInt);
 
 				Chat chat = data.get(i);
 				data.remove(i);
@@ -132,7 +132,7 @@ public class RecentAdapter extends BaseAdapter {
 		// set image to null
 		holder.recentImage.setImageDrawable(null);
 		
-		if(getItem(position).getType() == Const.C_PRIVATE){
+		if(getItem(position).type == Const.C_PRIVATE){
 			defaultImage = R.drawable.default_user_image;
 		}else{
 			defaultImage = R.drawable.default_group_image;
@@ -140,15 +140,15 @@ public class RecentAdapter extends BaseAdapter {
 
 		Chat item = getItem(position);
 
-		imageLoaderSpice.displayImage(holder.recentImage, item.getImageThumb(), defaultImage);
+		imageLoaderSpice.displayImage(holder.recentImage, item.image_thumb, defaultImage);
 
-		holder.recentName.setText(item.getChat_name());
+		holder.recentName.setText(item.chat_name);
 
 		((RoundImageView) holder.recentImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
-		switch (item.getLastMessage().getType()) {
+		switch (item.last_message.getType()) {
 		case Const.MSG_TYPE_DEFAULT:
-			holder.lastMessage.setText(item.getLastMessage().getText());
+			holder.lastMessage.setText(item.last_message.getText());
 			break;
 		case Const.MSG_TYPE_DELETED:
 			holder.lastMessage.setText(mContext.getResources().getString(R.string.deleted));
@@ -177,11 +177,11 @@ public class RecentAdapter extends BaseAdapter {
 			break;
 		}
 
-		holder.lastMessageTime.setText(getCreatedTime(item.getLastMessage().getCreated()));
+		holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
 
-		if (Integer.parseInt(item.getUnread()) > 0) {
+		if (Integer.parseInt(item.unread) > 0) {
 			holder.unreadText.setVisibility(View.VISIBLE);
-			holder.unreadText.setText(item.getUnread());
+			holder.unreadText.setText(item.unread);
 		} else {
 			holder.unreadText.setVisibility(View.INVISIBLE);
 			holder.unreadText.setText("");

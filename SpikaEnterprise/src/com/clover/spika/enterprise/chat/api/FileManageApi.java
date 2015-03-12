@@ -22,11 +22,10 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.http.HttpEntity;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,22 +55,20 @@ public class FileManageApi {
 			}
 
 			protected UploadFileModel doInBackground(Void... params) {
+
+				// start: encrypt
+				String finalPath = Utils.handleFileEncryption(path, context);
+
+				if (finalPath == null) {
+					return null;
+				}
+				// end: encrypt
+
+				HashMap<String, String> postParams = new HashMap<String, String>();
+				postParams.put(Const.FILE, finalPath);
+
 				try {
-
-					// start: encrypt
-					String finalPath = Utils.handleFileEncryption(path, context);
-
-					if (finalPath == null) {
-						return null;
-					}
-					// end: encrypt
-
-					HashMap<String, String> postParams = new HashMap<String, String>();
-					postParams.put(Const.FILE, finalPath);
-
-					JSONObject jsonObject = new JSONObject();
-
-					jsonObject = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams, new ProgressBarListeners() {
+					String responseBody = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams, new ProgressBarListeners() {
 
 						@Override
 						public void onSetMax(long total) {
@@ -89,13 +86,17 @@ public class FileManageApi {
 							progressBar.dismiss();
 						}
 					});
+					ObjectMapper mapper = new ObjectMapper();
+
+					if (responseBody == null) {
+						return null;
+					}
 
 					new File(finalPath).delete();
 
-					return new Gson().fromJson(String.valueOf(jsonObject), UploadFileModel.class);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
+					return mapper.readValue(responseBody, UploadFileModel.class);
+
+				} catch (IOException | JSONException e) {
 					e.printStackTrace();
 				}
 
@@ -221,12 +222,13 @@ public class FileManageApi {
 
 		}.execute();
 	}
-	
-	public void downloadFileToFile(final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener, final ProgressBarListeners pbListener) {
+
+	public void downloadFileToFile(final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener,
+			final ProgressBarListeners pbListener) {
 		new BaseAsyncTask<Void, Void, String>(ctx, showProgress) {
-			
+
 			protected void onPreExecute() {
-				if(showProgress){
+				if (showProgress) {
 					progressBar = new AppProgressDialogWithBar(ctx);
 					progressBar.showProgress();
 				}
@@ -249,7 +251,7 @@ public class FileManageApi {
 					}
 
 					OutputStream os = new FileOutputStream(file);
-					if(pbListener == null){
+					if (pbListener == null) {
 						Helper.copyStream(is, os, en.getContentLength(), new ProgressBarListeners() {
 
 							@Override
@@ -276,7 +278,7 @@ public class FileManageApi {
 							}
 						});
 
-					}else{
+					} else {
 						Helper.copyStream(is, os, en.getContentLength(), pbListener);
 					}
 
@@ -308,7 +310,7 @@ public class FileManageApi {
 
 					listener.onApiResponse(result);
 				}
-				
+
 				if (progressBar != null && progressBar.isShowing()) {
 					progressBar.dismiss();
 				}

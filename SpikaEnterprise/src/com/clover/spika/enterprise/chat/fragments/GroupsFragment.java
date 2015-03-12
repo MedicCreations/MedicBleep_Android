@@ -214,7 +214,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = (Chat) adapter.getItem(position).getModel();
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.password);
 			
 		}
 	}

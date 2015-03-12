@@ -473,11 +473,11 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+			if (adapter.getUsersForString().get(i).type == Type.GROUP) {
 				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
-				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+			} else if (adapter.getUsersForString().get(i).type == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).chat_name);
+			} else if (adapter.getUsersForString().get(i).type == Type.USER) {
 				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 

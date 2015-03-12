@@ -11,6 +11,9 @@ public class Group {
 	public boolean is_member;
 	public boolean isSelected = false;
 
+	public Group() {
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -2,7 +2,6 @@ package com.clover.spika.enterprise.chat.api;
 
 import java.io.IOException;
 
-import org.json.JSONObject;
 
 import android.content.Context;
 
@@ -12,8 +11,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class EmojiApi {
 
@@ -21,13 +19,19 @@ public class EmojiApi {
 		new BaseAsyncTask<Void, Void, StickersHolder>(context, false) {
 			@Override
 			protected StickersHolder doInBackground(Void... params) {
-				JSONObject jsonObject = new JSONObject();
 
 				try {
-					jsonObject = NetworkManagement.httpGetRequest(Const.F_STICKERS_URL, null, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.TOKEN));
-					return new Gson().fromJson(jsonObject.toString(), StickersHolder.class);
-				} catch (JsonSyntaxException e) {
-					e.printStackTrace();
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_STICKERS_URL, null, SpikaEnterpriseApp.getSharedPreferences(context)
+							.getCustomString(Const.TOKEN));
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					if (responseBody == null) {
+						return null;
+					}
+
+					return mapper.readValue(responseBody, StickersHolder.class);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

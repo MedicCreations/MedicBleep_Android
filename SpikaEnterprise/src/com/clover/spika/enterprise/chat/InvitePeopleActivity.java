@@ -331,7 +331,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
 
-					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getResultData().getId()), result.getResultData().getPassword());
+					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getResultData().getId()), result.getResultData().password);
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);

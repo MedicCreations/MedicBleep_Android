@@ -8,6 +8,9 @@ public class Result<T> {
 	private T resultData;
 	private ApiResponseState state;
 
+	public Result() {
+	}
+
 	public Result(ApiResponseState state) {
 		this.state = state;
 	}

@@ -113,7 +113,7 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 			@Override
 			public void onApiResponse(Result<CategoryList> result) {
 				if (result.isSuccess()) {
-					setData(result.getResultData().getCategoryList());
+					setData(result.getResultData().categories);
 				} else {
 					AppDialog dialog = new AppDialog(getActivity(), false);
 					if (result.getResultData() != null && result.getResultData().getMessage() != null)
@@ -136,16 +136,16 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 			switch (mUseType) {
 			case CHOOSE_CATEGORY:
 				if (getActivity() instanceof ChooseCategoryActivity) {
-					((ChooseCategoryActivity) getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()), category.getName());
+					((ChooseCategoryActivity) getActivity()).returnCategoryIdToActivity(String.valueOf(category.id), category.name);
 				}
 				break;
 
 			case ROOM:
-				RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
+				RoomsActivity.startActivity(String.valueOf(category.id), category.name, getActivity());
 				break;
 
 			case GROUP:
-				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+				GroupsActivity.startActivity(String.valueOf(category.id), getActivity());
 				break;
 			}
 

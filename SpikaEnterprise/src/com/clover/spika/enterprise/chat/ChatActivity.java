@@ -338,7 +338,7 @@ public class ChatActivity extends BaseChatActivity {
 
 							if (result.getCode() == Const.API_SUCCESS) {
 
-								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.getImage(), result.getFirstname(), result.getLastname(),
+								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.firstname, result.lastname,
 										result.getToken());
 								new GoogleUtils().getPushToken(ChatActivity.this);
 
@@ -443,18 +443,18 @@ public class ChatActivity extends BaseChatActivity {
 
 					if (result.getCode() == Const.API_SUCCESS) {
 
-						chatParams(result.getChat());
+						chatParams(result.chat);
 
 						chatId = String.valueOf(result.getId());
-						chatName = result.getChat_name();
+						chatName = result.chat_name;
 
 						setTitle(chatName);
 
 						adapter.clearItems();
-						totalItems = Integer.valueOf(result.getTotal_count());
-						adapter.addItems(result.getMessagesList(), true);
-						adapter.setSeenBy(result.getSeen_by());
-						adapter.setTotalCount(Integer.valueOf(result.getTotal_count()));
+						totalItems = Integer.valueOf(result.total_count);
+						adapter.addItems(result.messages, true);
+						adapter.setSeenBy(result.seen_by);
+						adapter.setTotalCount(Integer.valueOf(result.total_count));
 						if (adapter.getCount() > 0) {
 							chatListView.setSelectionFromTop(adapter.getCount(), 0);
 						}
@@ -478,33 +478,33 @@ public class ChatActivity extends BaseChatActivity {
 			AppDialog dialog = new AppDialog(this, true);
 			dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
 			return;
-		} else if (chat.getChat_name() == null && !TextUtils.isEmpty(chatName)) {
+		} else if (chat.chat_name == null && !TextUtils.isEmpty(chatName)) {
 			return;
 		}
 
-		chatName = chat.getChat_name();
+		chatName = chat.chat_name;
 		setTitle(chatName);
-		chatImage = chat.getImage();
-		chatImageThumb = chat.getImageThumb();
+		chatImage = chat.image;
+		chatImageThumb = chat.image_thumb;
 
-		if (!TextUtils.isEmpty(chat.getAdminId())) {
-			isAdmin = Helper.getUserId(this).equals(chat.getAdminId()) ? true : false;
+		if (!TextUtils.isEmpty(chat.admin_id)) {
+			isAdmin = Helper.getUserId(this).equals(chat.admin_id) ? true : false;
 		} else {
 			isAdmin = false;
 		}
 
-		isActive = chat.isActive();
+		isActive = chat.is_active;
 		if (isActive == 0) {
 			etMessage.setFocusable(false);
 		}
-		isPrivate = chat.isPrivate();
+		isPrivate = chat.is_private;
 
-		if (chat.getCategory() != null) {
-			categoryId = String.valueOf(chat.getCategory().getId());
-			categoryName = chat.getCategory().getName();
+		if (chat.category != null) {
+			categoryId = String.valueOf(chat.category.id);
+			categoryName = chat.category.name;
 		}
 
-		chatType = chat.getType();
+		chatType = chat.type;
 
 		if (chatType == Const.C_ROOM) {
 			if (isAdmin && isActive == 1) {
@@ -667,32 +667,32 @@ public class ChatActivity extends BaseChatActivity {
 
 					Chat chat = result;
 
-					chatParams(chat.getChat());
+					chatParams(chat.chat);
 
 					setMenuByChatType();
 
 					if (TextUtils.isEmpty(mUserId)) {
-						mUserId = chat.getUser() == null ? "" : String.valueOf(chat.getUser().getId());
+						mUserId = chat.user == null ? "" : String.valueOf(chat.user.getId());
 					}
 
-					adapter.addItems(chat.getMessagesList(), isNewMsg);
-					for (int i = 0; i < chat.getMessagesList().size(); i++) {
-						if (chat.getMessagesList().get(i).getType() == Const.MSG_TYPE_DEFAULT) {
-							if (chat.getMessagesList().get(i).getText().startsWith("http") && chat.getMessagesList().get(i).getText().endsWith(".gif")) {
-								chat.getMessagesList().get(i).setType(Const.MSG_TYPE_GIF);
+					adapter.addItems(chat.messages, isNewMsg);
+					for (int i = 0; i < chat.messages.size(); i++) {
+						if (chat.messages.get(i).getType() == Const.MSG_TYPE_DEFAULT) {
+							if (chat.messages.get(i).getText().startsWith("http") && chat.messages.get(i).getText().endsWith(".gif")) {
+								chat.messages.get(i).setType(Const.MSG_TYPE_GIF);
 							}
 						}
 					}
-					adapter.setSeenBy(chat.getSeen_by());
+					adapter.setSeenBy(chat.seen_by);
 
-					totalItems = Integer.valueOf(chat.getTotal_count());
+					totalItems = Integer.valueOf(chat.total_count);
 					adapter.setTotalCount(totalItems);
 
 					if (!isRefresh) {
 						if (isClear || isSend) {
 							chatListView.setSelectionFromTop(adapter.getCount(), 0);
 						} else if (isPagging) {
-							chatListView.setSelection(chat.getMessagesList().size());
+							chatListView.setSelection(chat.messages.size());
 						}
 					} else {
 						int visibleItem = chatListView.getFirstVisiblePosition();

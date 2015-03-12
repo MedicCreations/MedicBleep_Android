@@ -193,9 +193,9 @@ public class CreateRoomActivity extends BaseActivity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					String chat_id = String.valueOf(result.getChat().getId());
+					String chat_id = String.valueOf(result.chat.getId());
 
-					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.getChat().getPassword());
+					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.chat.password);
 
 					Helper.setRoomFileId(CreateRoomActivity.this, "");
 					Helper.setRoomThumbId(CreateRoomActivity.this, "");

@@ -13,6 +13,10 @@ public class Login extends BaseModel {
 	public String lastname;
 	public List<Organization> organizations;
 
+	public Login() {
+
+	}
+
 	public String getUserId() {
 		return user_id == null ? "" : user_id;
 	}

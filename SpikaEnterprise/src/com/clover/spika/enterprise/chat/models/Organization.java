@@ -9,4 +9,7 @@ public class Organization implements Serializable {
 	public String id;
 	public String name;
 
+	public Organization() {
+	}
+
 }

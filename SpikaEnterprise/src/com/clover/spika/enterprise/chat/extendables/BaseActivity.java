@@ -202,8 +202,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		if (isPushShowing) {
 
 			LocalPush push = new LocalPush();
-			push.setChatId(chatId);
-			push.setPassword(password);
+			push.chat_id = chatId;
+			push.password = password;
 			push.setMessage(msg);
 
 			qPush.add(push);
@@ -285,7 +285,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 						isPushShowing = false;
 
 						if (qPush.size() > 0) {
-							showPopUp(qPush.get(0).getMessage(), qPush.get(0).getChatId(), qPush.get(0).getPassword());
+							showPopUp(qPush.get(0).getMessage(), qPush.get(0).chat_id, qPush.get(0).password);
 							qPush.remove(0);
 						}
 					}

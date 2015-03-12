@@ -56,7 +56,7 @@ public class InformationFragment extends CustomFragment {
 			@Override
 			public void onApiResponse(Result<Information> result) {
 				if (result.isSuccess()) {
-					mUrl = result.getResultData().getUrl();
+					mUrl = result.getResultData().url;
 					setUrl();
 				}else{
 					AppDialog dialog = new AppDialog(getActivity(), false);

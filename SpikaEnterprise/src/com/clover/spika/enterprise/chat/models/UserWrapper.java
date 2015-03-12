@@ -12,6 +12,9 @@ public class UserWrapper extends BaseModel implements Serializable {
 	public User user;
 	public List<UserDetail> detail_values;
 
+	public UserWrapper() {
+	}
+
 	public List<UserDetail> getUserDetailList() {
 		return detail_values;
 	}

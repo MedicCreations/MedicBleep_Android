@@ -6,6 +6,9 @@ public class UploadFileModel extends BaseModel {
 
 	private String file_id;
 
+	public UploadFileModel() {
+	}
+
 	public String getFileId() {
 		return file_id;
 	}

@@ -14,4 +14,8 @@ public class LocalPush extends BaseModel {
 	public String password;
 	public int type;
 
+	public LocalPush() {
+
+	}
+
 }

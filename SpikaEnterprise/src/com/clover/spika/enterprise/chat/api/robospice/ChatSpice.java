@@ -14,7 +14,6 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Request;
@@ -501,16 +500,18 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+			
+			ObjectMapper mapper = new ObjectMapper();
 
-			Chat result = new Gson().fromJson(responseBody, Chat.class);
+			Chat result = mapper.readValue(responseBody, Chat.class);
 
 			if (result != null && result.getCode() == Const.API_SUCCESS) {
 
-				result.setNewMsg(isNewMessage);
-				result.setRefresh(isRefresh);
-				result.setClear(isClear);
-				result.setSend(isSend);
-				result.setPagging(isPagging);
+				result.isNewMsg = isNewMessage;
+				result.isRefresh = isRefresh;
+				result.isClear = isClear;
+				result.isSend  = isSend;
+				result.isPagging = isPagging;
 
 				return result;
 			} else {
