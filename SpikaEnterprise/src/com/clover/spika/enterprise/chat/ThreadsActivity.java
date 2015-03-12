@@ -52,6 +52,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     private String mMessageId;
     private String mUserId;
     
+    private int typeOfMessage = 0;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,15 +113,18 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     }
 
     private void sendMessage(String text) {
+    	typeOfMessage = Const.MSG_TYPE_DEFAULT;
         new ChatApi().sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this, this);
     }
 
     private void sendFile(String fileName, String fileId) {
+    	typeOfMessage = Const.MSG_TYPE_FILE;
         new ChatApi().sendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null,
                 mRootId, mMessageId, this, this);
     }
     
     private void sendEmoji(String text) {
+    	typeOfMessage = Const.MSG_TYPE_GIF;
         new ChatApi().sendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this, this);
     }
 
@@ -129,7 +134,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
     @Override
     protected void onEditorSendEvent(final String text) {
-    	hideKeyboard(etMessage);
+//    	hideKeyboard(etMessage);
 		new Handler().post(new Runnable() {
 			
 			@Override
@@ -207,7 +212,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
     public void onApiResponse(Result<Integer> result) {
         if (result.isSuccess()) {
             etMessage.setText("");
-            forceClose();
+            if(typeOfMessage != Const.MSG_TYPE_DEFAULT) forceClose();
 
             getThreads();
         } else {
