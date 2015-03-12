@@ -503,9 +503,12 @@ public class BaseActivity extends SlidingFragmentActivity {
     @Override
     protected void onStart() {
     	super.onStart();
-    	Intent intent = new Intent(this, SocketService.class);
-    	bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     	
+    	if(getResources().getBoolean(R.bool.enable_web_rtc)){
+    		Intent intent = new Intent(this, SocketService.class);
+        	bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    	}
+
     	intentFilterSocket = new IntentFilter(Const.SOCKET_ACTION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
     };

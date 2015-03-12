@@ -132,39 +132,41 @@ public class PeopleAdapter extends BaseAdapter {
 
 		holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());
 		
-		convertView.setOnTouchListener(new OnSwipeTouchListener(mContext){
+		if(mContext.getResources().getBoolean(R.bool.enable_web_rtc)){
+			convertView.setOnTouchListener(new OnSwipeTouchListener(mContext){
+				
+				@Override
+				public void onSwipeLeft() {
+					if((Integer) holder.controlHolder.getTag() != CLOSE_STATE) return;
+					holder.controlHolder.setTag(ANIMATING_STATE);
+					holder.controlHolder.setVisibility(View.VISIBLE);
+					animateToLeft(holder.dataHolder, holder.controlHolder);
+				}
+				
+				@Override
+				public void onSwipeRight() {
+					if((Integer) holder.controlHolder.getTag() != OPEN_STATE) return;
+					holder.controlHolder.setTag(ANIMATING_STATE);
+					animateToRight(holder.dataHolder, holder.controlHolder);
+				}
+			});
 			
-			@Override
-			public void onSwipeLeft() {
-				if((Integer) holder.controlHolder.getTag() != CLOSE_STATE) return;
-				holder.controlHolder.setTag(ANIMATING_STATE);
-				holder.controlHolder.setVisibility(View.VISIBLE);
-				animateToLeft(holder.dataHolder, holder.controlHolder);
-			}
+			holder.videoCall.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					((BaseActivity)mContext).callUser((User)getItem(position).getModel(), true);
+				}
+			});
 			
-			@Override
-			public void onSwipeRight() {
-				if((Integer) holder.controlHolder.getTag() != OPEN_STATE) return;
-				holder.controlHolder.setTag(ANIMATING_STATE);
-				animateToRight(holder.dataHolder, holder.controlHolder);
-			}
-		});
-		
-		holder.videoCall.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				((BaseActivity)mContext).callUser((User)getItem(position).getModel(), true);
-			}
-		});
-		
-		holder.voiceCall.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				((BaseActivity)mContext).callUser((User)getItem(position).getModel(), false);
-			}
-		});
+			holder.voiceCall.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					((BaseActivity)mContext).callUser((User)getItem(position).getModel(), false);
+				}
+			});
+		}
 		
 		final PeopleFragment frag = ((MainActivity)mContext).getPeopleFragment();
 		final AdapterView<?> adView = (AdapterView<?>) parent;

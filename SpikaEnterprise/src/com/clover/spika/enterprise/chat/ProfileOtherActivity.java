@@ -75,6 +75,10 @@ public class ProfileOtherActivity extends BaseActivity {
 		profileImage = (ImageView) findViewById(R.id.profileImage);
 		profileName = (TextView) findViewById(R.id.profileName);
 		
+		if(!getResources().getBoolean(R.bool.enable_web_rtc)){
+			findViewById(R.id.callControls).setVisibility(View.INVISIBLE);
+		}
+		
 		findViewById(R.id.btnVideoCall).setOnClickListener(new OnClickListener() {
 			
 			@Override

@@ -359,7 +359,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected void setMenuByChatType () {
 		if(!isMenuSetted){
 			isMenuSetted = true;
-			if(chatType != Const.C_PRIVATE){
+			if(chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)){
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount()-1)); // remove call
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount()-1)); // remove divider above call
 				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 344);

@@ -47,6 +47,7 @@ public class SpikaEnterpriseApp extends Application {
 	}
 	
 	public void startSocket(){
+		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
 		if(socketIntent != null) return;
 		if(isMyServiceRunning(SocketService.class)) return;
 		socketIntent = new Intent(this, SocketService.class);
@@ -55,16 +56,19 @@ public class SpikaEnterpriseApp extends Application {
 	}
 	
 	public void stopSocket() {
+		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
 		stopService(new Intent(this, SocketService.class));
 		socketIntent = null;
 	}
 	
 	public void stopSocketWithCon(Context c) {
+		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
 		c.stopService(new Intent(c, SocketService.class));
 		socketIntent = null;
 	}
 	
 	public void restartSocket() {
+		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
 		stopService(new Intent(this, SocketService.class));
 		if(isMyServiceRunning(SocketService.class)){
 			socketIntent = new Intent(this, SocketService.class);
