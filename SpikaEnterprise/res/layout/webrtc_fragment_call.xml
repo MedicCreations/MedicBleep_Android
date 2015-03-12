@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <TextView
         android:id="@+id/encoder_stat_call"
         android:layout_width="wrap_content"
@@ -163,7 +163,7 @@
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
         android:background="@drawable/call_switch_camera" />
-    
+
     <Button
         android:id="@+id/switchScaleType"
         android:layout_width="wrap_content"
@@ -172,5 +172,34 @@
         android:layout_alignParentLeft="true"
         android:layout_margin="10dp"
         android:background="@drawable/change_scale_type_selector" />
+
+    <RelativeLayout
+        android:id="@+id/connectingInfo"
+        android:layout_width="match_parent"
+        android:layout_margin="40dp"
+        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:background="#77000000" >
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"/>
+        
+        <TextView android:id="@+id/tvConnectionStatusInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="15sp"
+            android:text="Connecting"
+            android:textColor="@android:color/white"/>
+        
+    </RelativeLayout>
 
 </RelativeLayout>
