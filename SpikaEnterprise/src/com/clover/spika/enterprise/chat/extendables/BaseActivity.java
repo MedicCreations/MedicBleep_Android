@@ -155,15 +155,15 @@ public class BaseActivity extends SlidingFragmentActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		PasscodeUtility.getInstance().setSessionValid(true);
 		
+		updateTextViewAction("Call ended");
 		if(requestCode == Const.CALL_ACTIVITY_REQUEST){
 			new Handler().postDelayed(new Runnable() {
 				
 				@Override
 				public void run() {
-					updateTextViewAction("Call ended");
 					dissmisCallingPopup();
 				}
-			}, 500);
+			}, 1000);
 			
 		}
 	}
