@@ -35,6 +35,8 @@ public class Stickers implements Serializable{
 	@SerializedName("organization_id")
 	@Expose
 	private int organizationId;
+	
+	private int usedTimes = 0;
 
 	public int getId() {
 		return id;
@@ -78,6 +80,14 @@ public class Stickers implements Serializable{
 
 	public void setOrganizationId(int organizationId) {
 		this.organizationId = organizationId;
+	}
+	
+	public int getUsedTimes() {
+		return usedTimes;
+	}
+
+	public void setUsedTimes(int usedTimes) {
+		this.usedTimes = usedTimes;
 	}
 
 	@Override

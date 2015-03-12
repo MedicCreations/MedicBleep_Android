@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -219,12 +220,12 @@ public class MessagesAdapter extends BaseAdapter {
 				
 				holder.meFlForGif.setVisibility(View.VISIBLE);
 				
-//				holder.meGifView.setVisibility(View.VISIBLE);
 				holder.meWebView.setVisibility(View.VISIBLE);
 				holder.meWebView.getSettings().setAllowFileAccess(true);
 				holder.meWebView.getSettings().setJavaScriptEnabled(true);
 				holder.meWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.meWebView.getSettings().setBuiltInZoomControls(true);
+				holder.meWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
 				
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
@@ -244,27 +245,6 @@ public class MessagesAdapter extends BaseAdapter {
 				});
 				
 				holder.meWebView.setOnLongClickListener(setLongClickListener(msg));
-				
-//				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.meGifView, new OnImageDisplayFinishListener() {
-//					
-//					@Override
-//					public void onFinish() {
-//						setGif(holder.meGifView, (ProgressBar) holder.meFlForGif.getChildAt(0));
-//					}
-//				});
-//				
-//				holder.meGifView.setOnClickListener(new OnClickListener() {
-//					
-//					@Override
-//					public void onClick(View v) {
-//						Intent intent = new Intent(ctx, PhotoActivity.class);
-//						intent.putExtra(Const.IMAGE, msg.getText());
-//						intent.putExtra(Const.TYPE, msg.getType());
-//						ctx.startActivity(intent);
-//						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
-//					}
-//				});
-//				holder.meGifView.setOnLongClickListener(setLongClickListener(msg));
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 				holder.meWatchVideo.setVisibility(View.VISIBLE);
@@ -415,11 +395,11 @@ public class MessagesAdapter extends BaseAdapter {
 				
 				holder.youFlForGif.setVisibility(View.VISIBLE);
 				
-//				holder.youGifView.setVisibility(View.VISIBLE);
 				holder.youWebView.setVisibility(View.VISIBLE);
 				holder.youWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.youWebView.getSettings().setAllowFileAccess(true);
 				holder.youWebView.getSettings().setJavaScriptEnabled(true);
+				holder.youWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 				holder.youWebView.getSettings().setBuiltInZoomControls(true);
 				
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-top:5%; margin-left:5%;\"";
@@ -437,31 +417,6 @@ public class MessagesAdapter extends BaseAdapter {
 						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
 					}
 				});
-				
-//				holder.youFlForGif.setVisibility(View.VISIBLE);
-//				
-//				holder.youGifView.setVisibility(View.VISIBLE);
-//				holder.youMsgLayoutBack.setBackgroundColor(Color.WHITE);
-//				new GifLoader(ctx).displayImage(ctx, msg.getText(), holder.youGifView, new OnImageDisplayFinishListener() {
-//					
-//					@Override
-//					public void onFinish() {
-//						setGif(holder.youGifView, (ProgressBar) holder.youFlForGif.getChildAt(0));
-//					}
-//				});
-//				
-//				holder.youGifView.setOnClickListener(new OnClickListener() {
-//					
-//					@Override
-//					public void onClick(View v) {
-//						Intent intent = new Intent(ctx, PhotoActivity.class);
-//						intent.putExtra(Const.IMAGE, msg.getText());
-//						intent.putExtra(Const.TYPE, msg.getType());
-//						ctx.startActivity(intent);
-//						if(ctx instanceof ChatActivity) ((ChatActivity)ctx).setIsResume(false);
-//					}
-//				});
-				
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 
