@@ -124,9 +124,13 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 		if (position != -1 && position != adapter.getCount()) {
 			GlobalModel user = adapter.getItem(position);
+			
+			User userUser = null;
+			
+			if(user.getType() == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
 			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), ((User) user.getModel()).getImage(),
-					((User) user.getModel()).getFirstName() + " " + ((User) user.getModel()).getLastName());
+					((User) user.getModel()).getFirstName() + " " + ((User) user.getModel()).getLastName(), userUser);
 		}
 	}
 

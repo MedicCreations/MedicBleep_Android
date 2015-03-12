@@ -18,6 +18,7 @@ import java.util.List;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -42,7 +43,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -68,6 +68,7 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -133,6 +134,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
+	protected User currentUser = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -674,8 +676,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected void deleteMessage(final String messageId) {
 		AppDialog deleteDialog = new AppDialog(this, false);
 		deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+
 			@Override
-			public void onPositiveButtonClick(View v) {
+			public void onPositiveButtonClick(View v, Dialog d) {
 				new ChatApi().deleteMessage(messageId, BaseChatActivity.this, new ApiCallback<BaseModel>() {
 					@Override
 					public void onApiResponse(Result<BaseModel> result) {
@@ -713,7 +716,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 				@Override
-				public void onPositiveButtonClick(View v) {
+				public void onPositiveButtonClick(View v, Dialog d) {
 					Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
 					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 					intent.putExtra(Const.FROM_WAll, true);
@@ -729,7 +732,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 				@Override
-				public void onNegativeButtonClick(View v) {
+				public void onNegativeButtonClick(View v, Dialog d) {
 					Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 					intent.putExtra(Const.FROM_WAll, true);
@@ -739,6 +742,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 					startActivity(intent);
 					dialog.dismiss();
 				}
+
 			});
 
 			dialog.show();
@@ -790,8 +794,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 					final AppDialog cropImageConfirmationDialog = new AppDialog(BaseChatActivity.this, false);
 					cropImageConfirmationDialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
 					cropImageConfirmationDialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+
 						@Override
-						public void onPositiveButtonClick(View v) {
+						public void onPositiveButtonClick(View v, Dialog d) {
 							openCameraCropActivity();
 							cropImageConfirmationDialog.dismiss();
 						}
@@ -799,7 +804,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 					cropImageConfirmationDialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 						@Override
-						public void onNegativeButtonClick(View v) {
+						public void onNegativeButtonClick(View v, Dialog d) {
 							openCameraFullSizeActivity();
 							cropImageConfirmationDialog.dismiss();
 						}
@@ -859,9 +864,19 @@ public abstract class BaseChatActivity extends BaseActivity {
 				onEditorSendEvent(etMessage.getText().toString());
 			} else if (id == R.id.voiceCall) {
 				//make call
-				Toast.makeText(BaseChatActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
+				rlDrawerNewManage();
+				callUser(currentUser, false);
 			}
 		}
+	};
+	
+	@Override
+	protected void openRecordActivity(User user) {
+		Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
+		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		startActivity(intent);
 	};
 
 	protected void kill() {
@@ -909,7 +924,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 				if (position == SETTINGS_POSITION_FIRST) {
 					if (chatType == Const.C_PRIVATE) {
-						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
+						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName, currentUser);
 					} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 					} else {

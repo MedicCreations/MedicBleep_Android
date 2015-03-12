@@ -2,6 +2,7 @@ package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,6 +38,7 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -122,6 +124,12 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		});
 		
+		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, false);
+		}
+		
+		setActiveClass(ChatActivity.class.getName());
+		
 	}
 	
 	public void setIsResume(boolean isResume){
@@ -199,18 +207,13 @@ public class ChatActivity extends BaseChatActivity {
 	};
 
 	protected void kill() {
+		
+		finish();
 
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(intent);
 
-		new Handler().postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				finish();
-			}
-		}, 500);
 	}
 
 	@Override
@@ -237,6 +240,10 @@ public class ChatActivity extends BaseChatActivity {
 				getIntentData(intent);
 			}
 		}
+		
+		if (intent.getBooleanExtra(Const.IS_CALL_ACTIVE, false)) {
+			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, true);
+		}
 	}
 
 	/**
@@ -246,11 +253,12 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param chatId
 	 * @param password
 	 */
-	public static void startWithChatId(Context context, String chatId, String password) {
+	public static void startWithChatId(Context context, String chatId, String password, User user) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.PASSWORD, password);
+		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
@@ -264,17 +272,31 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param firstname
 	 * @param lastname
 	 */
-	public static void startWithUserId(Context context, String userId, boolean isGroup, String firstname, String lastname) {
+	public static void startWithUserId(Context context, String userId, boolean isGroup, String firstname, String lastname, User user) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.USER_ID, userId);
 		intent.putExtra(Const.FIRSTNAME, firstname);
+		intent.putExtra(Const.USER, user);
 		intent.putExtra(Const.LASTNAME, lastname);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		if (isGroup) {
 			intent.putExtra(Const.IS_GROUP, true);
 		}
+
+		context.startActivity(intent);
+	}
+	
+	public static void startWithUserIdWithLeaveMessage(Context context, User user) {
+
+		Intent intent = new Intent(context, ChatActivity.class);
+		intent.putExtra(Const.USER_ID, String.valueOf(user.getId()));
+		intent.putExtra(Const.FIRSTNAME, user.getFirstName());
+		intent.putExtra(Const.USER, user);
+		intent.putExtra(Const.LASTNAME, user.getLastName());
+		intent.putExtra(Const.TO_LEAVE_MESSAGE, user.getLastName());
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
 	}
@@ -301,12 +323,13 @@ public class ChatActivity extends BaseChatActivity {
 	 * @param newImage
 	 * @param newThumbImage
 	 */
-	public static void startUpdateImage(Context context, String newImage, String newThumbImage) {
+	public static void startUpdateImage(Context context, String newImage, String newThumbImage, User user) {
 
 		Intent intentFinal = new Intent(context, ChatActivity.class);
 		intentFinal.putExtra(Const.IMAGE, newImage);
 		intentFinal.putExtra(Const.IMAGE_THUMB, newThumbImage);
 		intentFinal.putExtra(Const.UPDATE_PICTURE, true);
+		intentFinal.putExtra(Const.USER, user);
 		intentFinal.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intentFinal);
 	}
@@ -328,7 +351,7 @@ public class ChatActivity extends BaseChatActivity {
 								public void onApiResponse(Result<Login> result) {
 									if (result.isSuccess()) {
 
-										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result
+										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getImageThumb(), result
 												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
 
 										new GoogleUtils().getPushToken(ChatActivity.this, result.getResultData().getToken());
@@ -380,7 +403,7 @@ public class ChatActivity extends BaseChatActivity {
 		}
 	}
 
-	private void handleIntentSecondLevel(Intent intent) {
+	private void handleIntentSecondLevel(final Intent intent) {
 		
 		isOnCreate = false;
 		
@@ -407,7 +430,7 @@ public class ChatActivity extends BaseChatActivity {
 					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 						@Override
-						public void onPositiveButtonClick(View v) {
+						public void onPositiveButtonClick(View v, Dialog d) {
 							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
 							getMessages(true, true, true, false, false, false);
 						}
@@ -415,7 +438,7 @@ public class ChatActivity extends BaseChatActivity {
 					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 						@Override
-						public void onNegativeButtonClick(View v) {
+						public void onNegativeButtonClick(View v, Dialog d) {
 							finish();
 						}
 					});
@@ -445,6 +468,9 @@ public class ChatActivity extends BaseChatActivity {
 							if (result.isSuccess()) {
 
 								chatParams(result.getResultData().getChat());
+								
+								if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
+								if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
 
 								chatId = String.valueOf(result.getResultData().getId());
 								chatName = result.getResultData().getChat_name();
@@ -459,6 +485,8 @@ public class ChatActivity extends BaseChatActivity {
 								if (adapter.getCount() > 0) {
 									chatListView.setSelectionFromTop(adapter.getCount(), 0);
 								}
+								
+								checkForLeaveVoiceMessage(intent);
 							} else {
 								AppDialog dialog = new AppDialog(ChatActivity.this, false);
 
@@ -472,6 +500,12 @@ public class ChatActivity extends BaseChatActivity {
 							setNoItemsVisibility();
 						}
 					});
+		}
+	}
+
+	protected void checkForLeaveVoiceMessage(Intent intent) {
+		if(intent.hasExtra(Const.TO_LEAVE_MESSAGE)){
+			if(currentUser != null) openRecordActivity(currentUser);
 		}
 	}
 
@@ -646,6 +680,9 @@ public class ChatActivity extends BaseChatActivity {
 				if (result.isSuccess()) {
 					
 					Chat chat = result.getResultData();
+					
+					if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
+					if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
 
 					chatParams(chat.getChat());
 					
@@ -761,7 +798,7 @@ public class ChatActivity extends BaseChatActivity {
 		dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 			@Override
-			public void onPositiveButtonClick(View v) {
+			public void onPositiveButtonClick(View v, Dialog d) {
 				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
 
 					@Override
@@ -782,7 +819,7 @@ public class ChatActivity extends BaseChatActivity {
 		dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 			@Override
-			public void onNegativeButtonClick(View v) {
+			public void onNegativeButtonClick(View v, Dialog d) {
 				dialog.dismiss();
 			}
 		});

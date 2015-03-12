@@ -115,7 +115,7 @@ public class PushHandle {
 	}
 	
 	
-	private static boolean isActivePCG(ActivityManager am) {
+	public static boolean isActivePCG(ActivityManager am) {
 		final Set<String> activePackages = new HashSet<String>();
 		final List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
 		for (ActivityManager.RunningAppProcessInfo processInfo : processInfos) {

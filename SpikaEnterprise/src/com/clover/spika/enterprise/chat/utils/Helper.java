@@ -1,5 +1,24 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -33,25 +52,7 @@ import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.clover.spika.enterprise.chat.models.User;
 
 public class Helper {
 
@@ -234,10 +235,11 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(Context ctx, String userId, String userImageName, String firstName, String lastName, String token) {
+	public static void setUserProperties(Context ctx, String userId, String userImageName, String userThumbImage, String firstName, String lastName, String token) {
 		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
 		pref.setCustomString(Const.USER_ID, userId);
 		pref.setCustomString(Const.USER_IMAGE_NAME, userImageName);
+		pref.setCustomString(Const.USER_THUMB_IMAGE_NAME, userThumbImage);
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
 		pref.setCustomString(Const.TOKEN, token);
@@ -258,6 +260,10 @@ public class Helper {
 	public static String getUserImage(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_IMAGE_NAME);
 	}
+	
+	public static String getUserThumbImage(Context ctx) {
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_THUMB_IMAGE_NAME);
+	}
 
 	public static String getUserId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
@@ -277,6 +283,14 @@ public class Helper {
 
 	public static String getRoomThumbId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_THUMB_ID);
+	}
+	
+	public static User getUser(Context ctx){
+		try {
+			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false, null);
+		} catch (Exception e) {
+			return new User(-1, "", "", "", "", "", false, null, false, null);
+		}
 	}
 
 	/**
@@ -528,6 +542,7 @@ public class Helper {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		SpikaEnterpriseApp.getInstance().stopSocket();
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}

@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
@@ -94,7 +95,11 @@
         </receiver>
 
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />
-
+        
+        <service android:name="com.clover.spika.enterprise.chat.webrtc.socket.SocketService" />
+        
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
+        
         <activity
             android:name="com.clover.spika.enterprise.chat.LocationActivity"
             android:screenOrientation="portrait" />
@@ -187,8 +192,6 @@
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
-
         <activity
             android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
             android:screenOrientation="portrait" />
@@ -230,6 +233,17 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ShowProfileActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.webrtc.CallActivity"
+            android:screenOrientation="portrait" />
+        
+        <!-- Change connectivity receiver -->
+        <receiver android:name="com.clover.spika.enterprise.chat.webrtc.socket.ConnectToInternetReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

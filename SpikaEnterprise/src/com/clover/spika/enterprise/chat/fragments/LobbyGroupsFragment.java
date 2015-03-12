@@ -132,7 +132,7 @@ public class LobbyGroupsFragment extends CustomFragment implements OnItemClickLi
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword());
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.getPassword(), user.getUser());
 		}
 	}
 

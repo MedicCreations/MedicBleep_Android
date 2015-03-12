@@ -34,7 +34,7 @@ public class Const {
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
 
-	// Change this in production to false
+	// Change this in production to falsename
 	public static final boolean IS_DEBUG = true;
 
 	public static final boolean DEBUG_CRYPTO = false;
@@ -111,6 +111,7 @@ public class Const {
 	public static final String MSG_TYPE = "type";
 	public static final String TOTAL_COUNT = "total_count";
 	public static final String USER_IMAGE_NAME = "user_image_name";
+	public static final String USER_THUMB_IMAGE_NAME = "user_thumb_image_name";
 	public static final String IS_GROUP = "isGroup";
 	public static final String PUSH_TOKEN = "push_token";
 	public static final String ROOM_FILE_ID = "room_file_id";
@@ -286,6 +287,45 @@ public class Const {
 	public static final String FROM_CHAT = "from_chat";
 	public static final String POSITION = "position";
 	public static final String STICEKRS_HOLDER = "stickersHolder";
+	
+	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
+	public static final String SESSION_ID = "SessionId";
+	public static final String AVAILABLE_TYPE = "AvailableType";
+	public static final int ACTION_IDLE = 0;
+	public static final int ACTION_CHECK = 1;
+	public static final int ACTION_CALL = 2;
+	public static final int ACTION_CALL_CANCEL = 3;
+	public static final int ACTION_CALL_DECLINE = 4;
+	public static final int ACTION_CALL_RINGING = 5;
+	public static final int ACTION_CALL_ACCEPT = 6;
+	public static final int ACTION_LEAVE_MY_ROOM = 7;
+	public static final int ACTION_JOIN_OTHER_ROOM = 8;
+	public static final int ACTION_WAIT_FOR_CANDIDATE = 9;
+	public static final int ACTION_CALL_END = 10;
+	public static final int ACTION_LEAVE_OTHER_ROOM = 11;
+	public static final String USER_AVAILABLE = "UserAvailable";
+	public static final String USER_BUSY = "USerBusy";
+	public static final String USER_NOT_CONNECTED = "UserNotConnected";
+	public static final String TYPE_OF_SOCKET_RECEIVER = "TypeOfSocketReceiver";
+	public static final int CHECK_USER_AVAILABLE = 1;
+	public static final int CALL_USER = 2;
+	public static final int CALL_ENDED = 3;
+	public static final int CALL_RECEIVE = 4;
+	public static final int CALL_ANSWER = 5;
+	public static final int CALL_CONNECT = 6;
+	public static final int CALL_ACCEPTED = 7;
+	public static final int CALL_RINGING = 8;
+	public static final int CALL_CANCELED = 9;
+	public static final int WEB_SOCKET_OPENED = 10;
+	public static final String CANDIDATE = "Candidate";
+	public static final String IS_VIDEO_ACCEPT = "VideoAccept";
+	public static final String TO_LEAVE_MESSAGE = "toLeaveMessage";
+	
+	public static final int TIMEOUT_FOR_CALL = 30000;
+	public static final int CALL_ACTIVITY_REQUEST = 99;
+	public static final String IS_APLICATION_OPEN = "IsAppOpened";
+	public static final String IS_CALL_ACTIVE = "IsCAllACtive";
+	public static final String ACTIVE_CLASS = "ClassActive";
 	
 	public static final class SoundControl{
 		public static final int PLAY_BUTTON = 0;

@@ -115,7 +115,7 @@ public class AppDialog extends Dialog {
 
 					if (!TextUtils.isEmpty(hashPassword) && hashPassword.equals(password)) {
 						if (mOnPositiveButtonClick != null) {
-							mOnPositiveButtonClick.onPositiveButtonClick(v);
+							mOnPositiveButtonClick.onPositiveButtonClick(v, AppDialog.this);
 						}
 					} else {
 						infoText.setText(getOwnerActivity().getString(R.string.password_error));
@@ -123,7 +123,7 @@ public class AppDialog extends Dialog {
 					}
 				} else {
 					if (mOnPositiveButtonClick != null) {
-						mOnPositiveButtonClick.onPositiveButtonClick(v);
+						mOnPositiveButtonClick.onPositiveButtonClick(v, AppDialog.this);
 					}
 					dismiss();
 				}
@@ -138,7 +138,7 @@ public class AppDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				if (mOnNegativeButtonClick != null) {
-					mOnNegativeButtonClick.onNegativeButtonClick(v);
+					mOnNegativeButtonClick.onNegativeButtonClick(v, AppDialog.this);
 				}
 				dismiss();
 			}
@@ -204,7 +204,7 @@ public class AppDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				if (mOnPositiveButtonClick != null) {
-					mOnPositiveButtonClick.onPositiveButtonClick(v);
+					mOnPositiveButtonClick.onPositiveButtonClick(v, AppDialog.this);
 				}
 				dismiss();
 			}
@@ -218,7 +218,7 @@ public class AppDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				if (mOnNegativeButtonClick != null) {
-					mOnNegativeButtonClick.onNegativeButtonClick(v);
+					mOnNegativeButtonClick.onNegativeButtonClick(v, AppDialog.this);
 				}
 				dismiss();
 			}
@@ -560,11 +560,11 @@ public class AppDialog extends Dialog {
 	}
 
 	public interface OnPositiveButtonClickListener {
-		void onPositiveButtonClick(View v);
+		void onPositiveButtonClick(View v, Dialog d);
 	}
 
 	public interface OnNegativeButtonCLickListener {
-		void onNegativeButtonClick(View v);
+		void onNegativeButtonClick(View v, Dialog d);
 	}
 
 	public interface OnDismissDialogListener {

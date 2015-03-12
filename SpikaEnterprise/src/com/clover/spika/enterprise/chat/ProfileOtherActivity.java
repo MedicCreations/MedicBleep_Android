@@ -5,20 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
-import com.clover.spika.enterprise.chat.models.Result;
-import com.clover.spika.enterprise.chat.models.UserWrapper;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.views.DetailsView;
 
 public class ProfileOtherActivity extends BaseActivity {
 
@@ -30,20 +24,23 @@ public class ProfileOtherActivity extends BaseActivity {
 	private String mUserFirstName = "";
 	private String mUserLastName = "";
 	private String mUserId;
+	
+	private User activeUser = null;
 
-	public static void openOtherProfile(Context context, int userId, String imageFileId, String chatName) {
+	public static void openOtherProfile(Context context, int userId, String imageFileId, String chatName, User user) {
 
 		Intent intent = new Intent(context, ProfileOtherActivity.class);
 
 		intent.putExtra(Const.IMAGE, imageFileId);
 		intent.putExtra(Const.CHAT_NAME, chatName);
 		intent.putExtra(Const.USER_ID, String.valueOf(userId));
+		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
 	}
 	
-	public static void openOtherProfileFromList(Context context, int userId, String imageFileId, String chatName, String firstName, String lastName) {
+	public static void openOtherProfileFromList(Context context, int userId, String imageFileId, String chatName, String firstName, String lastName, User user) {
 
 		Intent intent = new Intent(context, ProfileOtherActivity.class);
 
@@ -52,6 +49,7 @@ public class ProfileOtherActivity extends BaseActivity {
 		intent.putExtra(Const.FIRSTNAME, firstName);
 		intent.putExtra(Const.LASTNAME, lastName);
 		intent.putExtra(Const.USER_ID, String.valueOf(userId));
+		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 		context.startActivity(intent);
@@ -81,7 +79,7 @@ public class ProfileOtherActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(ProfileOtherActivity.this, "VIDEO CALL IS NOT IMPLEMENTED YES", 2000).show();
+				if(activeUser != null) showCallingPopup(activeUser, null, false, true);
 			}
 		});
 		
@@ -89,7 +87,7 @@ public class ProfileOtherActivity extends BaseActivity {
 			
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(ProfileOtherActivity.this, "VOICE CALL IS NOT IMPLEMENTED YET", 2000).show();
+				if(activeUser != null) showCallingPopup(activeUser, null, false, false);
 			}
 		});
 		
@@ -113,6 +111,7 @@ public class ProfileOtherActivity extends BaseActivity {
 			mUserId = getIntent().getExtras().getString(Const.USER_ID);
 			mUserFirstName = getIntent().getExtras().getString(Const.FIRSTNAME);
 			mUserLastName = getIntent().getExtras().getString(Const.LASTNAME);
+			activeUser = (User) getIntent().getSerializableExtra(Const.USER);
 			
 			final String imageId = intent.getExtras().getString(Const.IMAGE);
 			final String chatName = getIntent().getExtras().getString(Const.CHAT_NAME);

@@ -255,7 +255,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	@Override
 	public void finish() {
 		if (fromChatAct && updateImage && !TextUtils.isEmpty(newImage)) {
-			ChatActivity.startUpdateImage(this, newImage, newThumbImage);
+			ChatActivity.startUpdateImage(this, newImage, newThumbImage, null);
 		}
 
 		super.finish();

@@ -1,27 +1,37 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.fragments.HomeFragment;
+import com.clover.spika.enterprise.chat.fragments.PeopleFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -121,6 +131,65 @@ public class MainActivity extends BaseActivity {
 				closeSearchAnimation(searchBtn, sidebarBtn, closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
 			}
 		});
+		
+		if(getIntent().getBooleanExtra(Const.IS_CALL_ACTIVE, false)){
+			TextView view = new TextView(this);
+			view.setBackgroundColor(getResources().getColor(R.color.green_in_people_row));
+			view.setText(getString(R.string.touch_to_return_to_call));
+			view.setTextColor(Color.WHITE);
+			view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+			view.setGravity(Gravity.CENTER);
+			((ViewGroup) findViewById(R.id.baseLayout)).addView(view);
+			view.getLayoutParams().height = (int) getResources().getDimension(R.dimen.menu_height);
+			view.getLayoutParams().width = android.widget.RelativeLayout.LayoutParams.MATCH_PARENT;
+			view.setId(1);
+			
+			((android.widget.RelativeLayout.LayoutParams)findViewById(R.id.actionBarLayout).getLayoutParams()).addRule(RelativeLayout.BELOW, view.getId());
+			
+			view.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					finish();
+				}
+			});
+		}
+		
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		//if activity is in background and receive call offer
+		if(intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)){
+			if(intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_RECEIVE){
+				User user = (User) intent.getSerializableExtra(Const.USER);
+				String sessionId = intent.getStringExtra(Const.SESSION_ID);
+				mService.callRinging(sessionId);
+				showCallingPopup(user, sessionId, true, false);
+			}
+		}else if(intent.getBooleanExtra(Const.IS_CALL_ACTIVE, false)){
+			setViewWhenCallIsInBackground(R.id.baseLayout, R.id.actionBarLayout, true);
+		}
+	}
+	
+	@Override
+	protected void onServiceBaseConnected() {
+		//if activity is killed and receive call offer
+		if(getIntent().hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)){
+			if(getIntent().getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_RECEIVE){
+				User user = (User) getIntent().getSerializableExtra(Const.USER);
+				String sessionId = getIntent().getStringExtra(Const.SESSION_ID);
+				mService.callRinging(sessionId);
+				showCallingPopup(user, sessionId, true, false);
+				getIntent().removeExtra(Const.TYPE_OF_SOCKET_RECEIVER);
+			}
+		}
+	}
+	
+	@Override
+	protected void openRecordActivity(User user) {
+		if(user != null) ChatActivity.startWithUserIdWithLeaveMessage(this, user);
 	}
 
 	public void setScreenTitle(String title) {
@@ -146,6 +215,12 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+			if(viewForReturnToCall == null) setViewWhenCallIsInBackground(R.id.baseLayout, R.id.actionBarLayout, false);
+		}else{
+			if(viewForReturnToCall != null) ((ViewGroup) findViewById(R.id.baseLayout)).removeView(viewForReturnToCall);
+		}
 
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
@@ -299,4 +374,12 @@ public class MainActivity extends BaseActivity {
 			((HomeFragment) mFragment).handlePushNotificationInFragment(chatId);
 		}
 	}
+	
+	public PeopleFragment getPeopleFragment(){
+		if(mFragment instanceof HomeFragment){
+			return ((HomeFragment) mFragment).getPeopleFragment();
+		}
+		return null;
+	}
+	
 }

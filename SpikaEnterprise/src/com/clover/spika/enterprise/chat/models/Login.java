@@ -20,6 +20,10 @@ public class Login extends BaseModel {
     @Expose
     private String image;
     
+    @SerializedName("image_thumb")
+    @Expose
+    private String imageThumb;
+    
     @SerializedName("firstname")
     @Expose
     private String firstname;
@@ -80,6 +84,14 @@ public class Login extends BaseModel {
 		this.organizations = organizations;
 	}
 	
+	public String getImageThumb() {
+		return imageThumb;
+	}
+
+	public void setImageThumb(String imageThumb) {
+		this.imageThumb = imageThumb;
+	}
+
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
