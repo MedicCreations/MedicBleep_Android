@@ -135,6 +135,8 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
 	protected User currentUser = null;
+	
+	private boolean toAutoScrollChat = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -258,7 +260,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 				int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
 
 				if (heightDiff > 200) {
+					if(!toAutoScrollChat) return;
+					toAutoScrollChat = false;
 					chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
+				}else{
+					toAutoScrollChat = true;
 				}
 			}
 		});
