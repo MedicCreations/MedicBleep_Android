@@ -1,6 +1,6 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
@@ -12,7 +12,7 @@ import com.clover.spika.enterprise.chat.R;
  * Shows a dialog while loading something, the three dots are animated
  * 
  */
-public class AppProgressDialog extends AlertDialog {
+public class AppProgressDialog extends Dialog {
 
 	TextView dot1;
 	TextView dot2;

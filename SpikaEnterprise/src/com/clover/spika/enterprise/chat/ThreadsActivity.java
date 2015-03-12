@@ -134,7 +134,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
     @Override
     protected void onEditorSendEvent(final String text) {
-//    	hideKeyboard(etMessage);
 		new Handler().post(new Runnable() {
 			
 			@Override

@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat;
 import java.util.ArrayList;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,7 +29,6 @@ import com.clover.spika.enterprise.chat.api.LoginApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -755,7 +753,6 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void onEditorSendEvent(final String text) {
-//		hideKeyboard(etMessage);
 		new Handler().post(new Runnable() {
 			
 			@Override
