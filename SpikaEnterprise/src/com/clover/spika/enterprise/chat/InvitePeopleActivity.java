@@ -224,7 +224,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		if (position != -1 && position != adapter.getCount()) {
 			User user = (User) adapter.getItem(position).getModel();
-			ProfileOtherActivity.openOtherProfile(this, user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName());
+			ProfileOtherActivity.openOtherProfile(this, user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user);
 		}
 	}
 
@@ -331,7 +331,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			public void onApiResponse(Result<Chat> result) {
 				if (result.isSuccess()) {
 
-					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getResultData().getId()), result.getResultData().password);
+					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getResultData().getId()), result.getResultData().password, result.getResultData().user);
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);

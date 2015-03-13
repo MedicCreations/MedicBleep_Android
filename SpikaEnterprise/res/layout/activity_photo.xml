@@ -43,6 +43,17 @@
             android:padding="20dp"
             android:src="@drawable/btn_back"
             android:visibility="invisible" />
+        
+        <ImageButton
+            android:id="@+id/sharePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/button_share"
+            android:visibility="invisible" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -58,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/default_blue_light" />
-
+        
         <ProgressBar
             android:id="@+id/pbLoading"
             android:layout_width="wrap_content"

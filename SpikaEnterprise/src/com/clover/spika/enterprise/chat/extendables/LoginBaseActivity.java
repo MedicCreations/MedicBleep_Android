@@ -173,16 +173,18 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.firstname, result.lastname, result.getToken());
+					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
 
 					new GoogleUtils().getPushToken(LoginBaseActivity.this);
 
-					Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
+					final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
 					if (extras != null) {
 						intent.putExtras(extras);
 					}
-
+					
+					SpikaEnterpriseApp.startSocket();
+					
 					startActivity(intent);
 					finish();
 

@@ -1,5 +1,24 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -33,25 +52,7 @@ import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.clover.spika.enterprise.chat.models.User;
 
 public class Helper {
 
@@ -234,10 +235,11 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(Context ctx, String userId, String userImageName, String firstName, String lastName, String token) {
+	public static void setUserProperties(Context ctx, String userId, String userImageName, String userThumbImage, String firstName, String lastName, String token) {
 		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
 		pref.setCustomString(Const.USER_ID, userId);
 		pref.setCustomString(Const.USER_IMAGE_NAME, userImageName);
+		pref.setCustomString(Const.USER_THUMB_IMAGE_NAME, userThumbImage);
 		pref.setCustomString(Const.FIRSTNAME, firstName);
 		pref.setCustomString(Const.LASTNAME, lastName);
 		pref.setUserTokenId(token);
@@ -259,6 +261,10 @@ public class Helper {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_IMAGE_NAME);
 	}
 
+	public static String getUserThumbImage(Context ctx) {
+		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_THUMB_IMAGE_NAME);
+	}
+
 	public static String getUserId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
 	}
@@ -277,6 +283,15 @@ public class Helper {
 
 	public static String getRoomThumbId(Context ctx) {
 		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_THUMB_ID);
+	}
+
+	public static User getUser(Context ctx) {
+		try {
+			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false,
+					null);
+		} catch (Exception e) {
+			return new User(-1, "", "", "", "", "", false, null, false, null);
+		}
 	}
 
 	/**
@@ -528,65 +543,66 @@ public class Helper {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
 		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		SpikaEnterpriseApp.stopSocket();
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}
-	
-	public static void saveMap(Context ctx, Map<String,String> inputMap){
+
+	public static void saveMap(Context ctx, Map<String, String> inputMap) {
 		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
-        if (pref != null){
-            JSONObject jsonObject = new JSONObject(inputMap);
-            String jsonString = jsonObject.toString();
-            String userId = pref.getCustomString(Const.USER_ID);
-            pref.setCustomString(userId, jsonString);
-        }
-    }
-	
-	public static Map<String,String> loadMap(Context ctx){
-		
-        Map<String, String> outputMap = new HashMap<String,String>();
-        Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
-        String userId = pref.getCustomString(Const.USER_ID);
-        try{
-            if (pref != null){       
-                String jsonString = pref.getCustomString(userId);
-                if (!jsonString.equals("")){
-                	JSONObject jsonObject = new JSONObject(jsonString);
-                    Iterator<String> keysItr = jsonObject.keys();
-                    while(keysItr.hasNext()) {
-                        String key = keysItr.next();
-                        String value = (String) jsonObject.get(key);
-                        outputMap.put(key, value);
-                    }
-                }
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return outputMap;
-    }
-	
-	public static String getStoredChatPassword(Context ctx, String chatId){
-		
+		if (pref != null) {
+			JSONObject jsonObject = new JSONObject(inputMap);
+			String jsonString = jsonObject.toString();
+			String userId = pref.getCustomString(Const.USER_ID);
+			pref.setCustomString(userId, jsonString);
+		}
+	}
+
+	public static Map<String, String> loadMap(Context ctx) {
+
+		Map<String, String> outputMap = new HashMap<String, String>();
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+		String userId = pref.getCustomString(Const.USER_ID);
+		try {
+			if (pref != null) {
+				String jsonString = pref.getCustomString(userId);
+				if (!jsonString.equals("")) {
+					JSONObject jsonObject = new JSONObject(jsonString);
+					Iterator<String> keysItr = jsonObject.keys();
+					while (keysItr.hasNext()) {
+						String key = keysItr.next();
+						String value = (String) jsonObject.get(key);
+						outputMap.put(key, value);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return outputMap;
+	}
+
+	public static String getStoredChatPassword(Context ctx, String chatId) {
+
 		String password = "";
 		Map<String, String> chatPasswords = loadMap(ctx);
 		password = chatPasswords.get(chatId);
 		Logger.d("ovo je pass: " + password);
 		return password;
-		
+
 	}
-	
-	public static void storeChatPassword(Context ctx, String chatPassword, String chatId){
-		
+
+	public static void storeChatPassword(Context ctx, String chatPassword, String chatId) {
+
 		Map<String, String> chatPasswords = loadMap(ctx);
-		if (chatPasswords.containsKey(chatId)){
+		if (chatPasswords.containsKey(chatId)) {
 			chatPasswords.remove(chatId);
-		} 
+		}
 		chatPasswords.put(chatId, chatPassword);
 		saveMap(ctx, chatPasswords);
-		
+
 	}
-	
+
 	public static ArrayList<String> getAllShownImagesPath(Activity activity) {
 		Uri uri;
 		Cursor cursor;
@@ -601,13 +617,13 @@ public class Helper {
 
 		column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
 		column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-		while (cursor.moveToNext()) {
+		cursor.moveToLast();
+		while (cursor.moveToPrevious()) {
 			absolutePathOfImage = cursor.getString(column_index_data);
 
 			listOfAllImages.add(absolutePathOfImage);
 		}
 		return listOfAllImages;
 	}
-	
 
 }

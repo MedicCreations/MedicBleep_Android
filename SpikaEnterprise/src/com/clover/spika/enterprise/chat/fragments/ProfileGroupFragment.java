@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -169,11 +170,10 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 					@Override
-					public void onPositiveButtonClick(View v) {
+					public void onPositiveButtonClick(View v, Dialog d) {
 						RelativeLayout parent = (RelativeLayout) v.getParent().getParent();
 						String newPassword = ((RobotoThinEditText) parent.findViewById(R.id.etDialogPassword)).getText().toString();
 						tvPassword.setText(newPassword);
-
 					}
 				});
 			} else {
@@ -181,16 +181,15 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 				dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 					@Override
-					public void onPositiveButtonClick(View v) {
+					public void onPositiveButtonClick(View v, Dialog d) {
 						dialog.setPasswordInput(getString(R.string.new_password), getString(R.string.ok), getString(R.string.cancel_big), null);
 						dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 							@Override
-							public void onPositiveButtonClick(View v) {
+							public void onPositiveButtonClick(View v, Dialog d) {
 								RelativeLayout parent = (RelativeLayout) v.getParent().getParent();
 								String newPassword = ((RobotoThinEditText) parent.findViewById(R.id.etDialogPassword)).getText().toString();
 								tvPassword.setText(newPassword);
-
 							}
 						});
 					}

@@ -16,14 +16,14 @@ import org.apache.http.util.TextUtils;
 
 import android.content.Context;
 import android.os.Handler;
-import android.widget.ImageView;
+import android.webkit.WebView;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class GifLoader {
 
@@ -48,7 +48,7 @@ public class GifLoader {
 	FileCache fileCache;
 
 	// Create Map (collection) to store image and image url in key value pair
-	private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private Map<WebView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<WebView, String>());
 	ExecutorService executorService;
 
 	// handler to display images in UI thread
@@ -60,65 +60,55 @@ public class GifLoader {
 	public GifLoader(Context context) {
 
 		fileCache = new FileCache(context);
-		gifCache = GifCache.getInstance();
 
 		// Creates a thread pool that reuses a fixed number of
 		// threads operating off a shared unbounded queue.
 		executorService = Executors.newFixedThreadPool(5);
 	}
-	
-//	public GifLoader(Context context, GifCache cache) {
-//
-//		fileCache = new FileCache(context);
-//		gifCache = cache;
-//
-//		// Creates a thread pool that reuses a fixed number of
-//		// threads operating off a shared unbounded queue.
-//		executorService = Executors.newFixedThreadPool(5);
-//	}
 
-	public void displayImage(Context ctx, String url, ImageView imageView) {
+	public void displayImage(Context ctx, String url, WebView webView, String style) {
 
-		displayImage(ctx, url, imageView, null);
+		displayImage(ctx, url, webView, style, null);
 	}
 
-	public void displayImage(Context ctx, String url, ImageView imageView, OnImageDisplayFinishListener lis) {
+	public void displayImage(Context ctx, String url, WebView webView, String style, OnImageDisplayFinishListener lis) {
 		
 		mListener = lis;
 
 		if (TextUtils.isEmpty(url) || url.equals(Const.DEFAULT_IMAGE_GROUP) || url.equals(Const.DEFAULT_IMAGE_USER)) {
-			imageView.setImageResource(defaultImageId);
+			webView.loadUrl(null);// web view default //TODO
 			if (mListener != null)
 				mListener.onFinish();
 			return;
 		}
 		// Store image and url in Map
-		imageViews.put(imageView, url);
+		imageViews.put(webView, url);
 
 		// Check image is stored in MemoryCache Map or not (see
 		// MemoryCache.java)
-		GifAnimationDrawable file = gifCache.get(url);
+		File file = gifCache.get(url);
 
 		if (file != null) {
 			// if image is stored in MemoryCache Map then
 			// Show image in listview row
-			imageView.setTag(file);
+			webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath(), style), "text/html","utf-8", ""); //set WEB view //TODO
+			webView.setTag(file.getAbsolutePath());
 			if (mListener != null)
 				mListener.onFinish();
 		} else {
 			// queue Photo to download from url
-			queuePhoto(ctx, url, imageView);
+			queuePhoto(ctx, url, webView, style);
 
 			// Before downloading image show default image
 			if (defaultImageId != -1) {
-				imageView.setImageResource(defaultImageId);
+				webView.loadUrl(null);// web view default //TODO
 			}
 		}
 	}
 
-	private void queuePhoto(Context ctx, String url, ImageView imageView) {
+	private void queuePhoto(Context ctx, String url, WebView webView, String style) {
 		// Store image and url in PhotoToLoad object
-		PhotoToLoad p = new PhotoToLoad(url, imageView);
+		PhotoToLoad p = new PhotoToLoad(url, webView, style);
 
 		// pass PhotoToLoad object to PhotosLoader runnable class
 		// and submit PhotosLoader runnable to executers to run runnable
@@ -130,11 +120,13 @@ public class GifLoader {
 	// Task for the queue
 	private class PhotoToLoad {
 		public String url;
-		public ImageView imageView;
+		public WebView webView;
+		public String style;
 
-		public PhotoToLoad(String url, ImageView imageView) {
+		public PhotoToLoad(String url, WebView webView, String style) {
 			this.url = url;
-			this.imageView = imageView;
+			this.webView = webView;
+			this.style = style;
 		}
 	}
 
@@ -156,7 +148,7 @@ public class GifLoader {
 					return;
 
 				// download image from web url
-				GifAnimationDrawable file = getFile(context, photoToLoad.url);
+				File file = getFile(context, photoToLoad.url);
 
 				// set image data in Memory Cache
 				gifCache.put(photoToLoad.url, file);
@@ -187,18 +179,15 @@ public class GifLoader {
 	 * @param url
 	 * @return
 	 */
-	public GifAnimationDrawable getFile(Context context, String url) {
+	public File getFile(Context context, String url) {
 
 		File file = fileCache.getFile(url);
 
 		// start: Get image from cache
 		try {
-
-			GifAnimationDrawable localFile;
-			localFile = new GifAnimationDrawable(file, context);
 			
-			if (localFile != null) {
-				return localFile;
+			if (file != null && file.exists()) {
+				return file;
 			}
 
 		} catch (Exception e) {
@@ -229,7 +218,7 @@ public class GifLoader {
 			fos.close();
 			is.close();
 			
-			return new GifAnimationDrawable(file, context);
+			return file;
 
 		} catch (Throwable ex) {
 			if (Const.DEBUG_CRYPTO)
@@ -245,7 +234,7 @@ public class GifLoader {
 
 	boolean imageViewReused(PhotoToLoad photoToLoad) {
 
-		String tag = imageViews.get(photoToLoad.imageView);
+		String tag = imageViews.get(photoToLoad.webView);
 		// Check url is already exist in imageViews MAP
 		if (tag == null || !tag.equals(photoToLoad.url))
 			return true;
@@ -254,10 +243,10 @@ public class GifLoader {
 
 	// Used to display bitmap in the UI thread
 	private class BitmapDisplayer implements Runnable {
-		GifAnimationDrawable file;
+		File file;
 		PhotoToLoad photoToLoad;
 
-		public BitmapDisplayer(GifAnimationDrawable file, PhotoToLoad photoLoad) {
+		public BitmapDisplayer(File file, PhotoToLoad photoLoad) {
 			this.file = file;
 			this.photoToLoad = photoLoad;
 		}
@@ -266,7 +255,8 @@ public class GifLoader {
 
 			// Show bitmap on UI
 			if (file != null) {
-				photoToLoad.imageView.setTag(file);
+				photoToLoad.webView.loadDataWithBaseURL("", Utils.generateGifHTML(file.getAbsolutePath(), photoToLoad.style), "text/html","utf-8", ""); //TODO current webivew
+				photoToLoad.webView.setTag(file.getAbsolutePath());
 				if (mListener != null)
 					mListener.onFinish();
 			}

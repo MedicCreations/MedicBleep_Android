@@ -9,12 +9,12 @@ public class Login extends BaseModel {
 	public String user_id;
 	public String token;
 	public String image;
+	public String image_thumb;
 	public String firstname;
 	public String lastname;
 	public List<Organization> organizations;
 
 	public Login() {
-
 	}
 
 	public String getUserId() {
@@ -44,16 +44,15 @@ public class Login extends BaseModel {
 		return true;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = super.hashCode();
-		result = 31 * result + (user_id != null ? user_id.hashCode() : 0);
-		result = 31 * result + (token != null ? token.hashCode() : 0);
-		return result;
+	public void setOrganizations(List<Organization> organizations) {
+		this.organizations = organizations;
 	}
 
-	@Override
-	public String toString() {
-		return "Login{" + "userId='" + user_id + '\'' + ", token='" + token + '\'' + "} " + super.toString();
+	public String getImageThumb() {
+		return image_thumb;
+	}
+
+	public void setImageThumb(String imageThumb) {
+		this.image_thumb = imageThumb;
 	}
 }

@@ -8,6 +8,7 @@
     <color name="green">#71d654</color>
     <color name="red">#d75555</color>
     <color name="red_solid">#ff0000</color>
+    <color name="green_solid">#00FF00</color>
     <color name="divider_gray">#d8e1e7</color>
     <color name="text_gray">#c0c0c0</color>
     <color name="text_dark_gray">#949494</color>
@@ -42,5 +43,9 @@
     <color name="gray_in_adapter">#EFEFEF</color>
     <color name="chat_settings_gray">#F4F4F4</color>
     <color name="chat_settings_separator">#D7D7D7</color>
+    
+    <color name="blue_in_people_row">#43A7DA</color>
+    <color name="green_in_people_row">#5Ad68D</color>
+    <color name="red_in_people_row">#EB232F</color>
 
 </resources>

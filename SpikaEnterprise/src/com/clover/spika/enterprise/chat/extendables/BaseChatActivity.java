@@ -1,5 +1,11 @@
 package com.clover.spika.enterprise.chat.extendables;
 
+import github.ankushsachdeva.emojicon.EmojiconGridView.OnEmojiconClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnEmojiconBackspaceClickedListener;
+import github.ankushsachdeva.emojicon.EmojiconsPopup.OnSoftKeyboardOpenCloseListener;
+import github.ankushsachdeva.emojicon.emoji.Emojicon;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +18,7 @@ import java.util.List;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,19 +27,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -57,6 +68,7 @@ import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -75,6 +87,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected static final int SETTINGS_POSITION_SECOND = 1;
 	protected static final int SETTINGS_POSITION_THIRD = 2;
 	protected static final int SETTINGS_POSITION_FOURTH = 3;
+
+	private static final int MENU_OPEN = 1;
+	private static final int STATIC_SMILEY_OPEN = 2;
+	private static final int NONE_OPEN = 0;
 
 	protected String chatImage = null;
 	protected String chatImageThumb = null;
@@ -96,6 +112,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	private ImageButton footerEmoji;
 	protected RelativeLayout rlDrawerNew;
 	protected RelativeLayout rlDrawerEmoji;
+	protected EmojiconsPopup staticEmojiPopup;
 	private RelativeLayout chatLayout;
 	private RobotoThinTextView screenTitle;
 	protected EditText etMessage;
@@ -112,8 +129,13 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	private List<Stickers> stickersList = new ArrayList<Stickers>();
 
+	private boolean isMenuInAnimation = false;
+
 	private SelectEmojiListener mEmojiListener = null;
 	private boolean isMenuSetted = false;
+	protected User currentUser = null;
+
+	private boolean toAutoScrollChat = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,6 +161,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		findViewById(R.id.chooseVoice).setOnClickListener(thisClickListener);
 		findViewById(R.id.voiceCall).setOnClickListener(thisClickListener);
 		findViewById(R.id.chooseFile).setOnClickListener(thisClickListener);
+		findViewById(R.id.footerSend).setOnClickListener(thisClickListener);
 
 		chatListView = (ListView) findViewById(R.id.main_list_view);
 
@@ -156,6 +179,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		etMessage = (EditText) findViewById(R.id.etMessage);
 		etMessage.setOnClickListener(thisClickListener);
 		setEditTextEditorAction();
+		etMessage.addTextChangedListener(thisTextChangeWatcher);
 
 		rlDrawerNew = (RelativeLayout) findViewById(R.id.rlNewDrawer);
 		rlDrawerNew.setSelected(false);
@@ -233,24 +257,113 @@ public abstract class BaseChatActivity extends BaseActivity {
 				int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
 
 				if (heightDiff > 200) {
+					if (!toAutoScrollChat)
+						return;
+					toAutoScrollChat = false;
 					chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
+				} else {
+					toAutoScrollChat = true;
 				}
 			}
 		});
 
 		dimOther.setOnClickListener(thisClickListener);
 		dimMenu.setOnClickListener(thisClickListener);
-		
+
 		boolean isEmojiEnable = getResources().getBoolean(R.bool.enable_emoji);
-		if(!isEmojiEnable){
+		if (!isEmojiEnable) {
 			findViewById(R.id.footerSmiley).setVisibility(View.GONE);
 		}
+
+		boolean isStaticEmojiEnable = getResources().getBoolean(R.bool.enable_static_emoji);
+		if (!isStaticEmojiEnable) {
+			findViewById(R.id.footerSmileyStatic).setVisibility(View.GONE);
+		}
+
+		staticEmojiPopup = new EmojiconsPopup(findViewById(R.id.rootView), this);
+		staticEmojiPopup.setSizeForSoftKeyboard();
+
+		final ImageButton staticSmileyButton = (ImageButton) findViewById(R.id.footerSmileyStatic);
+		staticSmileyButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				staticEmojiManage(staticSmileyButton);
+			}
+		});
+
+		// Set on emojicon click listener
+		staticEmojiPopup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				etMessage.append(emojicon.getEmoji());
+			}
+		});
+
+		// Set on backspace click listener
+		staticEmojiPopup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				etMessage.dispatchKeyEvent(event);
+			}
+		});
+
+		// If the emoji popup is dismissed, change emojiButton to smiley icon
+		staticEmojiPopup.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				changeEmojiKeyboardIcon(staticSmileyButton, R.drawable.smiley_static);
+			}
+		});
+
+		// If the text keyboard closes, also dismiss the emoji popup
+		staticEmojiPopup.setOnSoftKeyboardOpenCloseListener(new OnSoftKeyboardOpenCloseListener() {
+
+			@Override
+			public void onKeyboardOpen(int keyBoardHeight) {
+
+			}
+
+			@Override
+			public void onKeyboardClose() {
+				if (staticEmojiPopup.isShowing())
+					staticEmojiPopup.dismiss();
+			}
+		});
+
+		// On emoji clicked, add it to edittext
+		staticEmojiPopup.setOnEmojiconClickedListener(new OnEmojiconClickedListener() {
+
+			@Override
+			public void onEmojiconClicked(Emojicon emojicon) {
+				etMessage.append(emojicon.getEmoji());
+			}
+		});
+
+		// On backspace clicked, emulate the KEYCODE_DEL key event
+		staticEmojiPopup.setOnEmojiconBackspaceClickedListener(new OnEmojiconBackspaceClickedListener() {
+
+			@Override
+			public void onEmojiconBackspaceClicked(View v) {
+				KeyEvent event = new KeyEvent(0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+				etMessage.dispatchKeyEvent(event);
+			}
+		});
+
+	}
+
+	private void changeEmojiKeyboardIcon(ImageButton iconToBeChanged, int drawableResourceId) {
+		iconToBeChanged.setImageResource(drawableResourceId);
 	}
 
 	protected void setMenuByChatType() {
 		if (!isMenuSetted) {
 			isMenuSetted = true;
-			if (chatType != Const.C_PRIVATE) {
+			if (chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
 																									// call
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
@@ -362,11 +475,14 @@ public abstract class BaseChatActivity extends BaseActivity {
 	}
 
 	private void rlDrawerNewManage() {
+		if (isMenuInAnimation)
+			return;
 		if (rlDrawerEmoji.isSelected()) {
-			rlDrawerEmojiManage(true);
+			rlDrawerEmojiManage(MENU_OPEN);
 			return;
 		}
 		if (!rlDrawerNew.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerNew.setVisibility(View.VISIBLE);
 			dimMenu.setVisibility(View.VISIBLE);
 			dimOther.setVisibility(View.VISIBLE);
@@ -375,9 +491,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerNew.setSelected(true);
 					hideKeyboard(etMessage);
-					
+
 					new Handler().postDelayed(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
@@ -386,9 +502,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 								@Override
 								public void onSelectImage(String path) {
-									if(path.equals("camera")){
+									if (path.equals("camera")) {
 										openCamera();
-									}else{
+									} else {
 										openPathCropActivity(path);
 									}
 								}
@@ -396,6 +512,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 							flForPager.addView(pagerLayout);
 
 							findViewById(R.id.pbLoading).setVisibility(View.GONE);
+							isMenuInAnimation = false;
 						}
 					}, 200);
 				}
@@ -404,9 +521,10 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.fadeAnim(dimMenu, 0, 1, drawerDuration);
 			AnimUtils.fadeAnim(dimOther, 0, 1, drawerDuration);
 		} else {
-
+			isMenuInAnimation = true;
 			FrameLayout flForPager = (FrameLayout) findViewById(R.id.layoutForImagesPager);
-			((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
+			if (flForPager.getChildCount() > 1 && flForPager.getChildAt(1) instanceof FrameLayoutForMenuPager)
+				((FrameLayoutForMenuPager) flForPager.getChildAt(1)).clearAdapters();
 			if (flForPager.getChildCount() > 1)
 				flForPager.removeView(flForPager.getChildAt(1));
 
@@ -419,6 +537,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 					rlDrawerNew.setSelected(false);
 					dimMenu.setVisibility(View.GONE);
 					dimOther.setVisibility(View.GONE);
+					isMenuInAnimation = false;
 
 				}
 			});
@@ -427,7 +546,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	private void rlDrawerEmojiManage(boolean toOpenMenu) {
+	private void rlDrawerEmojiManage(final int openOther) {
+		if (isMenuInAnimation)
+			return;
 		if (stickersList.size() == 0) {
 			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
 
@@ -440,6 +561,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			});
 		}
 		if (!rlDrawerEmoji.isSelected()) {
+			isMenuInAnimation = true;
 			rlDrawerEmoji.setVisibility(View.VISIBLE);
 			AnimUtils.translationY(rlDrawerEmoji, Helper.dpToPx(this, drawerHeight), 0, drawerDuration, new AnimatorListenerAdapter() {
 				@Override
@@ -458,19 +580,25 @@ public abstract class BaseChatActivity extends BaseActivity {
 							chatListView.setSelection(chatListView.getAdapter().getCount() - 1);
 							EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
 							layout.resetDotsIfNeed();
+							isMenuInAnimation = false;
 						}
 					}, 100);
 				}
 			});
 			AnimUtils.translationY(chatLayout, 0, -Helper.dpToPx(this, drawerHeight), drawerDuration, null);
 		} else {
+			isMenuInAnimation = true;
 			AnimUtils.translationY(rlDrawerEmoji, 0, Helper.dpToPx(this, drawerHeight), drawerDuration, new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setVisibility(View.GONE);
 					rlDrawerEmoji.setSelected(false);
 
-					rlDrawerNewManage();
+					isMenuInAnimation = false;
+					if (openOther == MENU_OPEN)
+						rlDrawerNewManage();
+					else if (openOther == STATIC_SMILEY_OPEN)
+						staticEmojiManage((ImageButton) findViewById(R.id.footerSmileyStatic));
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
@@ -481,12 +609,45 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
+	private void staticEmojiManage(ImageButton buttonView) {
+		if (rlDrawerEmoji.isSelected()) {
+			rlDrawerEmojiManage(STATIC_SMILEY_OPEN);
+			return;
+		}
+		if (!staticEmojiPopup.isShowing()) {
+
+			// If keyboard is visible, simply show the emoji popup
+			if (staticEmojiPopup.isKeyBoardOpen()) {
+				staticEmojiPopup.showAtBottom();
+				changeEmojiKeyboardIcon(buttonView, R.drawable.keyboard_icon);
+			}
+
+			// else, open the text keyboard first and immediately after that
+			// show the emoji popup
+			else {
+				etMessage.setFocusableInTouchMode(true);
+				etMessage.requestFocus();
+				staticEmojiPopup.showAtBottomPending();
+				final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				inputMethodManager.showSoftInput(etMessage, InputMethodManager.SHOW_IMPLICIT);
+				changeEmojiKeyboardIcon(buttonView, R.drawable.keyboard_icon);
+			}
+		}
+
+		// If popup is showing, simply dismiss it to show the undelying text
+		// keyboard
+		else {
+			staticEmojiPopup.dismiss();
+		}
+
+	}
+
 	protected void forceClose() {
 		if (rlDrawerNew.isSelected()) {
 			rlDrawerNewManage();
 			hideKeyboard(etMessage);
 		} else if (rlDrawerEmoji.isSelected()) {
-			rlDrawerEmojiManage(false);
+			rlDrawerEmojiManage(NONE_OPEN);
 			hideKeyboard(etMessage);
 		}
 	}
@@ -526,21 +687,25 @@ public abstract class BaseChatActivity extends BaseActivity {
 	protected void deleteMessage(final String messageId) {
 		AppDialog deleteDialog = new AppDialog(this, false);
 		deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+
 			@Override
-			public void onPositiveButtonClick(View v) {
+			public void onPositiveButtonClick(View v, Dialog d) {
 
 				handleProgress(true);
+
 				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(messageId, BaseChatActivity.this);
 				spiceManager.execute(deleteMessage, new CustomSpiceListener<BaseModel>() {
 
 					@Override
-					public void onRequestFailure(SpiceException ex) {
+					public void onRequestFailure(SpiceException arg0) {
+						super.onRequestFailure(arg0);
 						handleProgress(false);
 						Utils.onFailedUniversal(null, BaseChatActivity.this);
 					}
 
 					@Override
 					public void onRequestSuccess(BaseModel result) {
+						super.onRequestSuccess(result);
 						handleProgress(false);
 
 						if (result.getCode() == Const.API_SUCCESS) {
@@ -574,13 +739,13 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 	private void openCamera() {
 		boolean isChoiceEnabled = getResources().getBoolean(R.bool.enable_full_size_and_crop_image_choice);
-		if(isChoiceEnabled){
+		if (isChoiceEnabled) {
 			final AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 			dialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
 			dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 				@Override
-				public void onPositiveButtonClick(View v) {
+				public void onPositiveButtonClick(View v, Dialog d) {
 					Intent intent = new Intent(BaseChatActivity.this, CameraCropActivity.class);
 					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 					intent.putExtra(Const.FROM_WAll, true);
@@ -596,7 +761,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 
 				@Override
-				public void onNegativeButtonClick(View v) {
+				public void onNegativeButtonClick(View v, Dialog d) {
 					Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 					intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 					intent.putExtra(Const.FROM_WAll, true);
@@ -606,10 +771,11 @@ public abstract class BaseChatActivity extends BaseActivity {
 					startActivity(intent);
 					dialog.dismiss();
 				}
+
 			});
 
 			dialog.show();
-		}else{
+		} else {
 			Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 			intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 			intent.putExtra(Const.FROM_WAll, true);
@@ -618,8 +784,30 @@ public abstract class BaseChatActivity extends BaseActivity {
 			intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
 			startActivity(intent);
 		}
-		
+
 	}
+
+	private TextWatcher thisTextChangeWatcher = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			if (TextUtils.isEmpty(s.toString())) {
+				findViewById(R.id.footerSend).setVisibility(View.GONE);
+				findViewById(R.id.footerSmiley).setVisibility(View.VISIBLE);
+			} else {
+				findViewById(R.id.footerSend).setVisibility(View.VISIBLE);
+				findViewById(R.id.footerSmiley).setVisibility(View.INVISIBLE);
+			}
+		}
+	};
 
 	View.OnClickListener thisClickListener = new View.OnClickListener() {
 		@Override
@@ -637,8 +825,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 					final AppDialog cropImageConfirmationDialog = new AppDialog(BaseChatActivity.this, false);
 					cropImageConfirmationDialog.setYesNo(getString(R.string.enableEditPhoto), getString(R.string.choiceCroppedImage), getString(R.string.choiceFullSizeImage));
 					cropImageConfirmationDialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
+
 						@Override
-						public void onPositiveButtonClick(View v) {
+						public void onPositiveButtonClick(View v, Dialog d) {
 							openCameraCropActivity();
 							cropImageConfirmationDialog.dismiss();
 						}
@@ -646,7 +835,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 					cropImageConfirmationDialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
 						@Override
-						public void onNegativeButtonClick(View v) {
+						public void onNegativeButtonClick(View v, Dialog d) {
 							openCameraFullSizeActivity();
 							cropImageConfirmationDialog.dismiss();
 						}
@@ -654,7 +843,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 					cropImageConfirmationDialog.show();
 				} else {
-//					openCameraCropActivity();
+					// openCameraCropActivity();
 					openCameraFullSizeActivity();
 				}
 
@@ -687,7 +876,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				hideSettings();
 
 			} else if (id == R.id.footerSmiley && isActive == 1) {
-				rlDrawerEmojiManage(false);
+				rlDrawerEmojiManage(NONE_OPEN);
 				hideSettings();
 
 			} else if (id == R.id.goBack) {
@@ -702,8 +891,23 @@ public abstract class BaseChatActivity extends BaseActivity {
 				rlDrawerNewManage();
 			} else if (id == R.id.blackedTopMenu) {
 				rlDrawerNewManage();
+			} else if (id == R.id.footerSend) {
+				onEditorSendEvent(etMessage.getText().toString());
+			} else if (id == R.id.voiceCall) {
+				// make call
+				rlDrawerNewManage();
+				callUser(currentUser, false);
 			}
 		}
+	};
+
+	@Override
+	protected void openRecordActivity(User user) {
+		Intent intent = new Intent(BaseChatActivity.this, RecordAudioActivity.class);
+		intent.putExtra(Const.CHAT_ID, chatId);
+		intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
+		intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
+		startActivity(intent);
 	};
 
 	protected void kill() {
@@ -751,7 +955,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 
 				if (position == SETTINGS_POSITION_FIRST) {
 					if (chatType == Const.C_PRIVATE) {
-						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName);
+						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName, currentUser);
 					} else if ((chatType == Const.C_GROUP) || (chatType == Const.C_ROOM)) {
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, false, categoryId, categoryName, chatPassword);
 					} else {

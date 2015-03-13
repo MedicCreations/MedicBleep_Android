@@ -132,9 +132,12 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 
 		if (position != -1 && position != mUserAdapter.getCount()) {
 			GlobalModel user = mUserAdapter.getItem(position);
+			
+			User userUser = null;
+			if(user.type == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
 			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false, ((User) user.getModel()).getFirstName(),
-					((User) user.getModel()).getLastName());
+					((User) user.getModel()).getLastName(), userUser);
 		}
 	}
 

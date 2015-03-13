@@ -47,7 +47,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
-	
+
 	private EditText etSearch;
 
 	private GlobalApi api = new GlobalApi();
@@ -80,20 +80,20 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 
-		if(allData.size() > 1){
+		if (allData.size() > 1) {
 			adapter.addData(allData);
-		}else{
+		} else {
 			getGroups(mCurrentIndex, null, false);
 		}
-		
+
 		etSearch = (EditText) rootView.findViewById(R.id.etSearchPeople);
 		etSearch.setOnEditorActionListener(editorActionListener);
-		
+
 		etSearch.addTextChangedListener(textWatacher);
 		etSearch.setHint(getString(R.string.search_for_groups));
-		
-		((MainActivity)getActivity()).setCreateRoom(new OnCreateRoomListener() {
-			
+
+		((MainActivity) getActivity()).setCreateRoom(new OnCreateRoomListener() {
+
 			@Override
 			public void onCreateRoom() {
 				CreateRoomActivity.start(getActivity());
@@ -102,21 +102,23 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		return rootView;
 	}
-	
+
 	private TextWatcher textWatacher = new TextWatcher() {
-		
+
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {}
-		
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
 		@Override
 		public void afterTextChanged(Editable s) {
 			adapter.manageData(s.toString(), allData);
 		}
 	};
-	
+
 	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
 
 		@Override
@@ -133,7 +135,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	public void onPause() {
 		super.onPause();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	PullToRefreshBase.OnRefreshListener2 refreshListener2 = new PullToRefreshBase.OnRefreshListener2() {
 		@Override
@@ -174,7 +176,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
-		
+
 		allData.clear();
 		allData.addAll(adapter.getData());
 	}
@@ -214,11 +216,10 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = (Chat) adapter.getItem(position).getModel();
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.password);
-			
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.password, null);
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -227,5 +228,5 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
 	}
-	
+
 }

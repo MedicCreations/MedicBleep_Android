@@ -84,7 +84,7 @@
                     android:textSize="15sp" />
             </RelativeLayout>
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <github.ankushsachdeva.emojicon.EmojiconTextView
                 android:id="@+id/lastMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

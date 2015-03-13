@@ -204,7 +204,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 				handleProgress(false);
 
 				if (result == Const.API_SUCCESS) {
-					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.password);
+					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.password, chat.user);
 				} else {
 					AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
 					dialog.setFailed(result);

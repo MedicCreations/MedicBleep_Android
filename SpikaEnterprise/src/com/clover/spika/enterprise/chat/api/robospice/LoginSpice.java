@@ -42,9 +42,7 @@ public class LoginSpice {
 			ResponseBody resBody = res.body();
 			String responsBody = resBody.string();
 
-			ObjectMapper mapper = new ObjectMapper();
-
-			return mapper.readValue(responsBody, PreLogin.class);
+			return new ObjectMapper().readValue(responsBody, PreLogin.class);
 		}
 	}
 

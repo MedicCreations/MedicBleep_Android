@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/relative_layout_thread_item_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp" >
+
+        <TextView
+            android:id="@+id/text_view_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/messageRl"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/text_gray_image"
+            android:textSize="12sp"
+            tools:text="Stiven Spilberg" />
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/image_view_user"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_below="@id/text_view_user"
+            android:layout_marginLeft="10dp"
+            android:contentDescription="@null"
+            android:src="@drawable/default_user_image" />
+
+        <LinearLayout
+            android:id="@+id/messageRl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/image_view_user"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/image_view_user"
+            android:gravity="left"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:background="@drawable/shape_you_chat_bubble"
+                android:orientation="vertical"
+                android:padding="10dp" >
+
+                <RelativeLayout
+                    android:id="@+id/rlSoundControl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left" >
+
+                    <Button
+                        android:id="@+id/youPlayPause"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/play_button" />
+
+                    <ProgressBar
+                        android:id="@+id/YouPbSound"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:visibility="invisible" />
+
+                    <Chronometer
+                        android:id="@+id/youChronoPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/youPlayPause"
+                        android:text="00:00"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/youDownloadPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/youPlayPause"
+                        android:text="0%"
+                        android:textColor="@android:color/white"
+                        android:visibility="invisible" />
+
+                    <SeekBar
+                        android:id="@+id/youSeekBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/youChronoPlay"
+                        android:max="100"
+                        android:thumb="@drawable/shape_thumb" />
+
+                    <ProgressBar
+                        android:id="@+id/youDownloadProgressHor"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/youDownloadPercent"
+                        android:visibility="invisible" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/timeThread"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/text_time_gray"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

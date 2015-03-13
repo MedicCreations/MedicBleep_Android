@@ -68,13 +68,12 @@
             android:gravity="right"
             android:orientation="horizontal" >
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="10dp"
                 android:gravity="bottom"
-                android:minHeight="50dp"
                 android:orientation="vertical" >
 
                 <ImageView
@@ -82,6 +81,7 @@
                     android:layout_width="20dp"
                     android:layout_height="17dp"
                     android:layout_gravity="right|top"
+                    android:layout_alignRight="@+id/timeMe"
                     android:layout_marginBottom="10dp"
                     android:contentDescription="@null"
                     android:src="@drawable/right_thread_arrow" />
@@ -90,9 +90,10 @@
                     android:id="@+id/timeMe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
                     android:textColor="@color/text_time_gray"
                     android:textSize="15sp" />
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/defaultMsgLayoutMe"
@@ -110,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <github.ankushsachdeva.emojicon.EmojiconTextView
                         android:id="@+id/meMsgContent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -215,8 +216,14 @@
                     android:id="@+id/meFlForWebView"
                     android:layout_width="150dp"
                     android:layout_height="150dp" >
+                    
+                    <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                        android:id="@+id/meWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="none"/>
 
-                    <ProgressBar
+                    <!-- <ProgressBar
                         android:id="@+id/mePbGif"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
@@ -228,7 +235,7 @@
                         android:layout_height="150dp"
                         android:layout_gravity="right"
                         android:contentDescription="@null"
-                        android:scaleType="fitCenter" />
+                        android:scaleType="fitCenter" /> -->
                 </FrameLayout>
 
                 <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
@@ -298,7 +305,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" >
 
-                        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        <github.ankushsachdeva.emojicon.EmojiconTextView
                             android:id="@+id/youMsgContent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -404,8 +411,14 @@
                         android:id="@+id/youFlForWebView"
                         android:layout_width="150dp"
                         android:layout_height="150dp" >
+                        
+                        <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
+                            android:id="@+id/youWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="none"/>
 
-                        <ProgressBar
+                        <!-- <ProgressBar
                             android:id="@+id/youPbGif"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
@@ -417,7 +430,7 @@
                             android:layout_height="150dp"
                             android:layout_gravity="left"
                             android:contentDescription="@null"
-                            android:scaleType="fitCenter" />
+                            android:scaleType="fitCenter" /> -->
                     </FrameLayout>
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
@@ -432,9 +445,9 @@
                         android:textSize="17sp" />
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="bottom"
                     android:layout_marginRight="10dp"
                     android:gravity="left|bottom"
@@ -446,6 +459,7 @@
                         android:layout_width="20dp"
                         android:layout_height="17dp"
                         android:layout_gravity="left|top"
+                        android:layout_alignLeft="@+id/timeYou"
                         android:layout_marginBottom="10dp"
                         android:contentDescription="@null"
                         android:src="@drawable/left_thread_arrow" />
@@ -454,9 +468,10 @@
                         android:id="@+id/timeYou"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
                         android:textColor="@color/text_time_gray"
                         android:textSize="15sp" />
-                </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
 

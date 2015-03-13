@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,12 +15,14 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
@@ -49,6 +52,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	private String mMessageId;
 	private String mUserId;
 
+	private int typeOfMessage = 0;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,7 +70,16 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 			chatListView.setOnItemClickListener(this);
 			chatListView.setOnItemLongClickListener(this);
-			chatListView.setAdapter(new ThreadsAdapter(spiceManager, this));
+			ThreadsAdapter adapter = new ThreadsAdapter(spiceManager, this);
+			chatListView.setAdapter(adapter);
+
+			setEmojiListener(new SelectEmojiListener() {
+
+				@Override
+				public void onEmojiSelect(Stickers selectedStickers) {
+					sendEmoji(selectedStickers.getUrl());
+				}
+			});
 		}
 	}
 
@@ -145,13 +159,41 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		});
 	}
 
+	private void sendEmoji(String text) {
+		
+		typeOfMessage = Const.MSG_TYPE_GIF;
+		
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+
+			@Override
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ThreadsActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
+				onApiResponse(result);
+			}
+		});
+	}
+
 	@Override
 	protected void leaveChat() {
 	}
 
 	@Override
-	protected void onEditorSendEvent(String text) {
-		sendMessage(text);
+	protected void onEditorSendEvent(final String text) {
+		new Handler().post(new Runnable() {
+
+			@Override
+			public void run() {
+				sendMessage(text);
+			}
+		});
 	}
 
 	@Override
@@ -223,6 +265,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		if (result == Const.API_SUCCESS) {
 			etMessage.setText("");
 			hideKeyboard(etMessage);
+
+			if (typeOfMessage != Const.MSG_TYPE_DEFAULT)
+				forceClose();
 
 			getThreads();
 		} else {

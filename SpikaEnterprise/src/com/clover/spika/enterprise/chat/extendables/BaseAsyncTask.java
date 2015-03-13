@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Helper;
 
@@ -18,7 +18,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	private static int EXPIRED_TOKEN_CODE = 1001;
 
 	protected Context context;
-	protected AppProgressDialog progressDialog;
+	protected AppProgressAlertDialog progressDialog;
 	protected boolean showProgressBar = false;
 
 	public BaseAsyncTask(Context context, boolean showProgressBar) {
@@ -37,7 +37,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 
 			if (showProgressBar) {
 
-				progressDialog = new AppProgressDialog(context);
+				progressDialog = new AppProgressAlertDialog(context);
 
 				if (!((Activity) context).isFinishing()) {
 

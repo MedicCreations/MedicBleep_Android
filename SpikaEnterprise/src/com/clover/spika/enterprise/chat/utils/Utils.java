@@ -24,25 +24,6 @@
 
 package com.clover.spika.enterprise.chat.utils;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnDismissListener;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.text.TextUtils;
-
-import com.clover.spika.enterprise.chat.LoginActivity;
-import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.security.JNAesCrypto;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,8 +40,29 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.widget.ImageView;
+
+import com.clover.spika.enterprise.chat.LoginActivity;
+import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 /**
  * Utils
@@ -626,6 +628,40 @@ public class Utils {
 			AppDialog dialog = new AppDialog(c, false);
 			dialog.setInfo(c.getString(R.string.aplication_for_sending_mail_did_t_found));
 		}
+	}
+
+	public static String generateGifHTML(String path, String style) {
+		String imagePath = "file://" + path;
+		if (style == null)
+			style = "";
+		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\"" + imagePath
+				+ "\"></body></html>";
+		return html;
+
+	}
+
+	public static Uri getLocalBitmapUri(ImageView imageView, Context context) {
+		// Extract Bitmap from ImageView drawable
+		Drawable drawable = imageView.getDrawable();
+		Bitmap bmp = null;
+		if (drawable instanceof BitmapDrawable) {
+			bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+		} else {
+			return null;
+		}
+		// Store image to default external storage directory
+		Uri bmpUri = null;
+		try {
+			File file = new File(getTempFile(context, "temp") + "/temp.png");
+			file.getParentFile().mkdirs();
+			FileOutputStream out = new FileOutputStream(file);
+			bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+			out.close();
+			bmpUri = Uri.fromFile(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bmpUri;
 	}
 
 }

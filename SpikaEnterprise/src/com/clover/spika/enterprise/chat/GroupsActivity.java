@@ -197,7 +197,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 
 		if (position != -1 && position != adapter.getCount()) {
 			Group group = (Group) adapter.getItem(position).getModel();
-			ChatActivity.startWithUserId(this, String.valueOf(group.getId()), true, group.getGroupName(), null);
+			ChatActivity.startWithUserId(this, String.valueOf(group.getId()), true, group.getGroupName(), null, null);
 		}
 	}
 

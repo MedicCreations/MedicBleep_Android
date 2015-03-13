@@ -20,7 +20,6 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.octo.android.robospice.SpiceManager;
 
@@ -57,6 +56,10 @@ public class RecentAdapter extends BaseAdapter {
 	public void addData(List<Chat> list) {
 		data.addAll(list);
 		notifyDataSetChanged();
+	}
+	
+	public List<Chat> getData(){
+		return data;
 	}
 
 	@Override
@@ -209,18 +212,18 @@ public class RecentAdapter extends BaseAdapter {
 	public class ViewHolderCharacter {
 
 		public ImageView recentImage;
-		public RobotoRegularTextView recentName;
+		public TextView recentName;
 		public TextView unreadText;
-		public RobotoRegularTextView lastMessage;
-		public RobotoRegularTextView lastMessageTime;
+		public TextView lastMessage;
+		public TextView lastMessageTime;
 
 		public ViewHolderCharacter(View view) {
 
 			recentImage = (ImageView) view.findViewById(R.id.recentImage);
-			recentName = (RobotoRegularTextView) view.findViewById(R.id.recentName);
+			recentName = (TextView) view.findViewById(R.id.recentName);
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
-			lastMessage = (RobotoRegularTextView) view.findViewById(R.id.lastMessage);
-			lastMessageTime = (RobotoRegularTextView) view.findViewById(R.id.lastMessageTime);
+			lastMessage = (TextView) view.findViewById(R.id.lastMessage);
+			lastMessageTime = (TextView) view.findViewById(R.id.lastMessageTime);
 		}
 
 	}

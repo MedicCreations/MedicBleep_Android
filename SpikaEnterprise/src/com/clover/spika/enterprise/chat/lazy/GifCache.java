@@ -1,36 +1,18 @@
 package com.clover.spika.enterprise.chat.lazy;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import android.graphics.Bitmap;
 import android.util.Log;
-
-import com.clover.spika.enterprise.chat.utils.Logger;
-import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
 
 public class GifCache {
 
 	private static final String TAG = "GifCache";
 
-	// singleton usage
-	private static GifCache sInstance;
-
-	public static GifCache getInstance() {
-		if (sInstance == null) {
-			Logger.e("ImageLoader has to be initialized first before instance can be used. " + "Call init method before usage.");
-			init();
-		}
-		return sInstance;
-	}
-
-	public static void init() {
-		sInstance = new GifCache();
-	}
-
 	// Last argument true for LRU ordering
-	private Map<String, GifAnimationDrawable> cache = Collections.synchronizedMap(new LinkedHashMap<String, GifAnimationDrawable>(10, 1.5f, true));
+	private Map<String, File> cache = Collections.synchronizedMap(new LinkedHashMap<String, File>(10, 1.5f, true));
 
 	// current allocated size
 	// max memory cache folder used to download images in bytes
@@ -48,13 +30,13 @@ public class GifCache {
 		Log.i(TAG, "MemoryCache will use up to " + limit / 1024. / 1024. + "MB");
 	}
 	
-	long getSizeInBytes(Bitmap bitmap) {
-		if (bitmap == null)
+	long getSizeInBytes(File file) {
+		if (file == null || !file.exists())
 			return 0;
-		return bitmap.getRowBytes() * bitmap.getHeight();
+		return file.length();
 	}
 
-	public GifAnimationDrawable get(String id) {
+	public File get(String id) {
 		try {
 			if (!cache.containsKey(id))
 				return null;
@@ -67,7 +49,7 @@ public class GifCache {
 		}
 	}
 
-	public void put(String id, GifAnimationDrawable is) {
+	public void put(String id, File is) {
 		try {
 			cache.put(id, is);
 		} catch (Throwable th) {

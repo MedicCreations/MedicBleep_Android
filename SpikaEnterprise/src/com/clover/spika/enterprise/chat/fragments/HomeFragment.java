@@ -137,5 +137,9 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		
 		fragmentHolder = (FrameLayout) view.findViewById(R.id.contentForFragments);
 	}
+	
+	public PeopleFragment getPeopleFragment(){
+		return peopleFragment;
+	}
 
 }

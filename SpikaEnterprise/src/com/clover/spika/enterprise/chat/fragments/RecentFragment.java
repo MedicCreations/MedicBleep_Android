@@ -28,12 +28,18 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 
 public class RecentFragment extends CustomFragment implements OnItemClickListener {
 
+	private final int CLEAR_ALL = 0;
+	private final int DONT_CLEAR = 1;
+	private final int CHECK_FOR_NEW_DATA = 2;
+
 	private PullToRefreshListView mainListView;
 	private RecentAdapter adapter;
 	private TextView noItems;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
+
+	private List<Chat> allData = new ArrayList<Chat>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +49,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
-		getLobby(0, true);
+		if (allData.size() < 1) {
+			getLobby(0, CLEAR_ALL);
+		} else {
+			getLobby(0, CHECK_FOR_NEW_DATA);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,6 +78,10 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
 
+		if (allData.size() > 1) {
+			adapter.addData(allData);
+		}
+
 		return view;
 	}
 
@@ -81,11 +95,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getLobby(mCurrentIndex, false);
+			getLobby(mCurrentIndex, DONT_CLEAR);
 		}
 	};
 
-	private void setData(List<Chat> data, boolean toClearPrevious) {
+	private void setData(List<Chat> data, int toClearPrevious) {
 		if (mainListView == null) {
 			return;
 		}
@@ -95,14 +109,19 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
+
+		if (toClearPrevious == CLEAR_ALL)
 			currentCount = data.size();
 
-		if (toClearPrevious)
+		if (toClearPrevious == CLEAR_ALL) {
 			adapter.setData(data);
-		else
+		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
+			adapter.setData(data);
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+
+		if (toClearPrevious == CLEAR_ALL)
 			mainListView.getRefreshableView().setSelection(0);
 
 		mainListView.onRefreshComplete();
@@ -123,10 +142,15 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			mainListView.setMode(PullToRefreshBase.Mode.DISABLED);
 		}
 
+		allData.clear();
+		allData.addAll(adapter.getData());
 	}
 
-	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity(), true, new ApiCallback<LobbyModel>() {
+	public void getLobby(int page, final int toClear) {
+		boolean toShowProgress = true;
+		if (toClear == CHECK_FOR_NEW_DATA)
+			toShowProgress = false;
+		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity(), toShowProgress, new ApiCallback<LobbyModel>() {
 
 			@Override
 			public void onApiResponse(Result<LobbyModel> result) {
@@ -144,7 +168,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 		if (position != -1 && position != adapter.getCount()) {
 			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password);
+			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password, null);
 		}
 	}
 
@@ -154,7 +178,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			boolean isFound = adapter.incrementUnread(chatId);
 			if (!isFound) {
 				mCurrentIndex = 0;
-				getLobby(mCurrentIndex, true);
+				getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
 			}
 		}
 	}

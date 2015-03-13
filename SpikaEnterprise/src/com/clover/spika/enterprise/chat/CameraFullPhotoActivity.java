@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -431,15 +432,17 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				AppDialog compressionConfirmationDialog = new AppDialog(this, false);
 				compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
 				compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+
 					@Override
-					public void onPositiveButtonClick(View v) {
+					public void onPositiveButtonClick(View v, Dialog d) {
 						compressFileBeforePrepare();
 						prepareFileForUpload();
 					}
 				});
 				compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+
 					@Override
-					public void onNegativeButtonClick(View v) {
+					public void onNegativeButtonClick(View v, Dialog d) {
 						prepareFileForUpload();
 					}
 				});

@@ -2,6 +2,8 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import java.io.File;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -9,12 +11,18 @@ import android.content.Intent;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Preferences;
+import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
 public class SpikaEnterpriseApp extends Application {
 
 	private static Context mAppContext;
 	private static Preferences mAppPreferences;
+
+	private static Intent socketIntent;
+
+	private static boolean isCallInBackground = false;
 
 	@Override
 	public void onCreate() {
@@ -28,6 +36,45 @@ public class SpikaEnterpriseApp extends Application {
 			startService(poolingIntent);
 		} else {
 			stopService(poolingIntent);
+		}
+	}
+
+	public static void startSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		if (socketIntent != null)
+			return;
+		if (isMyServiceRunning(SocketService.class))
+			return;
+		socketIntent = new Intent(mAppContext, SocketService.class);
+		socketIntent.putExtra(Const.IS_APLICATION_OPEN, true);
+		mAppContext.startService(socketIntent);
+	}
+
+	public static void stopSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		mAppContext.stopService(new Intent(mAppContext, SocketService.class));
+		socketIntent = null;
+	}
+
+	public static void stopSocketWithCon(Context c) {
+		if (!c.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		c.stopService(new Intent(c, SocketService.class));
+		socketIntent = null;
+	}
+
+	public static void restartSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		mAppContext.stopService(new Intent(mAppContext, SocketService.class));
+		if (isMyServiceRunning(SocketService.class)) {
+			socketIntent = new Intent(mAppContext, SocketService.class);
+			socketIntent.putExtra(Const.IS_APLICATION_OPEN, false);
+			mAppContext.startService(socketIntent);
+		} else {
+			startSocket();
 		}
 	}
 
@@ -86,5 +133,23 @@ public class SpikaEnterpriseApp extends Application {
 				f.delete();
 		}
 		setSamsungImagePath(null);
+	}
+
+	private static boolean isMyServiceRunning(Class<?> serviceClass) {
+		ActivityManager manager = (ActivityManager) mAppContext.getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isCallInBackground() {
+		return isCallInBackground;
+	}
+
+	public static void setCallInBackground(boolean isInBack) {
+		isCallInBackground = isInBack;
 	}
 }
