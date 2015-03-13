@@ -290,7 +290,7 @@ public class Helper {
 			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false,
 					null);
 		} catch (Exception e) {
-			return new User(-1, "", "", "", "", "", false, null, false, null);
+			return new User(-1, "", "", "-1", "", "", false, null, false, null);
 		}
 	}
 
