@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
@@ -80,6 +81,7 @@ public class EmojiFragment extends CustomFragment {
 				
 				@Override
 				public void onClick(View v) {
+					EmojiCounterHelper.increaseEmojiCounter(String.valueOf(object.getId()), SpikaEnterpriseApp.getSharedPreferences(getActivity()));
 					if(mListener != null) mListener.onEmojiSelect(object);
 				}
 			});

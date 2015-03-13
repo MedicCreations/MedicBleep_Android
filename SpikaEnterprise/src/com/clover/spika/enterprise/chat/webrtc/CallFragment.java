@@ -36,6 +36,7 @@ import org.webrtc.VideoRendererGui.ScalingType;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
@@ -72,7 +74,10 @@ public class CallFragment extends Fragment {
 	private TextView messages;
 	private TextView callDecline;
 	private Button videoScalingButton;
-
+	
+	private TextView connectionStatusInfo;
+	private RelativeLayout rlConnectionStatusInfo;
+	
 	/**
 	 * Call control interface for container activity.
 	 */
@@ -114,6 +119,9 @@ public class CallFragment extends Fragment {
 		speaker = (TextView) controlView.findViewById(R.id.audioSpeaker);
 		messages = (TextView) controlView.findViewById(R.id.messages);
 		callDecline = (TextView) controlView.findViewById(R.id.callDeclineFragment);
+		
+		connectionStatusInfo = (TextView) controlView.findViewById(R.id.tvConnectionStatusInfo);
+		rlConnectionStatusInfo = (RelativeLayout) controlView.findViewById(R.id.connectingInfo);
 
 		// Add buttons click events.
 		callDecline.setOnClickListener(new View.OnClickListener() {
@@ -290,5 +298,18 @@ public class CallFragment extends Fragment {
 		}
 		encoderStatView.setText(stat.toString());
 		hudView.setText(bweBuilder.toString() + hudView.getText());
+	}
+	
+	public void updateStatusInfo(String text, boolean toFinish, int finishDelay){
+		connectionStatusInfo.setText(text);
+		if(toFinish){
+			new Handler().postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					rlConnectionStatusInfo.setVisibility(View.GONE);
+				}
+			}, finishDelay);
+		}
 	}
 }

@@ -14,5 +14,9 @@ public class StickersHolder extends BaseModel implements Serializable {
 	public StickersHolder() {
 
 	}
+	
+	public void setStickersList(List<Stickers> inStickers){
+		this.stickers = inStickers;
+	}
 
 }

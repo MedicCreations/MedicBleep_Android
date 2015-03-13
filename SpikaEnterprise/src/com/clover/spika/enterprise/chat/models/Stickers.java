@@ -12,6 +12,8 @@ public class Stickers implements Serializable {
 	public long created;
 	public String url;
 	public int organization_id;
+	
+	private int usedTimes = 0;
 
 	public Stickers() {
 
@@ -59,6 +61,14 @@ public class Stickers implements Serializable {
 
 	public void setOrganizationId(int organizationId) {
 		this.organization_id = organizationId;
+	}
+	
+	public int getUsedTimes() {
+		return usedTimes;
+	}
+
+	public void setUsedTimes(int usedTimes) {
+		this.usedTimes = usedTimes;
 	}
 
 	@Override

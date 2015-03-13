@@ -677,18 +677,26 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			Log.w(TAG, "Room is connected, but EGL context is not ready yet.");
 			return;
 		}
-		logAndToast("Creating peer connection...");
+//		logAndToast("Creating peer connection...");
 		peerConnectionClient.createPeerConnection(localRender, remoteRender, signalingParameters, peerConnectionParameters);
 
 		if (signalingParameters.initiator) {
-			logAndToast("Creating OFFER...");
+//			logAndToast("Creating OFFER...");
+			String user = "user";
+			if(activeUser != null) user = activeUser.getFirstName()+" "+activeUser.getLastName();
+			if(callFragment != null) callFragment.updateStatusInfo("Connecting to " + user, false, 0);
+			
 			// Create offer. Offer SDP will be sent to answering client in
 			// PeerConnectionEvents.onLocalDescription event.
 			peerConnectionClient.createOffer();
 		} else {
 			if (params.offerSdp != null) {
 				peerConnectionClient.setRemoteDescription(params.offerSdp);
-				logAndToast("Creating ANSWER...");
+//				logAndToast("Creating ANSWER...");
+				String user = "user";
+				if(activeUser != null) user = activeUser.getFirstName()+" "+activeUser.getLastName();
+				if(callFragment != null) callFragment.updateStatusInfo("Connecting to " + user, false, 0);
+				
 				// Create answer. Answer SDP will be sent to offering client in
 				// PeerConnectionEvents.onLocalDescription event.
 				peerConnectionClient.createAnswer();
@@ -721,10 +729,17 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 					Log.e(TAG, "Received remote SDP for non-initilized peer connection.");
 					return;
 				}
-				logAndToast("Received remote " + sdp.type + " ...");
+//				logAndToast("Received remote " + sdp.type + " ...");
+				String user = "user";
+				if(activeUser != null) user = activeUser.getFirstName()+" "+activeUser.getLastName();
+				if(callFragment != null) callFragment.updateStatusInfo(user + " responded.", false, 0);
+				
 				peerConnectionClient.setRemoteDescription(sdp);
 				if (!signalingParameters.initiator) {
-					logAndToast("Creating ANSWER...");
+//					logAndToast("Creating ANSWER...");
+					
+					if(callFragment != null) callFragment.updateStatusInfo("Waiting for " + user, false, 0);
+					
 					// Create answer. Answer SDP will be sent to offering client
 					// in
 					// PeerConnectionEvents.onLocalDescription event.
@@ -783,7 +798,11 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			@Override
 			public void run() {
 				if (appRtcClient != null) {
-					logAndToast("Sending " + sdp.type + " ...");
+//					logAndToast("Sending " + sdp.type + " ...");
+					String user = "user";
+					if(activeUser != null) user = activeUser.getFirstName()+" "+activeUser.getLastName();
+					if(callFragment != null) callFragment.updateStatusInfo("Waiting for " + user, false, 0);
+					
 					if (signalingParameters.initiator) {
 						appRtcClient.sendOfferSdp(sdp);
 					} else {
@@ -811,7 +830,8 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				logAndToast("ICE connected");
+//				logAndToast("ICE connected");
+				if(callFragment != null )callFragment.updateStatusInfo("Connected", true, 600);
 				iceConnected = true;
 				callConnected();
 			}

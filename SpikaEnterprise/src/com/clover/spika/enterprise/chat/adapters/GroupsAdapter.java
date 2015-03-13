@@ -88,7 +88,7 @@ public class GroupsAdapter extends BaseAdapter {
 		final ViewHolderCharacter holder;
 		if (convertView == null) {
 
-			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_people, parent, false);
+			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_group, parent, false);
 
 			holder = new ViewHolderCharacter(convertView);
 			convertView.setTag(holder);

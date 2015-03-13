@@ -545,7 +545,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.fadeAnim(dimOther, 1, 0, drawerDuration);
 		}
 	}
-
+	
 	private void rlDrawerEmojiManage(final int openOther) {
 		if (isMenuInAnimation)
 			return;
@@ -559,6 +559,9 @@ public abstract class BaseChatActivity extends BaseActivity {
 					layout.setStickersList(result.getResultData().stickers, BaseChatActivity.this, mEmojiListener);
 				}
 			});
+		}else{
+			EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+			layout.refreshStickersList(stickersList, BaseChatActivity.this, mEmojiListener);
 		}
 		if (!rlDrawerEmoji.isSelected()) {
 			isMenuInAnimation = true;
