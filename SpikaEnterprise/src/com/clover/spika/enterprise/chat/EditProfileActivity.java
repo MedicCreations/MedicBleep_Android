@@ -8,14 +8,16 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.clover.spika.enterprise.chat.adapters.UserDetailsAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class EditProfileActivity extends BaseActivity implements OnClickListener {
 
@@ -53,13 +55,33 @@ public class EditProfileActivity extends BaseActivity implements OnClickListener
 			break;
 		case R.id.saveProfile:
 
-			new UserApi().updateUserDetails(adapter.getList(), this, new ApiCallback<BaseModel>() {
+			handleProgress(true);
+
+			UserSpice.UpdateUserDetails updateUserImage = new UserSpice.UpdateUserDetails(adapter.getList(), this);
+			spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 				@Override
-				public void onApiResponse(Result<BaseModel> result) {
-					finish();
+				public void onRequestFailure(SpiceException arg0) {
+					super.onRequestFailure(arg0);
+					handleProgress(false);
+					Utils.onFailedUniversal(null, EditProfileActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(BaseModel result) {
+					super.onRequestSuccess(result);
+					handleProgress(false);
+
+					if (result.getCode() == Const.API_SUCCESS) {
+
+						finish();
+
+					} else {
+						Utils.onFailedUniversal(Helper.errorDescriptions(EditProfileActivity.this, result.getCode()), EditProfileActivity.this);
+					}
 				}
 			});
+
 		default:
 			break;
 		}

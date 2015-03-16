@@ -9,9 +9,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -19,7 +18,6 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -41,8 +39,6 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 	private String chatId;
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
-
-	private GlobalApi api;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,17 +68,35 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);
 
-		api = new GlobalApi();
 		getUsers(true);
 	}
 
 	private void getUsers(final boolean clearPrevious) {
+		
+		handleProgress(true);
 
-		api.globalSearch(this, mCurrentIndex, chatId, null, Type.USER, null, false, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, chatId, null, Type.USER, null, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
+
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					setData((List<GlobalModel>) result.getResultData().getModelsList(), clearPrevious);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, SetAdminActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					setData((List<GlobalModel>) result.getModelsList(), clearPrevious);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, SetAdminActivity.this);
 				}
 			}
 		});

@@ -23,18 +23,20 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.PeopleAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
 
@@ -47,8 +49,6 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	private int mTotalCount = 0;
 	private String mSearchData = null;
 
-	private GlobalApi api = new GlobalApi();
-	
 	private EditText etSearch;
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
@@ -67,7 +67,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	@SuppressWarnings("unchecked")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
+
 		View rootView = inflater.inflate(R.layout.fragment_users_list, container, false);
 
 		noItems = (TextView) rootView.findViewById(R.id.noItems);
@@ -78,39 +78,41 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
-		
+
 		etSearch = (EditText) rootView.findViewById(R.id.etSearchPeople);
 		etSearch.setOnEditorActionListener(editorActionListener);
-		
+
 		etSearch.addTextChangedListener(textWatacher);
-		
-		if(allData.size() > 1){
+
+		if (allData.size() > 1) {
 			adapter.addData(allData);
-		}else{
+		} else {
 			getUsers(mCurrentIndex, null, false);
 		}
-		
+
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
-		
+
 		return rootView;
 	}
-	
+
 	private TextWatcher textWatacher = new TextWatcher() {
-		
+
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {}
-		
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
 		@Override
 		public void afterTextChanged(Editable s) {
 			adapter.manageData(s.toString(), allData);
 		}
 	};
-	
+
 	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
 
 		@Override
@@ -169,23 +171,38 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
-		
+
 		allData.clear();
 		allData.addAll(adapter.getData());
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {
 
-		api.globalSearch(getActivity(), page, null, null, Type.USER, search, true, new ApiCallback<GlobalResponse>() {
+		handleProgress(true);
+
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, Type.USER, search, getActivity());
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
 
-					GlobalResponse response = result.getResultData();
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
 
-					mTotalCount = response.getTotalCount();
-					setData(response.getModelsList(), toClear);
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, getActivity());
 				}
 			}
 		});
@@ -204,20 +221,21 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		
+
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
 			User user = (User) adapter.getItem(position).getModel();
-			
+
 			boolean isFirstUserProfile = getResources().getBoolean(R.bool.first_user_profile);
-			
-			if (isFirstUserProfile){
-				ProfileOtherActivity.openOtherProfileFromList(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user.getFirstName(), user.getLastName(), user);
+
+			if (isFirstUserProfile) {
+				ProfileOtherActivity.openOtherProfileFromList(getActivity(), user.getId(), user.getImage(), user.getFirstName() + " " + user.getLastName(), user.getFirstName(),
+						user.getLastName(), user);
 			} else {
 				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName(), user);
 			}
-			
+
 		}
 	}
 }

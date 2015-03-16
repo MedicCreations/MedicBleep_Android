@@ -28,8 +28,8 @@ import android.widget.LinearLayout;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -568,18 +568,29 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 	}
 
 	private void updateUser(final String fileId, final String thumbId) {
-		new UserApi().updateUserImage(fileId, thumbId, this, true, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+
+		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId, this);
+		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {
-					if (result.hasResultData()) {
-						AppDialog dialog = new AppDialog(CameraFullPhotoActivity.this, true);
-						dialog.setFailed(result.getResultData().getMessage());
-					}
+					Utils.onFailedUniversal(Helper.errorDescriptions(CameraFullPhotoActivity.this, result.getCode()), CameraFullPhotoActivity.this);
 				}
 			}
 		});

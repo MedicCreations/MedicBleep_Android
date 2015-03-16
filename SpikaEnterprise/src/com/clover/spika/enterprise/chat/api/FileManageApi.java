@@ -51,7 +51,6 @@ public class FileManageApi {
 					progressBar = new AppProgressDialogWithBar(ctx);
 					progressBar.showProgress();
 				}
-
 			}
 
 			protected UploadFileModel doInBackground(Void... params) {

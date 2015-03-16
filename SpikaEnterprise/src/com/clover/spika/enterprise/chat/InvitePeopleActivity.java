@@ -24,10 +24,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -35,15 +33,16 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel> {
-
-	GlobalApi api;
 
 	PullToRefreshListView mainList;
 	InviteRemoveAdapter adapter;
@@ -90,8 +89,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_invite_people);
 		// setSearch(this);
-
-		api = new GlobalApi();
 
 		goBack = (ImageButton) findViewById(R.id.goBack);
 		goBack.setOnClickListener(new View.OnClickListener() {
@@ -203,16 +200,31 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	private void getUsers(int page, String search, final boolean toClear) {
 
-		api.globalSearch(this, page, chatId, null, Type.ALL, search, toClear, new ApiCallback<GlobalResponse>() {
+		handleProgress(true);
+
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, null, Type.ALL, search, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, InvitePeopleActivity.this);
+			}
 
-					GlobalResponse response = result.getResultData();
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
 
-					mTotalCount = response.getTotalCount();
-					setData(response.getModelsList(), toClear);
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, InvitePeopleActivity.this);
 				}
 			}
 		});
@@ -325,17 +337,30 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			}
 		}
 
-		new UserApi().inviteUsers(chatId, users.toString(), this, new ApiCallback<Chat>() {
+		handleProgress(true);
+
+		UserSpice.InviteUsers inviteUser = new UserSpice.InviteUsers(chatId, users.toString(), this);
+		spiceManager.execute(inviteUser, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<Chat> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, InvitePeopleActivity.this);
+			}
 
-					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getResultData().getId()), result.getResultData().password, result.getResultData().user);
+			@Override
+			public void onRequestSuccess(Chat result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getId()), result.password, result.user);
 					finish();
+
 				} else {
-					AppDialog dialog = new AppDialog(InvitePeopleActivity.this, false);
-					dialog.setFailed("");
+					Utils.onFailedUniversal(Helper.errorDescriptions(InvitePeopleActivity.this, result.getCode()), InvitePeopleActivity.this);
 				}
 			}
 		});

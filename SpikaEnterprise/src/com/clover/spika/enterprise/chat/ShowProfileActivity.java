@@ -10,17 +10,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.UserDetailsAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UserWrapper;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ShowProfileActivity extends BaseActivity implements OnClickListener {
 
@@ -53,14 +54,30 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 
 		listViewDetail = (ListView) findViewById(R.id.listUserDetails);
 
-		new UserApi().getProfile(this, true, mUserId, new ApiCallback<UserWrapper>() {
+		handleProgress(true);
+
+		UserSpice.GetProfile updateUSerDetails = new UserSpice.GetProfile(mUserId, true, mService);
+		spiceManager.execute(updateUSerDetails, new CustomSpiceListener<UserWrapper>() {
+
 			@Override
-			public void onApiResponse(Result<UserWrapper> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ShowProfileActivity.this);
+			}
 
-					userData = result.getResultData();
-					setData(result.getResultData());
+			@Override
+			public void onRequestSuccess(UserWrapper result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
 
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					userData = result;
+					setData(result);
+
+				} else {
+					Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this);
 				}
 			}
 		});
@@ -122,52 +139,94 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		isInEditMode = false;
 
 		if (withReload) {
-			new UserApi().getProfile(this, true, Helper.getUserId(this), new ApiCallback<UserWrapper>() {
-				@Override
-				public void onApiResponse(Result<UserWrapper> result) {
-					if (result.isSuccess()) {
 
-						userData = result.getResultData();
+			handleProgress(true);
+
+			UserSpice.GetProfile getProfile = new UserSpice.GetProfile(Helper.getUserId(this), true, mService);
+			spiceManager.execute(getProfile, new CustomSpiceListener<UserWrapper>() {
+
+				@Override
+				public void onRequestFailure(SpiceException arg0) {
+					super.onRequestFailure(arg0);
+					handleProgress(false);
+					Utils.onFailedUniversal(null, ShowProfileActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(UserWrapper result) {
+					super.onRequestSuccess(result);
+					handleProgress(false);
+
+					if (result.getCode() == Const.API_SUCCESS) {
+
+						userData = result;
 						adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
 						adapter.setShowNotEdit(true);
 						adapter.notifyDataSetChanged();
+
+					} else {
+						Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this);
 					}
 				}
 			});
+
 		} else {
 			adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
 			adapter.setShowNotEdit(true);
 			adapter.notifyDataSetChanged();
 		}
-
 	}
 
 	@Override
 	public void onClick(View v) {
+
 		switch (v.getId()) {
+
 		case R.id.goBack:
 			finish();
 			break;
+
 		case R.id.saveProfile:
 			if (!isInEditMode) {
 				setEditModeData();
 			} else {
-				new UserApi().updateUserDetails(adapter.getList(), this, new ApiCallback<BaseModel>() {
+
+				handleProgress(true);
+
+				UserSpice.UpdateUserDetails updateUSerDetails = new UserSpice.UpdateUserDetails(adapter.getList(), this);
+				spiceManager.execute(updateUSerDetails, new CustomSpiceListener<BaseModel>() {
 
 					@Override
-					public void onApiResponse(Result<BaseModel> result) {
-						backToShow(true);
+					public void onRequestFailure(SpiceException arg0) {
+						super.onRequestFailure(arg0);
+						handleProgress(false);
+						Utils.onFailedUniversal(null, ShowProfileActivity.this);
+					}
+
+					@Override
+					public void onRequestSuccess(BaseModel result) {
+						super.onRequestSuccess(result);
+						handleProgress(false);
+
+						if (result.getCode() == Const.API_SUCCESS) {
+
+							backToShow(true);
+
+						} else {
+							Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this);
+						}
 					}
 				});
 			}
 			break;
+
 		case R.id.cancelProfile:
 			backToShow(false);
 			break;
+
 		default:
 			break;
 		}
-
 	}
 
 }

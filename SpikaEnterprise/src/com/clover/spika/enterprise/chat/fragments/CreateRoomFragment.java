@@ -35,8 +35,7 @@ import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -49,13 +48,15 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel> {
 
@@ -304,13 +305,33 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
+		
+		handleProgress(true);
 
-		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, type, search, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, null, null, type, search, getActivity());
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				mTotalCount = result.getResultData().getTotalCount();
-				setData(result.getResultData().getModelsList(), toClear);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, getActivity());
+				}
 			}
 		});
 	}

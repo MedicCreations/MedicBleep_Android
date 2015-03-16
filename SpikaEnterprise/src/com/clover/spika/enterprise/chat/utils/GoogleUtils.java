@@ -76,6 +76,8 @@ public class GoogleUtils {
 	public void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
+		
+		
 		new UserApi().updateUserToken(ctx, new ApiCallback<BaseModel>() {
 
 			@Override

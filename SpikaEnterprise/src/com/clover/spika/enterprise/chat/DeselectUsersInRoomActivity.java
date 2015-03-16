@@ -11,17 +11,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<GlobalModel> {
 
@@ -75,13 +76,32 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 	}
 
 	private void getUsersFromRoom() {
+		
+		handleProgress(true);
 
-		new GlobalApi().globalMembers(this, Type.USER, roomId, null, -1, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, null, roomId, Type.USER, this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					mUsers = handleResult(result.getResultData().getModelsList());
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, DeselectUsersInRoomActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mUsers = handleResult(result.getModelsList());
 					setListView();
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, DeselectUsersInRoomActivity.this);
 				}
 			}
 		});

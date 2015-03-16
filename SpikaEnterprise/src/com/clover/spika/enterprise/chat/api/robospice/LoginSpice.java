@@ -32,9 +32,15 @@ public class LoginSpice {
 		@Override
 		public PreLogin loadDataFromNetwork() throws Exception {
 
-			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
+			RequestBody formBody = new FormEncodingBuilder()
+				.add(Const.USERNAME, username)
+				.add(Const.PASSWORD, password)
+				.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_PRELOGIN)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

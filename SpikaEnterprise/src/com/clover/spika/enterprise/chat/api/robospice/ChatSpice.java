@@ -52,7 +52,10 @@ public class ChatSpice {
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERS_TO_ADD, userToAdd).add(Const.CHAT_ID, chatId).add(Const.GROUP_IDS, groupIds)
 					.add(Const.GROUP_ALL_IDS, groupsAll).add(Const.ROOM_IDS, roomIds).add(Const.ROOM_ALL_IDS, roomsAll).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_INVITE_USERS).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_INVITE_USERS)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -88,7 +91,10 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_UPDATE_CHAT).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_UPDATE_CHAT)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -149,7 +155,10 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_UPDATE_CHAT).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_UPDATE_CHAT)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -209,7 +218,10 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_CREATE_ROOM).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_CREATE_ROOM)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -243,7 +255,10 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_DELETE_MESSAGE).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_DELETE_MESSAGE)
+				.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -272,8 +287,10 @@ public class ChatSpice {
 		@Override
 		public Chat loadDataFromNetwork() throws Exception {
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(Const.BASE_URL + Const.F_GET_THREADS + "?" + Const.ROOT_ID + "=" + messageId)
-					.get();
+			Request.Builder requestBuilder = new Request.Builder()
+				.headers(getGetHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_GET_THREADS + "?" + Const.ROOT_ID + "=" + messageId)
+				.get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

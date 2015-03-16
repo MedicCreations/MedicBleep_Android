@@ -12,13 +12,14 @@ import android.webkit.WebViewClient;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Information;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class InformationFragment extends CustomFragment {
 	
@@ -51,16 +52,29 @@ public class InformationFragment extends CustomFragment {
 	}
 	
 	private void getInformation(){
-		new UserApi().getInformation(getActivity(), new ApiCallback<Information>() {
+		
+		handleProgress(true);
+		
+		UserSpice.GetInformation getInformation = new UserSpice.GetInformation(getActivity());
+		spiceManager.execute(getInformation, new CustomSpiceListener<Information>(){
 			
 			@Override
-			public void onApiResponse(Result<Information> result) {
-				if (result.isSuccess()) {
-					mUrl = result.getResultData().url;
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+			
+			@Override
+			public void onRequestSuccess(Information result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+				
+				if (result.getCode() == Const.API_SUCCESS) {
+					mUrl = result.url;
 					setUrl();
 				}else{
-					AppDialog dialog = new AppDialog(getActivity(), false);
-					dialog.setFailed(Helper.errorDescriptions(getActivity(), result.getResultData().getCode()));
+					Utils.onFailedUniversal(Helper.errorDescriptions(getActivity(), result.getCode()), getActivity());
 				}
 			}
 		});

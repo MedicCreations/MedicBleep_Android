@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat.fragments;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +12,16 @@ import android.widget.TextView;
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LobbyApi;
+import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,13 +117,38 @@ public class LobbyUsersFragment extends CustomFragment implements OnItemClickLis
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.USERS_TYPE, getActivity(), false, new ApiCallback<LobbyModel>() {
+		
+		handleProgress(true);
+
+		LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(page, Const.USERS_TYPE, getActivity());
+		spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>() {
 
 			@Override
-			public void onApiResponse(Result<LobbyModel> result) {
-				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().users.getTotalCount();
-					setData(result.getResultData().users.getChatsList(), toClear);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+
+			@Override
+			public void onRequestSuccess(LobbyModel result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				String message = getResources().getString(R.string.e_something_went_wrong);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.users.getTotalCount();
+					setData(result.users.getChatsList(), toClear);
+
+				} else {
+
+					if (result != null && !TextUtils.isEmpty(result.getMessage())) {
+						message = result.getMessage();
+					}
+
+					Utils.onFailedUniversal(message, getActivity());
 				}
 			}
 		});

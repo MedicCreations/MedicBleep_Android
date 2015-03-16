@@ -12,18 +12,19 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class SidebarFragment extends Fragment implements OnClickListener {
+public class SidebarFragment extends CustomFragment implements OnClickListener {
 
 	ImageView userImage;
 	TextView userName;
@@ -154,16 +155,23 @@ public class SidebarFragment extends Fragment implements OnClickListener {
 			break;
 
 		case R.id.logout:
-
-			new UserApi().logout(getActivity(), new ApiCallback<BaseModel>() {
-
+			
+			handleProgress(true);
+			UserSpice.Logout logout = new UserSpice.Logout(getActivity());
+			spiceManager.execute(logout, new CustomSpiceListener<BaseModel>(){
+				
 				@Override
-				public void onApiResponse(Result<BaseModel> result) {
-					if (result.isSuccess()) {
-						Helper.logout(getActivity());
-					} else {
-						new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
-					}
+				public void onRequestFailure(SpiceException arg0) {
+					super.onRequestFailure(arg0);
+					handleProgress(false);
+					new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
+				}
+				
+				@Override
+				public void onRequestSuccess(BaseModel arg0) {
+					super.onRequestSuccess(arg0);
+					handleProgress(false);
+					Helper.logout(getActivity());
 				}
 			});
 

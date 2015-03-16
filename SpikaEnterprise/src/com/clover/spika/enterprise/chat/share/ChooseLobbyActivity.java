@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -17,8 +18,8 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.api.LobbyApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -126,13 +127,38 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		new LobbyApi().getLobbyByType(page, Const.ALL_TOGETHER_TYPE, this, true, new ApiCallback<LobbyModel>() {
-
+		
+		handleProgress(true);
+		
+		LobbySpice.GetLobbyByType getLobbyType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE, this);
+		spiceManager.execute(getLobbyType, new CustomSpiceListener<LobbyModel>(){
+			
 			@Override
-			public void onApiResponse(Result<LobbyModel> result) {
-				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().all_chats.total_count;
-					setData(result.getResultData().all_chats.chats, toClear);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChooseLobbyActivity.this);
+			}
+			
+			@Override
+			public void onRequestSuccess(LobbyModel result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+				
+				String message = getResources().getString(R.string.e_something_went_wrong);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.all_chats.total_count;
+					setData(result.all_chats.chats, toClear);
+
+				} else {
+
+					if(result != null && !TextUtils.isEmpty(result.getMessage())){
+						message = result.getMessage();
+					}
+
+					Utils.onFailedUniversal(message, ChooseLobbyActivity.this);
 				}
 			}
 		});

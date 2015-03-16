@@ -58,13 +58,11 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RecordAudioActivity;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.EmojiApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.EmojiSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
@@ -545,21 +543,48 @@ public abstract class BaseChatActivity extends BaseActivity {
 			AnimUtils.fadeAnim(dimOther, 1, 0, drawerDuration);
 		}
 	}
-	
+
 	private void rlDrawerEmojiManage(final int openOther) {
 		if (isMenuInAnimation)
 			return;
 		if (stickersList.size() == 0) {
-			new EmojiApi().getEmoji(this, new ApiCallback<StickersHolder>() {
+
+			EmojiSpice.GetEmoji getEmoji = new EmojiSpice.GetEmoji(this);
+			spiceManager.execute(getEmoji, new CustomSpiceListener<StickersHolder>() {
 
 				@Override
-				public void onApiResponse(Result<StickersHolder> result) {
-					stickersList.addAll(result.getResultData().stickers);
-					EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
-					layout.setStickersList(result.getResultData().stickers, BaseChatActivity.this, mEmojiListener);
+				public void onRequestFailure(SpiceException arg0) {
+					super.onRequestFailure(arg0);
+					handleProgress(false);
+					Utils.onFailedUniversal(null, BaseChatActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(StickersHolder result) {
+					super.onRequestSuccess(result);
+					handleProgress(false);
+
+					if (result.getCode() == Const.API_SUCCESS) {
+
+						stickersList.addAll(result.stickers);
+						EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+						layout.setStickersList(result.stickers, BaseChatActivity.this, mEmojiListener);
+
+					} else {
+
+						String message = "";
+
+						if (result != null && result.getMessage() != null) {
+							message = result.getMessage();
+						} else {
+							message = getString(R.string.e_something_went_wrong);
+						}
+
+						Utils.onFailedUniversal(message, BaseChatActivity.this);
+					}
 				}
 			});
-		}else{
+		} else {
 			EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
 			layout.refreshStickersList(stickersList, BaseChatActivity.this, mEmojiListener);
 		}
