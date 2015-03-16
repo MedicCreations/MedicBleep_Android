@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -181,6 +182,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		public void setMembers(List<GlobalModel> members) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof MembersFragment) {
+					Log.d("Vida", "SetMember setMembers in adapter");
 					((MembersFragment) fragment).setMembers(members);
 				}
 			}
@@ -251,6 +253,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
+					
+					Log.d("Vida", "onRequestSuccess: " + result.getModelsList());
 
 					profileFragmentPagerAdapter.setMemberTotalCount(result.getTotalCount());
 					profileFragmentPagerAdapter.setMembers(result.getModelsList());

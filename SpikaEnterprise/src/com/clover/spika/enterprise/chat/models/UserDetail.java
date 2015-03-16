@@ -2,6 +2,9 @@ package com.clover.spika.enterprise.chat.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetail implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -11,7 +14,7 @@ public class UserDetail implements Serializable {
 	public String label;
 	public int keyboard_type;
 	public String value;
-	public boolean public_value;
+	public int public_value;
 
 	private int position;
 
@@ -59,11 +62,25 @@ public class UserDetail implements Serializable {
 	}
 
 	public boolean isPublicValue() {
-		return public_value;
+		
+		if(this.public_value == 1)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 
 	public void setPublicValue(boolean publicValue) {
-		this.public_value = publicValue;
+		
+		if(publicValue)
+		{
+			this.public_value = 1;
+		}
+		else
+		{
+			this.public_value = 0;
+		}
 	}
 
 	public int getPosition() {

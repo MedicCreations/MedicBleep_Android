@@ -1,11 +1,16 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.util.TextUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
@@ -126,10 +131,34 @@ public class GlobalSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+			
+			JSONObject jsonObject = new JSONObject(responseBody);
+			int code = jsonObject.getInt(Const.CODE);
+			
+			GlobalResponse response = new GlobalResponse();
+			
+			if (code == Const.API_SUCCESS) {
 
-			ObjectMapper mapper = new ObjectMapper();
+				response.setCode(code);
+				response.setPage(jsonObject.getInt(Const.PAGE));
+				response.setTotalCount(jsonObject.getInt(Const.TOTAL_COUNT));
 
-			return mapper.readValue(responseBody, GlobalResponse.class);
+				List<GlobalModel> globalModels = new ArrayList<GlobalModel>();
+				JSONArray jsonArray = jsonObject.getJSONArray(Const.MEMBERS_RESULT);
+
+				for (int i = 0; i < jsonArray.length(); i++) {
+					GlobalModel item = new GlobalModel((JSONObject) jsonArray.get(i));
+					globalModels.add(item);
+				}
+
+				response.setModelsList(globalModels);
+
+				return response;
+			} else {
+				response.setCode(Const.E_SOMETHING_WENT_WRONG);
+			}
+			
+			return null;
 		}
 	}
 	

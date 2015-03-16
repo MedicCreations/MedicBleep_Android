@@ -44,6 +44,7 @@ public class User implements Serializable {
 		this.image = image;
 		this.image_thumb = imageThumb;
 		this.is_member = isMember;
+
 		this.details = details;
 		this.isSelected = isSelected;
 		organization = org;
@@ -111,7 +112,7 @@ public class User implements Serializable {
 	}
 
 	public boolean isMember() {
-		return is_member;
+		return this.is_member;
 	}
 
 	public void setIsMember(boolean isMember) {
@@ -119,7 +120,7 @@ public class User implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		return is_admin;
+		return this.is_admin;
 	}
 
 	public void setIsAdmin(boolean isAdmin) {

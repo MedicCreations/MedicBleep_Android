@@ -8,7 +8,7 @@ public class Group {
 	public String image;
 	public String image_thumb;
 	public Category category;
-	public boolean is_member;
+	public int is_member;
 	public boolean isSelected = false;
 
 	public Group() {
@@ -95,11 +95,11 @@ public class Group {
 	}
 
 	public boolean isMember() {
-		return is_member;
+		return is_member == 0 ? false : true;
 	}
 
 	public void setMember(boolean isMember) {
-		this.is_member = isMember;
+		this.is_member = isMember ? 1 : 0;
 	}
 
 	public boolean isSelected() {

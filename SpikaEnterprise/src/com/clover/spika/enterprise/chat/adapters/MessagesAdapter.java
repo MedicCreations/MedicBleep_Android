@@ -57,7 +57,6 @@ import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -831,8 +830,6 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean isMe(String userId) {
 
-		Log.d("Vida", "USER1: " + userId);
-		Log.d("Vida", "USER2: " + Helper.getUserId(ctx));
 		if (Helper.getUserId(ctx).equals(userId)) {
 			return true;
 		}

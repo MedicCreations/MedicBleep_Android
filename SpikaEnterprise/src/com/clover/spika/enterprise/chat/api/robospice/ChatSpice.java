@@ -457,11 +457,12 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			try {
 				JSONObject jsonObject = new JSONObject(responseBody);
 				return jsonObject.getInt(Const.CODE);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			return Const.E_FAILED;

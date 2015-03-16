@@ -55,7 +55,7 @@ public class GlobalModel {
 		try {
 
 			if (type == Type.USER) {
-
+				
 				model = object.getJSONObject(Const.USER);
 				user = new ObjectMapper().readValue(model.toString(), User.class);
 
@@ -118,7 +118,7 @@ public class GlobalModel {
 		} else if (type == Type.GROUP) {
 			return group.isMember();
 		} else if (type == Type.CHAT) {
-			return chat.is_member;
+			return chat.isMember();
 		}
 
 		return false;
@@ -134,7 +134,7 @@ public class GlobalModel {
 			return chat.image_thumb;
 		}
 
-		return null;
+		return "";
 	}
 
 }

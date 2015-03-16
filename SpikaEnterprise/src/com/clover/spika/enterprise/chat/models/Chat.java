@@ -23,7 +23,7 @@ public class Chat extends BaseModel {
 	public String password;
 	public String unread;
 	public Category category;
-	public boolean is_member;
+	public int is_member;
 	public Message last_message;
 
 	public boolean isSelected = false;
@@ -44,5 +44,9 @@ public class Chat extends BaseModel {
 		} else {
 			return chat_id;
 		}
+	}
+	
+	public boolean isMember(){
+		return this.is_member == 0 ? false : true;
 	}
 }
