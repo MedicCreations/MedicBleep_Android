@@ -94,6 +94,8 @@ public class ProfileOtherActivity extends BaseActivity {
 		});
 
 		getIntentData(getIntent());
+		
+		setActiveClass(ProfileOtherActivity.class.getName());
 
 	}
 
@@ -138,7 +140,11 @@ public class ProfileOtherActivity extends BaseActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		getIntentData(intent);
+		if(intent.getBooleanExtra(Const.IS_CALL_ACTIVE, false)){
+			setViewWhenCallIsInBackground(R.id.wholeScreen, R.id.actionBarLayout, true);
+		}else{
+			getIntentData(intent);
+		}
 	}
 
 }

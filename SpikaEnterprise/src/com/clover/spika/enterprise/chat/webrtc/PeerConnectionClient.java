@@ -644,6 +644,9 @@ public class PeerConnectionClient {
 	}
 
 	public void switchCamera() {
+		if(!localVideoTrack.enabled()){
+			return;
+		}
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
