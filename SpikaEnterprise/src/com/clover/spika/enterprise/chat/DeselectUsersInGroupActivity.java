@@ -11,18 +11,19 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<GlobalModel> {
 
@@ -74,22 +75,40 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 
 	private void getUsersFromGroup() {
 
-		new GlobalApi().globalMembers(this, Type.USER, null, groupId, -1, true, new ApiCallback<GlobalResponse>() {
+		handleProgress(true);
+
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, null, groupId, Type.USER, this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					List<GlobalModel> members = result.getResultData().getModelsList();
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, DeselectUsersInGroupActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					List<GlobalModel> members = result.getModelsList();
 					mUsers = generateUserList(members);
 
 					setListView();
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, DeselectUsersInGroupActivity.this);
 				}
 			}
 		});
 	}
 
 	private void setListView() {
-		InviteRemoveAdapter adapter = new InviteRemoveAdapter(this, mUsers, this, null);
+		InviteRemoveAdapter adapter = new InviteRemoveAdapter(spiceManager, this, mUsers, this, null);
 		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		listView.getRefreshableView().setAdapter(adapter);
 	}
@@ -114,11 +133,12 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 				}
 			}
 
-			User finalUser = new User(item.getId(), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false, null, toCheck, item.getOrganization());
+			User finalUser = new User(item.getId(), item.getFirstName(), item.getLastName(), null, item.getImage(), item.getImageThumb(), false, null, toCheck,
+					item.getOrganization());
 
 			GlobalModel finalModel = new GlobalModel();
-			finalModel.setType(Type.USER);
-			finalModel.setUser(finalUser);
+			finalModel.type = Type.USER;
+			finalModel.user = finalUser;
 
 			list.add(finalModel);
 		}

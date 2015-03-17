@@ -42,7 +42,7 @@ public class EmojiFragment extends CustomFragment {
 		View superView = inflater.inflate(R.layout.layout_emoji_fragment, container, false);
 		
 		int position = getArguments().getInt(Const.POSITION, 0);
-		List<Stickers> listAll = ((StickersHolder) getArguments().getSerializable(Const.STICEKRS_HOLDER)).getStickersList();
+		List<Stickers> listAll = ((StickersHolder) getArguments().getSerializable(Const.STICEKRS_HOLDER)).stickers;
 		
 		List<Stickers> listLocal = new ArrayList<Stickers>();
 		

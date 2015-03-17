@@ -7,13 +7,15 @@ import android.widget.AdapterView;
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.listeners.OnRemoveClickListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 
@@ -29,7 +31,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		if (getListView() != null) {
-			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
+			mUserAdapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 			mUserAdapter.disableNameClick(true);
 			getListView().setAdapter(mUserAdapter);
 		}
@@ -84,22 +86,34 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 			roomIds = idsRoomBuilder.substring(0, idsRoomBuilder.length() - 1);
 		}
 
-		new ChatApi().leaveChatAdmin(chatId, ids, groupIds, roomIds, getActivity(), new ApiCallback<Chat>() {
+		handleProgress(true);
+		ChatSpice.LeaveChatAdmin leaveChatAdmin = new ChatSpice.LeaveChatAdmin(chatId, ids, groupIds, roomIds, getActivity());
+		spiceManager.execute(leaveChatAdmin, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<Chat> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					if (getActivity() instanceof ManageUsersActivity) {
-						((ManageUsersActivity) getActivity()).setNewChat(result.getResultData().getChat());
+						((ManageUsersActivity) getActivity()).setNewChat(result.chat);
 					}
 					mCurrentIndex = 0;
 					mUserAdapter.clearData();
 					mUserAdapter.resetSelected();
 					mCallbacks.getMembers(mCurrentIndex, true);
+				} else {
+					AppDialog dialog = new AppDialog(getActivity(), false);
+					dialog.setFailed(result.getCode());
 				}
 			}
 		});
-
 	}
 
 	@Override

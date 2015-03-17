@@ -23,8 +23,7 @@ import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
@@ -33,12 +32,14 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class InviteUsersFragment extends CustomFragment implements AdapterView.OnItemClickListener, OnChangeListener<GlobalModel>, OnSearchManageUsersListener,
 		OnInviteClickListener {
@@ -99,7 +100,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		super.onViewCreated(view, savedInstanceState);
 
 		if (view != null) {
-			adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
+			adapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), this, this);
 
 			noItems = (TextView) view.findViewById(R.id.noItems);
 			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
@@ -127,7 +128,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			
 			User userUser = null;
 			
-			if(user.getType() == GlobalModel.Type.USER) userUser = (User) user.getModel();
+			if(user.type == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
 			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), ((User) user.getModel()).getImage(),
 					((User) user.getModel()).getFirstName() + " " + ((User) user.getModel()).getLastName(), userUser);
@@ -164,11 +165,11 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+			if (adapter.getUsersForString().get(i).type == Type.GROUP) {
 				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
-				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+			} else if (adapter.getUsersForString().get(i).type == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).chat_name);
+			} else if (adapter.getUsersForString().get(i).type == Type.USER) {
 				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 
@@ -296,25 +297,37 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			}
 		}
 
-		new ChatApi().addUsersToRoom(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(), groups_to_add_all.toString(), rooms_to_add_all.toString(), chatId,
-				getActivity(), new ApiCallback<Chat>() {
+		handleProgress(true);
+		ChatSpice.AddUsersToRoom addUsersToRoom = new ChatSpice.AddUsersToRoom(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(),
+				groups_to_add_all.toString(), rooms_to_add_all.toString(), chatId, getActivity());
+		spiceManager.execute(addUsersToRoom, new CustomSpiceListener<Chat>() {
 
-					@Override
-					public void onApiResponse(Result<Chat> result) {
+			@Override
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
 
-						if (result.isSuccess()) {
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
 
-							if (getActivity() instanceof ManageUsersActivity) {
-								((ManageUsersActivity) getActivity()).setNewChat(result.getResultData().getChat());
-							}
+				if (result.getCode() == Const.API_SUCCESS) {
 
-							mCurrentIndex = 0;
-							mCallbacks.getUsers(mCurrentIndex, null, true, true);
-							setInitialTextToTxtUsers();
-							adapter.resetSelected();
-						}
+					if (getActivity() instanceof ManageUsersActivity) {
+						((ManageUsersActivity) getActivity()).setNewChat(result.chat);
 					}
-				});
+
+					mCurrentIndex = 0;
+					mCallbacks.getUsers(mCurrentIndex, null, true, true);
+					setInitialTextToTxtUsers();
+					adapter.resetSelected();
+				} else {
+					AppDialog dialog = new AppDialog(getActivity(), false);
+					dialog.setFailed(result.getCode());
+				}
+			}
+		});
 	}
 
 	public void setData(List<GlobalModel> data, boolean toClearPrevious) {

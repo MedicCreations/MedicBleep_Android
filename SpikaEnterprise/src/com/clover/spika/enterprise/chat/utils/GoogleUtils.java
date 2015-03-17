@@ -12,40 +12,28 @@ import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.google.android.gcm.GCMRegistrar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
-import java.io.IOException;
 
 public class GoogleUtils {
 
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-	private GoogleCloudMessaging gcm;
-	private String mUserToken = "";
-
-	public String getPushToken(Context ctx, String userToken) {
+	public String getPushToken(Context ctx) {
 
 		String regId = "";
-		mUserToken = userToken;
 
-		if (checkPlayServices(ctx)) {
-
-			if (!ctx.getResources().getBoolean(R.bool.enable_polling)) {
-				registerInBackground(ctx);
-			} else {
-				storeRegistrationId(ctx, "");
-			}
-
-			regId = getRegistrationId(ctx);
-			Logger.i("PUSH_TOKEN: " + regId);
-
-			return regId;
+		if (!ctx.getResources().getBoolean(R.bool.enable_polling)) {
+			registerInBackground(ctx);
 		} else {
-			Logger.i("Google Play Services are missing");
-			return null;
+			storeRegistrationId(ctx, "");
 		}
+
+		regId = getRegistrationId(ctx);
+		Logger.i("PUSH_TOKEN: " + regId);
+
+		return regId;
 	}
 
 	/**
@@ -61,26 +49,15 @@ public class GoogleUtils {
 
 				String msg = "";
 
-				try {
-					if (gcm == null) {
-						gcm = GoogleCloudMessaging.getInstance(context);
-					}
+				GCMRegistrar.checkDevice(context);
+				GCMRegistrar.checkManifest(context);
+				GCMRegistrar.register(context, Const.GCM_SENDER_ID);
+				
+				String regId = GCMRegistrar.getRegistrationId(context);
+				msg = "Device registered, registration ID=" + regId;
 
-					String regId = gcm.register(Const.GCM_SENDER_ID);
-					msg = "Device registered, registration ID=" + regId;
-
-					// if (regId != null &&
-					// !regId.equals(getRegistrationId(context))) {
-					storeRegistrationId(context, regId);
-					Logger.i("NEW PUSH_TOKEN: " + regId);
-					// }
-				} catch (IOException ex) {
-					msg = "Error :" + ex.getMessage();
-					ex.printStackTrace();
-					// If there is an error, don't just keep trying to register.
-					// Require the user to click a button again, or perform
-					// exponential back-off.
-				}
+				storeRegistrationId(context, regId);
+				Logger.i("NEW PUSH_TOKEN: " + regId);
 
 				return msg;
 			};
@@ -96,10 +73,12 @@ public class GoogleUtils {
 	 * @param regId
 	 *            registration ID
 	 */
-	private void storeRegistrationId(Context ctx, String regId) {
+	public void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
 		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
-		new UserApi().updateUserToken(ctx, mUserToken, new ApiCallback<BaseModel>() {
+		
+		
+		new UserApi().updateUserToken(ctx, new ApiCallback<BaseModel>() {
 
 			@Override
 			public void onApiResponse(Result<BaseModel> result) {
@@ -142,9 +121,9 @@ public class GoogleUtils {
 	 * @return registration ID, or empty string if there is no existing
 	 *         registration ID.
 	 */
-	public String getRegistrationId(Context context) {
+	public String getRegistrationId(Context ctx) {
 
-		String registrationId = SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PUSH_TOKEN_LOCAL);
+		String registrationId = SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL);
 
 		if (registrationId == null || registrationId.isEmpty()) {
 			Logger.i("GCM registration ID not found");
@@ -154,7 +133,7 @@ public class GoogleUtils {
 		// Check if app was updated; if so, it must clear the registration ID
 		// since the existing regID is not guaranteed to work with the new
 		// app version.
-		if (Helper.isUpdated(context)) {
+		if (Helper.isUpdated(ctx)) {
 			Logger.i("App has been updated, we need to register GCM again.");
 			return "";
 		}

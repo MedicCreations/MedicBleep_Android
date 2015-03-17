@@ -17,20 +17,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.ConfirmRoomFragment;
 import com.clover.spika.enterprise.chat.fragments.CreateRoomFragment;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CreateRoomActivity extends BaseActivity {
 
@@ -48,9 +47,6 @@ public class CreateRoomActivity extends BaseActivity {
 	OnSearchListener mSearchListener;
 	OnCreateRoomListener mCreateRoomListener;
 	OnNextStepRoomListener mNextStepListener;
-
-	/* Main ImageLoader */
-	ImageLoader imageLoader;
 
 	/* Fragment currently in use */
 	TextView screenTitle;
@@ -99,9 +95,6 @@ public class CreateRoomActivity extends BaseActivity {
 			}
 		});
 
-		imageLoader = ImageLoader.getInstance(this);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
-
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
@@ -126,7 +119,7 @@ public class CreateRoomActivity extends BaseActivity {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
-		
+
 		setScreenTitle(getString(R.string.preview_group));
 
 		roomIsPrivate = is_private;
@@ -154,8 +147,8 @@ public class CreateRoomActivity extends BaseActivity {
 		bundle.putString(Const.ROOM_THUMB_ID, room_thumb_id);
 		bundle.putString(Const.NAME, roomName);
 		bundle.putString(Const.CATEGORY_NAME, categoryName);
-		bundle.putBoolean(Const.IS_PRIVATE, roomIsPrivate.equals("1") ? true : false );
-		bundle.putString(Const.PASSWORD, password );
+		bundle.putBoolean(Const.IS_PRIVATE, roomIsPrivate.equals("1") ? true : false);
+		bundle.putString(Const.PASSWORD, password);
 		fragment.setArguments(bundle);
 		getSupportFragmentManager().beginTransaction().add(R.id.mainContent, fragment, ConfirmRoomFragment.class.getSimpleName()).commit();
 
@@ -165,7 +158,7 @@ public class CreateRoomActivity extends BaseActivity {
 	public void setCategoryId(String categoryId) {
 		this.categoryId = categoryId;
 	}
-	
+
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
@@ -184,15 +177,25 @@ public class CreateRoomActivity extends BaseActivity {
 
 	public void createRoomFinaly(String userIds, String groupIds, String roomIds) {
 
-		new ChatApi().createRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId, roomIsPrivate, roomPassword, this, new ApiCallback<Chat>() {
+		handleProgress(true);
+		ChatSpice.CreateRoom createRoom = new ChatSpice.CreateRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId, roomIsPrivate, roomPassword, this);
+		spiceManager.execute(createRoom, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<Chat> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CreateRoomActivity.this);
+			}
 
-					String chat_id = String.valueOf(result.getResultData().getChat().getId());
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
 
-					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.getResultData().getChat().getPassword(), result.getResultData().getUser());
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					String chat_id = String.valueOf(result.chat.getId());
+
+					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.chat.password, result.user);
 
 					Helper.setRoomFileId(CreateRoomActivity.this, "");
 					Helper.setRoomThumbId(CreateRoomActivity.this, "");
@@ -207,10 +210,6 @@ public class CreateRoomActivity extends BaseActivity {
 		if (screenTitle != null) {
 			screenTitle.setText(title);
 		}
-	}
-
-	public ImageLoader getImageLoader() {
-		return imageLoader;
 	}
 
 	/**

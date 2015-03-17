@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
@@ -23,20 +23,21 @@ import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class GlobalModelAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<GlobalModel> data = new ArrayList<GlobalModel>();
 
-	private ImageLoader imageLoader;
+	private ImageLoaderSpice imageLoaderSpice;
 
-	public GlobalModelAdapter(Context context, Collection<GlobalModel> users, int defaultImage) {
+	public GlobalModelAdapter(SpiceManager manager, Context context, Collection<GlobalModel> users, int defaultImage) {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = ImageLoader.getInstance(context);
-		imageLoader.setDefaultImage(defaultImage);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
 	}
 
 	public Context getContext() {
@@ -93,14 +94,14 @@ public class GlobalModelAdapter extends BaseAdapter {
 
 		final GlobalModel item = getItem(position);
 
-		imageLoader.displayImage(getContext(), item.getImageThumb(), holder.itemImage);
-		((RoundImageView)holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+		imageLoaderSpice.displayImage(holder.itemImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
+		((RoundImageView) holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
-		if (item.getType() == Type.USER) {
+		if (item.type == Type.USER) {
 			holder.itemName.setText(((User) getItem(position).getModel()).getFirstName() + " " + ((User) getItem(position).getModel()).getLastName());
-		} else if (item.getType() == Type.CHAT) {
-			holder.itemName.setText(((Chat) item.getModel()).getChat_name());
-		} else if (item.getType() == Type.GROUP) {
+		} else if (item.type == Type.CHAT) {
+			holder.itemName.setText(((Chat) item.getModel()).chat_name);
+		} else if (item.type == Type.GROUP) {
 			holder.itemName.setText(((Group) item.getModel()).getGroupName());
 		}
 

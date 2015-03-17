@@ -17,74 +17,65 @@ import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
 public class SpikaEnterpriseApp extends Application {
 
-	private static SpikaEnterpriseApp mInstance;
 	private static Context mAppContext;
-	private boolean mCheckForRestartVideoActivity = false;
-	private String mFilePathForVideo = null;
-	private String mSamsungPath = null;
+	private static Preferences mAppPreferences;
 
-	private Intent poolingIntent;
-	private Intent socketIntent;
-	
-	private boolean isCallInBackground = false;
+	private static Intent socketIntent;
+
+	private static boolean isCallInBackground = false;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		mInstance = this;
-		JNAesCrypto.isEncryptionEnabled = getApplicationContext().getResources().getBoolean(R.bool.enable_global_encryption);
+		JNAesCrypto.isEncryptionEnabled = getResources().getBoolean(R.bool.enable_global_encryption);
+		setAppContext(getApplicationContext());
 
-		this.setAppContext(getApplicationContext());
-
-		poolingIntent = new Intent(this, PoolingService.class);
+		Intent poolingIntent = new Intent(this, PoolingService.class);
 		if (getResources().getBoolean(R.bool.enable_polling)) {
 			startService(poolingIntent);
 		} else {
 			stopService(poolingIntent);
 		}
-		
 	}
-	
-	public void startSocket(){
-		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
-		if(socketIntent != null) return;
-		if(isMyServiceRunning(SocketService.class)) return;
-		socketIntent = new Intent(this, SocketService.class);
+
+	public static void startSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		if (socketIntent != null)
+			return;
+		if (isMyServiceRunning(SocketService.class))
+			return;
+		socketIntent = new Intent(mAppContext, SocketService.class);
 		socketIntent.putExtra(Const.IS_APLICATION_OPEN, true);
-		startService(socketIntent);
+		mAppContext.startService(socketIntent);
 	}
-	
-	public void stopSocket() {
-		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
-		stopService(new Intent(this, SocketService.class));
+
+	public static void stopSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		mAppContext.stopService(new Intent(mAppContext, SocketService.class));
 		socketIntent = null;
 	}
-	
-	public void stopSocketWithCon(Context c) {
-		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
+
+	public static void stopSocketWithCon(Context c) {
+		if (!c.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
 		c.stopService(new Intent(c, SocketService.class));
 		socketIntent = null;
 	}
-	
-	public void restartSocket() {
-		if(!getResources().getBoolean(R.bool.enable_web_rtc)) return;
-		stopService(new Intent(this, SocketService.class));
-		if(isMyServiceRunning(SocketService.class)){
-			socketIntent = new Intent(this, SocketService.class);
+
+	public static void restartSocket() {
+		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
+			return;
+		mAppContext.stopService(new Intent(mAppContext, SocketService.class));
+		if (isMyServiceRunning(SocketService.class)) {
+			socketIntent = new Intent(mAppContext, SocketService.class);
 			socketIntent.putExtra(Const.IS_APLICATION_OPEN, false);
-			startService(socketIntent);
-		}else{
+			mAppContext.startService(socketIntent);
+		} else {
 			startSocket();
 		}
-	}
-	
-	public static Preferences getSharedPreferences(Context ctx) {
-		return new Preferences(ctx);
-	}
-
-	public static SpikaEnterpriseApp getInstance() {
-		return mInstance;
 	}
 
 	public static Context getAppContext() {
@@ -95,31 +86,47 @@ public class SpikaEnterpriseApp extends Application {
 		SpikaEnterpriseApp.mAppContext = mAppContext;
 	}
 
-	public boolean checkForRestartVideoActivity() {
+	public static Preferences getSharedPreferences(Context ctx) {
+
+		if (mAppPreferences == null) {
+			return new Preferences(getAppContext());
+		} else {
+			return mAppPreferences;
+		}
+	}
+
+	// Video activity and path variables and methods
+	private static boolean mCheckForRestartVideoActivity = false;
+	private static String mFilePathForVideo = null;
+
+	public static boolean checkForRestartVideoActivity() {
 		return mCheckForRestartVideoActivity;
 	}
 
-	public void setCheckForRestartVideoActivity(boolean check) {
+	public static void setCheckForRestartVideoActivity(boolean check) {
 		mCheckForRestartVideoActivity = check;
 	}
 
-	public String videoPath() {
+	public static String videoPath() {
 		return mFilePathForVideo;
 	}
 
-	public void setVideoPath(String path) {
+	public static void setVideoPath(String path) {
 		mFilePathForVideo = path;
 	}
 
-	public String samsungImagePath() {
+	// Samsung image path variable and methods
+	private static String mSamsungPath = null;
+
+	public static String samsungImagePath() {
 		return mSamsungPath;
 	}
 
-	public void setSamsungImagePath(String path) {
+	public static void setSamsungImagePath(String path) {
 		mSamsungPath = path;
 	}
 
-	public void deleteSamsungPathImage() {
+	public static void deleteSamsungPathImage() {
 		if (mSamsungPath != null && !mSamsungPath.equals("-1")) {
 			File f = new File(mSamsungPath);
 			if (f.exists())
@@ -127,23 +134,22 @@ public class SpikaEnterpriseApp extends Application {
 		}
 		setSamsungImagePath(null);
 	}
-	
-	private boolean isMyServiceRunning(Class<?> serviceClass) {
-	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (serviceClass.getName().equals(service.service.getClassName())) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
-	
-	public boolean isCallInBackground(){
-		return isCallInBackground;
-	}
-	
-	public void setCallInBackground(boolean isInBack){
-		isCallInBackground = isInBack;
+
+	private static boolean isMyServiceRunning(Class<?> serviceClass) {
+		ActivityManager manager = (ActivityManager) mAppContext.getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
+	public static boolean isCallInBackground() {
+		return isCallInBackground;
+	}
+
+	public static void setCallInBackground(boolean isInBack) {
+		isCallInBackground = isInBack;
+	}
 }

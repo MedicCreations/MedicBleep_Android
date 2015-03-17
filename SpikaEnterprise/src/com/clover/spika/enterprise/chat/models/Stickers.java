@@ -2,41 +2,22 @@ package com.clover.spika.enterprise.chat.models;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public class Stickers implements Serializable {
 
-public class Stickers implements Serializable{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8648077636719231721L;
 
-	@SerializedName("id")
-	@Expose
-	private int id;
-
-	@SerializedName("filename")
-	@Expose
-	private String fileName;
-	
-	@SerializedName("is_deleted")
-	@Expose
-	private int isDeleted;
-	
-	@SerializedName("created")
-	@Expose
-	private long created;
-	
-	@SerializedName("url")
-	@Expose
-	private String url;
-	
-	@SerializedName("organization_id")
-	@Expose
-	private int organizationId;
+	public int id;
+	public String filename;
+	public int is_deleted;
+	public long created;
+	public String url;
+	public int organization_id;
 	
 	private int usedTimes = 0;
+
+	public Stickers() {
+
+	}
 
 	public int getId() {
 		return id;
@@ -47,23 +28,23 @@ public class Stickers implements Serializable{
 	}
 
 	public String getFileName() {
-		return fileName;
+		return filename;
 	}
 
 	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		this.filename = fileName;
 	}
 
 	public int getIsDeleted() {
-		return isDeleted;
+		return is_deleted;
 	}
-	
+
 	public boolean isDeleted() {
-		return isDeleted == 1 ? true : false;
+		return is_deleted == 1 ? true : false;
 	}
 
 	public void setIsDeleted(int isDeleted) {
-		this.isDeleted = isDeleted;
+		this.is_deleted = isDeleted;
 	}
 
 	public String getUrl() {
@@ -75,11 +56,11 @@ public class Stickers implements Serializable{
 	}
 
 	public int getOrganizationId() {
-		return organizationId;
+		return organization_id;
 	}
 
 	public void setOrganizationId(int organizationId) {
-		this.organizationId = organizationId;
+		this.organization_id = organizationId;
 	}
 	
 	public int getUsedTimes() {
@@ -92,9 +73,8 @@ public class Stickers implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Stickers [id=" + id + ", fileName=" + fileName + ", isDeleted=" + isDeleted + ", created=" + created + ", url=" + url + ", organizationId=" + organizationId + "]";
+		return "Stickers [id=" + id + ", fileName=" + filename + ", isDeleted=" + is_deleted + ", created=" + created + ", url=" + url + ", organizationId=" + organization_id
+				+ "]";
 	}
-	
-	
-	
+
 }

@@ -55,7 +55,7 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -67,8 +67,7 @@ import com.clover.spika.enterprise.chat.webrtc.WebSocketChannelClient.WebSocketC
 import com.clover.spika.enterprise.chat.webrtc.socket.models.CallMessage;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPCandidate;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPMessage;
-import com.google.gson.Gson;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Activity for peer connection call setup, call waiting and call view.
@@ -125,22 +124,26 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	// Controls
 	private GLSurfaceView videoView;
 	CallFragment callFragment;
-	
-	
+
 	private WebSocketChannelClient wsClient;
-	
+
 	private int localXConnected = 0;
 	private int localYConnected = 0;
-	
+
 	private User activeUser = null;
 	private boolean isMyCameraOn = false;
 	private boolean isRemoteCameraOn = true;
 	private boolean isServiceAllreadyConnect = false;
-	
+
+	ImageLoaderSpice imageLoaderSpice;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
+
+		imageLoaderSpice = ImageLoaderSpice.getInstance(this);
+		imageLoaderSpice.setSpiceManager(spiceManager);
 
 		// Set window styles for fullscreen-window size. Needs to be done before
 		// adding content.
@@ -153,24 +156,24 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		iceConnected = false;
 		signalingParameters = null;
 		scalingType = ScalingType.SCALE_ASPECT_FILL;
-		
+
 		isMyCameraOn = getIntent().getBooleanExtra(Const.IS_VIDEO_ACCEPT, false);
 
 		// Create UI controls.
-		videoView = (GLSurfaceView) findViewById(R.id.glview_call); 
+		videoView = (GLSurfaceView) findViewById(R.id.glview_call);
 		callFragment = new CallFragment();
 
 		// Create video renderers.
 		VideoRendererGui.setView(videoView, new Runnable() {
 			@Override
 			public void run() {
-				createPeerConnectionFactory(); 
+				createPeerConnectionFactory();
 			}
 		});
-		
+
 		localXConnected = 100 - LOCAL_WIDTH_CONNECTED - 5;
 		localYConnected = 2;
-		
+
 		remoteRender = VideoRendererGui.create(REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType, false);
 		localRender = VideoRendererGui.create(LOCAL_X_CONNECTING, LOCAL_Y_CONNECTING, LOCAL_WIDTH_CONNECTING, LOCAL_HEIGHT_CONNECTING, scalingType, true);
 
@@ -184,7 +187,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 
 		// Get Intent parameters.
 		final Intent intent = getIntent();
-		
+
 		hwCodecAcceleration = intent.getBooleanExtra(EXTRA_HWCODEC, true);
 		if (intent.hasExtra(EXTRA_VIDEOCODEC)) {
 			videoCodec = intent.getStringExtra(EXTRA_VIDEOCODEC);
@@ -192,58 +195,58 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			videoCodec = PeerConnectionClient.VIDEO_CODEC_VP8; // use VP8 by
 																// default.
 		}
-		peerConnectionParameters = new PeerConnectionParameters(intent.getIntExtra(EXTRA_VIDEO_WIDTH, 0), intent.getIntExtra(EXTRA_VIDEO_HEIGHT, 0), intent.getIntExtra(EXTRA_VIDEO_FPS, 0),
-				intent.getIntExtra(EXTRA_VIDEO_BITRATE, 0), intent.getBooleanExtra(EXTRA_CPUOVERUSE_DETECTION, true));
-		
+		peerConnectionParameters = new PeerConnectionParameters(intent.getIntExtra(EXTRA_VIDEO_WIDTH, 0), intent.getIntExtra(EXTRA_VIDEO_HEIGHT, 0), intent.getIntExtra(
+				EXTRA_VIDEO_FPS, 0), intent.getIntExtra(EXTRA_VIDEO_BITRATE, 0), intent.getBooleanExtra(EXTRA_CPUOVERUSE_DETECTION, true));
+
 		LooperExecutor executor = new LooperExecutor();
-		
+
 		// Create connection client and connection parameters.
 		wsClient = new WebSocketChannelClient(executor, new WebSocketChannelEvents() {
-			
+
 			@Override
 			public void onWebSocketOpen() {
-				Log.d(TAG, "Websocket connection completed. Registering..."); 
+				Log.d(TAG, "Websocket connection completed. Registering...");
 				wsClient.register();
-				acceptCall();  
+				acceptCall();
 			}
-			
+
 			@Override
 			public void onWebSocketMessage(String message) {
-				if (wsClient.getState() != WebSocketConnectionState.REGISTERED) { 
+				if (wsClient.getState() != WebSocketConnectionState.REGISTERED) {
 					Log.e(TAG, "Got WebSocket message in non registered state.");
 					return;
-				} 
-				try { 
-					WebRtcSDPMessage item = new Gson().fromJson(message, WebRtcSDPMessage.class);
-					if (item.getArgs().get(0).getType().equals("answer")){ 
+				}
+				try {
+					WebRtcSDPMessage item = new ObjectMapper().readValue(message, WebRtcSDPMessage.class);
+					if (item.getArgs().get(0).getType().equals("answer")) {
 						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("ANSWER"), item.getArgs().get(0).getPayload().getSdp());
 						onRemoteDescription(sdp);
-					}else if (item.getArgs().get(0).getType().equals("offer")){
+					} else if (item.getArgs().get(0).getType().equals("offer")) {
 						SessionDescription sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), item.getArgs().get(0).getPayload().getSdp());
 						onRemoteDescription(sdp);
-					}else if (item.getArgs().get(0).getType().equals("candidate")){
+					} else if (item.getArgs().get(0).getType().equals("candidate")) {
 						WebRtcSDPCandidate candidateModel = item.getArgs().get(0).getPayload().getCandidate();
 						IceCandidate candidate = new IceCandidate(candidateModel.getSdmMid(), Integer.valueOf(candidateModel.getSdpMLineIndex()), candidateModel.getCandidate());
 						onRemoteIceCandidate(candidate);
-					}else if (item.getArgs().get(0).getType().equals("bye")) {
+					} else if (item.getArgs().get(0).getType().equals("bye")) {
 						onChannelClose();
 					}
 				} catch (Exception e) {
-					Log.e("LOG", e.toString()); 
+					Log.e("LOG", e.toString());
 				}
 			}
-			
+
 			@Override
 			public void onWebSocketError(String description) {
 				onChannelClose();
 			}
-			
+
 			@Override
 			public void onWebSocketClose() {
 				reportError("WebSocket error: ");
 			}
 		}, this);
-		
+
 		WebRtcSDPMessage item = (WebRtcSDPMessage) getIntent().getSerializableExtra(Const.CANDIDATE);
 		appRtcClient = new WebSocketRTCClient(this, executor, this, item, wsClient);
 
@@ -260,135 +263,134 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 				}
 			}, runTimeMs);
 		}
-		
-		SpikaEnterpriseApp.getInstance().setCallInBackground(true);
-		
+
+		SpikaEnterpriseApp.setCallInBackground(true);
+
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		if(intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)){
-			if(intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_ENDED){
+		if (intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)) {
+			if (intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_ENDED) {
 				disconnect();
 			}
 		}
 	}
-	
+
 	private void reportError(final String errorMessage) {
 		Log.e(TAG, errorMessage);
 		onChannelError(errorMessage);
 	}
-	
+
 	@Override
     protected void onStart() {
     	super.onStart();
     	intentFilterSocketCall = new IntentFilter(Const.CALL_ACTION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocketCall);
-    };
-    
-    @Override
+	};
+
+	@Override
 	protected void onStop() {
-//		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
+		// LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		super.onStop();
-    }
-    
-    IntentFilter intentFilterSocketCall;
+	}
+
+	IntentFilter intentFilterSocketCall;
 	BroadcastReceiver rec = new BroadcastReceiver() {
-		
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if(intent.hasExtra(Const.MESSAGES)){
-				//MUTE UNMUTE
+			if (intent.hasExtra(Const.MESSAGES)) {
+				// MUTE UNMUTE
 				CallMessage mess = (CallMessage) intent.getSerializableExtra(Const.MESSAGES);
 				if(mess.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_MUTE_REMOTE_VIDEO)){
 					manageRemoteSourceVideo(mess.getArgs().get(0).getPayload().isMute());
-				}else if(mess.getArgs().get(0).getPayload().getName().equals("video")){
+				} else if (mess.getArgs().get(0).getPayload().getName().equals("video")) {
 					manageRemoteVideo(mess.getArgs().get(0).getType());
 				}
 				return;
-			}else if(intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)){
-				if(intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_ENDED){
+			} else if (intent.hasExtra(Const.TYPE_OF_SOCKET_RECEIVER)) {
+				if (intent.getIntExtra(Const.TYPE_OF_SOCKET_RECEIVER, -1) == Const.CALL_ENDED) {
 					disconnect();
 					return;
 				}
 			}
 			WebRtcSDPMessage item = (WebRtcSDPMessage) intent.getSerializableExtra(Const.CANDIDATE);
-			if(item == null){
+			if (item == null) {
 				disconnect();
 				return;
 			}
 			activeUser = item.getArgs().get(0).getPayload().getUser();
 			startCall(item);
-			
+
 		}
 	};
 
 	@Override
 	protected void onServiceBaseConnected() {
-		if(isServiceAllreadyConnect) return;
+		if (isServiceAllreadyConnect)
+			return;
 		isServiceAllreadyConnect = true;
 		wsClient.connect();
 	};
-	
-	public void acceptCall(){
-		if(getIntent().hasExtra(Const.SESSION_ID)) {
-			//RECEIVE CALL
+
+	public void acceptCall() {
+		if (getIntent().hasExtra(Const.SESSION_ID)) {
+			// RECEIVE CALL
 			mService.callAccept(getIntent().getStringExtra(Const.SESSION_ID));
-		}else{
-			//MAKE CALL
+		} else {
+			// MAKE CALL
 			User user = (User) getIntent().getSerializableExtra(Const.USER);
 			activeUser = user;
 			startCall(null);
 		}
 	}
-	
+
 	private void manageRemoteVideo(String type) {
 		Log.d("NEW", "MANAGE REMOTE VIDEO: "+type);
 		if(type.equals(Const.WebRTCCall.CALL_MUTE)){
 			isRemoteCameraOn = false;
-			for(int i = 1; i < 5; i++){
+			for (int i = 1; i < 5; i++) {
 				int id = getResources().getIdentifier("backBlue" + i, "id", getPackageName());
 				findViewById(id).setVisibility(View.VISIBLE);
 			}
 			manageLocalVideo();
-		}else{
+		} else {
 			isRemoteCameraOn = true;
-			for(int i = 1; i < 5; i++){
+			for (int i = 1; i < 5; i++) {
 				int id = getResources().getIdentifier("backBlue" + i, "id", getPackageName());
 				findViewById(id).setVisibility(View.INVISIBLE);
 			}
 			manageLocalVideo();
 		}
 	}
-	
+
 	protected void manageRemoteSourceVideo(boolean mute) {
 		onVideoOnOff(mute);
 	}
-	
+
 	private void manageLocalVideo() {
-		if(!isMyCameraOn){
-			if(!isRemoteCameraOn) {
+		if (!isMyCameraOn) {
+			if (!isRemoteCameraOn) {
 				findViewById(R.id.backgroundInMyCamera).setVisibility(View.VISIBLE);
 				findViewById(R.id.imageInCall).setVisibility(View.VISIBLE);
-			}
-			else {
+			} else {
 				findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 				findViewById(R.id.imageInCall).setVisibility(View.GONE);
 			}
 			VideoRendererGui.update(localRender, 99, 99, 1, 1, ScalingType.SCALE_ASPECT_FILL);
-		}else{
+		} else {
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 			findViewById(R.id.imageInCall).setVisibility(View.GONE);
 			VideoRendererGui.update(localRender, localXConnected, localYConnected, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED, ScalingType.SCALE_ASPECT_FILL);
 		}
 	}
-	
+
 	@Override
 	protected void callEnded() {
 		disconnect();
 	}
-	
 
 	// Activity interfaces
 	@Override
@@ -420,7 +422,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			logToast.cancel();
 		}
 		activityRunning = false;
-		SpikaEnterpriseApp.getInstance().setCallInBackground(false);
+		SpikaEnterpriseApp.setCallInBackground(false);
 	}
 
 	// CallFragment.OnCallEvents interface implementation.
@@ -442,7 +444,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		updateVideoView();
 		manageLocalVideo();
 	}
-	
+
 	@Override
 	public void onMuteAudio(boolean toMute) {
 		String mute = Const.WebRTCCall.CALL_UNMUTE;
@@ -450,45 +452,47 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		mService.sendWebRtcUnMuteOrMute("audio", mute);
 		peerConnectionClient.setAudioEnabled(!toMute);
 	}
-	
+
 	@Override
 	public void onVideoOnOff(boolean toOff) {
 		String mute = Const.WebRTCCall.CALL_UNMUTE;
 		if(toOff) mute = Const.WebRTCCall.CALL_MUTE;
 		mService.sendWebRtcUnMuteOrMute("video", mute);
 		peerConnectionClient.setLocalVideoEnabled(!toOff);
-		if(toOff)peerConnectionClient.stopVideoSource();
-		else peerConnectionClient.startVideoSource();
+		if (toOff)
+			peerConnectionClient.stopVideoSource();
+		else
+			peerConnectionClient.startVideoSource();
 		isMyCameraOn = !toOff;
 		manageLocalVideo();
 	}
-	
+
 	@Override
 	public void onSpeakerOnOff(boolean toOff) {
-		if(toOff){
+		if (toOff) {
 			audioManager.setForceEarpiece(true);
 			audioManager.setAudioDevice(AudioDevice.EARPIECE);
-		}else{
+		} else {
 			audioManager.setForceEarpiece(false);
 			audioManager.setAudioDevice(AudioDevice.SPEAKER_PHONE);
 		}
 	}
-	
+
 	@Override
 	public void onMessages() {
 		try {
 			Class<?> classa = Class.forName(getIntent().getStringExtra(Const.ACTIVE_CLASS));
 			Intent intent = new Intent(this, classa);
-		    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-		    intent.putExtra(Const.IS_CALL_ACTIVE, true);
-		    startActivity(intent);
+			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			intent.putExtra(Const.IS_CALL_ACTIVE, true);
+			startActivity(intent);
 		} catch (ClassNotFoundException e) {
 			Intent intent = new Intent(this, MainActivity.class);
-		    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-		    intent.putExtra(Const.IS_CALL_ACTIVE, true);
-		    startActivity(intent);
+			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			intent.putExtra(Const.IS_CALL_ACTIVE, true);
+			startActivity(intent);
 		}
-		
+
 	}
 
 	// Helper functions.
@@ -508,7 +512,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	}
 
 	private void updateVideoView() {
-		VideoRendererGui.update(remoteRender, REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType); 
+		VideoRendererGui.update(remoteRender, REMOTE_X, REMOTE_Y, REMOTE_WIDTH, REMOTE_HEIGHT, scalingType);
 		if (iceConnected) {
 			VideoRendererGui.update(localRender, localXConnected, localYConnected, LOCAL_WIDTH_CONNECTED, LOCAL_HEIGHT_CONNECTED, ScalingType.SCALE_ASPECT_FILL);
 		} else {
@@ -518,12 +522,12 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 
 	private void startCall(WebRtcSDPMessage webRtcMessage) {
 		if (appRtcClient == null) {
-			Log.e(TAG, "AppRTC client is not allocated for a call."); 
+			Log.e(TAG, "AppRTC client is not allocated for a call.");
 			return;
 		}
-		// Start room connection. 
+		// Start room connection.
 		signalingParameters = appRtcClient.setRoomParameters(webRtcMessage);
-		
+
 		onConnectedToRoom(signalingParameters);
 
 		// Create and audio manager that will take care of audio routing,
@@ -539,25 +543,29 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		// Store existing audio settings and change audio mode to
 		// MODE_IN_COMMUNICATION for best possible VoIP performance.
 		Log.d(TAG, "Initializing the audio manager...");
-		audioManager.init(); 
-		
+		audioManager.init();
+
 		final RoundImageView profile = (RoundImageView) findViewById(R.id.imageInCall);
 		profile.setBorderColor(Color.WHITE);
-		
+
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				if(activeUser != null)ImageLoader.getInstance(CallActivity.this).displayImage(CallActivity.this, activeUser.getImageThumb(), profile);
+				if (activeUser != null) {
+					imageLoaderSpice.displayImage(profile, activeUser.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
+				}
 			}
 		});
-//		if(activeUser != null)ImageLoader.getInstance(this).displayImage(this, activeUser.getImageThumb(), profile);
+		// if(activeUser !=
+		// null)ImageLoader.getInstance(this).displayImage(this,
+		// activeUser.getImageThumb(), profile);
 	}
 
 	// Should be called from UI thread
 	private void callConnected() {
-		// Update video view. 
-		if(!isMyCameraOn) {
+		// Update video view.
+		if (!isMyCameraOn) {
 			peerConnectionClient.setLocalVideoEnabled(false);
 			peerConnectionClient.stopVideoSource();
 			mService.sendWebRtcUnMuteOrMute("video", Const.WebRTCCall.CALL_MUTE);
@@ -567,25 +575,26 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			mService.sendWebRtcUnMuteOrMute("video", Const.WebRTCCall.CALL_UNMUTE);
 		}
 		updateVideoView();
-		
-		// Enable statistics callback. 
+
+		// Enable statistics callback.
 		peerConnectionClient.enableStatsEvents(true, STAT_CALLBACK_PERIOD);
-		
-		if(activeUser != null && callFragment != null) callFragment.setUserNameAndStarChrono(activeUser.getFirstName() + " " + activeUser.getLastName());
+
+		if (activeUser != null && callFragment != null)
+			callFragment.setUserNameAndStarChrono(activeUser.getFirstName() + " " + activeUser.getLastName());
 		callFragment.setAudioMuteButton(true);
 		callFragment.setVideoOnOffButton(isMyCameraOn);
 		callFragment.setSpeakerButton(true);
-		
+
 	}
 
 	private void onAudioManagerChangedState() {
-		//  disable video if
+		// disable video if
 		// AppRTCAudioManager.AudioDevice.EARPIECE
 		// is active.
-	} 
+	}
 
 	// Create peer connection factory when EGL context is ready.
-	private void createPeerConnectionFactory() { 
+	private void createPeerConnectionFactory() {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -600,7 +609,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			}
 		});
 	}
- 
+
 	// Disconnect from remote resources, dispose of local resources, and exit.
 	private void disconnect() {
 		mService.setIsInWebRtc(false);
@@ -623,7 +632,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		} else {
 			setResult(RESULT_CANCELED);
 		}
-		SpikaEnterpriseApp.getInstance().setCallInBackground(false);
+		SpikaEnterpriseApp.setCallInBackground(false);
 		finish();
 	}
 
@@ -728,7 +737,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 					// Create answer. Answer SDP will be sent to offering client
 					// in
 					// PeerConnectionEvents.onLocalDescription event.
-//					peerConnectionClient.createAnswer();
+					// peerConnectionClient.createAnswer();
 				}
 			}
 		});

@@ -1,9 +1,11 @@
 package com.clover.spika.enterprise.chat.webrtc.socket.models;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SocketParser {
-	
+
 	/** Message type disconnect */
 	public static final int TYPE_DISCONNECT = 0;
 
@@ -51,7 +53,7 @@ public class SocketParser {
 
 	/** Type */
 	private int type;
-	
+
 	/**
 	 * Instantiates a new IOMessage by given data.
 	 * 
@@ -97,7 +99,7 @@ public class SocketParser {
 		String[] fields = message.split(":", NUM_FIELDS);
 		for (int i = 0; i < fields.length; i++) {
 			this.fields[i] = fields[i];
-			if(i == FIELD_TYPE)
+			if (i == FIELD_TYPE)
 				this.type = Integer.parseInt(fields[i]);
 		}
 	}
@@ -108,7 +110,7 @@ public class SocketParser {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < fields.length; i++) {
+		for (int i = 0; i < fields.length; i++) {
 			builder.append(':');
 			if (fields[i] != null)
 				builder.append(fields[i]);
@@ -160,22 +162,39 @@ public class SocketParser {
 	public String getData() {
 		return fields[FIELD_DATA];
 	}
-	
-	public CheckAvailableRoom parseCheckUser(String mess){
-		if(mess.contains("[null,")){
+
+	public CheckAvailableRoom parseCheckUser(String mess) {
+		if (mess.contains("[null,")) {
 			mess = mess.substring((mess.indexOf("[null,") + 6), mess.length() - 1);
-			return new Gson().fromJson(mess, CheckAvailableRoom.class);
-		}else{
-			return new Gson().fromJson(mess, CheckAvailableRoom.class);
+
+			try {
+				return new ObjectMapper().readValue(mess, CheckAvailableRoom.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				return new ObjectMapper().readValue(mess, CheckAvailableRoom.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+
+		return null;
 	}
-	
-	public CallMessage parseCallMessage(String mess){
-		if(!mess.startsWith("{")){
+
+	public CallMessage parseCallMessage(String mess) {
+		if (!mess.startsWith("{")) {
 			mess = mess.substring(mess.indexOf("{"));
 		}
-		
-		return new Gson().fromJson(mess, CallMessage.class);
+
+		try {
+			return new ObjectMapper().readValue(mess, CallMessage.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 	
 }

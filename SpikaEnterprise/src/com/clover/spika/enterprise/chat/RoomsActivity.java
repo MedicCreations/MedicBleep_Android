@@ -17,18 +17,19 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,14 +62,12 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	private int speedSearchAnimation = 300;
 	private OnSearchListener mSearchListener;
 
-	private GlobalApi api = new GlobalApi();
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rooms);
 
-		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
+		adapter = new GlobalModelAdapter(spiceManager, this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);
@@ -131,7 +130,7 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = (Chat) adapter.getItem(position).getModel();
-			ChatActivity.startWithChatId(this, String.valueOf(room.getId()), room.getPassword(), room.getUser());
+			ChatActivity.startWithChatId(this, String.valueOf(room.getId()), room.password, room.user);
 		}
 	}
 
@@ -230,19 +229,35 @@ public class RoomsActivity extends BaseActivity implements AdapterView.OnItemCli
 	}
 
 	private void getRooms(int page, String search, final boolean toClear) {
+		
+		handleProgress(true);
 
-		api.globalSearch(this, page, null, mCategory, Type.CHAT, search, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, mCategory, Type.CHAT, search, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, RoomsActivity.this);
+			}
 
-				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getModelsList(), toClear);
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, RoomsActivity.this);
 				}
 			}
 		});
-
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import com.clover.spika.enterprise.chat.ShowProfileActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -79,9 +80,9 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		updatePassword.setOnClickListener(this);
 
 		mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
-		
-		((MainActivity)getActivity()).enableEditProfile(this);
-		
+
+		((MainActivity) getActivity()).enableEditProfile(this);
+
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
@@ -93,7 +94,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 	public void onResume() {
 		super.onResume();
 		onClosed();
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 
 	}
 
@@ -115,7 +116,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 			}
 
 			mLoadingLayout.setVisibility(View.VISIBLE);
-			((MainActivity) getActivity()).getImageLoader().displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+			getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_USER_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override
 				public void onFinish() {

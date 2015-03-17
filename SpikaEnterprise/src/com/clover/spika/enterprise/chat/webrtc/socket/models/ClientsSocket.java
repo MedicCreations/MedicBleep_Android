@@ -3,28 +3,17 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 import java.io.Serializable;
 
 import com.clover.spika.enterprise.chat.models.User;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class ClientsSocket implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("screen")
-	@Expose
-	private boolean screen;
+	public boolean screen;
+	public boolean video;
+	public boolean audio;
+	public User user;
 	
-	@SerializedName("video")
-	@Expose
-	private boolean video;
-	
-	@SerializedName("audio")
-	@Expose
-	private boolean audio;
-
-	@SerializedName("user")
-	@Expose
-	private User user;
+	public ClientsSocket(){}
 
 	public boolean isScreen() {
 		return screen;

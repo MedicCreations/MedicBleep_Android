@@ -35,11 +35,11 @@ import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnNextStepRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -48,13 +48,15 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel> {
 
@@ -98,7 +100,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		adapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), this, this);
+		adapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), this, this);
 		mCurrentIndex = 0;
 	}
 
@@ -106,14 +108,13 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onResume() {
 		super.onResume();
 		onClosed();
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_create_room, container, false);
-
 		View header = inflater.inflate(R.layout.pull_to_refresh_header_create_room, null);
 
 		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
@@ -246,7 +247,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 			room_thumb_id = Helper.getRoomThumbId(getActivity());
 
 			if (room_file_id != "") {
-				((CreateRoomActivity) getActivity()).getImageLoader().displayImage(getActivity(), room_thumb_id, imgRoom);
+				getImageLoader().displayImage(imgRoom, room_thumb_id, ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
 			}
 
 			((CreateRoomActivity) getActivity()).setRoom_file_id(room_file_id);
@@ -304,13 +305,33 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
+		
+		handleProgress(true);
 
-		new GlobalApi().globalSearch(getActivity(), mCurrentIndex, null, null, type, search, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, null, null, type, search, getActivity());
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				mTotalCount = result.getResultData().getTotalCount();
-				setData(result.getResultData().getModelsList(), toClear);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, getActivity());
+				}
 			}
 		});
 	}
@@ -473,11 +494,11 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		for (int i = 0; i < adapter.getUsersForString().size(); i++) {
 
-			if (adapter.getUsersForString().get(i).getType() == Type.GROUP) {
+			if (adapter.getUsersForString().get(i).type == Type.GROUP) {
 				builder.append(((Group) adapter.getUsersForString().get(i).getModel()).getGroupName());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.CHAT) {
-				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).getChat_name());
-			} else if (adapter.getUsersForString().get(i).getType() == Type.USER) {
+			} else if (adapter.getUsersForString().get(i).type == Type.CHAT) {
+				builder.append(((Chat) adapter.getUsersForString().get(i).getModel()).chat_name);
+			} else if (adapter.getUsersForString().get(i).type == Type.USER) {
 				builder.append(((User) adapter.getUsersForString().get(i).getModel()).getFirstName() + " " + ((User) adapter.getUsersForString().get(i).getModel()).getLastName());
 			}
 

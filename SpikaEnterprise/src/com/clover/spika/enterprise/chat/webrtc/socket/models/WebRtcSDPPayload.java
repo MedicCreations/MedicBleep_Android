@@ -3,28 +3,18 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 import java.io.Serializable;
 
 import com.clover.spika.enterprise.chat.models.User;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class WebRtcSDPPayload implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("type")
-	@Expose
-	private String type;
+	public String type;
+	public String sdp;
+	public User user;
+	public WebRtcSDPCandidate candidate;
 	
-	@SerializedName("sdp")
-	@Expose
-	private String sdp;
-	
-	@SerializedName("user")
-	@Expose
-	private User user;
-	
-	@SerializedName("candidate")
-	@Expose
-	private WebRtcSDPCandidate candidate;
+	public WebRtcSDPPayload(){
+	}
 
 	public String getType() {
 		return type;

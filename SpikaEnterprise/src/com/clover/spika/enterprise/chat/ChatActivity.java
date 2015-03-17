@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -23,9 +22,9 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -38,12 +37,14 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 
 public class ChatActivity extends BaseChatActivity {
@@ -58,14 +59,14 @@ public class ChatActivity extends BaseChatActivity {
 	private boolean isRunning = false;
 	private boolean isResume = false;
 	private boolean isOnCreate = false;
-	
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		noItems = (TextView) findViewById(R.id.noItems);
 
-		adapter = new MessagesAdapter(this, new ArrayList<Message>());
+		adapter = new MessagesAdapter(spiceManager, this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
 		chatListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -92,9 +93,9 @@ public class ChatActivity extends BaseChatActivity {
 				return true;
 			}
 		});
-		
+
 		adapter.setOnLongAndSimpleClickCustomListener(new MessagesAdapter.OnMessageLongAndSimpleClickCustomListener() {
-			
+
 			@Override
 			public void onLongClick(Message message) {
 				if (message.isMe()) {
@@ -112,38 +113,37 @@ public class ChatActivity extends BaseChatActivity {
 		});
 
 		isOnCreate = true;
-		
+
 		LocalBroadcastManager.getInstance(this).registerReceiver(adminBroadCast, adminFilter);
 		getIntentData(getIntent());
-		
+
 		setEmojiListener(new SelectEmojiListener() {
-			
+
 			@Override
 			public void onEmojiSelect(Stickers selectedStickers) {
 				sendMessage(Const.MSG_TYPE_GIF, chatId, selectedStickers.getUrl(), null, null, null, null);
 			}
 		});
-		
-		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+
+		if (SpikaEnterpriseApp.isCallInBackground()) {
 			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, false);
 		}
-		
+
 		setActiveClass(ChatActivity.class.getName());
-		
 	}
-	
-	public void setIsResume(boolean isResume){
+
+	public void setIsResume(boolean isResume) {
 		this.isResume = isResume;
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 
 		// if activity restart after calling camera intent (SAMSUNG DEVICES)
-		SpikaEnterpriseApp.getInstance().setCheckForRestartVideoActivity(false);
-		SpikaEnterpriseApp.getInstance().setVideoPath(null);
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.setCheckForRestartVideoActivity(false);
+		SpikaEnterpriseApp.setVideoPath(null);
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 
 		if (isResume) {
 			if (adapter.getCount() > 0) {
@@ -168,7 +168,7 @@ public class ChatActivity extends BaseChatActivity {
 
 				isAdmin = intent.getExtras().getBoolean(Const.IS_ADMIN, isAdmin);
 
-				if (chatType == Const.C_ROOM){
+				if (chatType == Const.C_ROOM) {
 					if (isAdmin && isActive == 1) {
 						chatType = Const.C_ROOM_ADMIN_ACTIVE;
 					}
@@ -207,7 +207,7 @@ public class ChatActivity extends BaseChatActivity {
 	};
 
 	protected void kill() {
-		
+
 		finish();
 
 		Intent intent = new Intent(this, MainActivity.class);
@@ -220,7 +220,7 @@ public class ChatActivity extends BaseChatActivity {
 	public void onBackPressed() {
 		if (rlDrawerNew.isSelected()) {
 			forceClose();
-		}else if (rlDrawerEmoji.isSelected()) {
+		} else if (rlDrawerEmoji.isSelected()) {
 			forceClose();
 		} else {
 			kill();
@@ -236,11 +236,11 @@ public class ChatActivity extends BaseChatActivity {
 			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
 		} else {
-			if (!isOnCreate){
+			if (!isOnCreate) {
 				getIntentData(intent);
 			}
 		}
-		
+
 		if (intent.getBooleanExtra(Const.IS_CALL_ACTIVE, false)) {
 			setViewWhenCallIsInBackground(R.id.rootView, R.id.actionBarLayout, true);
 		}
@@ -287,7 +287,7 @@ public class ChatActivity extends BaseChatActivity {
 
 		context.startActivity(intent);
 	}
-	
+
 	public static void startWithUserIdWithLeaveMessage(Context context, User user) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
@@ -335,63 +335,60 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void getIntentData(final Intent intent) {
-		
+
 		if (intent != null && intent.getExtras() != null) {
-			
+
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 				try {
 					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
 
 					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-					new LoginApi().loginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME), hashPassword,
-							intent.getExtras().getString(Const.ORGANIZATION_ID), this, true,
-							new ApiCallback<Login>() {
-								@Override
-								public void onApiResponse(Result<Login> result) {
-									if (result.isSuccess()) {
 
-										Helper.setUserProperties(getApplicationContext(), result.getResultData().getUserId(), result.getResultData().getImage(), result.getResultData().getImageThumb(), result
-												.getResultData().getFirstname(), result.getResultData().getLastname(), result.getResultData().getToken());
+					handleProgress(true);
+					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
+							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
+					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
-										new GoogleUtils().getPushToken(ChatActivity.this, result.getResultData().getToken());
+						@Override
+						public void onRequestFailure(SpiceException ex) {
+							handleProgress(false);
+							Utils.onFailedUniversal(null, ChatActivity.this);
+						}
 
-										handleIntentSecondLevel(intent);
-									} else {
+						@Override
+						public void onRequestSuccess(Login result) {
+							handleProgress(false);
 
-										String message = "";
-										if (result.hasResultData()) {
-											if (result.getResultData().getCode() == Const.E_INVALID_TOKEN) {
-												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(intent);
-											} else if (result.getResultData().getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
-												Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
-												intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
-												startActivity(intent);
-												finish();
-												return;
-											} else {
-												message = result.getResultData().getMessage();
-											}
-										} else {
-											message = getString(R.string.e_something_went_wrong);
-										}
+							if (result.getCode() == Const.API_SUCCESS) {
 
-										AppDialog dialog = new AppDialog(ChatActivity.this, false);
-										dialog.setFailed(message);
-										dialog.setOnDismissListener(new OnDismissListener() {
+								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname,
+										result.getToken());
+								new GoogleUtils().getPushToken(ChatActivity.this);
 
-											@Override
-											public void onDismiss(DialogInterface dialog) {
-												Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-												intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-												startActivity(intent);
-											}
-										});
-									}
+								handleIntentSecondLevel(intent);
+
+							} else {
+
+								String message = "";
+								if (result.getCode() == Const.E_INVALID_TOKEN) {
+									Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
+									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									startActivity(intent);
+								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
+									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
+									startActivity(intent);
+									finish();
+									return;
+								} else {
+									message = result.getMessage();
 								}
-							});
+
+								Utils.onFailedUniversal(message, ChatActivity.this);
+							}
+						}
+					});
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -404,25 +401,25 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	private void handleIntentSecondLevel(final Intent intent) {
-		
+
 		isOnCreate = false;
-		
+
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
-			Log.d("LOG", "old: "+chatId +", new: "+intent.getExtras().getString(Const.CHAT_ID));
-			
-			if(chatId != null && intent.getExtras().getString(Const.CHAT_ID) !=null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))){
+			Log.d("LOG", "old: " + chatId + ", new: " + intent.getExtras().getString(Const.CHAT_ID));
+
+			if (chatId != null && intent.getExtras().getString(Const.CHAT_ID) != null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))) {
 				adapter.clearItems();
 			}
-			
+
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
-//			adapter.clearItems();
+			// adapter.clearItems();
 
 			if (!TextUtils.isEmpty(chatPassword)) {
-				
-				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)){
+
+				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
 					getMessages(true, true, true, false, false, false);
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
@@ -450,7 +447,7 @@ public class ChatActivity extends BaseChatActivity {
 						}
 					});
 				}
-				
+
 			} else {
 				getMessages(true, true, true, false, false, false);
 			}
@@ -459,53 +456,57 @@ public class ChatActivity extends BaseChatActivity {
 			boolean isGroup = intent.getExtras().containsKey(Const.IS_GROUP);
 			mUserId = intent.getExtras().getString(Const.USER_ID);
 
-			new ChatApi().startChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME), true, this,
-					new ApiCallback<Chat>() {
+			handleProgress(true);
+			ChatSpice.StartChat startChat = new ChatSpice.StartChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME),
+					this);
+			spiceManager.execute(startChat, new CustomSpiceListener<Chat>() {
 
-						@Override
-						public void onApiResponse(Result<Chat> result) {
+				@Override
+				public void onRequestFailure(SpiceException ex) {
+					handleProgress(false);
+					Utils.onFailedUniversal(null, ChatActivity.this);
+				}
 
-							if (result.isSuccess()) {
+				@Override
+				public void onRequestSuccess(Chat result) {
+					handleProgress(false);
 
-								chatParams(result.getResultData().getChat());
-								
-								if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
-								if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
+					chatParams(result.chat);
 
-								chatId = String.valueOf(result.getResultData().getId());
-								chatName = result.getResultData().getChat_name();
+					if (result.user != null) {
+						currentUser = result.user;
+					}
+					if (getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) {
+						currentUser = (User) getIntent().getSerializableExtra(Const.USER);
+					}
 
-								setTitle(chatName);
+					chatParams(result.chat);
 
-								adapter.clearItems();
-								totalItems = Integer.valueOf(result.getResultData().getTotal_count());
-								adapter.addItems(result.getResultData().getMessagesList(), true);
-								adapter.setSeenBy(result.getResultData().getSeen_by());
-								adapter.setTotalCount(Integer.valueOf(result.getResultData().getTotal_count()));
-								if (adapter.getCount() > 0) {
-									chatListView.setSelectionFromTop(adapter.getCount(), 0);
-								}
-								
-								checkForLeaveVoiceMessage(intent);
-							} else {
-								AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					chatId = String.valueOf(result.getId());
+					chatName = result.chat_name;
 
-								if (result.getResultData() != null) {
-									dialog.setFailed(Helper.errorDescriptions(ChatActivity.this, result.getResultData().getCode()));
-								} else {
-									dialog.setFailed("");
-								}
-							}
+					setTitle(chatName);
+					adapter.clearItems();
+					totalItems = Integer.valueOf(result.total_count);
+					adapter.addItems(result.messages, true);
+					adapter.setSeenBy(result.seen_by);
+					adapter.setTotalCount(Integer.valueOf(result.total_count));
+					if (adapter.getCount() > 0) {
+						chatListView.setSelectionFromTop(adapter.getCount(), 0);
+					}
 
-							setNoItemsVisibility();
-						}
-					});
+					checkForLeaveVoiceMessage(intent);
+
+					setNoItemsVisibility();
+				}
+			});
 		}
 	}
 
 	protected void checkForLeaveVoiceMessage(Intent intent) {
-		if(intent.hasExtra(Const.TO_LEAVE_MESSAGE)){
-			if(currentUser != null) openRecordActivity(currentUser);
+		if (intent.hasExtra(Const.TO_LEAVE_MESSAGE)) {
+			if (currentUser != null)
+				openRecordActivity(currentUser);
 		}
 	}
 
@@ -515,35 +516,35 @@ public class ChatActivity extends BaseChatActivity {
 			AppDialog dialog = new AppDialog(this, true);
 			dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
 			return;
-		} else if (chat.getChat_name() == null && !TextUtils.isEmpty(chatName)) {
+		} else if (chat.chat_name == null && !TextUtils.isEmpty(chatName)) {
 			return;
 		}
 
-		chatName = chat.getChat_name();
+		chatName = chat.chat_name;
 		setTitle(chatName);
-		chatImage = chat.getImage();
-		chatImageThumb = chat.getImageThumb();
+		chatImage = chat.image;
+		chatImageThumb = chat.image_thumb;
 
-		if (!TextUtils.isEmpty(chat.getAdminId())) {
-			isAdmin = Helper.getUserId(this).equals(chat.getAdminId()) ? true : false;
+		if (!TextUtils.isEmpty(chat.admin_id)) {
+			isAdmin = Helper.getUserId(this).equals(chat.admin_id) ? true : false;
 		} else {
 			isAdmin = false;
 		}
 
-		isActive = chat.isActive();
+		isActive = chat.is_active;
 		if (isActive == 0) {
 			etMessage.setFocusable(false);
 		}
-		isPrivate = chat.isPrivate();
+		isPrivate = chat.is_private;
 
-		if (chat.getCategory() != null) {
-			categoryId = String.valueOf(chat.getCategory().getId());
-			categoryName = chat.getCategory().getName();
+		if (chat.category != null) {
+			categoryId = String.valueOf(chat.category.id);
+			categoryName = chat.category.name;
 		}
 
-		chatType = chat.getType();
+		chatType = chat.type;
 
-		if (chatType == Const.C_ROOM){
+		if (chatType == Const.C_ROOM) {
 			if (isAdmin && isActive == 1) {
 				chatType = Const.C_ROOM_ADMIN_ACTIVE;
 			}
@@ -606,19 +607,32 @@ public class ChatActivity extends BaseChatActivity {
 	}
 
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
-		new ChatApi().sendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, this, new ApiCallback<Integer>() {
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
+
+				if (result == Const.API_SUCCESS) {
+
 					etMessage.setText("");
-					if(type != Const.MSG_TYPE_DEFAULT) forceClose();
+					if (type != Const.MSG_TYPE_DEFAULT)
+						forceClose();
 
 					callNewMsgs();
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(result.getResultData());
-					if (result.getResultData() == Const.E_CHAT_INACTIVE) {
+					dialog.setFailed(result);
+					if (result == Const.E_CHAT_INACTIVE) {
 						isActive = 0;
 						etMessage.setText("");
 						etMessage.setFocusable(false);
@@ -644,7 +658,7 @@ public class ChatActivity extends BaseChatActivity {
 			isRunning = true;
 
 			if (isClear) {
-//				adapter.clearItems();
+				// adapter.clearItems();
 				totalItems = 0;
 			}
 		} else {
@@ -670,65 +684,73 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		}
 
-		new ChatApi().getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, new ApiCallback<Chat>() {
+		handleProgress(processing);
+		ChatSpice.GetMessages getMessages = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this);
+		spiceManager.execute(getMessages, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<Chat> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
 
 				isRunning = false;
 
-				if (result.isSuccess()) {
-					
-					Chat chat = result.getResultData();
-					
-					if(result.getResultData().getUser() != null) currentUser = result.getResultData().getUser();
-					if(getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) currentUser = (User) getIntent().getSerializableExtra(Const.USER);
+				Chat chat = result;
 
-					chatParams(chat.getChat());
-					
-					setMenuByChatType();
+				chatParams(chat.chat);
 
-					if (TextUtils.isEmpty(mUserId)) {
-						mUserId = chat.getUser() == null ? "" : String.valueOf(chat.getUser().getId());
-					}
+				if (result.user != null) {
+					currentUser = result.user;
+				}
 
-					adapter.addItems(chat.getMessagesList(), isNewMsg);
-					for(int i = 0; i < chat.getMessagesList().size(); i++){
-						if(chat.getMessagesList().get(i).getType() == Const.MSG_TYPE_DEFAULT){
-							if(chat.getMessagesList().get(i).getText().startsWith("http") 
-									&& chat.getMessagesList().get(i).getText().endsWith(".gif")){
-								chat.getMessagesList().get(i).setType(Const.MSG_TYPE_GIF);
-							}
+				if (getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) {
+					currentUser = (User) getIntent().getSerializableExtra(Const.USER);
+				}
+
+				setMenuByChatType();
+
+				if (TextUtils.isEmpty(mUserId)) {
+					mUserId = chat.user == null ? "" : String.valueOf(chat.user.getId());
+				}
+
+				adapter.addItems(chat.messages, isNewMsg);
+				for (int i = 0; i < chat.messages.size(); i++) {
+					if (chat.messages.get(i).getType() == Const.MSG_TYPE_DEFAULT) {
+						if (chat.messages.get(i).getText().startsWith("http") && chat.messages.get(i).getText().endsWith(".gif")) {
+							chat.messages.get(i).setType(Const.MSG_TYPE_GIF);
 						}
 					}
-					adapter.setSeenBy(chat.getSeen_by());
+				}
+				adapter.setSeenBy(chat.seen_by);
 
-					totalItems = Integer.valueOf(chat.getTotal_count());
-					adapter.setTotalCount(totalItems);
+				totalItems = Integer.valueOf(chat.total_count);
+				adapter.setTotalCount(totalItems);
 
-					if (!isRefresh) {
-						if (isClear || isSend) {
-							chatListView.setSelectionFromTop(adapter.getCount(), 0);
-						} else if (isPagging) {
-							chatListView.setSelection(chat.getMessagesList().size());
-						}
-					} else {
-						int visibleItem = chatListView.getFirstVisiblePosition();
-
-						boolean isScroll = false;
-
-						if ((adapter.getCount() - visibleItem) <= 15) {
-							isScroll = true;
-						}
-
-						if (isScroll && !isSend) {
-							chatListView.setSelectionFromTop(adapter.getCount(), 0);
-						}
+				if (!isRefresh) {
+					if (isClear || isSend) {
+						chatListView.setSelectionFromTop(adapter.getCount(), 0);
+					} else if (isPagging) {
+						chatListView.setSelection(chat.messages.size());
 					}
 				} else {
-					AppDialog dialog = new AppDialog(ChatActivity.this, true);
-					dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
+					int visibleItem = chatListView.getFirstVisiblePosition();
+
+					boolean isScroll = false;
+
+					if ((adapter.getCount() - visibleItem) <= 15) {
+						isScroll = true;
+					}
+
+					if (isScroll && !isSend) {
+						chatListView.setSelectionFromTop(adapter.getCount(), 0);
+					}
 				}
+
 				setNoItemsVisibility();
 			}
 		});
@@ -736,11 +758,22 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void leaveChat() {
-		new ChatApi().leaveChat(chatId, true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.LeaveChat leaveChat = new ChatSpice.LeaveChat(chatId, this);
+		spiceManager.execute(leaveChat, new CustomSpiceListener<Chat>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -754,13 +787,12 @@ public class ChatActivity extends BaseChatActivity {
 	@Override
 	protected void onEditorSendEvent(final String text) {
 		new Handler().post(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				sendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null);
 			}
 		});
-		
 	}
 
 	private void setNoItemsVisibility() {
@@ -775,11 +807,22 @@ public class ChatActivity extends BaseChatActivity {
 
 	@Override
 	protected void deactivateChat() {
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, null, null, null, ChatActivity.this);
+		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -798,17 +841,27 @@ public class ChatActivity extends BaseChatActivity {
 
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
-				new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_DELETE, "", "", "", true, ChatActivity.this, new ApiCallback<BaseModel>() {
+
+				handleProgress(true);
+				ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DELETE, null, null, null, ChatActivity.this);
+				spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 					@Override
-					public void onApiResponse(Result<BaseModel> result) {
-						if (result.isSuccess()) {
-							dialog.dismiss();
-							AppDialog dialogSS = new AppDialog(ChatActivity.this, true);
-							dialogSS.setSucceed();
+					public void onRequestFailure(SpiceException ex) {
+						handleProgress(false);
+						Utils.onFailedUniversal(null, ChatActivity.this);
+					}
+
+					@Override
+					public void onRequestSuccess(BaseModel result) {
+						handleProgress(false);
+
+						if (result.getCode() == Const.API_SUCCESS) {
+							AppDialog dialog = new AppDialog(ChatActivity.this, true);
+							dialog.setSucceed();
 						} else {
-							AppDialog dialogSS = new AppDialog(ChatActivity.this, false);
-							dialogSS.setFailed(null);
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+							dialog.setFailed(null);
 						}
 					}
 				});
@@ -822,16 +875,26 @@ public class ChatActivity extends BaseChatActivity {
 				dialog.dismiss();
 			}
 		});
-
 	}
 
 	@Override
 	protected void activateChat() {
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, "", "", "", true, this, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, null, null, null, this);
+		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -841,5 +904,4 @@ public class ChatActivity extends BaseChatActivity {
 			}
 		});
 	}
-
 }

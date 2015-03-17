@@ -3,20 +3,15 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 import java.io.Serializable;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public class WebRtcSDPMessage implements Serializable {
 
-public class WebRtcSDPMessage implements Serializable{
-	
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("name")
-	@Expose
-	private String name;
-	
-	@SerializedName("args")
-	@Expose
-	private List<WebRtcSDPArgs> args;
+	public String name;
+	public List<WebRtcSDPArgs> args;
+
+	public WebRtcSDPMessage() {
+	}
 
 	public String getName() {
 		return name;

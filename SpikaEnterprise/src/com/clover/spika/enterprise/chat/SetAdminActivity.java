@@ -9,9 +9,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -19,11 +18,13 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +39,6 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 	private String chatId;
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
-
-	private GlobalApi api;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,22 +63,40 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 
 		noItems = (TextView) findViewById(R.id.noItems);
 		mainListView = (PullToRefreshListView) findViewById(R.id.main_list_view);
-		adapter = new InviteRemoveAdapter(this, new ArrayList<GlobalModel>(), null, null);
+		adapter = new InviteRemoveAdapter(spiceManager, this, new ArrayList<GlobalModel>(), null, null);
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);
 
-		api = new GlobalApi();
 		getUsers(true);
 	}
 
 	private void getUsers(final boolean clearPrevious) {
+		
+		handleProgress(true);
 
-		api.globalSearch(this, mCurrentIndex, chatId, null, Type.USER, null, false, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, chatId, null, Type.USER, null, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
+
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					setData((List<GlobalModel>) result.getResultData().getModelsList(), clearPrevious);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, SetAdminActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					setData((List<GlobalModel>) result.getModelsList(), clearPrevious);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, SetAdminActivity.this);
 				}
 			}
 		});
@@ -136,11 +153,22 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put(Const.CHAT_ID, chatId);
 			params.put(Const.ADMIN_ID, String.valueOf(user.getId()));
-			new ChatApi().updateChatAll(params, true, SetAdminActivity.this, new ApiCallback<BaseModel>() {
+			
+			handleProgress(true);
+			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params, this);
+			spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
 
 				@Override
-				public void onApiResponse(Result<BaseModel> result) {
-					if (result.isSuccess()) {
+				public void onRequestFailure(SpiceException ex) {
+					handleProgress(false);
+					Utils.onFailedUniversal(null, SetAdminActivity.this);
+				}
+
+				@Override
+				public void onRequestSuccess(BaseModel result) {
+					handleProgress(false);
+					
+					if (result.getCode() == Const.API_SUCCESS) {
 
 						Intent intent = new Intent();
 
@@ -154,7 +182,7 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 						finish();
 					} else {
 						AppDialog dialog = new AppDialog(SetAdminActivity.this, false);
-						dialog.setFailed(result.getResultData().getCode());
+						dialog.setFailed(result.getCode());
 					}
 				}
 			});

@@ -1,8 +1,10 @@
 package com.clover.spika.enterprise.chat.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.Settings.Global;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,6 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MembersFragment extends CustomFragment implements OnItemClickListener {
 
@@ -74,7 +73,7 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 		super.onViewCreated(view, savedInstanceState);
 
 		if (getListView() != null) {
-			mUserAdapter = new InviteRemoveAdapter(getActivity(), new ArrayList<GlobalModel>(), null, null);
+			mUserAdapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 			getListView().setOnItemClickListener(this);
 			getListView().setAdapter(mUserAdapter);
 			mUserAdapter.setCheckBox(false);
@@ -135,7 +134,7 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 			GlobalModel user = mUserAdapter.getItem(position);
 			
 			User userUser = null;
-			if(user.getType() == GlobalModel.Type.USER) userUser = (User) user.getModel();
+			if(user.type == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
 			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false, ((User) user.getModel()).getFirstName(),
 					((User) user.getModel()).getLastName(), userUser);

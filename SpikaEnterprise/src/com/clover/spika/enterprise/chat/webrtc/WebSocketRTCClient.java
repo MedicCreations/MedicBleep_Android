@@ -36,12 +36,11 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.webrtc.RoomParametersFetcher.RoomParametersFetcherEvents;
 import com.clover.spika.enterprise.chat.webrtc.WebSocketChannelClient.WebSocketChannelEvents;
 import com.clover.spika.enterprise.chat.webrtc.WebSocketChannelClient.WebSocketConnectionState;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPCandidate;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPMessage;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Negotiates signaling for chatting with apprtc.appspot.com "rooms". Uses the
@@ -68,14 +67,12 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 	private ConnectionState roomState;
 	
 	private Activity activity;
-	private WebRtcSDPMessage webRtcMessage = null;
 	
 	public WebSocketRTCClient(SignalingEvents events, LooperExecutor executor, Activity activity, WebRtcSDPMessage item, WebSocketChannelClient ws) {
 		this.events = events;
 		this.executor = executor;
 		roomState = ConnectionState.NEW;
 		this.activity = activity;
-		this.webRtcMessage = item;
 		wsClient = ws;
 	}
 
@@ -176,7 +173,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelEvents 
 			return;
 		}
 		try {
-			WebRtcSDPMessage item = new Gson().fromJson(msg, WebRtcSDPMessage.class);
+			WebRtcSDPMessage item = new ObjectMapper().readValue(msg, WebRtcSDPMessage.class);
 //			JSONObject json = new JSONObject(msg);
 //			String msgText = json.getString("msg");
 //			String errorText = json.optString("error");

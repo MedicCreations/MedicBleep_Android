@@ -1,17 +1,15 @@
 package com.clover.spika.enterprise.chat.extendables;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseModel {
 
-	@SerializedName("message")
-	@Expose
-	private String message;
+	public String message;
+	public int code;
 
-	@SerializedName("code")
-	@Expose
-	private int code;
+	public BaseModel() {
+	}
 
 	public String getMessage() {
 		return message == null ? "" : message;

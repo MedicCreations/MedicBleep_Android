@@ -15,15 +15,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -32,11 +32,12 @@ import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks {
 
@@ -44,7 +45,6 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	ToggleButton profileTab;
 	ToggleButton membersTab;
 
-	GlobalApi api;
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
 
@@ -95,8 +95,6 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
-
-		api = new GlobalApi();
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -184,6 +182,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		public void setMembers(List<GlobalModel> members) {
 			for (Fragment fragment : mFragmentList) {
 				if (fragment instanceof MembersFragment) {
+					Log.d("Vida", "SetMember setMembers in adapter");
 					((MembersFragment) fragment).setMembers(members);
 				}
 			}
@@ -235,12 +234,34 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
-		api.globalMembers(this, Type.ALL, chatId, null, page, true, new ApiCallback<GlobalResponse>() {
+		
+		handleProgress(true);
+
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, null, Type.ALL, this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					profileFragmentPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
-					profileFragmentPagerAdapter.setMembers(result.getResultData().getModelsList());
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ProfileGroupActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+					
+					Log.d("Vida", "onRequestSuccess: " + result.getModelsList());
+
+					profileFragmentPagerAdapter.setMemberTotalCount(result.getTotalCount());
+					profileFragmentPagerAdapter.setMembers(result.getModelsList());
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, ProfileGroupActivity.this);
 				}
 			}
 		});
@@ -285,12 +306,21 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		requestParams.put(Const.CHAT_ID, chatId);
 		requestParams.put(Const.IS_PRIVATE, switchPrivate.isChecked() ? "1" : "0");
 
-		new ChatApi().updateChatAll(requestParams, true, this, new ApiCallback<BaseModel>() {
+		handleProgress(true);
+		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams, this);
+		spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ProfileGroupActivity.this);
+			}
 
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					Intent intent = new Intent();
 					intent.setAction(Const.IS_ADMIN);
 

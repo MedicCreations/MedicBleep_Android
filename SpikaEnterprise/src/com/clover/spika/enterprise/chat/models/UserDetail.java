@@ -1,39 +1,25 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetail implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("id")
-	@Expose
-	private int id;
-
-	@SerializedName("key")
-	@Expose
-	private String key;
-
-	@SerializedName("label")
-	@Expose
-	private String label;
-
-	@SerializedName("keyboard_type")
-	@Expose
-	private int keyboard_type;
-
-	@SerializedName("value")
-	@Expose
-	private String value;
-
-	@SerializedName("public_value")
-	@Expose
-	private boolean public_value;
+	public int id;
+	public String key;
+	public String label;
+	public int keyboard_type;
+	public String value;
+	public int public_value;
 
 	private int position;
+
+	public UserDetail() {
+	}
 
 	public int getId() {
 		return id;
@@ -76,11 +62,25 @@ public class UserDetail implements Serializable {
 	}
 
 	public boolean isPublicValue() {
-		return public_value;
+		
+		if(this.public_value == 1)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 
 	public void setPublicValue(boolean publicValue) {
-		this.public_value = publicValue;
+		
+		if(publicValue)
+		{
+			this.public_value = 1;
+		}
+		else
+		{
+			this.public_value = 0;
+		}
 	}
 
 	public int getPosition() {

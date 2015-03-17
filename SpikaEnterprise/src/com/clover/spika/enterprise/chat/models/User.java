@@ -1,96 +1,50 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("id")
-	@Expose
-	private int id;
+	public int id;
+	public int user_id = 0;
+	public String firstname;
+	public String lastname;
+	public int type;
+	public String image;
+	public String image_thumb;
+	public boolean is_member;
+	public boolean is_admin;
+	public String name;
+	public String groupname;
+	public String chat_id;
+	public int is_user;
+	public int is_group;
+	public int is_room;
+	public List<Map<String, String>> details;
+	public Organization organization;
+	public boolean isSelected = false;
 
-	@SerializedName("user_id")
-	@Expose
-	private int userId = 0;
+	public User() {
+	}
 
-	@SerializedName("firstname")
-	@Expose
-	private String firstName;
-
-	@SerializedName("lastname")
-	@Expose
-	private String lastName;
-
-	@SerializedName("type")
-	@Expose
-	private String type;
-
-	@SerializedName("image")
-	@Expose
-	private String image;
-
-	@SerializedName("image_thumb")
-	@Expose
-	private String imageThumb;
-
-	@SerializedName("is_member")
-	@Expose
-	private boolean isMember;
-
-	@SerializedName("is_admin")
-	@Expose
-	private boolean isAdmin;
-
-	@SerializedName("name")
-	@Expose
-	private String name;
-
-	@SerializedName("groupname")
-	@Expose
-	private String groupName;
-
-	@SerializedName("chat_id")
-	@Expose
-	private String chatId;
-
-	@SerializedName("is_user")
-	@Expose
-	private int isUser;
-
-	@SerializedName("is_group")
-	@Expose
-	private int isGroup;
-
-	@SerializedName("is_room")
-	@Expose
-	private int isRoom;
-
-	@SerializedName("details")
-	@Expose
-	private List<Map<String, String>> details;
-	
-	@SerializedName("organization")
-	@Expose
-	private Organization organization;
-
-	private boolean isSelected = false;
-
-	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected, Organization org) {
+	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected,
+			Organization org) {
 		super();
 		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.type = type;
+		this.firstname = firstName;
+		this.lastname = lastName;
+		this.type = Integer.valueOf(type);
 		this.image = image;
-		this.imageThumb = imageThumb;
-		this.isMember = isMember;
+		this.image_thumb = imageThumb;
+		this.is_member = isMember;
+
 		this.details = details;
 		this.isSelected = isSelected;
 		organization = org;
@@ -98,10 +52,10 @@ public class User implements Serializable {
 
 	public int getId() {
 
-		if (userId == 0) {
+		if (user_id == 0) {
 			return id;
 		} else {
-			return userId;
+			return user_id;
 		}
 	}
 
@@ -110,19 +64,19 @@ public class User implements Serializable {
 	}
 
 	public String getFirstName() {
-		return firstName == null ? "" : firstName;
+		return firstname == null ? "" : firstname;
 	}
 
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstname = firstName;
 	}
 
 	public String getLastName() {
-		return lastName == null ? "" : lastName;
+		return lastname == null ? "" : lastname;
 	}
 
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.lastname = lastName;
 	}
 
 	public String getImage() {
@@ -134,19 +88,19 @@ public class User implements Serializable {
 	}
 
 	public String getImageThumb() {
-		return imageThumb;
+		return image_thumb;
 	}
 
 	public void setImageThumb(String imageThumb) {
-		this.imageThumb = imageThumb;
+		this.image_thumb = imageThumb;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		this.type = Integer.valueOf(type);
 	}
 
 	public boolean isSelected() {
@@ -158,25 +112,25 @@ public class User implements Serializable {
 	}
 
 	public boolean isMember() {
-		return isMember;
+		return this.is_member;
 	}
 
 	public void setIsMember(boolean isMember) {
-		this.isMember = isMember;
+		this.is_member = isMember;
 	}
 
 	public boolean isAdmin() {
-		return isAdmin;
+		return this.is_admin;
 	}
 
 	public void setIsAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
+		this.is_admin = isAdmin;
 	}
 
 	public List<Map<String, String>> getDetails() {
 		return details;
 	}
-	
+
 	public Organization getOrganization() {
 		return organization;
 	}
@@ -188,7 +142,6 @@ public class User implements Serializable {
 	public Map<String, String> getPublicDetails() {
 		Map<String, String> detailsMap = new HashMap<String, String>();
 
-		// WHOA A CHRISTMAS TREE
 		if (getDetails() != null) {
 			for (Map<String, String> map : getDetails()) {
 				if (map.containsKey("public") && (map.get("public").equals("true") || "1".equals(map.get("public")))) {
@@ -204,60 +157,12 @@ public class User implements Serializable {
 		return detailsMap;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-
-		User user = (User) o;
-
-		if (isMember != user.isMember)
-			return false;
-		if (isSelected != user.isSelected)
-			return false;
-		if (details != null ? !details.equals(user.details) : user.details != null)
-			return false;
-		if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null)
-			return false;
-		if (image != null ? !image.equals(user.image) : user.image != null)
-			return false;
-		if (imageThumb != null ? !imageThumb.equals(user.imageThumb) : user.imageThumb != null)
-			return false;
-		if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null)
-			return false;
-		if (type != null ? !type.equals(user.type) : user.type != null)
-			return false;
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = firstName != null ? firstName.hashCode() : 0;
-		result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-		result = 31 * result + (type != null ? type.hashCode() : 0);
-		result = 31 * result + (image != null ? image.hashCode() : 0);
-		result = 31 * result + (imageThumb != null ? imageThumb.hashCode() : 0);
-		result = 31 * result + (isMember ? 1 : 0);
-		result = 31 * result + (details != null ? details.hashCode() : 0);
-		result = 31 * result + (isSelected ? 1 : 0);
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		return "User{" + "id='" + id + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", type='" + type + '\'' + ", image='" + image + '\''
-				+ ", imageThumb='" + imageThumb + '\'' + ", isMember=" + isMember + ", details=" + details + ", isSelected=" + isSelected + '}';
-	}
-
 	public String getGroupName() {
-		return groupName;
+		return groupname;
 	}
 
 	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+		this.groupname = groupName;
 	}
 
 	public String getName() {
@@ -269,24 +174,24 @@ public class User implements Serializable {
 	}
 
 	public String getChatId() {
-		return chatId;
+		return chat_id;
 	}
 
 	public void setChatId(String chatId) {
-		this.chatId = chatId;
+		this.chat_id = chatId;
 	}
 
 	public int getIsUser() {
-		return isUser;
+		return is_user;
 	}
 
 	public void setIsUser(int isUser) {
-		this.isUser = isUser;
+		this.is_user = isUser;
 	}
 
 	public boolean getIsGroup() {
 
-		if (isGroup == 0) {
+		if (is_group == 0) {
 			return false;
 		}
 
@@ -296,15 +201,15 @@ public class User implements Serializable {
 	public void setIsGroup(boolean isGroup) {
 
 		if (isGroup) {
-			this.isGroup = 1;
+			this.is_group = 1;
 		} else {
-			this.isGroup = 0;
+			this.is_group = 0;
 		}
 	}
 
 	public boolean getIsRoom() {
 
-		if (isRoom == 0) {
+		if (is_room == 0) {
 			return false;
 		}
 
@@ -314,9 +219,9 @@ public class User implements Serializable {
 	public void setIsRoom(boolean isRoom) {
 
 		if (isRoom) {
-			this.isRoom = 1;
+			this.is_room = 1;
 		} else {
-			this.isRoom = 0;
+			this.is_room = 0;
 		}
 	}
 

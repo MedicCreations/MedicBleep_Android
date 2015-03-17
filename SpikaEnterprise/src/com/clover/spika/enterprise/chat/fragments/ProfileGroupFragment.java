@@ -24,7 +24,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -47,8 +47,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	Button tvSetAdmin;
 	Button tvChangeCat;
 	TextView tvChangeCategoryLabel;
-
-	private ImageLoader imageLoader;
 
 	private FrameLayout loadingLayout;
 
@@ -97,10 +95,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 		Helper.setRoomThumbId(getActivity(), imageId);
 
-		imageLoader = new ImageLoader(getActivity());
-		imageLoader.setDefaultImage(R.drawable.default_group_image);
-
-		imageLoader.displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+		getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE, new OnImageDisplayFinishListener() {
 
 			@Override
 			public void onFinish() {
@@ -135,9 +130,9 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		if (!TextUtils.isEmpty(categoryName) && !categoryName.equals("0")) {
 			tvChangeCat.setText(categoryName);
 		} else {
-			if(isAdmin){
+			if (isAdmin) {
 				tvChangeCat.setText(getString(R.string.set));
-			}else{
+			} else {
 				tvChangeCat.setText(getString(R.string.none));
 			}
 		}
@@ -225,14 +220,12 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		AppDialog dialog = new AppDialog(getActivity(), false);
 		dialog.choseCamGalleryRoomUpdate(chatId, chatName);
 	}
-	
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Helper.setRoomThumbId(getActivity(), "");
 	}
-	
 
 	@Override
 	public void onResume() {
@@ -240,7 +233,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
 			loadingLayout.setVisibility(View.VISIBLE);
 			imageId = Helper.getRoomThumbId(getActivity());
-			imageLoader.displayImage(getActivity(), imageId, profileImage, new OnImageDisplayFinishListener() {
+			getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override
 				public void onFinish() {
@@ -249,6 +242,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			});
 			((ProfileGroupActivity) getActivity()).setChangeImage(Helper.getRoomThumbId(getActivity()), Helper.getRoomThumbId(getActivity()));
 		}
-		SpikaEnterpriseApp.getInstance().deleteSamsungPathImage();
+		SpikaEnterpriseApp.deleteSamsungPathImage();
 	}
 }

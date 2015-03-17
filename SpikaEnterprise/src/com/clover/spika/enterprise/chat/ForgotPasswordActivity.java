@@ -4,14 +4,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinButton;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ForgotPasswordActivity extends BaseActivity implements OnClickListener {
 
@@ -51,20 +54,33 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 
 	private void forgotPassword(String username) {
 
-		new UserApi().forgotPassword(username, this, new ApiCallback<BaseModel>() {
+		handleProgress(true);
+
+		UserSpice.ForgotPassword updateUserImage = new UserSpice.ForgotPassword(username, this);
+		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ForgotPasswordActivity.this);
+			}
 
-				AppDialog dialog = new AppDialog(ForgotPasswordActivity.this, true);
-				if (result.isSuccess()) {
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					AppDialog dialog = new AppDialog(ForgotPasswordActivity.this, true);
 					dialog.setInfo(getString(R.string.email_sent));
+
 				} else {
-					dialog.setFailed(result.getResultData().getCode());
+					Utils.onFailedUniversal(Helper.errorDescriptions(ForgotPasswordActivity.this, result.getCode()), ForgotPasswordActivity.this);
 				}
 			}
 		});
-
 	}
 
 }

@@ -2,28 +2,17 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public class CallMessageArgs implements Serializable {
 
-public class CallMessageArgs implements Serializable{
-	
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("to")
-	@Expose
-	private String to;
-	
-	@SerializedName("from")
-	@Expose
-	private String from;
-	
-	@SerializedName("type")
-	@Expose
-	private String type;
+	public String to;
+	public String from;
+	public String type;
+	public CallMessagePayload payload;
 
-	@SerializedName("payload")
-	@Expose
-	private CallMessagePayload payload;
+	public CallMessageArgs() {
+	}
 
 	public String getTo() {
 		return to;

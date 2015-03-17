@@ -67,9 +67,7 @@ import com.clover.spika.enterprise.chat.utils.Preferences;
 
 public class NetworkManagement {
 
-	public static final String TOKEN = "Token";
-
-	public static JSONObject httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
+	public static String httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
 		return httpPostRequest("", postParams, token);
 	}
 
@@ -83,11 +81,11 @@ public class NetworkManagement {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams) throws IOException, JSONException {
+	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams) throws IOException {
 		return httpPostRequest(apiUrl, postParams, null);
 	}
 
-	public static JSONObject httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException, JSONException {
+	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException {
 
 		HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
 		Logger.custom("RawRequest", httppost.getURI().toString());
@@ -113,16 +111,17 @@ public class NetworkManagement {
 		}
 
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
+
 		HttpEntity entity = response.getEntity();
 
-		return Helper.jObjectFromString(getString(entity.getContent()));
+		return getString(entity.getContent());
 	}
 
-	public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
 		return httpGetRequest(apiUrl, getParams, null);
 	}
 
-	public static JSONObject httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
+	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
 
 		String params = "";
 
@@ -150,7 +149,7 @@ public class NetworkManagement {
 		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
 		HttpEntity entity = response.getEntity();
 
-		return Helper.jObjectFromString(getString(entity.getContent()));
+		return getString(entity.getContent());
 	}
 
 	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
@@ -187,14 +186,14 @@ public class NetworkManagement {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static JSONObject httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException,
+	public static String httpPostFileRequest(Preferences prefs, HashMap<String, String> postParams, final ProgressBarListeners listener) throws ClientProtocolException,
 			IOException, JSONException {
 
 		HttpPost httppost = new HttpPost(Const.BASE_URL + Const.F_USER_UPLOAD_FILE);
 
 		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 
-		httppost.setHeader(TOKEN, prefs.getToken());
+		httppost.setHeader(Const.TOKEN_BIG_T, prefs.getToken());
 
 		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httppost.setHeader(Const.PLATFORM, "android");
@@ -224,19 +223,19 @@ public class NetworkManagement {
 		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
 		HttpEntity entity = response.getEntity();
 
-		return Helper.jObjectFromString(getString(entity.getContent()));
+		return getString(entity.getContent());
 	}
 
 	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
 		String gifString = null;
-		
+
 		// form parameters
 		if (getParams != null && !getParams.isEmpty()) {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 			for (Map.Entry<String, String> entity : getParams.entrySet()) {
 				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-				if(entity.getKey() == "file_id" && entity.getValue().startsWith("http")){
+				if (entity.getKey() == "file_id" && entity.getValue().startsWith("http")) {
 					gifString = entity.getValue();
 					break;
 				}
@@ -244,13 +243,14 @@ public class NetworkManagement {
 
 			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
 		}
-		
+
 		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
-		if(gifString != null) httpGet = new HttpGet(gifString);
+		if (gifString != null)
+			httpGet = new HttpGet(gifString);
 		Logger.custom("RawRequest", httpGet.getURI().toString());
-		
+
 		httpGet.setHeader("Encoding", "UTF-8");
-		httpGet.setHeader(TOKEN, prefs.getToken());
+		httpGet.setHeader(Const.TOKEN_BIG_T, prefs.getToken());
 
 		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
 		httpGet.setHeader(Const.PLATFORM, "android");

@@ -2,13 +2,11 @@ package com.clover.spika.enterprise.chat.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.models.Category;
@@ -48,10 +46,10 @@ public class CategoryAdapter extends BaseAdapter {
 		// Assign values
 		final Category category = (Category) getItem(position);
 
-		if (category.getId() == 0) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
+		if (category.id == 0) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
 		else holder.catName.setTextColor(Color.BLACK);
 		
-		holder.catName.setText(category.getName());
+		holder.catName.setText(category.name);
 		
 		return convertView;
 	}

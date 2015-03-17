@@ -46,6 +46,8 @@ import org.json.JSONException;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -55,9 +57,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.ImageView;
 
+import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
@@ -128,7 +130,7 @@ public class Utils {
 
 		return filePath;
 	}
-	
+
 	public static String handleFileDecryptionToPath(String filePath, String destPath, Context ctx) {
 		try {
 			if (JNAesCrypto.isEncryptionEnabled) {
@@ -439,13 +441,6 @@ public class Utils {
 		DecimalFormat df = new DecimalFormat();
 		df.setMaximumFractionDigits(2);
 		df.setMinimumFractionDigits(2);
-
-		Log.d("MEMORY_HANDLING", "debug. =================================" + step);
-		Log.d("MEMORY_HANDLING",
-				"debug.memory: allocated: " + df.format(Double.valueOf(Runtime.getRuntime().totalMemory() / 1048576)) + "MB of "
-						+ df.format(Double.valueOf(Runtime.getRuntime().maxMemory() / 1048576)) + "MB (" + df.format(Double.valueOf(Runtime.getRuntime().freeMemory() / 1048576))
-						+ "MB free)");
-		Log.d("MEMORY_HANDLING", "debug. =================================END");
 	}
 
 	public static String getHexString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {
@@ -463,53 +458,73 @@ public class Utils {
 
 		return stringBuffer.toString();
 	}
-	
-	
-	public static boolean isBuildOver (int version){
-		if(android.os.Build.VERSION.SDK_INT > version) return true;
+
+	public static boolean isBuildOver(int version) {
+		if (android.os.Build.VERSION.SDK_INT > version)
+			return true;
 		return false;
 	}
-	
+
+	public static void onFailedUniversal(String message, final Context ctx) {
+
+		if (TextUtils.isEmpty(message)) {
+			message = ctx.getString(R.string.e_something_went_wrong);
+		}
+
+		AppDialog dialog = new AppDialog(ctx, false);
+		dialog.setFailed(message);
+		dialog.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+
+				Intent intent = new Intent(ctx, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				ctx.startActivity(intent);
+			}
+		});
+	}
+
 	/**
 	 * get sp in px
 	 * 
 	 */
 	public static float getPxFromSp(float sp, Resources res) {
-	    float scaledDensity = res.getDisplayMetrics().scaledDensity;
-	    return sp * scaledDensity;
+		float scaledDensity = res.getDisplayMetrics().scaledDensity;
+		return sp * scaledDensity;
 	}
-	
+
 	/**
 	 * get dp in px
 	 * 
 	 */
-	public static int getPxFromDp(int dp, Resources res){
+	public static int getPxFromDp(int dp, Resources res) {
 		return (int) (dp * (res.getDisplayMetrics().densityDpi / 160f));
 	}
-	
+
 	/**
 	 * get px in dp
 	 * 
 	 */
-	public static int getDpFromPx(int px, Resources res){
+	public static int getDpFromPx(int px, Resources res) {
 		return (int) (px / (res.getDisplayMetrics().densityDpi / 160f));
 	}
-	
-	public static File getFilesFolder(){
+
+	public static File getFilesFolder() {
 		File file = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY, Const.APP_FILED_FILES);
 		if (!file.exists()) {
 			file.mkdir();
 		}
 		return file;
 	}
-	
+
 	public static Bitmap resizeBitmap(int targetW, int targetH, String photoPath) {
 		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 		bmOptions.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(photoPath, bmOptions);
 		int photoW = bmOptions.outWidth;
 		int photoH = bmOptions.outHeight;
-		
+
 		int scaleFactor = 1;
 		if ((targetW > 0) || (targetH > 0)) {
 			scaleFactor = Math.min(photoW / targetW, photoH / targetH);
@@ -517,11 +532,11 @@ public class Utils {
 
 		bmOptions.inJustDecodeBounds = false;
 		bmOptions.inSampleSize = scaleFactor;
-//		bmOptions.inPurgeable = true;
+		// bmOptions.inPurgeable = true;
 
 		return BitmapFactory.decodeFile(photoPath, bmOptions);
 	}
-	
+
 	public static Bitmap scaleBitmapTo1280(String path, int imageSizeMax) {
 		InputStream inputStream = null;
 		try {
@@ -542,8 +557,6 @@ public class Utils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		Log.d("LOG", "IMAGE ORIGINAL SIZE: "+imageOptions.outWidth+" "+imageOptions.outHeight);
 
 		Bitmap bitmap;
 		try {
@@ -553,7 +566,7 @@ public class Utils {
 		}
 		float imageScaleWidth = (float) imageOptions.outWidth / imageSizeMax;
 		float imageScaleHeight = (float) imageOptions.outHeight / imageSizeMax;
-		
+
 		if (imageScaleWidth > 2 && imageScaleHeight > 2) {
 			BitmapFactory.Options imageOptions2 = new BitmapFactory.Options();
 
@@ -567,22 +580,18 @@ public class Utils {
 		} else {
 			bitmap = BitmapFactory.decodeStream(inputStream);
 		}
-		
-		Log.d("LOG", "IMAGE TEMP: "+bitmap.getWidth()+" "+bitmap.getHeight());
-		
+
 		double destWidth = imageSizeMax;
 		double destHeight = imageSizeMax;
-		
-		if(bitmap.getWidth() > bitmap.getHeight()){
-			destHeight = (double)bitmap.getHeight() / ((double)bitmap.getWidth() / (double)1280);
-		}else if(bitmap.getWidth() < bitmap.getHeight()){
-			destWidth = (double)bitmap.getWidth() / ((double)bitmap.getHeight() / (double)1280);
+
+		if (bitmap.getWidth() > bitmap.getHeight()) {
+			destHeight = (double) bitmap.getHeight() / ((double) bitmap.getWidth() / (double) 1280);
+		} else if (bitmap.getWidth() < bitmap.getHeight()) {
+			destWidth = (double) bitmap.getWidth() / ((double) bitmap.getHeight() / (double) 1280);
 		}
-		
-		Log.d("LOG", "DEST SIZE: "+destWidth+" "+destHeight);
-		
-		Bitmap output = Bitmap.createScaledBitmap(bitmap, (int)destWidth, (int)destHeight, false);
-		
+
+		Bitmap output = Bitmap.createScaledBitmap(bitmap, (int) destWidth, (int) destHeight, false);
+
 		try {
 			inputStream.close();
 		} catch (IOException e) {
@@ -594,8 +603,8 @@ public class Utils {
 		}
 		return output;
 	}
-	
-	public static void phoneIntent(Context c, String tel){
+
+	public static void phoneIntent(Context c, String tel) {
 		try {
 			String uri = "tel:" + tel;
 			Intent intentPhoneDoc = new Intent(Intent.ACTION_DIAL);
@@ -606,65 +615,68 @@ public class Utils {
 			dialog.setInfo(c.getString(R.string.aplication_for_calling_mail_did_t_found));
 		}
 	}
-	
-	public static void emailIntent(Context c, String email, String message, String subject){
+
+	public static void emailIntent(Context c, String email, String message, String subject) {
 		try {
-			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto",email, null));
-			if(subject != null) emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-			if(message != null) emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null));
+			if (subject != null)
+				emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+			if (message != null)
+				emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 			c.startActivity(Intent.createChooser(emailIntent, "Send email..."));
 		} catch (ActivityNotFoundException e) {
 			AppDialog dialog = new AppDialog(c, false);
 			dialog.setInfo(c.getString(R.string.aplication_for_sending_mail_did_t_found));
 		}
 	}
-	
-	public static void mapIntent(Context c, String address){
+
+	public static void mapIntent(Context c, String address) {
 		String url = "http://maps.google.com/maps?q=" + address;
 
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
-		c. startActivity(intent);
+		c.startActivity(intent);
 	}
-	
-	public static void browserIntent(Context c, String url){
+
+	public static void browserIntent(Context c, String url) {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		if(!(url.startsWith("http://") || url.startsWith("https://"))){
+		if (!(url.startsWith("http://") || url.startsWith("https://"))) {
 			url = "http://" + url;
 		}
 		intent.setData(Uri.parse(url));
-		c. startActivity(intent);
+		c.startActivity(intent);
 	}
-	
-	public static String generateGifHTML(String path, String style){
-		String imagePath = "file://"+path;
-		if(style == null) style = "";
-		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\""+ imagePath + "\"></body></html>";
+
+	public static String generateGifHTML(String path, String style) {
+		String imagePath = "file://" + path;
+		if (style == null)
+			style = "";
+		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\"" + imagePath + "\"></body></html>";
 		return html;
-		
+
 	}
-	
+
 	public static Uri getLocalBitmapUri(ImageView imageView, Context context) {
-	    // Extract Bitmap from ImageView drawable
-	    Drawable drawable = imageView.getDrawable();
-	    Bitmap bmp = null;
-	    if (drawable instanceof BitmapDrawable){
-	       bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-	    } else {
-	       return null;
-	    }
-	    // Store image to default external storage directory
-	    Uri bmpUri = null;
-	    try {
-	        File file =  new File(getTempFile(context, "temp") + "/temp.png");
-	        file.getParentFile().mkdirs();
-	        FileOutputStream out = new FileOutputStream(file);
-	        bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-	        out.close();
-	        bmpUri = Uri.fromFile(file);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    return bmpUri;
+		// Extract Bitmap from ImageView drawable
+		Drawable drawable = imageView.getDrawable();
+		Bitmap bmp = null;
+		if (drawable instanceof BitmapDrawable) {
+			bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+		} else {
+			return null;
+		}
+		// Store image to default external storage directory
+		Uri bmpUri = null;
+		try {
+			File file = new File(getTempFile(context, "temp") + "/temp.png");
+			file.getParentFile().mkdirs();
+			FileOutputStream out = new FileOutputStream(file);
+			bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+			out.close();
+			bmpUri = Uri.fromFile(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bmpUri;
 	}
-	
+
 }

@@ -2,24 +2,16 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+public class WebRtcSDPCandidate implements Serializable {
 
-public class WebRtcSDPCandidate implements Serializable{
-	
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("sdpMLineIndex")
-	@Expose
-	private String sdpMLineIndex;
-	
-	@SerializedName("sdpMid")
-	@Expose
-	private String sdmMid;
-	
-	@SerializedName("candidate")
-	@Expose
-	private String candidate;
+	public String sdpMLineIndex;
+	public String sdpMid;
+	public String candidate;
+
+	public WebRtcSDPCandidate() {
+	}
 
 	public String getSdpMLineIndex() {
 		return sdpMLineIndex;
@@ -30,11 +22,11 @@ public class WebRtcSDPCandidate implements Serializable{
 	}
 
 	public String getSdmMid() {
-		return sdmMid;
+		return sdpMid;
 	}
 
 	public void setSdmMid(String sdmMid) {
-		this.sdmMid = sdmMid;
+		this.sdpMid = sdmMid;
 	}
 
 	public String getCandidate() {
@@ -47,7 +39,7 @@ public class WebRtcSDPCandidate implements Serializable{
 
 	@Override
 	public String toString() {
-		return "WebRtcSDPCandidate [sdpMLineIndex=" + sdpMLineIndex + ", sdmMid=" + sdmMid + ", candidate=" + candidate + "]";
+		return "WebRtcSDPCandidate [sdpMLineIndex=" + sdpMLineIndex + ", sdmMid=" + sdpMid + ", candidate=" + candidate + "]";
 	}
 
 }

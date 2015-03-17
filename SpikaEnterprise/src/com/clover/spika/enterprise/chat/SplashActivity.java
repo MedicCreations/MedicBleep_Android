@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.utils.Const;
 
 import java.io.UnsupportedEncodingException;
@@ -21,8 +20,6 @@ public class SplashActivity extends LoginBaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
-		ImageLoader.init(this);
-
 		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			pause(0, false);
 		} else {
@@ -35,7 +32,7 @@ public class SplashActivity extends LoginBaseActivity {
 		super.onResume();
 		extras = getIntent().getExtras();
 	}
-
+	
 	private void pause(final int time, final boolean toLogin) {
 		new BaseAsyncTask<Void, Void, Void>(this, false) {
 

@@ -11,14 +11,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.UserApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ChangePasswordActivity extends BaseActivity {
 
@@ -91,32 +92,45 @@ public class ChangePasswordActivity extends BaseActivity {
 			confirmNewPassword.setError(getString(R.string.new_passwords_not_identical));
 			return;
 		}
+		
+		handleProgress(true);
 
-		new UserApi().updateUserPassword(isUpdate, tempPassword, password, this, new ApiCallback<Login>() {
+		UserSpice.UpdateUserPassword updateUserImage = new UserSpice.UpdateUserPassword(isUpdate, tempPassword, password, this);
+		spiceManager.execute(updateUserImage, new CustomSpiceListener<Login>() {
 
 			@Override
-			public void onApiResponse(Result<Login> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ChangePasswordActivity.this);
+			}
 
+			@Override
+			public void onRequestSuccess(Login result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+					
 					if (!isUpdate) {
-						List<Organization> organizations = result.getResultData().getOrganizations();
-						
-						if (organizations.size() > 1){
+						List<Organization> organizations = result.organizations;
+
+						if (organizations.size() > 1) {
 							Intent intent = new Intent(ChangePasswordActivity.this, ChooseOrganizationActivity.class);
-							
+
 							intent.putExtra(Const.ORGANIZATIONS, (Serializable) organizations);
 							intent.putExtra(Const.USERNAME, username);
 							intent.putExtra(Const.PASSWORD, password);
-		
+
 							startActivity(intent);
 						}
-						
+
 					}
 
 					finish();
+					
 				} else {
-					AppDialog dialog = new AppDialog(ChangePasswordActivity.this, false);
-					dialog.setFailed(result.getResultData().getCode());
+					Utils.onFailedUniversal(Helper.errorDescriptions(ChangePasswordActivity.this, result.getCode()), ChangePasswordActivity.this);
 				}
 			}
 		});

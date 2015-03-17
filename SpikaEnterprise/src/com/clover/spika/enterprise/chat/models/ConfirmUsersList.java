@@ -1,23 +1,14 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
+
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 
 public class ConfirmUsersList extends BaseModel {
 
-	@SerializedName("users_array")
-	@Expose
-	private List<User> userList;
+	public List<User> users_array;
 
-	public List<User> getUserList() {
-		return userList;
+	public ConfirmUsersList() {
 	}
 
-	public void setUserList(List<User> userList) {
-		this.userList = userList;
-	}
-	
 }

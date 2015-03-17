@@ -1,39 +1,18 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Group {
 
-	@SerializedName("id")
-	@Expose
-	private int id;
+	public int id;
+	public String type;
+	public String groupname;
+	public String image;
+	public String image_thumb;
+	public Category category;
+	public int is_member;
+	public boolean isSelected = false;
 
-	@SerializedName("type")
-	@Expose
-	private String type;
-
-	@SerializedName("groupname")
-	@Expose
-	private String groupName;
-
-	@SerializedName("image")
-	@Expose
-	private String image;
-
-	@SerializedName("image_thumb")
-	@Expose
-	private String image_thumb;
-
-	@SerializedName("category")
-	@Expose
-	private Category category;
-
-	@SerializedName("is_member")
-	@Expose
-	private boolean isMember;
-	
-	private boolean isSelected = false;
+	public Group() {
+	}
 
 	public int getId() {
 		return id;
@@ -44,11 +23,11 @@ public class Group {
 	}
 
 	public String getGroupName() {
-		return groupName == null ? "" : groupName;
+		return groupname == null ? "" : groupname;
 	}
 
 	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+		this.groupname = groupName;
 	}
 
 	public String getImage() {
@@ -70,7 +49,7 @@ public class Group {
 
 		if (id != group.id)
 			return false;
-		if (groupName != null ? !groupName.equals(group.groupName) : group.groupName != null)
+		if (groupname != null ? !groupname.equals(group.groupname) : group.groupname != null)
 			return false;
 		if (image != null ? !image.equals(group.image) : group.image != null)
 			return false;
@@ -81,14 +60,14 @@ public class Group {
 	@Override
 	public int hashCode() {
 		int result = id;
-		result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
+		result = 31 * result + (groupname != null ? groupname.hashCode() : 0);
 		result = 31 * result + (image != null ? image.hashCode() : 0);
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "Group{" + "id=" + id + ", groupName='" + groupName + '\'' + ", image='" + image + '\'' + '}';
+		return "Group{" + "id=" + id + ", groupName='" + groupname + '\'' + ", image='" + image + '\'' + '}';
 	}
 
 	public String getImage_thumb() {
@@ -116,11 +95,11 @@ public class Group {
 	}
 
 	public boolean isMember() {
-		return isMember;
+		return is_member == 0 ? false : true;
 	}
 
 	public void setMember(boolean isMember) {
-		this.isMember = isMember;
+		this.is_member = isMember ? 1 : 0;
 	}
 
 	public boolean isSelected() {

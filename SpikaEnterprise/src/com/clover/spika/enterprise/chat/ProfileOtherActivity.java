@@ -9,22 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ProfileOtherActivity extends BaseActivity {
 
-	private ImageLoader imageLoader;
-
 	private ImageView profileImage;
 	private TextView profileName;
-	
+
 	private String mUserFirstName = "";
 	private String mUserLastName = "";
 	private String mUserId;
-	
+
 	private User activeUser = null;
 
 	public static void openOtherProfile(Context context, int userId, String imageFileId, String chatName, User user) {
@@ -39,7 +37,7 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		context.startActivity(intent);
 	}
-	
+
 	public static void openOtherProfileFromList(Context context, int userId, String imageFileId, String chatName, String firstName, String lastName, User user) {
 
 		Intent intent = new Intent(context, ProfileOtherActivity.class);
@@ -54,15 +52,11 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		context.startActivity(intent);
 	}
-	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_other_profile);
-
-		imageLoader = new ImageLoader(this);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -74,27 +68,31 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		profileImage = (ImageView) findViewById(R.id.profileImage);
 		profileName = (TextView) findViewById(R.id.profileName);
-		
-		if(!getResources().getBoolean(R.bool.enable_web_rtc)){
+
+		if (!getResources().getBoolean(R.bool.enable_web_rtc)) {
 			findViewById(R.id.callControls).setVisibility(View.INVISIBLE);
 		}
-		
+
 		findViewById(R.id.btnVideoCall).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if(activeUser != null) showCallingPopup(activeUser, null, false, true);
+				if (activeUser != null) {
+					showCallingPopup(activeUser, null, false, true);
+				}
 			}
 		});
-		
+
 		findViewById(R.id.btnVoiceCall).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if(activeUser != null) showCallingPopup(activeUser, null, false, false);
+				if (activeUser != null) {
+					showCallingPopup(activeUser, null, false, false);
+				}
 			}
 		});
-		
+
 		getIntentData(getIntent());
 
 	}
@@ -103,7 +101,7 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		if (intent != null && intent.getExtras() != null) {
 
-			imageLoader.displayImage(this, intent.getExtras().getString(Const.IMAGE), profileImage, new OnImageDisplayFinishListener() {
+			getImageLoader().displayImage(profileImage, intent.getExtras().getString(Const.IMAGE), ImageLoaderSpice.DEFAULT_USER_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override
 				public void onFinish() {
@@ -116,12 +114,12 @@ public class ProfileOtherActivity extends BaseActivity {
 			mUserFirstName = getIntent().getExtras().getString(Const.FIRSTNAME);
 			mUserLastName = getIntent().getExtras().getString(Const.LASTNAME);
 			activeUser = (User) getIntent().getSerializableExtra(Const.USER);
-			
+
 			final String imageId = intent.getExtras().getString(Const.IMAGE);
 			final String chatName = getIntent().getExtras().getString(Const.CHAT_NAME);
-			
+
 			findViewById(R.id.showProfile).setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					Intent sendIntent = new Intent(ProfileOtherActivity.this, ShowProfileActivity.class);
@@ -134,7 +132,7 @@ public class ProfileOtherActivity extends BaseActivity {
 				}
 			});
 		}
-		
+
 	}
 
 	@Override

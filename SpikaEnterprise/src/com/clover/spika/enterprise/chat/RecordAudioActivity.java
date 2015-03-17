@@ -25,16 +25,18 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.ExtAudioRecorder;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class RecordAudioActivity extends BaseActivity {
 
@@ -65,7 +67,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 	private AsyncTask<Void, Void, Void> recordingAsync;
 	private CountDownTimer mRecordingTimer;
-	
+
 	private Chronometer firstChornometer;
 	private TextView secondChronometer;
 	private CountDownTimer soundLeft;
@@ -135,33 +137,35 @@ public class RecordAudioActivity extends BaseActivity {
 				}
 			}
 		});
-		
+
 		firstChornometer = (Chronometer) findViewById(R.id.firstChrono);
 		secondChronometer = (TextView) findViewById(R.id.secondChrono);
 		seekBarSound = (SeekBar) findViewById(R.id.seekBarSound);
-		
+
 		mRlSoundControler.setVisibility(View.INVISIBLE);
-		
+
 		seekBarSound.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-			
+
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				startPlaying(seekBar.getProgress());
 			}
-			
+
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				if(observer != null) observer.stop();
+				if (observer != null)
+					observer.stop();
 				observer = null;
 				stopPlaying();
-				if(firstChornometer != null){
+				if (firstChornometer != null) {
 					firstChornometer.stop();
 					firstChornometer.setBase(SystemClock.elapsedRealtime());
 				}
 			}
-			
+
 			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {}
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			}
 		});
 	}
 
@@ -233,8 +237,8 @@ public class RecordAudioActivity extends BaseActivity {
 
 		sendAudio.setVisibility(View.INVISIBLE);
 
-		//TODO RESET CHRONNO AND SEEK
-		
+		// TODO RESET CHRONNO AND SEEK
+
 		mRecordTime.setVisibility(View.INVISIBLE);
 
 		mPlayPause.setImageResource(R.drawable.play_btn_selector);
@@ -279,13 +283,13 @@ public class RecordAudioActivity extends BaseActivity {
 		if (playPauseStop == START_PLAYING) {
 			startPlaying(0);
 		} else if (playPauseStop == PAUSE_PLAYING) {
-//			pausePlaying();
+			// pausePlaying();
 			stopPlaying();
 		} else {
 			stopPlaying();
 		}
 	}
-	
+
 	private class MediaObserver implements Runnable {
 		private AtomicBoolean stop = new AtomicBoolean(false);
 
@@ -297,7 +301,7 @@ public class RecordAudioActivity extends BaseActivity {
 		public void run() {
 			while (!stop.get()) {
 				long elapsedMillis = SystemClock.elapsedRealtime() - firstChornometer.getBase();
-				Log.e("LOG", elapsedMillis+" :ELG");
+				Log.e("LOG", elapsedMillis + " :ELG");
 				seekBarSound.setProgress((int) elapsedMillis);
 				try {
 					Thread.sleep(33);
@@ -307,6 +311,7 @@ public class RecordAudioActivity extends BaseActivity {
 			}
 		}
 	}
+
 	private MediaObserver observer = null;
 
 	private void startPlaying(final int offset) {
@@ -316,11 +321,11 @@ public class RecordAudioActivity extends BaseActivity {
 				mPlayer.setDataSource(mFilePath);
 				mPlayer.prepare();
 				mPlayer.setOnPreparedListener(new OnPreparedListener() {
-					
+
 					@Override
 					public void onPrepared(MediaPlayer mp) {
 						seekBarSound.setMax(mp.getDuration());
-						if(offset != 0) {
+						if (offset != 0) {
 							mPlayer.seekTo((int) offset);
 							firstChornometer.setBase((long) (SystemClock.elapsedRealtime() - offset));
 						}
@@ -328,7 +333,7 @@ public class RecordAudioActivity extends BaseActivity {
 					}
 				});
 				mPlayer.setOnCompletionListener(new OnCompletionListener() {
-					
+
 					@Override
 					public void onCompletion(MediaPlayer mp) {
 						stopChronoAndSeek();
@@ -339,13 +344,13 @@ public class RecordAudioActivity extends BaseActivity {
 				mPlayer.start();
 				startChronoAndSeek();
 				mIsPlaying = PLAYING;
-				
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else if (mIsPlaying == PAUSE) {
 			mPlayer.start();
-			//CONTINUE SEEKBAR AND CHRONO
+			// CONTINUE SEEKBAR AND CHRONO
 			mIsPlaying = PLAYING;
 		}
 
@@ -353,13 +358,13 @@ public class RecordAudioActivity extends BaseActivity {
 
 	private void startChronoSecond(int duration, int offset) {
 		soundLeft = new CountDownTimer(duration - offset, 500) {
-			
+
 			@Override
 			public void onTick(long millisUntilFinished) {
-                int va = (int)( (millisUntilFinished%60000)/1000);
-                secondChronometer.setText(String.format("-00:%02d",va));
+				int va = (int) ((millisUntilFinished % 60000) / 1000);
+				secondChronometer.setText(String.format("-00:%02d", va));
 			}
-			
+
 			@Override
 			public void onFinish() {
 				secondChronometer.setText("00:00");
@@ -369,18 +374,20 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	protected void stopChronoAndSeek() {
-		if(observer != null)observer.stop();
-	    seekBarSound.setProgress(0);
+		if (observer != null)
+			observer.stop();
+		seekBarSound.setProgress(0);
 		firstChornometer.stop();
 		firstChornometer.setBase(SystemClock.elapsedRealtime());
-		if(soundLeft != null)soundLeft.cancel();
+		if (soundLeft != null)
+			soundLeft.cancel();
 		secondChronometer.setText("00:00");
 	}
 
 	private void startChronoAndSeek() {
 		firstChornometer.setBase(SystemClock.elapsedRealtime());
 		firstChornometer.start();
-		
+
 		observer = new MediaObserver();
 		new Thread(observer).start();
 	}
@@ -419,7 +426,7 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayer.release();
 			mPlayer = null;
 			mIsPlaying = STOP;
-			//TODO RESET SEEKBAR AND CHRONO
+			// TODO RESET SEEKBAR AND CHRONO
 			mPlayPause.setImageResource(R.drawable.play_btn_selector);
 		}
 	}
@@ -434,7 +441,7 @@ public class RecordAudioActivity extends BaseActivity {
 			mPlayer.release();
 			mPlayer = null;
 			mIsPlaying = STOP;
-			//TODO RESET SEEKBAR AND CHRONO
+			// TODO RESET SEEKBAR AND CHRONO
 			mPlayPause.setImageResource(R.drawable.play_btn_selector);
 		}
 
@@ -460,14 +467,25 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 
 	private void sendMsg(String fileId) {
-        String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
-        String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
-		new ChatApi().sendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID),
-				mFileName, fileId, null, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
+		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
+
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), mFileName, fileId, null, null, null,
+				rootId, messageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, RecordAudioActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
+
+				if (result == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(RecordAudioActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -477,5 +495,4 @@ public class RecordAudioActivity extends BaseActivity {
 			}
 		});
 	}
-
 }

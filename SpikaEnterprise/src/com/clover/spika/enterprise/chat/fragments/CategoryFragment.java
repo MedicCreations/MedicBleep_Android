@@ -14,15 +14,16 @@ import com.clover.spika.enterprise.chat.GroupsActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.RoomsActivity;
 import com.clover.spika.enterprise.chat.adapters.CategoryAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.CategoryApi;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.api.robospice.CategorySpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.CategoryList;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,19 +108,36 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 	}
 
 	public void getCategory() {
-		CategoryApi catApi = new CategoryApi();
-		catApi.getCategory(getActivity(), true, new ApiCallback<CategoryList>() {
+
+		handleProgress(true);
+		CategorySpice.GetCategory getCategory = new CategorySpice.GetCategory(getActivity());
+		spiceManager.execute(getCategory, new CustomSpiceListener<CategoryList>() {
 
 			@Override
-			public void onApiResponse(Result<CategoryList> result) {
-				if (result.isSuccess()) {
-					setData(result.getResultData().getCategoryList());
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, getActivity());
+			}
+
+			@Override
+			public void onRequestSuccess(CategoryList result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+					setData(result.categories);
 				} else {
-					AppDialog dialog = new AppDialog(getActivity(), false);
-					if (result.getResultData() != null && result.getResultData().getMessage() != null)
-						dialog.setInfo(result.getResultData().getMessage());
-					else
-						dialog.setInfo(getString(R.string.e_something_went_wrong));
+
+					String message = "";
+
+					if (result != null && result.getMessage() != null) {
+						message = result.getMessage();
+					} else {
+						message = getString(R.string.e_something_went_wrong);
+					}
+
+					Utils.onFailedUniversal(message, getActivity());
 				}
 			}
 		});
@@ -136,16 +154,16 @@ public class CategoryFragment extends CustomFragment implements OnItemClickListe
 			switch (mUseType) {
 			case CHOOSE_CATEGORY:
 				if (getActivity() instanceof ChooseCategoryActivity) {
-					((ChooseCategoryActivity) getActivity()).returnCategoryIdToActivity(String.valueOf(category.getId()), category.getName());
+					((ChooseCategoryActivity) getActivity()).returnCategoryIdToActivity(String.valueOf(category.id), category.name);
 				}
 				break;
 
 			case ROOM:
-				RoomsActivity.startActivity(String.valueOf(category.getId()), category.getName(), getActivity());
+				RoomsActivity.startActivity(String.valueOf(category.id), category.name, getActivity());
 				break;
 
 			case GROUP:
-				GroupsActivity.startActivity(String.valueOf(category.getId()), getActivity());
+				GroupsActivity.startActivity(String.valueOf(category.id), getActivity());
 				break;
 			}
 

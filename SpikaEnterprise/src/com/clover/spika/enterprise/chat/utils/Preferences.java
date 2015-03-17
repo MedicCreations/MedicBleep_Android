@@ -1,8 +1,5 @@
 package com.clover.spika.enterprise.chat.utils;
 
-import java.io.IOException;
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -40,10 +37,10 @@ public class Preferences {
 		editor.apply();
 	}
 
-	public String getToken() throws ClientProtocolException, IOException, JSONException {
+	public String getToken() {
 		long tokenTime = sharedPreferences.getLong(Const.CLIENT_TOKEN_EXPIRES, 0L);
 		long currentTime = System.currentTimeMillis() / 1000L;
-
+		
 		return (tokenTime > currentTime) ? sharedPreferences.getString(Const.TOKEN, null) : null;
 	}
 

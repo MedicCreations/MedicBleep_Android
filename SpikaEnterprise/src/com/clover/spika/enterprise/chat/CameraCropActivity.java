@@ -27,9 +27,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.ChatApi;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
-import com.clover.spika.enterprise.chat.api.UserApi;
+import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -37,12 +37,15 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.cropper.CropImageView;
 import com.clover.spika.enterprise.chat.views.cropper.util.ScalingUtilities;
 import com.clover.spika.enterprise.chat.views.cropper.util.ScalingUtilities.ScalingLogic;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CameraCropActivity extends BaseActivity implements OnClickListener {
 
@@ -76,7 +79,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	private boolean mIsOverJellyBean;
 	private boolean mCompressImages;
 	private boolean mIsSamsung = false;
-	
+
 	private boolean isSquare = false;
 
 	@Override
@@ -87,7 +90,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		cropImageView = (CropImageView) findViewById(R.id.CropImageView);
 		cropImageView.setAspectRatio(20, 20);
 		// TODO set fixed rect uncomment
-		//cropImageView.setFixedAspectRatio(true);
+		// cropImageView.setFixedAspectRatio(true);
 
 		// ROTATE
 		// final Button rotateButton = (Button)
@@ -122,14 +125,14 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	private void getImageIntents() {
 		if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.SHARE_INTENT)) {
 			Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
-			if(uri.toString().contains("file://")){
+			if (uri.toString().contains("file://")) {
 				String selected_image_path = uri.toString().substring(7);
 				onPhotoTaken(selected_image_path);
-			}else{
+			} else {
 				String selected_image_path = Helper.getImagePath(this, uri, mIsOverJellyBean);
 				onPhotoTaken(selected_image_path);
 			}
-		}else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
+		} else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.GALLERY_INTENT)) {
 			if (mIsOverJellyBean) {
 				Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -141,7 +144,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 				intent.setAction(Intent.ACTION_GET_CONTENT);
 				this.startActivityForResult(intent, GALLERY);
 			}
-		}else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.PATH_INTENT)) {
+		} else if (getIntent().getStringExtra(Const.INTENT_TYPE).equals(Const.PATH_INTENT)) {
 			String path = getIntent().getStringExtra(Const.EXTRA_PATH);
 			onPhotoTaken(path);
 		} else {
@@ -158,7 +161,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		if (getIntent().getExtras().containsKey(Const.CHAT_ID)) {
 			chatId = getIntent().getStringExtra(Const.CHAT_ID);
 		}
-		
+
 		if (getIntent().getExtras().containsKey(Const.IS_SQUARE)) {
 			isSquare = getIntent().getBooleanExtra(Const.IS_SQUARE, false);
 		}
@@ -454,11 +457,11 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	protected void onResume() {
 		super.onResume();
 
-		if (mIsSamsung && SpikaEnterpriseApp.getInstance().samsungImagePath() != null) {
-			if (SpikaEnterpriseApp.getInstance().samsungImagePath().equals("-1")) {
+		if (mIsSamsung && SpikaEnterpriseApp.samsungImagePath() != null) {
+			if (SpikaEnterpriseApp.samsungImagePath().equals("-1")) {
 				finish();
 			} else {
-				onPhotoTaken(SpikaEnterpriseApp.getInstance().samsungImagePath());
+				onPhotoTaken(SpikaEnterpriseApp.samsungImagePath());
 			}
 		}
 
@@ -589,35 +592,55 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
-		new ChatApi().sendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this, new ApiCallback<Integer>() {
+		handleProgress(true);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
 
 			@Override
-			public void onApiResponse(Result<Integer> result) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CameraCropActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Integer result) {
+				handleProgress(false);
 
 				AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
 
-				if (result.isSuccess()) {
+				if (result == Const.API_SUCCESS) {
 					dialog.setSucceed();
 				} else {
-					dialog.setFailed(result.getResultData());
+					dialog.setFailed(result);
 				}
 			}
 		});
 	}
 
 	private void updateUser(final String fileId, final String thumbId) {
-		new UserApi().updateUserImage(fileId, thumbId, this, true, new ApiCallback<BaseModel>() {
+
+		handleProgress(true);
+
+		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId, this);
+		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CameraCropActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					Helper.setUserImage(getApplicationContext(), fileId);
 					finish();
 				} else {
-					if (result.hasResultData()) {
-						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
-						dialog.setFailed(result.getResultData().getMessage());
-					}
+					Utils.onFailedUniversal(Helper.errorDescriptions(CameraCropActivity.this, result.getCode()), CameraCropActivity.this);
 				}
 			}
 		});
@@ -628,11 +651,21 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		String chatId = getIntent().getStringExtra(Const.CHAT_ID);
 		String chatName = getIntent().getStringExtra(Const.CHAT_NAME);
 
-		new ChatApi().updateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName, true, this, new ApiCallback<BaseModel>() {
+		handleProgress(true);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName, this);
+		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
-			public void onApiResponse(Result<BaseModel> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException ex) {
+				handleProgress(false);
+				Utils.onFailedUniversal(null, CameraCropActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(BaseModel result) {
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
 					Helper.setRoomThumbId(getApplicationContext(), fileId);
 					finish();
 				} else {

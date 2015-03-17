@@ -20,8 +20,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
@@ -32,8 +31,10 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener {
 
@@ -45,7 +46,6 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ImageButton closeSearchBtn;
 	private ImageButton mInviteBtn;
 
-	private GlobalApi api = new GlobalApi();
 	private ManageUsersFragmentAdapter mPagerAdapter;
 	private ViewPager mViewPager;
 
@@ -132,16 +132,29 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
+		
+		handleProgress(true);
 
-		api.globalSearch(this, currentIndex, chatId, null, Type.ALL, search, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(currentIndex, chatId, null, Type.ALL, search, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ManageUsersActivity.this);
+			}
 
-					mPagerAdapter.setUserTotalCount(result.getResultData().getTotalCount());
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
 
-					List<GlobalModel> finalList = result.getResultData().getModelsList();
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mPagerAdapter.setUserTotalCount(result.getTotalCount());
+
+					List<GlobalModel> finalList = result.getModelsList();
 
 					for (int i = 0; i < finalList.size(); i++) {
 						if (finalList.get(i).isMember()) {
@@ -149,12 +162,16 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 						}
 					}
 
-					mPagerAdapter.setInviteUsers(result.getResultData().getModelsList(), toClear);
+					mPagerAdapter.setInviteUsers(result.getModelsList(), toClear);
 
 					if (toUpdateMember) {
 						mPagerAdapter.resetMembers();
 						getMembers(0, false);
 					}
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, ManageUsersActivity.this);
 				}
 			}
 		});
@@ -162,15 +179,35 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
-		api.globalMembers(this, Type.ALL, chatId, null, currentIndex, true, new ApiCallback<GlobalResponse>() {
+		
+		handleProgress(true);
+
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(currentIndex, chatId, null, Type.ALL, this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					mPagerAdapter.setMemberTotalCount(result.getResultData().getTotalCount());
-					mPagerAdapter.setMembers(result.getResultData().getModelsList());
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, ManageUsersActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mPagerAdapter.setMemberTotalCount(result.getTotalCount());
+					mPagerAdapter.setMembers(result.getModelsList());
 					if (toUpdateInviteMember) {
 						getUsers(0, null, true, false);
 					}
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, ManageUsersActivity.this);
 				}
 			}
 		});
@@ -343,7 +380,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 			return;
 		}
 		if (chatModelNew != null) {
-			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getId()), chatModelNew.getPassword(), chatModelNew.getUser());
+			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getId()), chatModelNew.password, chatModelNew.user);
 		}
 
 		finish();

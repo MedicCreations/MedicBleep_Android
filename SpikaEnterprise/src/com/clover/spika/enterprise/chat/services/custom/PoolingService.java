@@ -1,5 +1,7 @@
 package com.clover.spika.enterprise.chat.services.custom;
 
+import java.util.List;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -11,8 +13,6 @@ import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.PushHandle;
-
-import java.util.List;
 
 public class PoolingService extends Service {
 
@@ -43,10 +43,10 @@ public class PoolingService extends Service {
 
 				if (result.isSuccess()) {
 
-					List<LocalPush> data = result.getResultData().getChats();
+					List<LocalPush> data = result.getResultData().chats;
 
 					for (LocalPush push : data) {
-						PushHandle.handlePushNotification(push.getChatId(), push.getOrganizationId(), push.getFirstName(), push.getPassword(), String.valueOf(push.getType()), getBaseContext());
+						PushHandle.handlePushNotification(push.chat_id, push.organization_id, push.firstname, push.password, String.valueOf(push.type), getBaseContext());
 					}
 				}
 

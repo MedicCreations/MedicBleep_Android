@@ -38,12 +38,12 @@ public class LoginActivity extends LoginBaseActivity {
 		password = (EditText) findViewById(R.id.password);
 		tvForgotPassword = (RobotoRegularTextView) findViewById(R.id.tvForgotPassword);
 		tvForgotPassword.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
 				startActivity(intent);
-				
+
 			}
 		});
 		rememberMeCheckBox = (CheckBox) findViewById(R.id.checkBoxRememberLogin);
@@ -120,5 +120,5 @@ public class LoginActivity extends LoginBaseActivity {
 
 		}
 	}
-	
+
 }

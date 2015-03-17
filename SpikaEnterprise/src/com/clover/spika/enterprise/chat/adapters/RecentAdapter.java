@@ -17,28 +17,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class RecentAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private List<Chat> data = new ArrayList<Chat>();
 
-	private ImageLoader imageLoader;
+	private ImageLoaderSpice imageLoaderSpice;
+	private int defaultImage = ImageLoaderSpice.NO_IMAGE;
 
-	public RecentAdapter(Context context, Collection<Chat> users, boolean isUsers) {
+	public RecentAdapter(SpiceManager manager, Context context, Collection<Chat> users, boolean isUsers) {
 		this.mContext = context;
 		this.data.addAll(users);
 
-		imageLoader = ImageLoader.getInstance(context);
+		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
 		if (isUsers) {
-			imageLoader.setDefaultImage(R.drawable.default_user_image);
+			defaultImage = R.drawable.default_user_image;
 		} else {
-			imageLoader.setDefaultImage(R.drawable.default_group_image);
+			defaultImage = R.drawable.default_group_image;
 		}
 	}
 
@@ -76,7 +78,7 @@ public class RecentAdapter extends BaseAdapter {
 	}
 
 	public boolean incrementUnread(String chatId) {
-		
+
 		boolean isFound = false;
 
 		int finalChatId = 0;
@@ -92,27 +94,27 @@ public class RecentAdapter extends BaseAdapter {
 			if (data.get(i).getId() == finalChatId) {
 
 				isFound = true;
-				
+
 				int ureadInt = 0;
 
 				try {
-					ureadInt = Integer.valueOf(data.get(i).getUnread());
+					ureadInt = Integer.valueOf(data.get(i).unread);
 				} catch (Exception ignore) {
 				}
 
 				ureadInt = ureadInt + 1;
 
-				data.get(i).setUnread(String.valueOf(ureadInt));
-				
+				data.get(i).unread = String.valueOf(ureadInt);
+
 				Chat chat = data.get(i);
 				data.remove(i);
 				data.add(0, chat);
-				
+
 				notifyDataSetChanged();
 				break;
 			}
 		}
-		
+
 		return isFound;
 	}
 
@@ -132,20 +134,24 @@ public class RecentAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.recentImage.setImageDrawable(null);
-		if(getItem(position).getType() == Const.C_PRIVATE){
-			imageLoader.setDefaultImage(R.drawable.default_user_image);
+		
+		if(getItem(position).type == Const.C_PRIVATE){
+			defaultImage = R.drawable.default_user_image;
 		}else{
-			imageLoader.setDefaultImage(R.drawable.default_group_image);
+			defaultImage = R.drawable.default_group_image;
 		}
 
-		imageLoader.displayImage(getContext(), getItem(position).getImageThumb(), holder.recentImage);
-		holder.recentName.setText(getItem(position).getChat_name());
-		
-		((RoundImageView)holder.recentImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
-		
-		switch (getItem(position).getLastMessage().getType()) {
+		Chat item = getItem(position);
+
+		imageLoaderSpice.displayImage(holder.recentImage, item.image_thumb, defaultImage);
+
+		holder.recentName.setText(item.chat_name);
+
+		((RoundImageView) holder.recentImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
+
+		switch (item.last_message.getType()) {
 		case Const.MSG_TYPE_DEFAULT:
-			holder.lastMessage.setText(getItem(position).getLastMessage().getText());
+			holder.lastMessage.setText(item.last_message.getText());
 			break;
 		case Const.MSG_TYPE_DELETED:
 			holder.lastMessage.setText(mContext.getResources().getString(R.string.deleted));
@@ -173,12 +179,12 @@ public class RecentAdapter extends BaseAdapter {
 			holder.lastMessage.setText("");
 			break;
 		}
-		
-		holder.lastMessageTime.setText(getCreatedTime(getItem(position).getLastMessage().getCreated()));
 
-		if (Integer.parseInt(getItem(position).getUnread()) > 0) {
+		holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
+
+		if (Integer.parseInt(item.unread) > 0) {
 			holder.unreadText.setVisibility(View.VISIBLE);
-			holder.unreadText.setText(getItem(position).getUnread());
+			holder.unreadText.setText(item.unread);
 		} else {
 			holder.unreadText.setVisibility(View.INVISIBLE);
 			holder.unreadText.setText("");
@@ -186,7 +192,7 @@ public class RecentAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-	
+
 	private String getCreatedTime(String created) {
 
 		try {
@@ -218,7 +224,6 @@ public class RecentAdapter extends BaseAdapter {
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
 			lastMessage = (TextView) view.findViewById(R.id.lastMessage);
 			lastMessageTime = (TextView) view.findViewById(R.id.lastMessageTime);
-			
 		}
 
 	}

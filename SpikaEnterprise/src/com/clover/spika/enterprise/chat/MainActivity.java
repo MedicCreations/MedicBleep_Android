@@ -26,7 +26,6 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.fragments.HomeFragment;
 import com.clover.spika.enterprise.chat.fragments.PeopleFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
-import com.clover.spika.enterprise.chat.lazy.ImageLoader;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -59,15 +58,13 @@ public class MainActivity extends BaseActivity {
 	OnCreateRoomListener mCreateRoomListener;
 	OnEditProfileListener mEditProfileListener;
 
-	/* Main ImageLoader */
-	ImageLoader imageLoader;
-
 	/* Fragment currently in use */
 	CustomFragment mFragment;
 	TextView screenTitle;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		// start: set behind view (menu)
 		setBehindContentView(R.layout.sidebar_layout_empty);
 		getSupportFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
@@ -110,9 +107,6 @@ public class MainActivity extends BaseActivity {
 				getSlidingMenu().toggle(true);
 			}
 		});
-
-		imageLoader = ImageLoader.getInstance(this);
-		imageLoader.setDefaultImage(R.drawable.default_user_image);
 
 		screenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -198,10 +192,6 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	public ImageLoader getImageLoader() {
-		return imageLoader;
-	}
-
 	public void switchContent(Fragment fragment) {
 		mFragment = (CustomFragment) fragment;
 		if(getSupportFragmentManager().findFragmentByTag(fragment.getClass().toString()) != null){
@@ -216,7 +206,7 @@ public class MainActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 		
-		if(SpikaEnterpriseApp.getInstance().isCallInBackground()){
+		if(SpikaEnterpriseApp.isCallInBackground()){
 			if(viewForReturnToCall == null) setViewWhenCallIsInBackground(R.id.baseLayout, R.id.actionBarLayout, false);
 		}else{
 			if(viewForReturnToCall != null) ((ViewGroup) findViewById(R.id.baseLayout)).removeView(viewForReturnToCall);

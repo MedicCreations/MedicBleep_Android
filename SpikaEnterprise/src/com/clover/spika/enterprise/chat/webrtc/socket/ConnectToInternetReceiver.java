@@ -19,9 +19,9 @@ public class ConnectToInternetReceiver extends BroadcastReceiver {
 			NetworkInfo info = connManager.getActiveNetworkInfo();
 			
 			if (info != null && info.isConnected()) {
-				SpikaEnterpriseApp.getInstance().restartSocket();
+				SpikaEnterpriseApp.restartSocket();
 			}else{
-				SpikaEnterpriseApp.getInstance().stopSocketWithCon(context);
+				SpikaEnterpriseApp.stopSocketWithCon(context);
 			}
 			
 		}

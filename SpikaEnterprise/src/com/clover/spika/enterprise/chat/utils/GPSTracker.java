@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
@@ -70,7 +69,6 @@ public class GPSTracker extends Service implements LocationListener {
 				this.canGetLocation = true;
 				if (isNetworkEnabled) {
 					mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-					Log.d("Network", "Network");
 					if (mLocationManager != null) {
 						location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 						if (location != null) {
@@ -83,7 +81,6 @@ public class GPSTracker extends Service implements LocationListener {
 				else if (isGPSEnabled) {
 					if (location == null) {
 						mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-						Log.d("GPS Enabled", "GPS Enabled");
 						if (mLocationManager != null) {
 							location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 							if (location != null) {
@@ -183,7 +180,6 @@ public class GPSTracker extends Service implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d("LOG", "on location changed!!");
 		if (location != null) {
 			latitude = location.getLatitude();
 			longitude = location.getLongitude();
@@ -195,12 +191,10 @@ public class GPSTracker extends Service implements LocationListener {
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		Log.d("LOG", "onProviderDisabled");
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		Log.d("LOG", "onProviderEnabled");
 	}
 
 	@Override
@@ -210,7 +204,6 @@ public class GPSTracker extends Service implements LocationListener {
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		Log.d("LOG", "onStatusChanged");
 	}
 
 	public void setOnLocationChangedListener(OnLocationChangedListener listener) {

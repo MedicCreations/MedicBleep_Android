@@ -8,7 +8,6 @@ import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +61,7 @@ public class OrganizationAdapter extends BaseAdapter{
 		// Assign values
 		final Organization organization = (Organization) getItem(position);
 
-		holder.organizationName.setText(organization.getName());
+		holder.organizationName.setText(organization.name);
 
 		return convertView;
 	}

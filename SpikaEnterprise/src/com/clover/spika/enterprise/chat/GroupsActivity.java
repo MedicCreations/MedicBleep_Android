@@ -16,18 +16,19 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.GlobalModelAdapter;
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.GlobalApi;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,6 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 
 	private String mCategory = "0";
 
-	private GlobalApi api = new GlobalApi();
-
 	public static void startActivity(String categoryId, Context context) {
 		Intent intent = new Intent(context, GroupsActivity.class);
 		intent.putExtra(Const.CATEGORY_ID, categoryId);
@@ -68,7 +67,7 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 		setContentView(R.layout.activity_groups);
 		// setSearch(this);
 
-		adapter = new GlobalModelAdapter(this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
+		adapter = new GlobalModelAdapter(spiceManager, this, new ArrayList<GlobalModel>(), R.drawable.default_group_image);
 		mCurrentIndex = 0;
 
 		noItems = (TextView) findViewById(R.id.noItems);
@@ -166,14 +165,32 @@ public class GroupsActivity extends BaseActivity implements OnItemClickListener,
 	}
 
 	public void getGroup(int page, String search, final boolean toClear) {
+		
+		handleProgress(true);
 
-		api.globalSearch(this, page, null, mCategory, Type.GROUP, search, true, new ApiCallback<GlobalResponse>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, mCategory, Type.GROUP, search, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
-			public void onApiResponse(Result<GlobalResponse> result) {
-				if (result.isSuccess()) {
-					mTotalCount = result.getResultData().getTotalCount();
-					setData(result.getResultData().getModelsList(), toClear);
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				handleProgress(false);
+				Utils.onFailedUniversal(null, GroupsActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+				handleProgress(false);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					mTotalCount = result.getTotalCount();
+					setData(result.getModelsList(), toClear);
+
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, GroupsActivity.this);
 				}
 			}
 		});

@@ -17,10 +17,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LoginApi;
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
@@ -38,7 +39,15 @@ import com.clover.spika.enterprise.chat.webrtc.socket.models.CallMessage;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.CheckAvailableRoom;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.SocketParser;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPMessage;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 public class SocketService extends Service {
 
@@ -109,8 +118,8 @@ public class SocketService extends Service {
 
 	@Override
 	public int onStartCommand(final Intent intent, final int flags, final int startId) {
-		
-		if(intent != null && intent.getBooleanExtra(Const.IS_APLICATION_OPEN, false)){
+
+		if (intent != null && intent.getBooleanExtra(Const.IS_APLICATION_OPEN, false)) {
 			new Handler().post(new Runnable() {
 
 				@Override
@@ -118,12 +127,14 @@ public class SocketService extends Service {
 					connect();
 				}
 			});
-		}else{
+		} else {
 			new Handler().post(new Runnable() {
 
 				@Override
 				public void run() {
-					//because of this error java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.
+					// because of this error
+					// java.security.cert.CertPathValidatorException: Trust
+					// anchor for certification path not found.
 					connectWithFakeLoginApi();
 				}
 			});
@@ -131,7 +142,7 @@ public class SocketService extends Service {
 
 		return Service.START_STICKY;
 	}
-	
+
 	public void connect() {
 		if (mConn != null && mConn.isConnected()) {
 			Logger.custom("e", "LOG", "ALLREADY CONNECTED");
@@ -154,39 +165,62 @@ public class SocketService extends Service {
 
 		});
 	}
-	
+
 	public void connectWithFakeLoginApi() {
 		if (mConn != null && mConn.isConnected()) {
 			Logger.custom("e", "LOG", "ALLREADY CONNECTED");
 			mConn.disconnect();
 		}
-		new LoginApi().preLoginWithCredentials("FAKE", "FAKE", this, false, new ApiCallback<PreLogin>() {
-			
+
+		/* start:FakeApi A api reauest that is meant to fail - unknown hack */
+
+		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
+				.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		String token = SpikaEnterpriseApp.getSharedPreferences(getApplicationContext()).getToken();
+		if (!TextUtils.isEmpty(token)) {
+			headersBuilder.add("token", token);
+		}
+
+		Headers header = headersBuilder.build();
+
+		RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, "FAKE").add(Const.PASSWORD, "FAKE").build();
+		Request.Builder requestBuilder = new Request.Builder().headers(header).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
+
+		OkHttpClient client = new OkHttpClient();
+
+		Call connection = client.newCall(requestBuilder.build());
+
+		try {
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responsBody = resBody.string();
+
+			PreLogin preLogin = new ObjectMapper().readValue(responsBody, PreLogin.class);
+		} catch (Exception ex) {
+		}
+		/* end:FakeApi */
+
+		new SocketClient().getSessionId(true, new ApiCallback<String>() {
+
 			@Override
-			public void onApiResponse(Result<PreLogin> result) {
-				new SocketClient().getSessionId(true, new ApiCallback<String>() {
+			public void onApiResponse(Result<String> result) {
+				sessionId = result.getResultData();
+				if (sessionId == null) {
+					return;
+				}
+				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
+				Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
+				user = Helper.getUser(SocketService.this);
 
-					@Override
-					public void onApiResponse(Result<String> result) {
-						sessionId = result.getResultData();
-						if (sessionId == null) {
-							return;
-						}
-						sessionId = sessionId.substring(0, sessionId.indexOf(":"));
-						Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
-						user = Helper.getUser(SocketService.this);
-
-						if(user.getId() == -1){
-							SocketService.this.stopSelf();
-						}else{
-							work(sessionId);
-						}
-					}
-
-				});
+				if (user.getId() == -1) {
+					SocketService.this.stopSelf();
+				} else {
+					work(sessionId);
+				}
 			}
+
 		});
-		
 	}
 
 	private void work(String sessionId) {
@@ -221,7 +255,7 @@ public class SocketService extends Service {
 					inBroadcast.setAction(Const.SOCKET_ACTION);
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.WEB_SOCKET_OPENED);
 					LocalBroadcastManager.getInstance(SocketService.this).sendBroadcast(inBroadcast);
-					
+
 					Logger.custom("d", "WEBSOCKET", "OPEN IN TIME: " + System.currentTimeMillis());
 
 					new Handler().postDelayed(new Runnable() {
@@ -251,12 +285,12 @@ public class SocketService extends Service {
 
 	private void onMessageReceive(String message) {
 		SocketParser socketParser = new SocketParser(message);
-		if(socketParser.getType() == SocketParser.TYPE_HEARTBEAT){
+		if (socketParser.getType() == SocketParser.TYPE_HEARTBEAT) {
 			mConn.sendTextMessage(message);
 			return;
 		}
-		
-		if(!isActiveApp()){
+
+		if (!isActiveApp()) {
 			inactiveAppHandleMessage(socketParser);
 			return;
 		}
@@ -339,7 +373,7 @@ public class SocketService extends Service {
 			if (action == Const.ACTION_CALL_ACCEPT) {
 				try {
 					inBroadcast.setAction(Const.CALL_ACTION);
-					WebRtcSDPMessage item = new Gson().fromJson(socketParser.getData(), WebRtcSDPMessage.class);
+					WebRtcSDPMessage item = new ObjectMapper().readValue(socketParser.getData(), WebRtcSDPMessage.class);
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ACCEPTED);
 					inBroadcast.putExtra(Const.CANDIDATE, item);
 				} catch (Exception e) {
@@ -396,11 +430,11 @@ public class SocketService extends Service {
 
 	@Override
 	public void onDestroy() {
-		
+
 		Logger.custom("d", "LOG", "On Service Destroy");
 		if (mConn != null)
 			mConn.disconnect();
-		
+
 		super.onDestroy();
 	}
 
@@ -525,7 +559,8 @@ public class SocketService extends Service {
 
 	public void joinMyRoom() {
 		User user = Helper.getUser(this);
-		mConn.sendTextMessage(joinRoomMessage(String.valueOf(user.getId()), String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(), user.getLastName(), "join", id));
+		mConn.sendTextMessage(joinRoomMessage(String.valueOf(user.getId()), String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(),
+				user.getLastName(), "join", id));
 		Logger.custom("d", "LOG", "JOIN MY ROOM");
 		id++;
 	}

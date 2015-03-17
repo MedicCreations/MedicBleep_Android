@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,7 +17,6 @@ import com.clover.spika.enterprise.chat.adapters.OrganizationAdapter;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 
 public class ChooseOrganizationActivity extends LoginBaseActivity implements OnItemClickListener{
 	
@@ -66,7 +64,7 @@ public class ChooseOrganizationActivity extends LoginBaseActivity implements OnI
 		
 		Organization organization = organizations.get(position);
 		
-		login(organization.getId());
+		login(organization.id);
 		
 	}
 	
