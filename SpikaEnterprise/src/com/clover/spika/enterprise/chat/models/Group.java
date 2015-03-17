@@ -1,6 +1,8 @@
 package com.clover.spika.enterprise.chat.models;
 
-public class Group {
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
+
+public class Group extends BaseModel {
 
 	public int id;
 	public String type;
