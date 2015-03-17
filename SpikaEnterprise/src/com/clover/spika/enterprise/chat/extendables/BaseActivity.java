@@ -233,7 +233,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onPause() {
-		if (popupCall != null && !gotoCallActivity) {
+		if (popupCall != null && !gotoCallActivity && !SpikaEnterpriseApp.isCallInBackground()) {
 			if (callTimeoutRunnable != null)
 				callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 			updateTextViewAction("Call ending");
@@ -720,6 +720,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 			Intent intent = new Intent(BaseActivity.this, CallActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			intent.putExtra(Const.IS_CALL_ACTIVE, true);
+			Log.i("LOG", "gfhghhfghghf");
 			intent.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
 			startActivity(intent);
 
