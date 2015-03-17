@@ -47,11 +47,11 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
-import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
@@ -716,6 +716,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	protected void callEnded() {
+		if(viewForReturnToCall != null){
+			Intent intent = new Intent(BaseActivity.this, CallActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			intent.putExtra(Const.IS_CALL_ACTIVE, true);
+			intent.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
+			startActivity(intent);
+
+			showPopupCall();
+			((ViewGroup) viewForReturnToCall.getParent()).removeView(viewForReturnToCall);
+			viewForReturnToCall = null;
+			return;
+		}
 		updateTextViewAction("Call ended");
 		dissmisCallingPopup();
 	}
