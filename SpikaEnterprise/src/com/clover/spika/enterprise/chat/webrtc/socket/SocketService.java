@@ -18,7 +18,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -196,7 +195,7 @@ public class SocketService extends Service {
 			ResponseBody resBody = res.body();
 			String responsBody = resBody.string();
 
-			PreLogin preLogin = new ObjectMapper().readValue(responsBody, PreLogin.class);
+			new ObjectMapper().readValue(responsBody, PreLogin.class);
 		} catch (Exception ex) {
 		}
 		/* end:FakeApi */

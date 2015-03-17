@@ -4,7 +4,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 
 public class UploadFileModel extends BaseModel {
 
-	private String file_id;
+	public String file_id;
 
 	public UploadFileModel() {
 	}

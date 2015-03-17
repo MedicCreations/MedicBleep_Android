@@ -92,7 +92,7 @@ public class FileManageApi {
 					}
 
 					new File(finalPath).delete();
-
+					
 					return mapper.readValue(responseBody, UploadFileModel.class);
 
 				} catch (IOException | JSONException e) {
