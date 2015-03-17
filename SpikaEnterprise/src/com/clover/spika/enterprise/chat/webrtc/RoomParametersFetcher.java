@@ -36,6 +36,7 @@ import org.webrtc.SessionDescription;
 
 import android.util.Log;
 
+import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.webrtc.AppRTCClient.SignalingParameters;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPCandidate;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPMessage;
@@ -73,11 +74,11 @@ public class RoomParametersFetcher {
 	}
 
 	public SignalingParameters roomHttpResponseParse() {
-		String username = "turn";
-        String password = "turn";
-        String uri = "turn:spikaent.com:3478";
+		String username = Const.TURN_USER;
+        String password = Const.STUN_SERVER;
+        String uri = Const.TURN_SERVER;
         
-        String uriStun = "stun:spikaent.com:3478";
+        String uriStun = Const.STUN_SERVER;
         
 		LinkedList<PeerConnection.IceServer> turnServersNEW = new LinkedList<PeerConnection.IceServer>();
 		turnServersNEW.add(new PeerConnection.IceServer(uriStun, username, password));
@@ -97,33 +98,6 @@ public class RoomParametersFetcher {
 					String newSdp = webRtcMessage.getArgs().get(0).getPayload().getSdp();
 //					if(newSdp.contains("a=group:BUNDLE audio video data")){
 //						newSdp = newSdp.replace("a=group:BUNDLE audio video data", "a=group:BUNDLE audio video");
-//					}
-//					if(newSdp.contains("a=rtpmap:106 CN/32000")){
-//						Log.e("NEW", "REPLACED...1");
-//						newSdp = newSdp.replace("a=rtpmap:106 CN/32000\\r\\n", "");
-//					}
-//					if(newSdp.contains("a=rtpmap:105 CN/16000")){
-//						Log.e("NEW", "REPLACED...2");
-//						newSdp = newSdp.replace("a=rtpmap:105 CN/16000\\r\\n", "");
-//					}
-//					if(newSdp.contains("a=rtpmap:13 CN/8000")){
-//						Log.e("NEW", "REPLACED...3");
-//						newSdp = newSdp.replace("a=rtpmap:13 CN/8000\\r\\n", "");
-//					}
-//					if(newSdp.contains("m=video 9 RTP/SAVPF 100 116 117 96")){
-//						Log.e("NEW", "REPLACED...4");
-//						newSdp = newSdp.replace("m=video 9 RTP/SAVPF 100 116 117 96", "m=video 9 RTP/SAVPF 111 100 116 117 96");
-//					}
-//					if(newSdp.contains("m=application 9 DTLS/SCTP 5000")){
-//						Log.e("NEW", "REPLACED...5");
-//						newSdp = newSdp.replace("m=application 9 DTLS/SCTP 5000\\r\\n", "");
-//					}
-//					if(newSdp.contains("m=application 9 DTLS/SCTP 5000")){
-//						Log.e("NEW", "REPLACED...5.1");
-//						newSdp = newSdp.substring(0, newSdp.indexOf("m=application 9 DTLS/SCTP 5000"));
-//					}
-//					if(newSdp.contains("m=application 9 DTLS/SCTP 5000")){
-//						Log.e("NEW", "REPLACED...5.2");
 //					}
 					sdp = new SessionDescription(SessionDescription.Type.fromCanonicalForm("OFFER"), newSdp);
 				}

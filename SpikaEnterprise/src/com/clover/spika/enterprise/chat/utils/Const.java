@@ -13,6 +13,16 @@ public class Const {
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
 	public static final int S_ITERATIONS = 3;
+	
+	// Socket and WebRtc Constants
+	public static final String WS_URL = "wss://www.spikaent.com";
+	public static final String WS_PORT = "32443";
+	public static final String WS_SUFIX_URL = "/socket.io/1/websocket/";
+	public static final String WS_GET_SESSION_URL = "https://www.spikaent.com:32443/socket.io/1/";
+	public static final String STUN_SERVER = "stun:spikaent.com:3478";
+	public static final String TURN_SERVER = "turn:spikaent.com:3478";
+	public static final String TURN_USER = "turn:spikaent.com:3478"; // same user for stun server
+	public static final String TURN_PASS = "turn:spikaent.com:3478"; // same pass for stun server
 
 	// Activity for result constants
 	public static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;

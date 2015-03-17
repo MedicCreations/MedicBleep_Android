@@ -40,10 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SocketService extends Service {
 
-	private static final String WS_URL = "wss://www.spikaent.com";
-	private static final String WS_PORT = "32443";
-	private static final String WS_SUFIX_URL = "/socket.io/1/websocket/";
-
 	private int action = Const.ACTION_IDLE;
 
 	private User user;
@@ -221,7 +217,7 @@ public class SocketService extends Service {
 
 	private void work(String sessionId) {
 
-		wsString = WS_URL + ":" + WS_PORT + WS_SUFIX_URL + sessionId;
+		wsString = Const.WS_URL + ":" + Const.WS_PORT + Const.WS_SUFIX_URL + sessionId;
 		Logger.custom("d", "LOG", "Connected to Socket: " + wsString);
 
 		URI uri = null;

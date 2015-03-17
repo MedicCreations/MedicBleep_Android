@@ -22,7 +22,7 @@ public class SocketClient {
 			protected String doInBackground(Void... params) {
 
 				try {
-					return NetworkManagement.httpGetRequestWithRawResponse("https://www.spikaent.com:32443/socket.io/1/");
+					return NetworkManagement.httpGetRequestWithRawResponse(Const.WS_GET_SESSION_URL);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
