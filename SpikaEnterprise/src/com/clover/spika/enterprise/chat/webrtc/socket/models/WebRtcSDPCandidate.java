@@ -2,6 +2,9 @@ package com.clover.spika.enterprise.chat.webrtc.socket.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WebRtcSDPCandidate implements Serializable {
 
 	private static final long serialVersionUID = 1L;

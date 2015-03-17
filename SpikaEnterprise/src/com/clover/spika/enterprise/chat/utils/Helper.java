@@ -287,7 +287,7 @@ public class Helper {
 
 	public static User getUser(Context ctx) {
 		try {
-			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), null, getUserImage(ctx), getUserThumbImage(ctx), false, null, false,
+			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), String.valueOf(Const.USERS_TYPE), getUserImage(ctx), getUserThumbImage(ctx), false, null, false,
 					null);
 		} catch (Exception e) {
 			return new User(-1, "", "", "-1", "", "", false, null, false, null);

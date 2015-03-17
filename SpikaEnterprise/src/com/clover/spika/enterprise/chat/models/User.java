@@ -225,4 +225,13 @@ public class User implements Serializable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", user_id=" + user_id + ", firstname=" + firstname + ", lastname=" + lastname + ", type=" + type + ", image=" + image + ", image_thumb=" + image_thumb
+				+ ", is_member=" + is_member + ", is_admin=" + is_admin + ", name=" + name + ", groupname=" + groupname + ", chat_id=" + chat_id + ", is_user=" + is_user + ", is_group=" + is_group
+				+ ", is_room=" + is_room + ", details=" + details + ", organization=" + organization + ", isSelected=" + isSelected + "]";
+	}
+	
+	
+
 }

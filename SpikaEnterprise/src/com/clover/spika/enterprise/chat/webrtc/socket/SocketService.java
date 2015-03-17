@@ -17,11 +17,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.User;
@@ -40,14 +38,6 @@ import com.clover.spika.enterprise.chat.webrtc.socket.models.CheckAvailableRoom;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.SocketParser;
 import com.clover.spika.enterprise.chat.webrtc.socket.models.WebRtcSDPMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
 
 public class SocketService extends Service {
 
@@ -159,7 +149,7 @@ public class SocketService extends Service {
 				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
 				Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
 				user = Helper.getUser(SocketService.this);
-
+				
 				work(sessionId);
 			}
 
@@ -174,53 +164,60 @@ public class SocketService extends Service {
 
 		/* start:FakeApi A api reauest that is meant to fail - unknown hack */
 
-		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
-				.add("User-Agent", Const.HTTP_USER_AGENT);
-
-		String token = SpikaEnterpriseApp.getSharedPreferences(getApplicationContext()).getToken();
-		if (!TextUtils.isEmpty(token)) {
-			headersBuilder.add("token", token);
-		}
-
-		Headers header = headersBuilder.build();
-
-		RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, "FAKE").add(Const.PASSWORD, "FAKE").build();
-		Request.Builder requestBuilder = new Request.Builder().headers(header).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
-
-		OkHttpClient client = new OkHttpClient();
-
-		Call connection = client.newCall(requestBuilder.build());
-
-		try {
-			Response res = connection.execute();
-			ResponseBody resBody = res.body();
-			String responsBody = resBody.string();
-
-			PreLogin preLogin = new ObjectMapper().readValue(responsBody, PreLogin.class);
-		} catch (Exception ex) {
-		}
-		/* end:FakeApi */
-
-		new SocketClient().getSessionId(true, new ApiCallback<String>() {
-
+//		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
+//				.add("User-Agent", Const.HTTP_USER_AGENT);
+//
+//		String token = SpikaEnterpriseApp.getSharedPreferences(getApplicationContext()).getToken();
+//		if (!TextUtils.isEmpty(token)) {
+//			headersBuilder.add("token", token);
+//		}
+//
+//		Headers header = headersBuilder.build();
+//
+//		RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, "FAKE").add(Const.PASSWORD, "FAKE").build();
+//		Request.Builder requestBuilder = new Request.Builder().headers(header).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
+//
+//		OkHttpClient client = new OkHttpClient();
+//
+//		Call connection = client.newCall(requestBuilder.build());
+//
+//		try {
+//			Response res = connection.execute();
+//			ResponseBody resBody = res.body();
+//			String responsBody = resBody.string();
+//
+//			PreLogin preLogin = new ObjectMapper().readValue(responsBody, PreLogin.class);
+//		} catch (Exception ex) {
+//		}
+		
+		new SocketClient().fakeApiForSSL(this, new ApiCallback<PreLogin>() {
+			
 			@Override
-			public void onApiResponse(Result<String> result) {
-				sessionId = result.getResultData();
-				if (sessionId == null) {
-					return;
-				}
-				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
-				Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
-				user = Helper.getUser(SocketService.this);
+			public void onApiResponse(Result<PreLogin> result) {
+				new SocketClient().getSessionId(true, new ApiCallback<String>() {
 
-				if (user.getId() == -1) {
-					SocketService.this.stopSelf();
-				} else {
-					work(sessionId);
-				}
+					@Override
+					public void onApiResponse(Result<String> result) {
+						sessionId = result.getResultData();
+						if (sessionId == null) {
+							return;
+						}
+						sessionId = sessionId.substring(0, sessionId.indexOf(":"));
+						Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
+						user = Helper.getUser(SocketService.this);
+						
+						if (user.getId() == -1) {
+							SocketService.this.stopSelf();
+						} else {
+							work(sessionId);
+						}
+					}
+
+				});
 			}
-
 		});
+		/* end:FakeApi */
+		
 	}
 
 	private void work(String sessionId) {
