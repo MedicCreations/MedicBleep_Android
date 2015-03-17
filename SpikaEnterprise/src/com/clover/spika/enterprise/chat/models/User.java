@@ -20,7 +20,7 @@ public class User implements Serializable {
 	public String image;
 	public String image_thumb;
 	public boolean is_member;
-	public boolean is_admin;
+	public int is_admin;
 	public String name;
 	public String groupname;
 	public String chat_id;
@@ -120,11 +120,16 @@ public class User implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		return this.is_admin;
+		
+		if(this.is_admin == 0){
+			return false;
+		}
+		
+		return true;
 	}
 
 	public void setIsAdmin(boolean isAdmin) {
-		this.is_admin = isAdmin;
+		this.is_admin = isAdmin ? 1 : 0;
 	}
 
 	public List<Map<String, String>> getDetails() {
