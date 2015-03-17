@@ -4,9 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -20,7 +17,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
@@ -307,27 +303,29 @@ public class SocketService extends Service {
 			try {
 				CallMessage item = socketParser.parseCallMessage(socketParser.getData());
 
-				if (item.getArgs().get(0).getType().equals("callEnd") || item.getArgs().get(0).getType().equals("callDecline")) {
+				if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_END) || item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_DECLINE)) {
 					joinMyRoom();
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
-				} else if (item.getArgs().get(0).getType().equals("callAnswer")) {
+				} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_ANSWER)) {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ANSWER);
 					inBroadcast.putExtra(Const.USER, item.getArgs().get(0).getPayload().getUser());
 					activeUserInteractive = item.getArgs().get(0).getPayload().getUser();
 					activeSessionOfInteractiveUser = item.getArgs().get(0).getFrom();
 					inBroadcast.putExtra(Const.SESSION_ID, activeSessionOfInteractiveUser);
-				} else if (item.getArgs().get(0).getType().equals("callOffer")) {
+				} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_OFFER)) {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_RECEIVE);
 					inBroadcast.putExtra(Const.USER, item.getArgs().get(0).getPayload().getUser());
 					activeSessionOfInteractiveUser = item.getArgs().get(0).getFrom();
 					activeUserInteractive = item.getArgs().get(0).getPayload().getUser();
 					inBroadcast.putExtra(Const.SESSION_ID, activeSessionOfInteractiveUser);
-				} else if (item.getArgs().get(0).getType().equals("callRinging")) {
+				} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_RINGING)) {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_RINGING);
-				} else if (item.getArgs().get(0).getType().equals("callCancel")) {
+				} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_CANCEL)) {
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_CANCELED);
-				} else if (item.getArgs().get(0).getType().equals("mute") || item.getArgs().get(0).getType().equals("unmute")  || item.getArgs().get(0).getType().equals("muteRemoteVideo")) {
-					inBroadcast.setAction("CALL");
+				} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_MUTE) 
+						|| item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_UNMUTE)  
+						|| item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_MUTE_REMOTE_VIDEO)) {
+					inBroadcast.setAction(Const.CALL_ACTION);
 					inBroadcast.putExtra(Const.MESSAGES, item);
 				}
 			} catch (Exception e) {
@@ -340,7 +338,7 @@ public class SocketService extends Service {
 
 			if (action == Const.ACTION_CALL_ACCEPT) {
 				try {
-					inBroadcast.setAction("CALL");
+					inBroadcast.setAction(Const.CALL_ACTION);
 					WebRtcSDPMessage item = new Gson().fromJson(socketParser.getData(), WebRtcSDPMessage.class);
 					inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ACCEPTED);
 					inBroadcast.putExtra(Const.CANDIDATE, item);
@@ -374,7 +372,7 @@ public class SocketService extends Service {
 		try {
 			CallMessage item = socketParser.parseCallMessage(socketParser.getData());
 
-			if (item.getArgs().get(0).getType().equals("callOffer")) {
+			if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_OFFER)) {
 				activeSessionOfInteractiveUser = item.getArgs().get(0).getFrom();
 				activeUserInteractive = item.getArgs().get(0).getPayload().getUser();
 				User user = item.getArgs().get(0).getPayload().getUser();
@@ -384,10 +382,10 @@ public class SocketService extends Service {
 				intentInAp.putExtra(Const.SESSION_ID, activeSessionOfInteractiveUser);
 				intentInAp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intentInAp);
-			} else if (item.getArgs().get(0).getType().equals("callEnd")) {
+			} else if (item.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_END)) {
 				joinMyRoom();
 				Intent inBroadcast = new Intent();
-				inBroadcast.setAction("CALL");
+				inBroadcast.setAction(Const.CALL_ACTION);
 				inBroadcast.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
 				LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
 			}
@@ -447,62 +445,24 @@ public class SocketService extends Service {
 		id++;
 	}
 
-	public void sendWebRtcMessageInit() {
-		String json = "{" + "\"args\":{" + "\"type\" : \"init\"," + "\"to\" : \"" + activeSessionOfInteractiveUser + "\"" + "}," + "\"name\" : " + "\"message\"" + "}";
-		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id - 1), "", json).toString());
-	}
-
 	public String createMuteMessage(String videoOrAudio, String mute) {
-
-		String action = "message";
-		String json = "{" + "\"args\":{" + "\"type\" : \"" + mute + "\"," + "\"to\" : \"" + activeSessionOfInteractiveUser + "\"," + "\"from\" : \"" + sessionId + "\"," + "\"roomType\" : \"video\","
-				+ "\"payload\":{" + "\"name\" : \"" + videoOrAudio + "\"," + "\"user\":{" + "\"firstname\":\"" + user.getFirstName() + "\"," + "\"image\":\"" + user.getImage() + "\","
-				+ "\"image_thumb\":\"" + user.getImageThumb() + "\"," + "\"lastname\":\"" + user.getLastName() + "\"," + "\"user_id\":\"" + user.getId() + "\"" + "}" + "}" + "}," + "\"name\" : "
-				+ "\"" + action + "\"" + "}";
-
+		String json = SocketMessageHelper.createMuteMessage(videoOrAudio, mute, activeSessionOfInteractiveUser, sessionId, user);
 		return json;
 	}
 
 	public String createWebRtcMessage(String mess) {
-		String candidate = "";
-		String sdpMid = "";
-		String sdpMIndex = "";
-		try {
-			JSONObject jo = new JSONObject(mess);
-			candidate = jo.getString("candidate");
-			sdpMid = jo.getString("id");
-			sdpMIndex = jo.getString("label");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		String action = "message";
-		String json = "{" + "\"args\":{" + "\"type\" : \"candidate\"," + "\"to\" : \"" + activeSessionOfInteractiveUser + "\"," + "\"payload\":{" + "\"candidate\":{" + "\"sdpMLineIndex\":\""
-				+ sdpMIndex + "\"," + "\"sdpMid\":\"" + sdpMid + "\"," + "\"candidate\":\"" + candidate + "\"" + "}," + "\"user\":{" + "\"firstname\":\"" + user.getFirstName() + "\","
-				+ "\"image\":\"" + user.getImage() + "\"," + "\"image_thumb\":\"" + user.getImageThumb() + "\"," + "\"lastname\":\"" + user.getLastName() + "\"," + "\"user_id\":\"" + user.getId()
-				+ "\"" + "}" + "}," + "\"roomType\" : \"video\"" + "}," + "\"name\" : " + "\"" + action + "\"" + "}";
-
+		String json = SocketMessageHelper.createWebRtcMessage(mess, activeSessionOfInteractiveUser, user);
 		return json;
 	}
 
 	public void sendWebRtcMessageOffer(String sdp) {
-		String formatedSdp = sdp.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\r\\\\n");
-		String action = "message";
-		String json = "{" + "\"args\":{" + "\"type\" : \"offer\"," + "\"to\" : \"" + activeSessionOfInteractiveUser + "\"," + "\"payload\":{" + "\"sdp\" : \"" + formatedSdp + "\","
-				+ "\"type\" : \"offer\"," + "\"user\":{" + "\"firstname\":\"" + user.getFirstName() + "\"," + "\"image\":\"" + user.getImage() + "\"," + "\"image_thumb\":\"" + user.getImageThumb()
-				+ "\"," + "\"lastname\":\"" + user.getLastName() + "\"," + "\"user_id\":\"" + user.getId() + "\"" + "}" + "}," + "\"roomType\" : \"video\"" + "}," + "\"name\" : " + "\"" + action
-				+ "\"" + "}";
+		String json = SocketMessageHelper.sendWebRtcMessageOffer(sdp, activeSessionOfInteractiveUser, user);
 		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString());
 		id++;
 	}
 
 	public void sendWebRtcMessageOfferForAnswer(String sdp) {
-		String formatedSdp = sdp.replaceAll("(\\r|\\n|\\r\\n)+", "\\\\r\\\\n");
-		String action = "message";
-		String json = "{" + "\"args\":{" + "\"type\" : \"answer\"," + "\"to\" : \"" + activeSessionOfInteractiveUser + "\"," + "\"from\" : \"" + sessionId + "\"," + "\"payload\":{" + "\"sdp\" : \""
-				+ formatedSdp + "\"," + "\"type\" : \"answer\"," + "\"user\":{" + "\"firstname\":\"" + user.getFirstName() + "\"," + "\"image\":\"" + user.getImage() + "\"," + "\"image_thumb\":\""
-				+ user.getImageThumb() + "\"," + "\"lastname\":\"" + user.getLastName() + "\"," + "\"user_id\":\"" + user.getId() + "\"" + "}" + "}," + "\"roomType\" : \"video\"" + "},"
-				+ "\"name\" : " + "\"" + action + "\"" + "}";
+		String json = SocketMessageHelper.sendWebRtcMessageOfferForAnswer(sdp, activeSessionOfInteractiveUser, sessionId, user);
 		mConn.sendTextMessage(new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString());
 		id++;
 	}
@@ -515,7 +475,7 @@ public class SocketService extends Service {
 
 	public void call(String sessionId, boolean isVideo) {
 		action = Const.ACTION_CALL;
-		mConn.sendTextMessage(callMessage(sessionId, "callOffer", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_OFFER, id));
 		Logger.custom("d", "LOG", "CALL OFFER");
 		id++;
 	}
@@ -524,7 +484,7 @@ public class SocketService extends Service {
 		action = Const.ACTION_CALL_CANCEL;
 		if (sessionId == null)
 			sessionId = activeSessionOfInteractiveUser;
-		mConn.sendTextMessage(callMessage(sessionId, "callCancel", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_CANCEL, id));
 		activeSessionOfInteractiveUser = "-1";
 		activeUserInteractive = null;
 		Logger.custom("d", "LOG", "CALL CANCEL");
@@ -535,7 +495,7 @@ public class SocketService extends Service {
 		action = Const.ACTION_CALL_DECLINE;
 		if (sessionId == null)
 			sessionId = activeSessionOfInteractiveUser;
-		mConn.sendTextMessage(callMessage(sessionId, "callDecline", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_DECLINE, id));
 		Logger.custom("d", "LOG", "CALL DECLINE");
 		id++;
 	}
@@ -544,21 +504,21 @@ public class SocketService extends Service {
 		action = Const.ACTION_CALL_END;
 		if (sessionId == null)
 			sessionId = activeSessionOfInteractiveUser;
-		mConn.sendTextMessage(callMessage(sessionId, "callEnd", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_END, id));
 		Logger.custom("d", "LOG", "CALL END");
 		id++;
 	}
 
 	public void callAccept(String sessionId) {
 		action = Const.ACTION_CALL_ACCEPT;
-		mConn.sendTextMessage(callMessage(sessionId, "callAnswer", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_ANSWER, id));
 		Logger.custom("d", "LOG", "CALL ACCEPT");
 		id++;
 	}
 
 	public void callRinging(String sessionId) {
 		action = Const.ACTION_CALL_RINGING;
-		mConn.sendTextMessage(callMessage(sessionId, "callRinging", id));
+		mConn.sendTextMessage(callMessage(sessionId, Const.WebRTCCall.CALL_RINGING, id));
 		Logger.custom("d", "LOG", "CALL RINGING");
 		id++;
 	}
@@ -595,27 +555,23 @@ public class SocketService extends Service {
 	}
 
 	public String callMessage(String sessionId, String type, int id) {
-		User user = Helper.getUser(this);
-		String action = "message";
-		String json = "{" + "\"args\":{" + "\"payload\":{" + "\"user\":{" + "\"firstname\":\"" + user.getFirstName() + "\"," + "\"image\":\"" + user.getImage() + "\"," + "\"image_thumb\":\""
-				+ user.getImageThumb() + "\"," + "\"lastname\":\"" + user.getLastName() + "\"," + "\"user_id\":\"" + user.getId() + "\"" + "}" + "}," + "\"to\" : \"" + sessionId + "\","
-				+ "\"type\" : \"" + type + "\"" + "}," + "\"name\" : " + "\"" + action + "\"" + "}";
+		String json = SocketMessageHelper.callMessage(sessionId, type, id, this);
 		return new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString();
 	}
 
 	private String joinRoomMessage(String roomId, String userId, String firstName, String image, String imageThumb, String lastName, String action, int id) {
-		String json = "{" + "\"args\":{" + "\"room_id\":\"" + roomId + "\"," + "\"user\":{" + "\"firstname\":\"" + firstName + "\"," + "\"image\":\"" + image + "\"," + "\"image_thumb\":\""
-				+ imageThumb + "\"," + "\"lastname\":\"" + lastName + "\"," + "\"user_id\":\"" + userId + "\"" + "}" + "}," + "\"name\" : " + "\"" + action + "\"" + "}";
+		String json = SocketMessageHelper.joinRoomMessage(roomId, userId, firstName, image, imageThumb, lastName, action, id);
 		return new SocketParser(SocketParser.TYPE_EVENT, (id + "+"), "", json).toString();
 	}
 
 	private String checkIsRoomAvailableMessage(String userId) {
-		String json = "{\"args\" : \"" + userId + "\", \"name\" : \"room\"}";
+		String json = SocketMessageHelper.checkIsRoomAvailableMessage(userId);
 		return new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id + "+"), "", json).toString();
+		
 	}
 
 	private String createLeaveMessage() {
-		String json = "{\"name\" : \"leave\"}";
+		String json = SocketMessageHelper.createLeaveMessage();
 		return new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString();
 	}
 

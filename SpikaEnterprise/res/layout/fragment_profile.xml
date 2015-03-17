@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_blue" >
-    
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-        
-        <View android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#66000000"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/shadow_gradient" />
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/profileImage"
@@ -102,7 +103,6 @@
             android:padding="10dp"
             android:text="@string/update_password"
             android:textColor="@android:color/white" />
-
     </RelativeLayout>
 
 </ScrollView>

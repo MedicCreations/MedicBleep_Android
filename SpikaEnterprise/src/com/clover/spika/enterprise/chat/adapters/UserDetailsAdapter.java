@@ -155,13 +155,31 @@ public class UserDetailsAdapter extends BaseAdapter {
 						Utils.emailIntent(mContext, userDetail.getValue(), "", "");
 					}
 				});
-			}else if(userDetail.getKey().equals("mobile_number") || userDetail.getKey().equals("phone_number")){
+			}else if(userDetail.getKey().equals("mobile_number") || userDetail.getKey().equals("phone_number") || userDetail.getKey().equals("fax")){
 				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
 				holder.editValue.setOnClickListener(new View.OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						Utils.phoneIntent(mContext, userDetail.getValue());
+					}
+				});
+			}else if(userDetail.getKey().equals("home_address") || userDetail.getKey().equals("job_address")){
+				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
+				holder.editValue.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Utils.mapIntent(mContext, userDetail.getValue());
+					}
+				});
+			}else if(userDetail.getKey().equals("web_site")){
+				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
+				holder.editValue.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Utils.browserIntent(mContext, userDetail.getValue());
 					}
 				});
 			}else{

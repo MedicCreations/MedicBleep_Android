@@ -177,5 +177,5 @@ public class SocketParser {
 		
 		return new Gson().fromJson(mess, CallMessage.class);
 	}
-
+	
 }

@@ -289,6 +289,7 @@ public class Const {
 	public static final String STICEKRS_HOLDER = "stickersHolder";
 	
 	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
+	public static final String CALL_ACTION = "callAction";
 	public static final String SESSION_ID = "SessionId";
 	public static final String AVAILABLE_TYPE = "AvailableType";
 	public static final int ACTION_IDLE = 0;
@@ -334,6 +335,18 @@ public class Const {
 		public static final int PERCENT_TV = 3;
 		public static final int SEEKBAR = 4;
 		public static final int PROGREEBAR = 5;
+	}
+	
+	public static final class WebRTCCall{
+		public static final String CALL_OFFER = "callOffer";
+		public static final String CALL_CANCEL = "callCancel";
+		public static final String CALL_DECLINE = "callDecline";
+		public static final String CALL_END = "callEnd";
+		public static final String CALL_ANSWER = "callAnswer";
+		public static final String CALL_RINGING = "callRinging";
+		public static final String CALL_MUTE = "mute";
+		public static final String CALL_UNMUTE = "unmute";
+		public static final String CALL_MUTE_REMOTE_VIDEO = "muteRemoteVideo";
 	}
 	
 

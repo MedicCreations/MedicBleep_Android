@@ -76,24 +76,17 @@ public class WebSocketConnection implements WebSocket {
 		mWebSocketWriter.forward(new WebSocketMessage.TextMessage(payload));
 		Log.d("WEBSOCKET", "SENDING MESSAGE: " + payload);
 	}
-	
 
 	public void sendRawTextMessage(byte[] payload) {
 		mWebSocketWriter.forward(new WebSocketMessage.RawTextMessage(payload));
 	}
-
-
 	public void sendBinaryMessage(byte[] payload) {
 		mWebSocketWriter.forward(new WebSocketMessage.BinaryMessage(payload));
 	}
 
-
-
 	public boolean isConnected() {
 		return mSocket != null && mSocket.isConnected() && !mSocket.isClosed();
 	}
-
-
 
 	private void failConnection(WebSocketCloseNotification code, String reason) {
 		Log.d(TAG, "fail connection [code = " + code + ", reason = " + reason);

@@ -283,7 +283,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	@Override
     protected void onStart() {
     	super.onStart();
-    	intentFilterSocketCall = new IntentFilter("CALL");
+    	intentFilterSocketCall = new IntentFilter(Const.CALL_ACTION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocketCall);
     };
     
@@ -301,7 +301,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 			if(intent.hasExtra(Const.MESSAGES)){
 				//MUTE UNMUTE
 				CallMessage mess = (CallMessage) intent.getSerializableExtra(Const.MESSAGES);
-				if(mess.getArgs().get(0).getType().equals("muteRemoteVideo")){
+				if(mess.getArgs().get(0).getType().equals(Const.WebRTCCall.CALL_MUTE_REMOTE_VIDEO)){
 					manageRemoteSourceVideo(mess.getArgs().get(0).getPayload().isMute());
 				}else if(mess.getArgs().get(0).getPayload().getName().equals("video")){
 					manageRemoteVideo(mess.getArgs().get(0).getType());
@@ -345,7 +345,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	
 	private void manageRemoteVideo(String type) {
 		Log.d("NEW", "MANAGE REMOTE VIDEO: "+type);
-		if(type.equals("mute")){
+		if(type.equals(Const.WebRTCCall.CALL_MUTE)){
 			isRemoteCameraOn = false;
 			for(int i = 1; i < 5; i++){
 				int id = getResources().getIdentifier("backBlue" + i, "id", getPackageName());
@@ -445,16 +445,16 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	
 	@Override
 	public void onMuteAudio(boolean toMute) {
-		String mute = "unmute";
-		if(toMute) mute = "mute";
+		String mute = Const.WebRTCCall.CALL_UNMUTE;
+		if(toMute) mute = Const.WebRTCCall.CALL_MUTE;
 		mService.sendWebRtcUnMuteOrMute("audio", mute);
 		peerConnectionClient.setAudioEnabled(!toMute);
 	}
 	
 	@Override
 	public void onVideoOnOff(boolean toOff) {
-		String mute = "unmute";
-		if(toOff) mute = "mute";
+		String mute = Const.WebRTCCall.CALL_UNMUTE;
+		if(toOff) mute = Const.WebRTCCall.CALL_MUTE;
 		mService.sendWebRtcUnMuteOrMute("video", mute);
 		peerConnectionClient.setLocalVideoEnabled(!toOff);
 		if(toOff)peerConnectionClient.stopVideoSource();
@@ -476,9 +476,6 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 	
 	@Override
 	public void onMessages() {
-		Log.d("NEW", "GO TO MESSAGES"); //TODO
-//		startActivity(new Intent(this, MainActivity.class).putExtra(Const.IS_CALL_ACTIVE, true));
-		
 		try {
 			Class<?> classa = Class.forName(getIntent().getStringExtra(Const.ACTIVE_CLASS));
 			Intent intent = new Intent(this, classa);
@@ -563,11 +560,11 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 		if(!isMyCameraOn) {
 			peerConnectionClient.setLocalVideoEnabled(false);
 			peerConnectionClient.stopVideoSource();
-			mService.sendWebRtcUnMuteOrMute("video", "mute");
+			mService.sendWebRtcUnMuteOrMute("video", Const.WebRTCCall.CALL_MUTE);
 		}else{
 			findViewById(R.id.backgroundInMyCamera).setVisibility(View.INVISIBLE);
 			findViewById(R.id.imageInCall).setVisibility(View.GONE);
-			mService.sendWebRtcUnMuteOrMute("video", "unmute");
+			mService.sendWebRtcUnMuteOrMute("video", Const.WebRTCCall.CALL_UNMUTE);
 		}
 		updateVideoView();
 		

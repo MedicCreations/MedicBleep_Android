@@ -619,6 +619,22 @@ public class Utils {
 		}
 	}
 	
+	public static void mapIntent(Context c, String address){
+		String url = "http://maps.google.com/maps?q=" + address;
+
+		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
+		c. startActivity(intent);
+	}
+	
+	public static void browserIntent(Context c, String url){
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		if(!(url.startsWith("http://") || url.startsWith("https://"))){
+			url = "http://" + url;
+		}
+		intent.setData(Uri.parse(url));
+		c. startActivity(intent);
+	}
+	
 	public static String generateGifHTML(String path, String style){
 		String imagePath = "file://"+path;
 		if(style == null) style = "";
