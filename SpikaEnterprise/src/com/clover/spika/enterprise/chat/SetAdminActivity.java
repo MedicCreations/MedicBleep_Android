@@ -65,6 +65,8 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 		mainListView = (PullToRefreshListView) findViewById(R.id.main_list_view);
 		adapter = new InviteRemoveAdapter(spiceManager, this, new ArrayList<GlobalModel>(), null, null);
 		mainListView.setAdapter(adapter);
+		adapter.setCheckBox(false);
+		adapter.disableNameClick(true);
 		mainListView.setOnRefreshListener(refreshListener2);
 		mainListView.setOnItemClickListener(this);
 
@@ -75,8 +77,8 @@ public class SetAdminActivity extends BaseActivity implements OnItemClickListene
 		
 		handleProgress(true);
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, chatId, null, Type.USER, null, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(mCurrentIndex, chatId, null, Type.USER, this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException arg0) {

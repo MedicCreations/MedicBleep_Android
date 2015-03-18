@@ -262,7 +262,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 				}
 			});
 		} else {
-			holder.personName.setOnClickListener(null);
+			holder.personName.setClickable(false);
 		}
 
 		if (showCheckBox) {
