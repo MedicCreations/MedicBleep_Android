@@ -43,7 +43,7 @@
             android:padding="10dp"
             android:scaleType="centerInside"
             android:src="@drawable/button_check"
-            android:visibility="visible" />
+            android:visibility="invisible" />
     </RelativeLayout>
 
     <FrameLayout

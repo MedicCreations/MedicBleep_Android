@@ -18,11 +18,11 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.SetAdminActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
+import com.clover.spika.enterprise.chat.dialogs.SetAdminDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -219,9 +219,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 		case R.id.tvSetAdmin:
 
-			intent = new Intent(getActivity(), SetAdminActivity.class);
-			intent.putExtra(Const.CHAT_ID, chatId);
-			startActivityForResult(intent, Const.ADMIN_REQUEST);
+			openNewAdminDialog();
 			break;
 
 		case R.id.tvChangeCat:
@@ -232,6 +230,31 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		default:
 			break;
 		}
+	}
+	
+	private void openNewAdminDialog() {
+		SetAdminDialog dialog = new SetAdminDialog(getActivity(), chatId);
+		dialog.show();
+		dialog.setListener(new SetAdminDialog.OnActionClick() {
+			
+			@Override
+			public void onCloseClick(Dialog d) {
+				d.dismiss();
+			}
+			
+			@Override
+			public void onAcceptClick(Dialog d) {
+				d.dismiss();
+			}
+
+			@Override
+			public void onAdminSelect(boolean isAdmin, Dialog d) {
+				if(getActivity() instanceof ProfileGroupActivity){
+					((ProfileGroupActivity)getActivity()).changeAdmin(isAdmin);
+				}
+				d.dismiss();
+			}
+		});
 	}
 	
 	private void openChooseCategory() {

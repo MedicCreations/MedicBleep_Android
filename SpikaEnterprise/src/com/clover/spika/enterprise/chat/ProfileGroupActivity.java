@@ -358,24 +358,18 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
+	
+	public void changeAdmin(boolean isAdmin){
+		this.isAdmin = isAdmin; 
+		
+		Intent intent = getIntent();
+		intent.setAction(Const.IS_ADMIN);
+		intent.putExtra(Const.IS_UPDATE_ADMIN, true);
+		intent.getExtras().remove(Const.IS_ADMIN);
+		intent.putExtra(Const.IS_ADMIN, isAdmin);
+		profileFragmentPagerAdapter.setAdminData(intent);
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == RESULT_OK) {
-			if (data.getExtras() != null && data.getExtras().containsKey(Const.IS_ADMIN)) {
-				isAdmin = data.getExtras().getBoolean(Const.IS_ADMIN);
-
-				Intent intent = getIntent();
-				intent.setAction(Const.IS_ADMIN);
-				intent.putExtra(Const.IS_UPDATE_ADMIN, true);
-				intent.getExtras().remove(Const.IS_ADMIN);
-				intent.putExtra(Const.IS_ADMIN, isAdmin);
-				profileFragmentPagerAdapter.setAdminData(intent);
-
-				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-			} 
-		}
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
+
 }

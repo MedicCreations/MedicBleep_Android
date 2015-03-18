@@ -169,10 +169,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.ChooseCategoryActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.clover.spika.enterprise.chat.CreateRoomActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -202,9 +198,6 @@
             android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
             android:screenOrientation="portrait" />
 
-        <activity
-            android:name="com.clover.spika.enterprise.chat.SetAdminActivity"
-            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity"
             android:screenOrientation="portrait" />
