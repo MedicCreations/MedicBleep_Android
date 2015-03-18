@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity {
 
 		createRoomBtn.setOnClickListener(createRoomOnClickListener);
 		
-		if(!showFilter) return;
+		if(!showFilter || !getResources().getBoolean(R.bool.enable_categories)) return;
 		
 		filterRoomBtn.setVisibility(View.VISIBLE);
 
@@ -282,7 +282,7 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void enableCreateRoom(boolean showFilter) {
 		createRoomBtn.setVisibility(View.VISIBLE);
-		if(!showFilter) return;
+		if(!showFilter || !getResources().getBoolean(R.bool.enable_categories)) return;
 		filterRoomBtn.setVisibility(View.VISIBLE);
 	}
 
