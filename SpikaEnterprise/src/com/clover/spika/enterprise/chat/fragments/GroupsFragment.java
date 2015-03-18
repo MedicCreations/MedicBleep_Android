@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -58,6 +63,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 	
 	private int categoryId = -1;
+	private boolean needRefreshOnResume = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,11 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
+		if(needRefreshOnResume){
+			mCurrentIndex = 0;
+			getGroups(0, null, true);
+			needRefreshOnResume = false;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,6 +122,9 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			}
 			
 		}, true);
+		
+		intentFilterRefreshRooms = new IntentFilter(Const.ACTION_REFRESH_ROOMS);
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiverRefreshRoom, intentFilterRefreshRooms);
 
 		return rootView;
 	}
@@ -291,6 +305,17 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
+		
+		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiverRefreshRoom);
 	}
+	
+	IntentFilter intentFilterRefreshRooms;
+	BroadcastReceiver receiverRefreshRoom = new BroadcastReceiver() {
 
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			needRefreshOnResume = true;
+		}
+	};
+	
 }

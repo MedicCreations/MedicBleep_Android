@@ -46,6 +46,7 @@ import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
+import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -875,6 +876,11 @@ public class ChatActivity extends BaseChatActivity {
 				dialog.dismiss();
 			}
 		});
+		
+		Intent inBroadcast = new Intent();
+		inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
+		
 	}
 
 	@Override

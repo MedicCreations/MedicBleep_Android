@@ -298,6 +298,7 @@ public class Const {
 	public static final String FROM_CHAT = "from_chat";
 	public static final String POSITION = "position";
 	public static final String STICEKRS_HOLDER = "stickersHolder";
+	public static final String ACTION_REFRESH_ROOMS = "actionDeleteRoom";
 	
 	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
 	public static final String CALL_ACTION = "callAction";

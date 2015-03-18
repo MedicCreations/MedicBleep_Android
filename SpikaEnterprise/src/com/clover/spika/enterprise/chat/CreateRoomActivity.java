@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -199,6 +200,10 @@ public class CreateRoomActivity extends BaseActivity {
 
 					Helper.setRoomFileId(CreateRoomActivity.this, "");
 					Helper.setRoomThumbId(CreateRoomActivity.this, "");
+					
+					Intent inBroadcast = new Intent();
+					inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
+					LocalBroadcastManager.getInstance(CreateRoomActivity.this).sendBroadcast(inBroadcast);
 
 					finish();
 				}
