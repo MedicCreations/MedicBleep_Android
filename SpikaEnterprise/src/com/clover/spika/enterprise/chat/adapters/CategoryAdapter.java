@@ -19,6 +19,7 @@ public class CategoryAdapter extends BaseAdapter {
 
 	public Context cntx;
 	public List<Category> data;
+	private int activeCatId;
 
 	public CategoryAdapter(Context context) {
 		this.cntx = context;
@@ -46,8 +47,13 @@ public class CategoryAdapter extends BaseAdapter {
 		// Assign values
 		final Category category = (Category) getItem(position);
 
-		if (category.id == 0) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
-		else holder.catName.setTextColor(Color.BLACK);
+		if (activeCatId < 1){
+			if (category.id == 0) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
+			else holder.catName.setTextColor(Color.BLACK);
+		}else{
+			if (category.id == activeCatId) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
+			else holder.catName.setTextColor(Color.BLACK);
+		}
 		
 		holder.catName.setText(category.name);
 		
@@ -62,6 +68,10 @@ public class CategoryAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		return this.data.size();
+	}
+	
+	public void setActiveCategory(int active){
+		activeCatId = active;
 	}
 
 	@Override

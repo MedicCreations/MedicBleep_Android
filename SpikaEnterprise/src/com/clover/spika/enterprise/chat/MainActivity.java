@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity {
 
 	/* create room */
 	ImageButton createRoomBtn;
+	ImageButton filterRoomBtn;
 
 	/* edit profile */
 	ImageView editProfileBtn;
@@ -112,6 +113,7 @@ public class MainActivity extends BaseActivity {
 
 		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		createRoomBtn = (ImageButton) findViewById(R.id.createRoom);
+		filterRoomBtn = (ImageButton) findViewById(R.id.filterRoom);
 		editProfileBtn = (ImageView) findViewById(R.id.editProfile);
 		searchEt = (EditText) findViewById(R.id.searchEt);
 		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
@@ -249,12 +251,22 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * set create room btn
 	 */
-	public void setCreateRoom(OnCreateRoomListener listener) {
+	public void setCreateRoom(OnCreateRoomListener listener, boolean showFilter) {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		mCreateRoomListener = listener;
 
 		createRoomBtn.setOnClickListener(createRoomOnClickListener);
+		
+		if(!showFilter) return;
+		
+		filterRoomBtn.setVisibility(View.VISIBLE);
+
+		filterRoomBtn.setOnClickListener(filterRoomOnClickListener);
+	}
+	
+	public void setFilterActivate(boolean isActivate){
+		filterRoomBtn.setActivated(isActivate);
 	}
 
 	/**
@@ -262,13 +274,16 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void disableCreateRoom() {
 		createRoomBtn.setVisibility(View.INVISIBLE);
+		filterRoomBtn.setVisibility(View.INVISIBLE);
 	}
 
 	/**
 	 * enabled create room btn
 	 */
-	public void enableCreateRoom() {
+	public void enableCreateRoom(boolean showFilter) {
 		createRoomBtn.setVisibility(View.VISIBLE);
+		if(!showFilter) return;
+		filterRoomBtn.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -326,6 +341,19 @@ public class MainActivity extends BaseActivity {
 			if (mCreateRoomListener != null) {
 
 				mCreateRoomListener.onCreateRoom();
+
+			}
+		}
+	};
+	
+	private OnClickListener filterRoomOnClickListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+
+			if (mCreateRoomListener != null) {
+
+				mCreateRoomListener.onFilterClick();
 
 			}
 		}

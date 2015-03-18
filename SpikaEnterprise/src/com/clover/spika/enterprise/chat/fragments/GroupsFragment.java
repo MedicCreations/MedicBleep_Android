@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -24,6 +25,8 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GroupsAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
@@ -53,6 +56,8 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	private EditText etSearch;
 
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
+	
+	private int categoryId = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -99,9 +104,41 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			public void onCreateRoom() {
 				CreateRoomActivity.start(getActivity());
 			}
-		});
+			
+			@Override
+			public void onFilterClick() {
+				openChooseCategoryDialog();
+			}
+			
+		}, true);
 
 		return rootView;
+	}
+	
+	protected void openChooseCategoryDialog() {
+		ChooseCategoryDialog dialog = new ChooseCategoryDialog(getActivity(), UseType.SEARCH, categoryId);
+		dialog.show();
+		dialog.setListener(new ChooseCategoryDialog.OnActionClick() {
+			
+			@Override
+			public void onCloseClick(Dialog d) {
+				d.dismiss();
+			}
+			
+			@Override
+			public void onCategorySelect(String categoryId, String categoryName, Dialog d) {
+				GroupsFragment.this.categoryId = Integer.parseInt(categoryId);
+				filterGroups();
+				if(GroupsFragment.this.categoryId < 1) ((MainActivity)getActivity()).setFilterActivate(false);
+				else ((MainActivity)getActivity()).setFilterActivate(true);
+				d.dismiss();
+			}
+			
+			@Override
+			public void onAcceptClick(Dialog d) {
+				d.dismiss();
+			}
+		});
 	}
 
 	private TextWatcher textWatacher = new TextWatcher() {
@@ -116,9 +153,17 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			adapter.manageData(s.toString(), allData);
+			if(categoryId > 0){
+				adapter.manageData(categoryId, s.toString(), allData);
+			}else{
+				adapter.manageData(s.toString(), allData);
+			}
 		}
 	};
+	
+	protected void filterGroups() {
+		adapter.manageData(categoryId, allData);
+	}
 
 	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
 
@@ -185,8 +230,11 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	public void getGroups(int page, String search, final boolean toClear) {
 		
 		handleProgress(true);
+		
+		String catId = null;
+		if(categoryId > 0) catId = String.valueOf(categoryId);
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, Type.CHAT, search, getActivity());
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, catId, Type.CHAT, search, getActivity());
 		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override

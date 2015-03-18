@@ -25,6 +25,12 @@
     	if it's false, categorie is hidden, value is 0
     -->
     <bool name="enable_categories">true</bool>
+    
+    <!--  enable room password -->
+    <bool name="enable_room_password">false</bool>
+    
+    <!--  enable private room -->
+    <bool name="enable_private_room">false</bool>
 
     <!-- Enable polling in the app -->
     <bool name="enable_polling">false</bool>

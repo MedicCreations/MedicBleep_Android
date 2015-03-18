@@ -16,12 +16,13 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.SetAdminActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -81,6 +82,8 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		layoutSetAdmin = (LinearLayout) rootView.findViewById(R.id.layoutSetAdmin);
 		layoutChangeCategory = (LinearLayout) rootView.findViewById(R.id.layoutChangeCategory);
 		tvChangeCategoryLabel = (TextView) rootView.findViewById(R.id.tvChangeCategory);
+		
+		checkForEnableFeature();
 
 		tvPassword = (Button) rootView.findViewById(R.id.tvPassword);
 		tvSetAdmin = (Button) rootView.findViewById(R.id.tvSetAdmin);
@@ -104,6 +107,23 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		});
 
 		return rootView;
+	}
+
+	private void checkForEnableFeature() {
+		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
+		if(!isCategoriesEnabled){
+			layoutChangeCategory.setVisibility(View.GONE);
+		}
+		
+		boolean isPassEnabled = getResources().getBoolean(R.bool.enable_room_password);
+		if(!isPassEnabled){
+			passwordLayout.setVisibility(View.GONE);
+		}
+		
+		boolean isPrivateEnabled = getResources().getBoolean(R.bool.enable_private_room);
+		if(!isPrivateEnabled){
+			((View) switchIsPrivate.getParent()).setVisibility(View.GONE); //layoutPrivate
+		}
 	}
 
 	public void setVisual() {
@@ -206,14 +226,37 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 
 		case R.id.tvChangeCat:
 
-			intent = new Intent(getActivity(), ChooseCategoryActivity.class);
-			intent.putExtra(Const.CHAT_ID, chatId);
-			startActivityForResult(intent, Const.ADMIN_REQUEST);
+			openChooseCategory();
 			break;
 
 		default:
 			break;
 		}
+	}
+	
+	private void openChooseCategory() {
+		ChooseCategoryDialog dialog = new ChooseCategoryDialog(getActivity(), UseType.CHOOSE_CATEGORY, categoryId == null ? 0 : Integer.parseInt(categoryId));
+		dialog.show();
+		dialog.setListener(new ChooseCategoryDialog.OnActionClick() {
+			
+			@Override
+			public void onCloseClick(Dialog d) {
+				d.dismiss();
+			}
+			
+			@Override
+			public void onCategorySelect(String categoryId, String categoryName, Dialog d) {
+				if(getActivity() instanceof ProfileGroupActivity){
+					((ProfileGroupActivity)getActivity()).changeCategory(categoryId, categoryName);
+				}
+				d.dismiss();
+			}
+			
+			@Override
+			public void onAcceptClick(Dialog d) {
+				d.dismiss();
+			}
+		});
 	}
 
 	private void showDialog() {

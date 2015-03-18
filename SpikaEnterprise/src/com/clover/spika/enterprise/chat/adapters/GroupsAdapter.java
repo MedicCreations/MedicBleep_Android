@@ -66,6 +66,39 @@ public class GroupsAdapter extends BaseAdapter {
 		}
 		this.notifyDataSetChanged();
 	}
+	
+	public void manageData(int categoryId, String manageWith, List<GlobalModel> allData){
+		data.clear();
+		data.addAll(allData);
+		for (int i = 0; i < data.size(); i++) {
+			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())
+					&& ((Chat) data.get(i).getModel()).category.id == categoryId) {
+				continue;
+			} else {
+				data.remove(i);
+				i--;
+			}
+		}
+		this.notifyDataSetChanged();
+	}
+	
+	public void manageData(int categoryId, List<GlobalModel> allData){
+		data.clear();
+		data.addAll(allData);
+		if(categoryId < 1){
+			this.notifyDataSetChanged();
+			return;
+		}
+		for (int i = 0; i < data.size(); i++) {
+			if (((Chat) data.get(i).getModel()).category.id == categoryId) {
+				continue;
+			} else {
+				data.remove(i);
+				i--;
+			}
+		}
+		this.notifyDataSetChanged();
+	}
 
 	@Override
 	public int getCount() {

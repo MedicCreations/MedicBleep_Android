@@ -343,6 +343,21 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		});
 	}
+	
+	public void changeCategory(String categoryId, String categoryName){
+		this.categoryId = categoryId;
+		this.categoryName = categoryName;
+
+		Intent intent = getIntent();
+		intent.setAction(Const.IS_ADMIN);
+		intent.putExtra(Const.IS_UPDATE_CATEGORY, true);
+		intent.putExtra(Const.IS_ADMIN, isAdmin);
+		intent.putExtra(Const.CATEGORY_ID, categoryId);
+		intent.putExtra(Const.CATEGORY_NAME, categoryName);
+		profileFragmentPagerAdapter.setAdminData(intent);
+
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -360,21 +375,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				profileFragmentPagerAdapter.setAdminData(intent);
 
 				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-			} else if (data.getExtras() != null && data.getExtras().containsKey(Const.CATEGORY_ID)) {
-
-				categoryId = data.getExtras().getString(Const.CATEGORY_ID);
-				categoryName = data.getExtras().getString(Const.CATEGORY_NAME);
-
-				Intent intent = getIntent();
-				intent.setAction(Const.IS_ADMIN);
-				intent.putExtra(Const.IS_UPDATE_CATEGORY, true);
-				intent.putExtra(Const.IS_ADMIN, isAdmin);
-				intent.putExtra(Const.CATEGORY_ID, categoryId);
-				intent.putExtra(Const.CATEGORY_NAME, categoryName);
-				profileFragmentPagerAdapter.setAdminData(intent);
-
-				LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-			}
+			} 
 		}
 	}
 }

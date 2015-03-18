@@ -53,21 +53,17 @@
             android:src="@drawable/create_room"
             android:visibility="gone" />
         
-        <!-- <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-            android:id="@+id/createRoom"
+        <ImageButton
+            android:id="@+id/filterRoom"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:includeFontPadding="false"
             android:background="@drawable/selector_transp_blue"
-            android:textColor="@color/white"
-            android:paddingRight="20dp"
-            android:paddingLeft="20dp"
-            android:gravity="center_vertical"
-            android:text="@string/_plus_character"
-            android:textSize="30sp"
-            android:visibility="gone" /> -->
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:layout_toLeftOf="@id/createRoom"
+            android:src="@drawable/button_filter_selector"
+            android:visibility="gone" />
         
         <ImageView
             android:id="@+id/editProfile"

@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,12 +32,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.clover.spika.enterprise.chat.ChooseCategoryActivity;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
+import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -119,9 +121,13 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
 
+		RelativeLayout categoryLayout = (RelativeLayout) header.findViewById(R.id.layoutCategory);
 		if (!isCategoriesEnabled) {
-			RelativeLayout categoryLayout = (RelativeLayout) header.findViewById(R.id.layoutCategory);
+			header.findViewById(R.id.belowCategoryLayout).setVisibility(View.GONE);
 			categoryLayout.setVisibility(View.GONE);
+		}else{
+			header.findViewById(R.id.belowCategoryLayout).setVisibility(View.VISIBLE);
+			categoryLayout.setVisibility(View.VISIBLE);
 		}
 
 		if (getArguments() != null)
@@ -166,8 +172,33 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		});
 
 		mSwitchPrivate = (Switch) header.findViewById(R.id.switch_private_room);
+		
+		boolean isPrivateRoomEnabled = getResources().getBoolean(R.bool.enable_private_room);
+
+		if (!isPrivateRoomEnabled) {
+			header.findViewById(R.id.layoutPrivate).setVisibility(View.GONE);
+			header.findViewById(R.id.belowPrivateLayout).setVisibility(View.GONE);
+		}else{
+			header.findViewById(R.id.layoutPrivate).setVisibility(View.VISIBLE);
+			header.findViewById(R.id.belowPrivateLayout).setVisibility(View.VISIBLE);
+		}
+		
 		mEtPassword = (RobotoThinEditText) header.findViewById(R.id.etPassword);
 		mEtPasswordRepeat = (RobotoThinEditText) header.findViewById(R.id.etPasswordRepeat);
+		
+		boolean isPasswordEnabled = getResources().getBoolean(R.bool.enable_room_password);
+
+		if (!isPasswordEnabled) {
+			header.findViewById(R.id.layoutPassword).setVisibility(View.GONE);
+			header.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.GONE);
+			header.findViewById(R.id.belowPasswordLayout).setVisibility(View.GONE);
+			header.findViewById(R.id.belowPasswordRepeatLayout).setVisibility(View.GONE);
+		}else{
+			header.findViewById(R.id.layoutPassword).setVisibility(View.VISIBLE);
+			header.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.VISIBLE);
+			header.findViewById(R.id.belowPasswordLayout).setVisibility(View.VISIBLE);
+			header.findViewById(R.id.belowPasswordRepeatLayout).setVisibility(View.VISIBLE);
+		}
 
 		mainListView = (PullToRefreshListView) rootView.findViewById(R.id.mainListView);
 		mainListView.getRefreshableView().setMotionEventSplittingEnabled(false);
@@ -523,7 +554,27 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private void openChooseCategory() {
-		startActivityForResult(new Intent(getActivity(), ChooseCategoryActivity.class), FROM_CATEGORY);
+		ChooseCategoryDialog dialog = new ChooseCategoryDialog(getActivity(), UseType.CHOOSE_CATEGORY, Integer.parseInt(mCategoryId));
+		dialog.show();
+		dialog.setListener(new ChooseCategoryDialog.OnActionClick() {
+			
+			@Override
+			public void onCloseClick(Dialog d) {
+				d.dismiss();
+			}
+			
+			@Override
+			public void onCategorySelect(String categoryId, String categoryName, Dialog d) {
+				mCategoryId = categoryId;
+				setCategory(categoryName);
+				d.dismiss();
+			}
+			
+			@Override
+			public void onAcceptClick(Dialog d) {
+				d.dismiss();
+			}
+		});
 	}
 
 	private void setCategory(String catName) {
@@ -540,13 +591,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == FROM_CATEGORY) {
-
-			if (data != null) {
-				mCategoryId = data.getStringExtra(Const.CATEGORY_ID);
-				setCategory(data.getStringExtra(Const.CATEGORY_NAME));
-			}
-		} else if (requestCode == InviteRemoveAdapter.FROM_GROUP_MEMBERS) {
+		if (requestCode == InviteRemoveAdapter.FROM_GROUP_MEMBERS) {
 
 			if (data != null) {
 				String[] dataS = data.getStringArrayExtra(Const.USER_IDS);

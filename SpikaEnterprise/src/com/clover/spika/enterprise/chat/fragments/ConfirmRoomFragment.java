@@ -25,8 +25,8 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -125,17 +125,50 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		Switch switchPrivate = (Switch) rootView.findViewById(R.id.switch_private_room);
 		switchPrivate.setChecked(getArguments().getBoolean(Const.IS_PRIVATE, false));
 		switchPrivate.setEnabled(false);
+		
+		boolean isPrivateRoomEnabled = getResources().getBoolean(R.bool.enable_private_room);
 
+		if (!isPrivateRoomEnabled) {
+			rootView.findViewById(R.id.layoutPrivate).setVisibility(View.GONE);
+			rootView.findViewById(R.id.belowPrivateLayout).setVisibility(View.GONE);
+		}else{
+			rootView.findViewById(R.id.layoutPrivate).setVisibility(View.VISIBLE);
+			rootView.findViewById(R.id.belowPrivateLayout).setVisibility(View.VISIBLE);
+		}
+		
+		String passTxt = getArguments().getString(Const.PASSWORD, "");
 		EditText password = (EditText) rootView.findViewById(R.id.etPassword);
 		password.setEnabled(false);
-		password.setText(getArguments().getString(Const.PASSWORD, ""));
+		password.setText(passTxt);
+		
+		boolean isPasswordEnabled = getResources().getBoolean(R.bool.enable_room_password);
+
+		if (!isPasswordEnabled || TextUtils.isEmpty(passTxt)) {
+			rootView.findViewById(R.id.layoutPassword).setVisibility(View.GONE);
+			rootView.findViewById(R.id.belowPasswordLayout).setVisibility(View.GONE);
+		}else{
+			rootView.findViewById(R.id.layoutPassword).setVisibility(View.VISIBLE);
+			rootView.findViewById(R.id.belowPasswordLayout).setVisibility(View.VISIBLE);
+		}
 
 		rootView.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.GONE);
 		rootView.findViewById(R.id.belowPasswordRepeatLayout).setVisibility(View.GONE);
 
+		String catName = getArguments().getString(Const.CATEGORY_NAME, "None");
+		if(catName.equals(getString(R.string.select_category))){
+			catName = "None";
+		}
 		TextView tvCategory = (TextView) rootView.findViewById(R.id.tvCategory);
-		tvCategory.setText(getArguments().getString(Const.CATEGORY_NAME, "No Category"));
+		tvCategory.setText(catName);
 		rootView.findViewById(R.id.arrowRightCategory).setVisibility(View.GONE);
+		boolean isCategoriesEnabled = getResources().getBoolean(R.bool.enable_categories);
+		if (!isCategoriesEnabled) {
+			rootView.findViewById(R.id.layoutCategory).setVisibility(View.GONE);
+			rootView.findViewById(R.id.belowCategoryLayout).setVisibility(View.GONE);
+		}else{
+			rootView.findViewById(R.id.layoutCategory).setVisibility(View.VISIBLE);
+			rootView.findViewById(R.id.belowCategoryLayout).setVisibility(View.VISIBLE);
+		}
 
 		rootView.findViewById(R.id.txtUserNames).setVisibility(View.GONE);
 		rootView.findViewById(R.id.belowUsersLayout).setVisibility(View.GONE);
@@ -270,6 +303,11 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		}
 
 		((CreateRoomActivity) getActivity()).createRoomFinaly(users_to_add.toString(), groupIds, roomIds);
+	}
+
+	@Override
+	public void onFilterClick() {
+		
 	}
 
 }
