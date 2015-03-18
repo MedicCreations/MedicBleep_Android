@@ -686,6 +686,7 @@ public class ChatActivity extends BaseChatActivity {
 		}
 
 		handleProgress(processing);
+		// TODO add caching
 		ChatSpice.GetMessages getMessages = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this);
 		spiceManager.execute(getMessages, new CustomSpiceListener<Chat>() {
 
@@ -696,17 +697,15 @@ public class ChatActivity extends BaseChatActivity {
 			}
 
 			@Override
-			public void onRequestSuccess(Chat result) {
+			public void onRequestSuccess(Chat chat) {
 				handleProgress(false);
 
 				isRunning = false;
 
-				Chat chat = result;
-
 				chatParams(chat.chat);
 
-				if (result.user != null) {
-					currentUser = result.user;
+				if (chat.user != null) {
+					currentUser = chat.user;
 				}
 
 				if (getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) {

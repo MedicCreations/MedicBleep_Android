@@ -11,6 +11,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Parcelable {
+	
+//
+//@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "weather_id")
+//private Weather weather;
+//@Element
+//private String date;
+//@ElementList(inline = true)
+//private List< Day > listDay;
+//@Element
+//private String day_max_temp;
+//@ElementList(inline = true)
+//private List< Night > listNight;
+
+//
+
+//	@DatabaseField(generatedId = true)
+//	private int db_id;
 
 	public boolean isMe = false;
 	public boolean isFailed = false;

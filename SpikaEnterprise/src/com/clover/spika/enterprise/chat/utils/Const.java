@@ -1,9 +1,16 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import android.content.Context;
 import android.provider.Settings;
 
-import java.util.UUID;
+import com.clover.spika.enterprise.chat.models.Category;
+import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.models.User;
 
 public class Const {
 
@@ -43,6 +50,21 @@ public class Const {
 	public static final String DATE_SEPARATOR_FORMAT = "EEE d MMM HH:mm";
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
+
+	// ORM Lite DB
+	public static final String DATABASE_NAME = "CacheDBSpice";
+	public static final int DATABASE_VERSION = 1;
+	public static final List<Class<?>> DATABASE_CLASSES = new ArrayList<Class<?>>() {
+
+		private static final long serialVersionUID = -6134154163797941545L;
+
+		{
+			add(Message.class);
+			add(Chat.class);
+			add(User.class);
+			add(Category.class);
+		}
+	};
 
 	// Change this in production to falsename
 	public static final boolean IS_DEBUG = true;
@@ -148,7 +170,7 @@ public class Const {
 	public static final String PUBLIC = "public";
 	public static final String SEARCH_RESULT = "search_result";
 	public static final String MEMBERS_RESULT = "members_result";
-	
+
 	public static final String IS_SQUARE = "is_square";
 
 	public static final String USER = "user";
@@ -177,7 +199,7 @@ public class Const {
 	public static final String CATEGORY_ID = "category_id";
 	public static final String CATEGORY_NAME = "category_name";
 	public static final String URL = "url";
-	
+
 	public static final String ORGANIZATION_ID = "organization_id";
 	public static final String ORGANIZATION_NAME = "organization_name";
 	public static final String ORGANIZATIONS = "organizations";
@@ -298,7 +320,7 @@ public class Const {
 	public static final String FROM_CHAT = "from_chat";
 	public static final String POSITION = "position";
 	public static final String STICEKRS_HOLDER = "stickersHolder";
-	public static final String ACTION_REFRESH_ROOMS = "actionDeleteRoom";
+	public static final String ACTION_REFRESH_ROOMS = "actionRefreshRoom";
 	
 	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
 	public static final String CALL_ACTION = "callAction";
@@ -333,14 +355,14 @@ public class Const {
 	public static final String CANDIDATE = "Candidate";
 	public static final String IS_VIDEO_ACCEPT = "VideoAccept";
 	public static final String TO_LEAVE_MESSAGE = "toLeaveMessage";
-	
+
 	public static final int TIMEOUT_FOR_CALL = 30000;
 	public static final int CALL_ACTIVITY_REQUEST = 99;
 	public static final String IS_APLICATION_OPEN = "IsAppOpened";
 	public static final String IS_CALL_ACTIVE = "IsCAllACtive";
 	public static final String ACTIVE_CLASS = "ClassActive";
-	
-	public static final class SoundControl{
+
+	public static final class SoundControl {
 		public static final int PLAY_BUTTON = 0;
 		public static final int DOWNLOAD_PROGRESS = 1;
 		public static final int CHRONOMETER = 2;
@@ -348,8 +370,8 @@ public class Const {
 		public static final int SEEKBAR = 4;
 		public static final int PROGREEBAR = 5;
 	}
-	
-	public static final class WebRTCCall{
+
+	public static final class WebRTCCall {
 		public static final String CALL_OFFER = "callOffer";
 		public static final String CALL_CANCEL = "callCancel";
 		public static final String CALL_DECLINE = "callDecline";
@@ -360,6 +382,5 @@ public class Const {
 		public static final String CALL_UNMUTE = "unmute";
 		public static final String CALL_MUTE_REMOTE_VIDEO = "muteRemoteVideo";
 	}
-	
 
 }
