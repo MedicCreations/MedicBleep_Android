@@ -9,8 +9,8 @@ import android.os.AsyncTask;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
-import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
@@ -31,7 +31,7 @@ public class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, P
 	@Override
 	protected void onPreExecute() {
 
-		if (NetworkManagement.hasNetworkConnection(context)) {
+		if (Utils.hasNetworkConnection(context)) {
 
 			super.onPreExecute();
 

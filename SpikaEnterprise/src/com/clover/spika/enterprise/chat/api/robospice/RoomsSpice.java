@@ -6,12 +6,10 @@ import java.util.Map;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -19,7 +17,7 @@ import com.squareup.okhttp.ResponseBody;
 
 public class RoomsSpice {
 
-	public static class GetDistinctUserOK extends OkHttpSpiceRequest<ConfirmUsersList> {
+	public static class GetDistinctUserOK extends CustomSpiceRequest<ConfirmUsersList> {
 
 		private Context ctx;
 		private String userIds;
@@ -108,10 +106,12 @@ public class RoomsSpice {
 
 				uriVariables.put(Const.ROOM_ALL_IDS, roomAllIds);
 			}
+			
 
-			Request request = new Request.Builder().addHeader("Encoding", "UTF-8").addHeader(Const.APP_VERSION, Helper.getAppVersion()).addHeader(Const.PLATFORM, "android")
-					.addHeader("token", SpikaEnterpriseApp.getSharedPreferences(ctx).getToken())
-					.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams)).get().build();
+			Request request = new Request.Builder()
+				.headers(getPostHeaders(ctx))
+				.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams))
+				.get().build();
 
 			Call connection = getOkHttpClient().newCall(request);
 

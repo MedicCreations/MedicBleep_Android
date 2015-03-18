@@ -54,6 +54,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -650,7 +652,8 @@ public class Utils {
 		String imagePath = "file://" + path;
 		if (style == null)
 			style = "";
-		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\"" + imagePath + "\"></body></html>";
+		String html = "<!DOCTYPE html><html><head></head><body style=\"margin: 0px auto;\"><img " + style + " alt=\"Smileyface\" width=\"90%\" height=\"90%\" src=\"" + imagePath
+				+ "\"></body></html>";
 		return html;
 
 	}
@@ -677,6 +680,37 @@ public class Utils {
 			e.printStackTrace();
 		}
 		return bmpUri;
+	}
+
+	/**
+	 * Checks whether this app has mobile or wireless internet connection
+	 * 
+	 * @return
+	 */
+	public static boolean hasNetworkConnection(Context context) {
+
+		if (context == null)
+			return true;
+
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+		for (NetworkInfo ni : networkInfo) {
+
+			if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
+				if (ni.isConnected()) {
+					return true;
+				}
+			}
+
+			if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
+				if (ni.isConnected()) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

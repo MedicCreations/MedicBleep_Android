@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.text.TextUtils;
+
 public class GetUrl {
 
 	private static final String FORMAT = "UTF-8";
@@ -15,19 +17,22 @@ public class GetUrl {
 
 	public GetUrl(HashMap<String, String> map) {
 
-		Iterator<Entry<String, String>> it = map.entrySet().iterator();
-		while (it.hasNext()) {
+		if (map != null) {
 
-			Map.Entry<String, String> pairs = (Entry<String, String>) it.next();
+			Iterator<Entry<String, String>> it = map.entrySet().iterator();
+			while (it.hasNext()) {
 
-			try {
-				params += URLEncoder.encode(pairs.getKey(), FORMAT) + "=" + URLEncoder.encode(pairs.getValue(), FORMAT);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+				Map.Entry<String, String> pairs = (Entry<String, String>) it.next();
 
-			if (it.hasNext()) {
-				params += "&";
+				try {
+					params += URLEncoder.encode(pairs.getKey(), FORMAT) + "=" + URLEncoder.encode(pairs.getValue(), FORMAT);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+
+				if (it.hasNext()) {
+					params += "&";
+				}
 			}
 		}
 	}
@@ -46,7 +51,12 @@ public class GetUrl {
 	}
 
 	public String toString() {
-		return "?" + params;
+
+		if (!TextUtils.isEmpty(params)) {
+			return "?" + params;
+		} else {
+			return "";
+		}
 	}
 
 }

@@ -16,7 +16,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -38,118 +37,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.text.TextUtils;
 
+import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Preferences;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 public class NetworkManagement {
-
-	public static String httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
-		return httpPostRequest("", postParams, token);
-	}
-
-	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams) throws IOException {
-		return httpPostRequest(apiUrl, postParams, null);
-	}
-
-	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException {
-
-		HttpPost httppost = new HttpPost(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl));
-		Logger.custom("RawRequest", httppost.getURI().toString());
-
-		httppost.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
-
-		httppost.setHeader("Encoding", "UTF-8");
-		if (!TextUtils.isEmpty(token)) {
-			httppost.setHeader("token", token);
-		}
-
-		httppost.setHeader(Const.APP_VERSION, Helper.getAppVersion());
-		httppost.setHeader(Const.PLATFORM, "android");
-
-		// form parameters
-		if (postParams != null && !postParams.isEmpty()) {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			for (Map.Entry<String, String> entity : postParams.entrySet()) {
-				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-			}
-
-			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
-		}
-
-		HttpResponse response = HttpSingleton.getInstance().execute(httppost);
-
-		HttpEntity entity = response.getEntity();
-
-		return getString(entity.getContent());
-	}
-
-	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
-		return httpGetRequest(apiUrl, getParams, null);
-	}
-
-	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
-
-		String params = "";
-
-		// form parameters
-		if (getParams != null && !getParams.isEmpty()) {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			for (Map.Entry<String, String> entity : getParams.entrySet()) {
-				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-			}
-
-			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
-		}
-
-		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
-		Logger.custom("RawRequest", httpGet.getURI().toString());
-
-		httpGet.setHeader("Encoding", "UTF-8");
-		if (!TextUtils.isEmpty(token)) {
-			httpGet.setHeader("token", token);
-		}
-
-		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
-		httpGet.setHeader(Const.PLATFORM, "android");
-
-		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-		HttpEntity entity = response.getEntity();
-
-		return getString(entity.getContent());
-	}
-
-	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
-
-		String params = "";
-
-		// form parameters
-		if (getParams != null && !getParams.isEmpty()) {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			for (Map.Entry<String, String> entity : getParams.entrySet()) {
-				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-			}
-
-			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
-		}
-
-		HttpGet httpGet = new HttpGet(apiUrl + (TextUtils.isEmpty(params) ? "" : "?" + params));
-		Logger.custom("RawRequest", httpGet.getURI().toString());
-
-		httpGet.setHeader("Encoding", "UTF-8");
-
-		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-		HttpEntity entity = response.getEntity();
-
-		return Helper.jObjectRawFromString(getString(entity.getContent()));
-	}
 
 	/**
 	 * Post/upload file
@@ -199,6 +102,21 @@ public class NetworkManagement {
 
 		return getString(entity.getContent());
 	}
+	
+	private static String getString(InputStream is) throws IOException {
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+		StringBuilder builder = new StringBuilder();
+		String line = null;
+
+		while ((line = reader.readLine()) != null) {
+			builder.append(line + "\n");
+		}
+
+		is.close();
+
+		return builder.toString();
+	}
 
 	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
 		String params = "";
@@ -234,59 +152,7 @@ public class NetworkManagement {
 
 		return entity;
 	}
-
-	/**
-	 * Get string from InputStream, Http response
-	 * 
-	 * @param is
-	 * @return
-	 * @throws IOException
-	 */
-	public static String getString(InputStream is) throws IOException {
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-		StringBuilder builder = new StringBuilder();
-		String line = null;
-
-		while ((line = reader.readLine()) != null) {
-			builder.append(line + "\n");
-		}
-
-		is.close();
-
-		return builder.toString();
-	}
-
-	/**
-	 * Checks whether this app has mobile or wireless internet connection
-	 * 
-	 * @return
-	 */
-	public static boolean hasNetworkConnection(Context context) {
-		
-		if(context == null) return true;
-
-		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-
-		for (NetworkInfo ni : networkInfo) {
-
-			if (ni.getTypeName().equalsIgnoreCase("WIFI")) {
-				if (ni.isConnected()) {
-					return true;
-				}
-			}
-
-			if (ni.getTypeName().equalsIgnoreCase("MOBILE")) {
-				if (ni.isConnected()) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
+	
 	/**
 	 * HttpClient mini singleton
 	 */
@@ -321,15 +187,134 @@ public class NetworkManagement {
 			return sInstance;
 		}
 	}
+
+	// start: App requests
+	public static String httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
+		return httpPostRequest("", postParams, token);
+	}
+
+	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams) throws IOException {
+		return httpPostRequest(apiUrl, postParams, null);
+	}
+
+	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException {
+		return postOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), postParams, true, token);
+	}
+
+	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+		return httpGetRequest(apiUrl, getParams, null);
+	}
+
+	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
+		return getOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), getParams, true, token);
+	}
+	
+	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
+		return Helper.jObjectRawFromString(getOkRequest(apiUrl, getParams, false, null));
+	}
 	
 	public static String httpGetRequestWithRawResponse(String url) throws IOException {
-
-		HttpGet httpGet = new HttpGet(url);
-		Logger.custom("RawRequest", httpGet.getURI().toString());
-
-		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-		HttpEntity entity = response.getEntity();
-
-		return getString(entity.getContent());
+		return getOkRequest(url, null, false, null);
 	}
+	// end: App requests
+
+	// start: request handling
+	private static String getOkRequest(String url, HashMap<String, String> getParams, boolean addHeaders, String token) throws IOException {
+		
+		GetUrl urlParams = new GetUrl(getParams);
+		String finalUrl = url + urlParams.toString();
+
+		Request.Builder requestBuilder = new Request.Builder().url(finalUrl);
+		
+		if(addHeaders){
+			requestBuilder.headers(getGetHeadersWithToken(token));
+		}
+		
+		Request request = requestBuilder.build();
+		Response response = client().newCall(request).execute();
+
+		return response.body().string();
+	}
+
+	private static String postOkRequest(String url, HashMap<String, String> postParams, boolean addHeaders, String token) throws IOException {
+
+		FormEncodingBuilder formBodyBuilder = new FormEncodingBuilder();
+
+		if (postParams != null) {
+			for (Map.Entry<String, String> entry : postParams.entrySet()) {
+				formBodyBuilder.add(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		Request.Builder requestBuilder = new Request.Builder().url(url).post(formBodyBuilder.build());
+		
+		if(addHeaders){
+			requestBuilder.headers(getPostHeadersWithToken(token));
+		}
+		
+		Request request = requestBuilder.build();
+		Response response = client().newCall(request).execute();
+
+		return response.body().string();
+	}
+	
+	private static OkHttpClient client() {
+		return new OkHttpClient();
+	}
+	
+	public static Headers getPostHeadersWithContext(Context ctx){
+		return postHeaders(null, ctx);
+	}
+	
+	public static Headers getPostHeadersWithToken(String token){
+		return postHeaders(token, null);
+	}
+	
+	private static Headers postHeaders(String token, Context ctx) {
+
+		Headers.Builder headersBuilder = new Headers.Builder()
+		.add("Encoding", "UTF-8")
+		.add(Const.APP_VERSION, Helper.getAppVersion())
+		.add(Const.PLATFORM, "android")
+		.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		if(TextUtils.isEmpty(token)){
+		 token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+		}
+		
+		if (!TextUtils.isEmpty(token)) {
+			headersBuilder.add(Const.TOKEN_BIG_T, token);
+		}
+
+		return headersBuilder.build();
+	}
+	
+	public static Headers getGetHeadersWithContext(Context ctx){
+		return getHeaders(null, ctx);
+	}
+	
+	public static Headers getGetHeadersWithToken(String token){
+		return getHeaders(token, null);
+	}
+
+	private static Headers getHeaders(String token, Context ctx) {
+		
+		Headers.Builder headersBuilder = new Headers.Builder()
+		.add("Encoding", "UTF-8")
+		.add(Const.APP_VERSION, Helper.getAppVersion())
+		.add(Const.PLATFORM, "android")
+		.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		if(TextUtils.isEmpty(token)){
+			 token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+		}
+		
+		if (!TextUtils.isEmpty(token)) {
+			headersBuilder.add(Const.TOKEN_BIG_T, token);
+		}
+		
+		return headersBuilder.build();
+	}
+	// end: Request handling
+
 }
