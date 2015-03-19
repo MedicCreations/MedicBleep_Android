@@ -46,7 +46,6 @@ import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
-import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
 public class ChatActivity extends BaseChatActivity {
 
@@ -701,6 +700,10 @@ public class ChatActivity extends BaseChatActivity {
 				handleProgress(false);
 
 				isRunning = false;
+				
+				if(chat == null || chat.chat == null){
+					finish();
+				}
 
 				chatParams(chat.chat);
 
