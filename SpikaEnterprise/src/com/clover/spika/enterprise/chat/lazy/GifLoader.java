@@ -24,6 +24,7 @@ import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.squareup.okhttp.ResponseBody;
 
 public class GifLoader {
 
@@ -201,8 +202,9 @@ public class GifLoader {
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.FILE_ID, url);
 
-			InputStream is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
-
+			ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context).getToken(), Const.F_USER_GET_FILE, getParams);
+			InputStream is = response.byteStream();
+			
 			BufferedInputStream bis = new BufferedInputStream(is);
 
 			ByteArrayBuffer baf = new ByteArrayBuffer(20000);

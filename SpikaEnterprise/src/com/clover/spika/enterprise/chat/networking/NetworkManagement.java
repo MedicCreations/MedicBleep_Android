@@ -5,20 +5,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -29,7 +24,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
@@ -44,13 +38,13 @@ import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 public class NetworkManagement {
 
@@ -118,41 +112,6 @@ public class NetworkManagement {
 		return builder.toString();
 	}
 
-	public static HttpEntity httpGetGetFile(Preferences prefs, String apiUrl, HashMap<String, String> getParams) throws IllegalStateException, IOException, JSONException {
-		String params = "";
-		String gifString = null;
-
-		// form parameters
-		if (getParams != null && !getParams.isEmpty()) {
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			for (Map.Entry<String, String> entity : getParams.entrySet()) {
-				nameValuePairs.add(new BasicNameValuePair(entity.getKey(), entity.getValue()));
-				if (entity.getKey() == "file_id" && entity.getValue().startsWith("http")) {
-					gifString = entity.getValue();
-					break;
-				}
-			}
-
-			params += URLEncodedUtils.format(nameValuePairs, "UTF-8");
-		}
-
-		HttpGet httpGet = new HttpGet(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl) + (TextUtils.isEmpty(params) ? "" : "?" + params));
-		if (gifString != null)
-			httpGet = new HttpGet(gifString);
-		Logger.custom("RawRequest", httpGet.getURI().toString());
-
-		httpGet.setHeader("Encoding", "UTF-8");
-		httpGet.setHeader(Const.TOKEN_BIG_T, prefs.getToken());
-
-		httpGet.setHeader(Const.APP_VERSION, Helper.getAppVersion());
-		httpGet.setHeader(Const.PLATFORM, "android");
-
-		HttpResponse response = HttpSingleton.getInstance().execute(httpGet);
-		HttpEntity entity = response.getEntity();
-
-		return entity;
-	}
-	
 	/**
 	 * HttpClient mini singleton
 	 */
@@ -198,7 +157,7 @@ public class NetworkManagement {
 	}
 
 	public static String httpPostRequest(String apiUrl, HashMap<String, String> postParams, String token) throws IOException {
-		return postOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), postParams, true, token);
+		return postOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), postParams, true, token).string();
 	}
 
 	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
@@ -206,20 +165,38 @@ public class NetworkManagement {
 	}
 
 	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
-		return getOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), getParams, true, token);
+		return getOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), getParams, true, token).string();
 	}
 	
 	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
-		return Helper.jObjectRawFromString(getOkRequest(apiUrl, getParams, false, null));
+		return Helper.jObjectRawFromString(getOkRequest(apiUrl, getParams, false, null).string());
 	}
 	
 	public static String httpGetRequestWithRawResponse(String url) throws IOException {
-		return getOkRequest(url, null, false, null);
+		return getOkRequest(url, null, false, null).string();
+	}
+	
+	public static ResponseBody httpGetGetFile(String token, String apiUrl, HashMap<String, String> getParams) throws IOException {
+		
+		String gifString = null;
+		
+		if(getParams.get("file_id") != null && getParams.get("file_id").startsWith("http")){
+			gifString = getParams.get("file_id");
+			getParams = null;
+		}
+
+		String url = Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl);
+		
+		if (!TextUtils.isEmpty(gifString)){
+			url = gifString;
+		}
+
+		return getOkRequest(url, getParams, true, token);
 	}
 	// end: App requests
 
 	// start: request handling
-	private static String getOkRequest(String url, HashMap<String, String> getParams, boolean addHeaders, String token) throws IOException {
+	private static ResponseBody getOkRequest(String url, HashMap<String, String> getParams, boolean addHeaders, String token) throws IOException {
 		
 		GetUrl urlParams = new GetUrl(getParams);
 		String finalUrl = url + urlParams.toString();
@@ -233,10 +210,10 @@ public class NetworkManagement {
 		Request request = requestBuilder.build();
 		Response response = client().newCall(request).execute();
 
-		return response.body().string();
+		return response.body();
 	}
 
-	private static String postOkRequest(String url, HashMap<String, String> postParams, boolean addHeaders, String token) throws IOException {
+	private static ResponseBody postOkRequest(String url, HashMap<String, String> postParams, boolean addHeaders, String token) throws IOException {
 
 		FormEncodingBuilder formBodyBuilder = new FormEncodingBuilder();
 
@@ -255,7 +232,7 @@ public class NetworkManagement {
 		Request request = requestBuilder.build();
 		Response response = client().newCall(request).execute();
 
-		return response.body().string();
+		return response.body();
 	}
 	
 	private static OkHttpClient client() {

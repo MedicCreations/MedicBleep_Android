@@ -23,8 +23,8 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.ResponseBody;
 
-import org.apache.http.HttpEntity;
 import org.json.JSONException;
 
 import java.io.File;
@@ -134,94 +134,6 @@ public class FileManageApi {
 		}.execute();
 	}
 
-	public void downloadFile(final String fileId, final Context ctx, final ApiCallback<String> listener) {
-		new BaseAsyncTask<Void, Void, String>(ctx, true) {
-
-			protected void onPreExecute() {
-				progressBar = new AppProgressDialogWithBar(ctx);
-				progressBar.showProgress();
-			};
-
-			protected String doInBackground(Void... params) {
-				HashMap<String, String> getParams = new HashMap<String, String>();
-				getParams.put(Const.FILE_ID, fileId);
-
-				try {
-					HttpEntity en = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams);
-					InputStream is = en.getContent();
-
-					File file;
-
-					if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-						file = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_SPEN_FILE);
-					} else {
-						return null;
-					}
-
-					OutputStream os = new FileOutputStream(file);
-					Helper.copyStream(is, os, en.getContentLength(), new ProgressBarListeners() {
-
-						@Override
-						public void onSetMax(long total) {
-							if (progressBar.getMaxBar() == 1)
-								progressBar.setMaxBar((int) total);
-						}
-
-						@Override
-						public void onProgress(long current) {
-							progressBar.updateBar((int) current);
-						}
-
-						@Override
-						public void onFinish() {
-							progressBar.dismiss();
-
-							((Activity) context).runOnUiThread(new Runnable() {
-								public void run() {
-									progressBar = new AppProgressDialogWithBar(ctx);
-									progressBar.showDecrypting();
-								}
-							});
-						}
-					});
-
-					is.close();
-					os.close();
-
-					String finalFilePath = Utils.handleFileDecryption(file.getAbsolutePath(), context);
-
-					return finalFilePath;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				return null;
-			}
-
-			protected void onPostExecute(String path) {
-				super.onPostExecute(path);
-
-				if (listener != null) {
-					Result<String> result;
-
-					if (path != null) {
-						result = new Result<String>(Result.ApiResponseState.SUCCESS);
-						result.setResultData(path);
-					} else {
-						result = new Result<String>(Result.ApiResponseState.FAILURE);
-					}
-
-					listener.onApiResponse(result);
-				}
-
-				if (progressBar != null && progressBar.isShowing()) {
-					progressBar.dismiss();
-				}
-			}
-
-		}.execute();
-	}
-
 	public void downloadFileToFile(final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener,
 			final ProgressBarListeners pbListener) {
 		new BaseAsyncTask<Void, Void, String>(ctx, showProgress) {
@@ -238,8 +150,8 @@ public class FileManageApi {
 				getParams.put(Const.FILE_ID, fileId);
 
 				try {
-					HttpEntity en = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams);
-					InputStream is = en.getContent();
+					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context).getToken(), Const.F_USER_GET_FILE, getParams);
+					InputStream is = response.byteStream();
 
 					File file;
 
@@ -251,7 +163,7 @@ public class FileManageApi {
 
 					OutputStream os = new FileOutputStream(file);
 					if (pbListener == null) {
-						Helper.copyStream(is, os, en.getContentLength(), new ProgressBarListeners() {
+						Helper.copyStream(is, os, response.contentLength(), new ProgressBarListeners() {
 
 							@Override
 							public void onSetMax(long total) {
@@ -278,7 +190,7 @@ public class FileManageApi {
 						});
 
 					} else {
-						Helper.copyStream(is, os, en.getContentLength(), pbListener);
+						Helper.copyStream(is, os, response.contentLength(), pbListener);
 					}
 
 					is.close();
@@ -355,10 +267,10 @@ public class FileManageApi {
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.FILE_ID, fileId);
 
-				InputStream is;
 				try {
 
-					is = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context), Const.F_USER_GET_FILE, getParams).getContent();
+					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context).getToken(), Const.F_USER_GET_FILE, getParams);
+					InputStream is = response.byteStream();
 
 					if (JNAesCrypto.isEncryptionEnabled) {
 						JNAesCrypto.decryptIs(is, downloadedFile, context);
