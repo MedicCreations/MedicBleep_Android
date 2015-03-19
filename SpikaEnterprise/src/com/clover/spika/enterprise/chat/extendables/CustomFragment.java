@@ -3,7 +3,7 @@ package com.clover.spika.enterprise.chat.extendables;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.octo.android.robospice.SpiceManager;
@@ -39,7 +39,7 @@ public class CustomFragment extends Fragment {
 		super.onStop();
 	}
 
-	private AppProgressDialog progressBar;
+	private AppProgressAlertDialog progressBar;
 
 	public void handleProgress(boolean showProgress) {
 
@@ -52,7 +52,7 @@ public class CustomFragment extends Fragment {
 					progressBar = null;
 				}
 
-				progressBar = new AppProgressDialog(getActivity());
+				progressBar = new AppProgressAlertDialog(getActivity());
 				progressBar.show();
 
 			} else {

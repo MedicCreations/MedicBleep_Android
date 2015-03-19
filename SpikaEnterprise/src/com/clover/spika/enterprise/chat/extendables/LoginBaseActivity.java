@@ -14,7 +14,7 @@ import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.models.PreLogin;
@@ -31,7 +31,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 
-	private AppProgressDialog progressBar;
+	private AppProgressAlertDialog progressBar;
 
 	public void handleProgress(boolean showProgress) {
 
@@ -44,7 +44,7 @@ public abstract class LoginBaseActivity extends Activity {
 					progressBar = null;
 				}
 
-				progressBar = new AppProgressDialog(this);
+				progressBar = new AppProgressAlertDialog(this);
 				progressBar.show();
 
 			} else {

@@ -50,7 +50,7 @@ import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
-import com.clover.spika.enterprise.chat.dialogs.AppProgressDialog;
+import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
@@ -117,7 +117,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		super.onStop();
 	}
 
-	private AppProgressDialog progressBar;
+	private AppProgressAlertDialog progressBar;
 
 	public void handleProgress(boolean showProgress) {
 
@@ -130,7 +130,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					progressBar = null;
 				}
 
-				progressBar = new AppProgressDialog(this);
+				progressBar = new AppProgressAlertDialog(this);
 				progressBar.show();
 
 			} else {
