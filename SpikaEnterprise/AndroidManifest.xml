@@ -161,10 +161,6 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.clover.spika.enterprise.chat.GroupsActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
             android:name="com.clover.spika.enterprise.chat.ThreadsActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
@@ -173,10 +169,6 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.RoomsActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity"
             android:screenOrientation="portrait"
