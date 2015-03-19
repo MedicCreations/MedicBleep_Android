@@ -48,18 +48,17 @@ import com.clover.spika.enterprise.chat.ThreadsActivity;
 import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
+import com.clover.spika.enterprise.chat.lazy.GifLoaderSpice;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.lazy.GifLoader;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.octo.android.robospice.SpiceManager;
-
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
+import com.octo.android.robospice.SpiceManager;
 
 public class ThreadsAdapter extends BaseAdapter {
 
@@ -94,6 +93,7 @@ public class ThreadsAdapter extends BaseAdapter {
 	// *************************
 
 	private ImageLoaderSpice imageLoaderSpice;
+	private GifLoaderSpice gifLoaderSpice;
 
 	public ThreadsAdapter(SpiceManager manager, Context context) {
 		if (context instanceof Activity) {
@@ -101,6 +101,9 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			imageLoaderSpice = ImageLoaderSpice.getInstance(context);
 			imageLoaderSpice.setSpiceManager(manager);
+			
+			gifLoaderSpice = GifLoaderSpice.getInstance(context);
+			gifLoaderSpice.setSpiceManager(manager);
 
 			DisplayMetrics dm = new DisplayMetrics();
 			((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -454,7 +457,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
 		String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-left:5%;margin-top:5%\"";
-		GifLoader.getInstance(mContext).displayImage(mContext, node.getMessage().getText(), holder.gifWebView, style);
+		gifLoaderSpice.displayImage(mContext, node.getMessage().getText(), holder.gifWebView, style);
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);

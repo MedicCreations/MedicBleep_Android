@@ -159,32 +159,6 @@ public class SocketService extends Service {
 
 		/* start:FakeApi A api reauest that is meant to fail - unknown hack */
 
-//		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
-//				.add("User-Agent", Const.HTTP_USER_AGENT);
-//
-//		String token = SpikaEnterpriseApp.getSharedPreferences(getApplicationContext()).getToken();
-//		if (!TextUtils.isEmpty(token)) {
-//			headersBuilder.add("token", token);
-//		}
-//
-//		Headers header = headersBuilder.build();
-//
-//		RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, "FAKE").add(Const.PASSWORD, "FAKE").build();
-//		Request.Builder requestBuilder = new Request.Builder().headers(header).url(Const.BASE_URL + Const.F_PRELOGIN).post(formBody);
-//
-//		OkHttpClient client = new OkHttpClient();
-//
-//		Call connection = client.newCall(requestBuilder.build());
-//
-//		try {
-//			Response res = connection.execute();
-//			ResponseBody resBody = res.body();
-//			String responsBody = resBody.string();
-//
-//			PreLogin preLogin = new ObjectMapper().readValue(responsBody, PreLogin.class);
-//		} catch (Exception ex) {
-//		}
-		
 		new SocketClient().fakeApiForSSL(this, new ApiCallback<PreLogin>() {
 			
 			@Override
