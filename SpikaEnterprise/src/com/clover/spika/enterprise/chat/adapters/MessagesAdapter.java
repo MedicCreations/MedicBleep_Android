@@ -65,7 +65,6 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.MessageSortingById;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
-import com.clover.spika.enterprise.chat.views.emoji.GifAnimationDrawable;
 import com.octo.android.robospice.SpiceManager;
 
 public class MessagesAdapter extends BaseAdapter {
@@ -985,16 +984,6 @@ public class MessagesAdapter extends BaseAdapter {
 			setEndOfSearch(true);
 		} else {
 			setEndOfSearch(false);
-		}
-	}
-
-	private void setGif(ImageView iv, ProgressBar pb) {
-		GifAnimationDrawable big = (GifAnimationDrawable) iv.getTag();
-		big.setOneShot(false);
-		pb.setVisibility(View.GONE);
-		if (big != null) {
-			iv.setImageDrawable(big);
-			big.setVisible(true, true);
 		}
 	}
 
