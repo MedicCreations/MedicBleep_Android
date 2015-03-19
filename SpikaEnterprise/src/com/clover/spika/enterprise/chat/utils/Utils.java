@@ -243,12 +243,6 @@ public class Utils {
 		File file = new File(filename);
 		FileOutputStream fos;
 		String content = "";
-		// try {
-		// content=AESCrypto.encrypt(bitmap);
-		//
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
 		try {
 			content = JNAesCrypto.encryptJN(bitmap);
 			// content=JNAesCrypto.encryptJNChunk(bitmap);
@@ -282,12 +276,6 @@ public class Utils {
 		FileOutputStream fos;
 		String content = "";
 		if (toEncrypt) {
-			// try {
-			// content=AESCrypto.encrypt(dataInput);
-			//
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
 			try {
 				content = JNAesCrypto.encryptJN(dataInput);
 
@@ -323,12 +311,6 @@ public class Utils {
 		FileOutputStream fos;
 		byte[] content = null;
 		if (toEncrypt) {
-			// try {
-			// content=AESCrypto.encrypt(dataInput);
-			//
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
 			try {
 				content = JNAesCrypto.encryptJN(dataInput);
 			} catch (Exception e) {
