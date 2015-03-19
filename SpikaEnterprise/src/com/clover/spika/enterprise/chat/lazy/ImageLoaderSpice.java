@@ -240,9 +240,7 @@ public class ImageLoaderSpice {
 		public Bitmap loadDataFromNetwork() throws Exception {
 
 			if (bitmap != null) {
-				if (bitmap != null) {
-					memoryCache.put(fileId, bitmap);
-				}
+				memoryCache.put(fileId, bitmap);
 			}
 
 			return null;

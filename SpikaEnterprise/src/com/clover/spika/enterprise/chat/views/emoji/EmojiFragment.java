@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
-import com.clover.spika.enterprise.chat.lazy.GifLoader;
+import com.clover.spika.enterprise.chat.lazy.GifLoaderSpice;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -54,6 +54,9 @@ public class EmojiFragment extends CustomFragment {
 		int widthScreen = getResources().getDisplayMetrics().widthPixels;
 		int imageSize = ((widthScreen - Utils.getPxFromDp(40, getResources())) / 4) - Utils.getPxFromDp(10, getResources());
 		
+		GifLoaderSpice spiceGifLoader = GifLoaderSpice.getInstance(getActivity());
+		spiceGifLoader.setSpiceManager(spiceManager);
+		
 		for(int i = 0; i < listLocal.size(); i++){
 			int idRes = 0;
 			if(i < 4){
@@ -74,7 +77,7 @@ public class EmojiFragment extends CustomFragment {
 			webView.getLayoutParams().height = imageSize;
 			
 			String style = "style=\"border: solid #eee 1px;border-radius: 10px;\"";
-			GifLoader.getInstance(getActivity()).displayImage(getActivity(), listLocal.get(i).getUrl(), webView, style, null);
+			spiceGifLoader.displayImage(getActivity(), listLocal.get(i).getUrl(), webView, style);
 			
 			final Stickers object = listLocal.get(i);
 			webView.setOnClickListener(new View.OnClickListener() {

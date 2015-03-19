@@ -55,7 +55,7 @@ import com.clover.spika.enterprise.chat.VideoActivity;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
-import com.clover.spika.enterprise.chat.lazy.GifLoader;
+import com.clover.spika.enterprise.chat.lazy.GifLoaderSpice;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -77,7 +77,7 @@ public class MessagesAdapter extends BaseAdapter {
 	private SparseIntArray dateSeparator = new SparseIntArray();
 
 	private ImageLoaderSpice imageLoaderSpice;
-	private GifLoader gifLoader;
+	private GifLoaderSpice gifLoaderSpice;
 
 	private boolean endOfSearch = false;
 	private int totalCount = 0;
@@ -101,7 +101,9 @@ public class MessagesAdapter extends BaseAdapter {
 		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
 		imageLoaderSpice.setSpiceManager(manager);
 
-		gifLoader = GifLoader.getInstance(ctx);
+		gifLoaderSpice = GifLoaderSpice.getInstance(ctx);
+		gifLoaderSpice.setSpiceManager(manager);
+		
 		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
 		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
 	}
@@ -230,7 +232,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
 
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
-				gifLoader.displayImage(ctx, msg.getText(), holder.meWebView, style, null);
+				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.meWebView, style);
 
 				holder.meWebView.setOnClickListener(new OnClickListener() {
 
@@ -400,7 +402,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.youWebView.getSettings().setBuiltInZoomControls(true);
 
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-top:5%; margin-left:5%;\"";
-				gifLoader.displayImage(ctx, msg.getText(), holder.youWebView, style, null);
+				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.youWebView, style);
 
 				holder.youWebView.setOnClickListener(new OnClickListener() {
 
