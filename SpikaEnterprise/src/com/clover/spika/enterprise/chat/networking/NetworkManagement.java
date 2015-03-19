@@ -111,42 +111,47 @@ public class NetworkManagement {
 
 		return builder.toString();
 	}
-
+	
 	/**
-	 * HttpClient mini singleton
-	 */
+	
+	* HttpClient mini singleton
+	
+	*/
+	
 	public static class HttpSingleton {
-
+	
 		private static HttpClient sInstance = null;
 		private static long sTimestamp = 0L;
 		private static long sHour = 3600L;
-
+		
+		
 		public static HttpClient getInstance() {
-
+		
 			long current = System.currentTimeMillis() / 1000L;
-
+			
 			if (sInstance == null || (current > (sTimestamp + sHour))) {
-
+			
 				sTimestamp = System.currentTimeMillis() / 1000L;
-
+				
 				HttpParams params = new BasicHttpParams();
 				params.setParameter(CoreProtocolPNames.USER_AGENT, Const.HTTP_USER_AGENT);
 				params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-
+				
 				SchemeRegistry schemeRegistry = new SchemeRegistry();
 				schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+				
 				final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
 				schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
-
+				
 				ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-
+				
 				sInstance = new DefaultHttpClient(cm, params);
 			}
-
+		
 			return sInstance;
 		}
 	}
-
+	
 	// start: App requests
 	public static String httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
 		return httpPostRequest("", postParams, token);
@@ -208,7 +213,7 @@ public class NetworkManagement {
 		}
 		
 		Request request = requestBuilder.build();
-		Response response = client().newCall(request).execute();
+		Response response = OkHttpClientSingleton.getInstance().newCall(request).execute();
 
 		return response.body();
 	}
@@ -230,13 +235,9 @@ public class NetworkManagement {
 		}
 		
 		Request request = requestBuilder.build();
-		Response response = client().newCall(request).execute();
+		Response response = OkHttpClientSingleton.getInstance().newCall(request).execute();
 
 		return response.body();
-	}
-	
-	private static OkHttpClient client() {
-		return new OkHttpClient();
 	}
 	
 	public static Headers getPostHeadersWithContext(Context ctx){
@@ -292,6 +293,28 @@ public class NetworkManagement {
 		
 		return headersBuilder.build();
 	}
-	// end: Request handling
+	
+	private static class OkHttpClientSingleton {
+		
+		private static OkHttpClient client;
+		
+		private static long sTimestamp = 0L;
+		private static long sDay = 86400L;
 
+		public static OkHttpClient getInstance() {
+
+			long current = System.currentTimeMillis() / 1000L;
+
+			if (client == null || (current > (sTimestamp + sDay))) {
+
+				sTimestamp = System.currentTimeMillis() / 1000L;
+				
+				client = new OkHttpClient();
+			}
+
+			return client;
+		}
+	}
+	// end: Request handling
+	
 }
