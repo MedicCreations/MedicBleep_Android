@@ -60,5 +60,8 @@ public class PasscodeActivity extends NewPasscodeActivity {
 			}
 		}
 	}
+	
+	@Override
+	public void onBackPressed() {}
 
 }

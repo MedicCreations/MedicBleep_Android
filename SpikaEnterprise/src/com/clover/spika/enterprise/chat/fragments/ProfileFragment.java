@@ -74,7 +74,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 		mSwitchPasscodeEnabled = (Switch) rootView.findViewById(R.id.switchPasscode);
 		mSwitchPasscodeEnabled.setOnClickListener(this);
 		mSwitchPasscodeEnabled.setChecked(PasscodeUtility.getInstance().isPasscodeEnabled(getActivity()));
-		mSwitchPasscodeEnabled.setOnCheckedChangeListener(this);
 
 		updatePassword = (Button) rootView.findViewById(R.id.updatePassword);
 		updatePassword.setOnClickListener(this);
