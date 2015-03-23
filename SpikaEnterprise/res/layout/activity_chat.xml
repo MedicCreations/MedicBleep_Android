@@ -225,7 +225,7 @@
                 android:layout_below="@id/firstLine"
                 android:background="@drawable/trans_to_gray"
                 android:gravity="center"
-                android:text="Choose/Take video"
+                android:text="@string/choose_take_video"
                 android:textColor="@color/default_blue"
                 android:textSize="20sp" />
 

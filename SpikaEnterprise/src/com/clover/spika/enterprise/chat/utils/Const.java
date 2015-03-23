@@ -28,8 +28,8 @@ public class Const {
 	public static final String WS_GET_SESSION_URL = "https://www.spikaent.com:32443/socket.io/1/";
 	public static final String STUN_SERVER = "stun:spikaent.com:3478";
 	public static final String TURN_SERVER = "turn:spikaent.com:3478";
-	public static final String TURN_USER = "turn:spikaent.com:3478"; // same user for stun server
-	public static final String TURN_PASS = "turn:spikaent.com:3478"; // same pass for stun server
+	public static final String TURN_USER = "turn"; // same user for stun server
+	public static final String TURN_PASS = "turn"; // same pass for stun server
 
 	// Activity for result constants
 	public static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
