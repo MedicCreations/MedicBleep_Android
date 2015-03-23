@@ -72,10 +72,6 @@ public class EmojiRelativeLayout extends RelativeLayout {
 			
 		});
 		
-		for(Stickers item : this.stickersList){
-			Log.d("LOG", item.getId()+" : "+item.getUsedTimes());
-		}
-		
 		StickersHolder holder = new StickersHolder();
 		holder.setStickersList(this.stickersList);
 		int number = 1 + this.stickersList.size() / 8;

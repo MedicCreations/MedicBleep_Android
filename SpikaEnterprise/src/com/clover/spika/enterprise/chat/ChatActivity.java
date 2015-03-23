@@ -406,8 +406,6 @@ public class ChatActivity extends BaseChatActivity {
 
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
-			Log.d("LOG", "old: " + chatId + ", new: " + intent.getExtras().getString(Const.CHAT_ID));
-
 			if (chatId != null && intent.getExtras().getString(Const.CHAT_ID) != null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))) {
 				adapter.clearItems();
 			}

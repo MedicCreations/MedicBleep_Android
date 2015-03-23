@@ -24,7 +24,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -841,7 +840,6 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void run() {
 			while (!stop.get()) {
 				long elapsedMillis = SystemClock.elapsedRealtime() - activeChronometer.getBase();
-				Log.e("LOG", elapsedMillis + " :ELG");
 				activeSeekbar.setProgress((int) elapsedMillis);
 				try {
 					Thread.sleep(33);

@@ -103,7 +103,6 @@ public class RoomParametersFetcher {
 				}
 
 				WebRtcSDPCandidate candModel = webRtcMessage.getArgs().get(0).getPayload().getCandidate();
-				Log.d("LOG", "CANDIDATE: " + webRtcMessage.getArgs().get(0).getPayload().getCandidate());
 				if (webRtcMessage.getArgs().get(0).getPayload().getCandidate() != null)
 					iceCandidatesy.add(new IceCandidate(candModel.getSdmMid(), Integer.valueOf(candModel.getSdpMLineIndex()), candModel.getCandidate()));
 

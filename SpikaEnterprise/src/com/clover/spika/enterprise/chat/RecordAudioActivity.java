@@ -301,7 +301,6 @@ public class RecordAudioActivity extends BaseActivity {
 		public void run() {
 			while (!stop.get()) {
 				long elapsedMillis = SystemClock.elapsedRealtime() - firstChornometer.getBase();
-				Log.e("LOG", elapsedMillis + " :ELG");
 				seekBarSound.setProgress((int) elapsedMillis);
 				try {
 					Thread.sleep(33);

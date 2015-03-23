@@ -686,7 +686,6 @@ public class MessagesAdapter extends BaseAdapter {
 		public void run() {
 			while (!stop.get()) {
 				long elapsedMillis = SystemClock.elapsedRealtime() - activeChronometer.getBase();
-				Log.e("LOG", elapsedMillis + " :ELG");
 				activeSeekbar.setProgress((int) elapsedMillis);
 				try {
 					Thread.sleep(33);

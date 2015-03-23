@@ -135,12 +135,9 @@ public class GifLoaderSpice {
 	}
 
 	public void setSpiceManager(SpiceManager spiceManager) {
-		Log.d("LOG", "TRY TO SET");
 		if(this.spiceManager != null) {
-			Log.d("LOG", "NO NEED");
 			return;
 		}
-		Log.d("LOG", "SETTING");
 		this.spiceManager = spiceManager;
 	}
 

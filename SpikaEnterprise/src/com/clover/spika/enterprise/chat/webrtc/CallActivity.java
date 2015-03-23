@@ -232,7 +232,7 @@ public class CallActivity extends BaseActivity implements AppRTCClient.Signaling
 						onChannelClose();
 					}
 				} catch (Exception e) {
-					Log.e("LOG", e.toString());
+					e.printStackTrace();
 				}
 			}
 

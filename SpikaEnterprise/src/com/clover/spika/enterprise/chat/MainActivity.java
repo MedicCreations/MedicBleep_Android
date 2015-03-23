@@ -31,6 +31,7 @@ import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
@@ -197,7 +198,7 @@ public class MainActivity extends BaseActivity {
 	public void switchContent(Fragment fragment) {
 		mFragment = (CustomFragment) fragment;
 		if(getSupportFragmentManager().findFragmentByTag(fragment.getClass().toString()) != null){
-			Log.d("LOG", "same fragment"); // it is same fragment
+			Logger.custom("i", "LOG", "same fragment");// it is same fragment
 		}else{
 			getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment, fragment.getClass().toString()).commit();
 		}

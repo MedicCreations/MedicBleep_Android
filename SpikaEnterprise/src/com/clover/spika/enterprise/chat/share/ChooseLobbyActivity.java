@@ -24,6 +24,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
@@ -96,6 +97,11 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		if (mainListView == null) {
 			return;
 		}
+		
+		for (Chat item : data) {
+			item.last_message = Message.decryptContent(this, item.last_message);
+		}
+		
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 		if (toClearPrevious)
 			currentCount = data.size();

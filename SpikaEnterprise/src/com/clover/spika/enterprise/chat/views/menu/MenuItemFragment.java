@@ -242,7 +242,7 @@ public class MenuItemFragment extends CustomFragment {
             camera.setDisplayOrientation(90);
             camera.setParameters(parameters);
         }catch(RuntimeException e){
-        	Log.e("LOG", e.toString());
+        	e.printStackTrace();
             return;
         }
         
@@ -250,7 +250,7 @@ public class MenuItemFragment extends CustomFragment {
             camera.setPreviewDisplay(sf);
             camera.startPreview();
         } catch (Exception e) {
-        	Log.e("LOG", e.toString());
+        	e.printStackTrace();
             return;
         }
     }

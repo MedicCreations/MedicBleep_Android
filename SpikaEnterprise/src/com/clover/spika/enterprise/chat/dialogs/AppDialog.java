@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.dialogs;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,12 +21,8 @@ import com.clover.spika.enterprise.chat.models.HelperModel;
 import com.clover.spika.enterprise.chat.models.UserDetail;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 public class AppDialog extends Dialog {
 
@@ -449,8 +448,6 @@ public class AppDialog extends Dialog {
 				intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
 				intent.putExtra(Const.IS_SQUARE, true);
-				// getContext().startActivity(intent);
-				Logger.d("activity " + getOwnerActivity().getLocalClassName());
 				getOwnerActivity().startActivityForResult(intent, 1);
 			}
 		});

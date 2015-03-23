@@ -17,8 +17,6 @@ public class ShareImageActivity extends BaseActivity {
 		
 		Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
 		
-		Log.e("LOG", uri.toString());
-		
 		startActivity(new Intent(this, CameraFullPhotoActivity.class)
 				.putExtra(Const.INTENT_TYPE, Const.SHARE_INTENT)
 				.putExtra(Intent.EXTRA_STREAM, (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM))

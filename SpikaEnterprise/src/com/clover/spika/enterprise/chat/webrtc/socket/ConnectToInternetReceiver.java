@@ -13,7 +13,6 @@ public class ConnectToInternetReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d("LOG", "CONNECT CHANGED");
 		if (intent.getExtras() != null) {
 			ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo info = connManager.getActiveNetworkInfo();

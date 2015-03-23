@@ -57,6 +57,7 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.clover.spika.enterprise.chat.webrtc.CallActivity;
@@ -622,27 +623,24 @@ public class BaseActivity extends SlidingFragmentActivity {
 					dialog.setOnDismissListener(dissmisListener);
 				}
 			} else if (typeOfReceiver == Const.CALL_USER) {
-				final String sessionId = intent.getStringExtra(Const.SESSION_ID);
-
-				Log.d("LOG", "SESSION: " + sessionId + ", TYPE: CALLING");
-
+				
+				Logger.custom("d", "LOG", "CALLING");
+				
 			} else if (typeOfReceiver == Const.CALL_RECEIVE) {
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
 				User user = (User) intent.getSerializableExtra(Const.USER);
-
-				Log.d("LOG", "SESSION: " + sessionId + ", TYPE: RINGING");
+				Logger.custom("d", "LOG", "RINGING");
+				
 				mService.callRinging(sessionId);
-
 				showCallingPopup(user, sessionId, true, false);
-
+				
 			} else if (typeOfReceiver == Const.CALL_ANSWER) {
-				String sessionId = intent.getStringExtra(Const.SESSION_ID);
-				Log.d("LOG", "SESSION: " + sessionId + ", TYPE: ANSWER");
-
+				
+				Logger.custom("d", "LOG", "ANSWER");
 				mService.leaveMyRoom();
 
 			} else if (typeOfReceiver == Const.CALL_CONNECT) {
-				Log.d("LOG", "CALL CONNECT");
+				Logger.custom("d", "LOG", "CALL CONNECT");
 				if (callTimeoutRunnable != null)
 					callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 				if (mPlayer != null)
@@ -665,7 +663,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 				startActivityForResult(intent2, Const.CALL_ACTIVITY_REQUEST);
 
 			} else if (typeOfReceiver == Const.CALL_RINGING) {
-				Log.d("LOG", "CALL RINGING");
+				Logger.custom("d", "LOG", "CALL RINGING");
 				updateTextViewAction("Ringing");
 				mPlayer = MediaPlayer.create(BaseActivity.this, R.raw.ringing_voice);
 				mPlayer.start();
@@ -674,7 +672,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 					callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
 				if (mPlayer != null)
 					mPlayer.stop();
-				Log.d("LOG", "CALL CANCELED");
+				Logger.custom("d", "LOG", "CALL CANCELED");
 				updateTextViewAction("Call Canceled");
 				new Handler().postDelayed(new Runnable() {
 
@@ -695,10 +693,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 				}
 				if (mPlayer != null)
 					mPlayer.stop();
-				Log.d("LOG", "CALL ENDED");
+				Logger.custom("d", "LOG", "CALL ENDED");
 				callEnded();
 			} else if (typeOfReceiver == Const.CALL_ACCEPTED) {
-				Log.d("LOG", "CALL ACCEPTED");
+				Logger.custom("d", "LOG", "CALL ACCEPTED");
 				// LOGIC WHEN CALL IS ACCEPTED IS IN CALL ACTIVITY
 			} else if (typeOfReceiver == Const.WEB_SOCKET_OPENED) {
 				webSocketOpenedCallback();
@@ -720,7 +718,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 			Intent intent = new Intent(BaseActivity.this, CallActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			intent.putExtra(Const.IS_CALL_ACTIVE, true);
-			Log.i("LOG", "gfhghhfghghf");
 			intent.putExtra(Const.TYPE_OF_SOCKET_RECEIVER, Const.CALL_ENDED);
 			startActivity(intent);
 
