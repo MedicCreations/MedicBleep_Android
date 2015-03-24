@@ -16,7 +16,7 @@ public class CloverDaoGenerator {
 
 		generateTables(schema);
 
-		new DaoGenerator().generateAll(schema, "/home/darko/Documents/clover/spika_enterprise_android/CloverDAOGenerator/clover/models/");
+		new DaoGenerator().generateAll(schema, "./clover/models/");
 	}
 
 	/**
@@ -34,6 +34,7 @@ public class CloverDaoGenerator {
 		Entity user = schema.addEntity("User");
 		Entity message = schema.addEntity("Message");
 		Entity chat = schema.addEntity("Chat");
+		Entity stickers = schema.addEntity("Stickers");
 
 		// Category
 		category.addLongProperty("id").notNull().unique().primaryKey();
@@ -154,6 +155,15 @@ public class CloverDaoGenerator {
 		
 		chat.addToMany(message, chatIdProperty);
 		chat.implementsSerializable();
+		
+		//Stickers
+		stickers.addIntProperty("id").notNull().unique().primaryKey();
+		stickers.addStringProperty("filename");
+		stickers.addIntProperty("is_deleted");
+		stickers.addLongProperty("created");
+		stickers.addStringProperty("url");
+		stickers.addIntProperty("organization_id");
+		stickers.addIntProperty("usedTimes");
 	}
 
 }
