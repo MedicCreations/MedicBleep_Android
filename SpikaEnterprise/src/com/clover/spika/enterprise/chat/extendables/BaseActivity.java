@@ -87,11 +87,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	public SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 	private ImageLoaderSpice imageLoaderSpice;
+	
+	private boolean isPasscodeEnabled = false;
 
 	public ImageLoaderSpice getImageLoader() {
 		return imageLoaderSpice;
 	}
-
+	
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -104,6 +106,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		intentFilterSocket = new IntentFilter(Const.SOCKET_ACTION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
+		
+		startTimeout();
 	}
 
 	@Override
@@ -114,6 +118,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		spiceManager.shouldStop();
+		
+		stopTimeout();
+		
 		super.onStop();
 	}
 
@@ -202,9 +209,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 		// session
 		PasscodeUtility.getInstance().onResume();
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+			isPasscodeEnabled = true;
 			if (!PasscodeUtility.getInstance().isSessionValid()) {
 				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
 			}
+		}else{
+			isPasscodeEnabled = false;
 		}
 
 	}
@@ -964,6 +974,39 @@ public class BaseActivity extends SlidingFragmentActivity {
 			return;
 		}
 		showCallingPopup(user, null, false, isVideo);
+	}
+	
+	//timeout for passcode activity
+	@Override
+	public void onUserInteraction() {
+		super.onUserInteraction();
+		stopTimeout();
+		startTimeout();
+	}
+	
+	private Handler timeoutForPasscodeHandler = new Handler();
+	private Runnable timeoutForPasscodeRunnable = new Runnable() {
+		
+		@Override
+		public void run() {
+			Logger.custom("i", "TIMEOUT", "ACTIVATE");
+			if (PasscodeUtility.getInstance().isPasscodeEnabled(BaseActivity.this)) {
+				PasscodeUtility.getInstance().setSessionValid(false);
+				startActivityForResult(new Intent(BaseActivity.this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
+			}
+		}
+	};
+	
+	private void startTimeout(){
+		if(!isPasscodeEnabled) return;
+		Logger.custom("i", "TIMEOUT", "START");
+		timeoutForPasscodeHandler.postDelayed(timeoutForPasscodeRunnable, Const.PASSCODE_TIMEOUT_TIME);
+	}
+	
+	private void stopTimeout(){
+		if(!isPasscodeEnabled) return;
+		Logger.custom("i", "TIMEOUT", "STOP");
+		timeoutForPasscodeHandler.removeCallbacks(timeoutForPasscodeRunnable);
 	}
 
 }

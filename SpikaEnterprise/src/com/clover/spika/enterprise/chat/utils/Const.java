@@ -382,5 +382,7 @@ public class Const {
 		public static final String CALL_UNMUTE = "unmute";
 		public static final String CALL_MUTE_REMOTE_VIDEO = "muteRemoteVideo";
 	}
+	
+	public static final int PASSCODE_TIMEOUT_TIME = 300000;
 
 }
