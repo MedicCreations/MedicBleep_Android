@@ -9,7 +9,7 @@ import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.Headers;
 
 public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
-
+	
 	public CustomSpiceRequest(Class<T> clazz) {
 		super(clazz);
 	}

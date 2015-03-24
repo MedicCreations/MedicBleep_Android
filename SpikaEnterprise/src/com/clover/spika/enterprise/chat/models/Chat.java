@@ -25,6 +25,7 @@ public class Chat extends BaseModel {
 	public Category category;
 	public int is_member;
 	public Message last_message;
+	public long modified;
 
 	public boolean isSelected = false;
 	public boolean isNewMsg = false;

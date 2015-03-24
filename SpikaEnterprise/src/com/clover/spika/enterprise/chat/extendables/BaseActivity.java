@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -53,6 +54,9 @@ import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
+import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -67,7 +71,12 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.octo.android.robospice.SpiceManager;
 
 public class BaseActivity extends SlidingFragmentActivity {
-
+	
+	/* GreenDAO cache */
+	private SQLiteDatabase db;
+	private DaoMaster daoMaster;
+	private DaoSession daoSession;
+	
 	/* Handling push notifications display */
 	List<LocalPush> qPush = new ArrayList<LocalPush>();
 	boolean isPushShowing = false;
@@ -108,10 +117,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onStop() {
+		
 		if (mBound) {
 			unbindService(mConnection);
 			mBound = false;
 		}
+		
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		spiceManager.shouldStop();
 		super.onStop();
@@ -150,6 +161,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		/* GreenDAO */
+		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
+		db = helper.getWritableDatabase();
+		daoMaster = new DaoMaster(db);
+		daoSession = daoMaster.newSession();
 
 		imageLoaderSpice = ImageLoaderSpice.getInstance(this);
 		imageLoaderSpice.setSpiceManager(spiceManager);
@@ -183,9 +200,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
-
 	}
-
+	
+	public DaoSession getDaoSession(){
+		return daoSession;
+	}
+	
 	protected void setActiveClass(String actClass) {
 		activeClass = actClass;
 	}
@@ -218,9 +238,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		PasscodeUtility.getInstance().setSessionValid(true);
-		
+
 		updateTextViewAction("Call ended");
-		if(requestCode == Const.CALL_ACTIVITY_REQUEST){
+		if (requestCode == Const.CALL_ACTIVITY_REQUEST) {
 			new Handler().postDelayed(new Runnable() {
 
 				@Override
@@ -713,7 +733,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	protected void callEnded() {
-		if(viewForReturnToCall != null){
+		if (viewForReturnToCall != null) {
 			Intent intent = new Intent(BaseActivity.this, CallActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			intent.putExtra(Const.IS_CALL_ACTIVE, true);
@@ -741,6 +761,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private Runnable callTimeoutRunnable;
 	private MediaPlayer mPlayer = null;
 
+	@SuppressLint("InflateParams")
 	protected void showCallingPopup(final User user, final String sessionId, final boolean receive, boolean isVideo) {
 		tempActiveUser = user;
 		this.isVideo = isVideo;

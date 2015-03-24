@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +16,18 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
+import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentDBChanged;
+import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.RecentFragmentCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class RecentFragment extends CustomFragment implements OnItemClickListener {
+public class RecentFragment extends CustomFragment implements OnItemClickListener, OnRecentFragmentDBChanged, OnRecentFragmentNetworkResult {
 
 	private final int CLEAR_ALL = 0;
 	private final int DONT_CLEAR = 1;
@@ -149,46 +148,31 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	public void getLobby(int page, final int toClear) {
-		
-		boolean toShowProgress = true;
-		
-		if (toClear == CHECK_FOR_NEW_DATA){
-			toShowProgress = false;
-		}
-		
-		handleProgress(toShowProgress);
-		
-		LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE, getActivity());
-		spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>(){
-			
+
+		// boolean toShowProgress = true;
+		//
+		// if (toClear == CHECK_FOR_NEW_DATA) {
+		// toShowProgress = false;
+		// }
+
+		// handleProgress(toShowProgress);
+		RecentFragmentCacheSpice.GetData recentFragmentGetData = new RecentFragmentCacheSpice.GetData(getActivity(), spiceManager, page, toClear, this, this);
+		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
+
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
+			public void onRequestFailure(SpiceException ex) {
+				super.onRequestFailure(ex);
+				// handleProgress(false);
 			}
-			
+
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestSuccess(LobbyModel result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-				
-				String message = getResources().getString(R.string.e_something_went_wrong);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.all_chats.total_count;
-					setData(result.all_chats.chats, toClear);
-
-				} else {
-
-					if(result != null && !TextUtils.isEmpty(result.getMessage())){
-						message = result.getMessage();
-					}
-
-					Utils.onFailedUniversal(message, getActivity());
-				}
+				setData(result, toClear);
+				// handleProgress(false);
 			}
+
 		});
 	}
 
@@ -211,5 +195,15 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 				getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
 			}
 		}
+	}
+
+	@Override
+	public void onDBChanged(List<Chat> usableData, int isClear) {
+		setData(usableData, isClear);
+	}
+
+	@Override
+	public void onNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
 	}
 }
