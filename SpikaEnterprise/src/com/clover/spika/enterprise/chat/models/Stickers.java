@@ -77,4 +77,35 @@ public class Stickers implements Serializable {
 				+ "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (created ^ (created >>> 32));
+		result = prime * result + ((filename == null) ? 0 : filename.hashCode());
+		result = prime * result + id;
+		result = prime * result + is_deleted;
+		result = prime * result + organization_id;
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Stickers other = (Stickers) obj;
+		if(other.id != id) return false;
+		if(other. url == null || !other.url.equals(url)) return false;
+		if(other. filename == null || !other.filename.equals(filename)) return false;
+		
+		return true;
+	}
+	
+	
+
 }

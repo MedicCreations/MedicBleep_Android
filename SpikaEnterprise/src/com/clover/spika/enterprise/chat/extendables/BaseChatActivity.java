@@ -59,25 +59,27 @@ import com.clover.spika.enterprise.chat.RecordAudioActivity;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.EmojiSpice;
+import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersDBChanged;
+import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.StickersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
-import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
 import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public abstract class BaseChatActivity extends BaseActivity {
+public abstract class BaseChatActivity extends BaseActivity implements OnStickersDBChanged, OnStickersNetworkResult{
 
 	protected static final int PICK_FILE_RESULT_CODE = 987;
 
@@ -548,41 +550,22 @@ public abstract class BaseChatActivity extends BaseActivity {
 		if (isMenuInAnimation)
 			return;
 		if (stickersList.size() == 0) {
-
-			EmojiSpice.GetEmoji getEmoji = new EmojiSpice.GetEmoji(this);
-			spiceManager.execute(getEmoji, new CustomSpiceListener<StickersHolder>() {
-
+			
+			StickersCacheSpice.GetData stickersCacheSpice = new StickersCacheSpice.GetData(this, spiceManager, this, this);
+			spiceManager.execute(stickersCacheSpice, new CustomSpiceListener<StickersHolder>(){
+				
 				@Override
-				public void onRequestFailure(SpiceException arg0) {
-					super.onRequestFailure(arg0);
-					handleProgress(false);
+				public void onRequestFailure(SpiceException ex) {
+					super.onRequestFailure(ex);
 					Utils.onFailedUniversal(null, BaseChatActivity.this);
 				}
 
 				@Override
 				public void onRequestSuccess(StickersHolder result) {
 					super.onRequestSuccess(result);
-					handleProgress(false);
-
-					if (result.getCode() == Const.API_SUCCESS) {
-
-						stickersList.addAll(result.stickers);
-						EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
-						layout.setStickersList(result.stickers, BaseChatActivity.this, mEmojiListener);
-
-					} else {
-
-						String message = "";
-
-						if (result != null && result.getMessage() != null) {
-							message = result.getMessage();
-						} else {
-							message = getString(R.string.e_something_went_wrong);
-						}
-
-						Utils.onFailedUniversal(message, BaseChatActivity.this);
-					}
+					setEmojiLayout(result);
 				}
+				
 			});
 		} else {
 			EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
@@ -1128,4 +1111,28 @@ public abstract class BaseChatActivity extends BaseActivity {
 			}
 		}
 	}
+	
+	protected void setEmojiLayout(StickersHolder usableData) {
+		if(stickersList.equals(usableData.stickers)) return;
+		EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+		if(stickersList.size() == 0){
+			stickersList.addAll(usableData.stickers);
+			layout.setStickersList(usableData.stickers, BaseChatActivity.this, mEmojiListener);
+		}else{
+			stickersList.clear();
+			stickersList.addAll(usableData.stickers);
+			layout.refreshStickersList(usableData.stickers, BaseChatActivity.this, mEmojiListener);
+			layout.resetDotsIfNeed();
+		}
+		
+	}
+	
+	@Override
+	public void onStickersDBChanged(StickersHolder usableData) {
+		setEmojiLayout(usableData);
+	}
+
+	@Override
+	public void onStickersNetworkResult() {}
+	
 }

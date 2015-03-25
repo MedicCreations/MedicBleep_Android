@@ -9,7 +9,7 @@ package com.clover.spika.enterprise.chat.models.greendao;
  */
 public class Stickers {
 
-    private int id;
+    private long id;
     private String filename;
     private Integer is_deleted;
     private Long created;
@@ -23,11 +23,11 @@ public class Stickers {
     public Stickers() {
     }
 
-    public Stickers(int id) {
+    public Stickers(long id) {
         this.id = id;
     }
 
-    public Stickers(int id, String filename, Integer is_deleted, Long created, String url, Integer organization_id, Integer usedTimes) {
+    public Stickers(long id, String filename, Integer is_deleted, Long created, String url, Integer organization_id, Integer usedTimes) {
         this.id = id;
         this.filename = filename;
         this.is_deleted = is_deleted;
@@ -37,11 +37,11 @@ public class Stickers {
         this.usedTimes = usedTimes;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -14,7 +14,7 @@ import com.clover.spika.enterprise.chat.models.greendao.Stickers;
 /** 
  * DAO for table STICKERS.
 */
-public class StickersDao extends AbstractDao<Stickers, Integer> {
+public class StickersDao extends AbstractDao<Stickers, Long> {
 
     public static final String TABLENAME = "STICKERS";
 
@@ -23,7 +23,7 @@ public class StickersDao extends AbstractDao<Stickers, Integer> {
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
-        public final static Property Id = new Property(0, int.class, "id", true, "ID");
+        public final static Property Id = new Property(0, long.class, "id", true, "ID");
         public final static Property Filename = new Property(1, String.class, "filename", false, "FILENAME");
         public final static Property Is_deleted = new Property(2, Integer.class, "is_deleted", false, "IS_DELETED");
         public final static Property Created = new Property(3, Long.class, "created", false, "CREATED");
@@ -99,15 +99,15 @@ public class StickersDao extends AbstractDao<Stickers, Integer> {
 
     /** @inheritdoc */
     @Override
-    public Integer readKey(Cursor cursor, int offset) {
-        return cursor.getInt(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.getLong(offset + 0);
     }    
 
     /** @inheritdoc */
     @Override
     public Stickers readEntity(Cursor cursor, int offset) {
         Stickers entity = new Stickers( //
-            cursor.getInt(offset + 0), // id
+            cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // filename
             cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2), // is_deleted
             cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // created
@@ -121,7 +121,7 @@ public class StickersDao extends AbstractDao<Stickers, Integer> {
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Stickers entity, int offset) {
-        entity.setId(cursor.getInt(offset + 0));
+        entity.setId(cursor.getLong(offset + 0));
         entity.setFilename(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setIs_deleted(cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2));
         entity.setCreated(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
@@ -132,13 +132,14 @@ public class StickersDao extends AbstractDao<Stickers, Integer> {
     
     /** @inheritdoc */
     @Override
-    protected Integer updateKeyAfterInsert(Stickers entity, long rowId) {
-        return entity.getId();
+    protected Long updateKeyAfterInsert(Stickers entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     /** @inheritdoc */
     @Override
-    public Integer getKey(Stickers entity) {
+    public Long getKey(Stickers entity) {
         if(entity != null) {
             return entity.getId();
         } else {

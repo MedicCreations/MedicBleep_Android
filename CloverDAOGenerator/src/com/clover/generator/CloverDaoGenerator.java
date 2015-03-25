@@ -157,7 +157,7 @@ public class CloverDaoGenerator {
 		chat.implementsSerializable();
 		
 		//Stickers
-		stickers.addIntProperty("id").notNull().unique().primaryKey();
+		stickers.addLongProperty("id").notNull().unique().primaryKey();
 		stickers.addStringProperty("filename");
 		stickers.addIntProperty("is_deleted");
 		stickers.addLongProperty("created");
