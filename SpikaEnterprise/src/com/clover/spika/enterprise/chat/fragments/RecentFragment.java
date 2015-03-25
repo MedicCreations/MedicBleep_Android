@@ -17,10 +17,10 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.HandleNewData;
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentDBChanged;
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.RecentFragmentCacheSpice;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.HandleNewData;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyDBChanged;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.LobbyCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
@@ -32,7 +32,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class RecentFragment extends CustomFragment implements OnItemClickListener, OnRecentFragmentDBChanged, OnRecentFragmentNetworkResult {
+public class RecentFragment extends CustomFragment implements OnItemClickListener, OnLobbyDBChanged, OnLobbyNetworkResult {
 
 	private final int CLEAR_ALL = 0;
 	private final int DONT_CLEAR = 1;
@@ -55,11 +55,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
-		// if (allData.size() < 1) {
-		// getLobby(0, CLEAR_ALL);
-		// } else {
 		getLobby(0, CHECK_FOR_NEW_DATA);
-		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,8 +112,9 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious == CLEAR_ALL)
+		if (toClearPrevious == CLEAR_ALL) {
 			currentCount = data.size();
+		}
 
 		if (toClearPrevious == CLEAR_ALL) {
 			adapter.setData(data);
@@ -155,28 +152,14 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@SuppressWarnings("rawtypes")
 	public void getLobby(int page, final int toClear) {
 
-		// boolean toShowProgress = true;
-		//
-		// if (toClear == CHECK_FOR_NEW_DATA) {
-		// toShowProgress = false;
-		// }
-
-		// handleProgress(toShowProgress);
-		RecentFragmentCacheSpice.GetData recentFragmentGetData = new RecentFragmentCacheSpice.GetData(getActivity(), spiceManager, page, toClear, this, this);
+		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(getActivity(), spiceManager, page, toClear, this, this);
 		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
-
-			@Override
-			public void onRequestFailure(SpiceException ex) {
-				super.onRequestFailure(ex);
-				// handleProgress(false);
-			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
 				setData(result, toClear);
-				// handleProgress(false);
 			}
 
 		});

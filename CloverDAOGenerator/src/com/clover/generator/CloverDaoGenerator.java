@@ -42,7 +42,7 @@ public class CloverDaoGenerator {
 		category.implementsSerializable();
 
 		// Group
-		group.addStringProperty("id").notNull().unique().primaryKey();
+		group.addLongProperty("id").notNull().unique().primaryKey();
 		group.addStringProperty("type");
 		group.addStringProperty("groupname");
 		group.addStringProperty("image");

@@ -4,14 +4,14 @@ import java.util.List;
 
 import android.app.Activity;
 
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching;
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentDBChanged;
-import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentNetworkResult;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyDBChanged;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyNetworkResult;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.octo.android.robospice.SpiceManager;
 
-public class RecentFragmentCacheSpice {
+public class LobbyCacheSpice {
 
 	@SuppressWarnings("rawtypes")
 	public static class GetData extends CustomSpiceRequest<List> {
@@ -20,11 +20,10 @@ public class RecentFragmentCacheSpice {
 		private SpiceManager spiceManager;
 		private int page;
 		private int toClear;
-		private OnRecentFragmentDBChanged onDBChangeListener;
-		private OnRecentFragmentNetworkResult onNetworkListener;
+		private OnLobbyDBChanged onDBChangeListener;
+		private OnLobbyNetworkResult onNetworkListener;
 
-		public GetData(Activity activity, SpiceManager spiceManager, int page, int toClear, OnRecentFragmentDBChanged onDBChangeListener,
-				OnRecentFragmentNetworkResult onNetworkListener) {
+		public GetData(Activity activity, SpiceManager spiceManager, int page, int toClear, OnLobbyDBChanged onDBChangeListener, OnLobbyNetworkResult onNetworkListener) {
 			super(List.class);
 
 			this.activity = activity;
@@ -38,7 +37,7 @@ public class RecentFragmentCacheSpice {
 		@Override
 		public List<Chat> loadDataFromNetwork() throws Exception {
 
-			return RecentFragmentCaching.getData(activity, spiceManager, page, toClear, onDBChangeListener, onNetworkListener);
+			return LobbyCaching.getData(activity, spiceManager, page, toClear, onDBChangeListener, onNetworkListener);
 		}
 	}
 }

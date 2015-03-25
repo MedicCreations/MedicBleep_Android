@@ -12,8 +12,7 @@ import de.greenrobot.dao.DaoException;
  */
 public class Group implements java.io.Serializable {
 
-    /** Not-null value. */
-    private String id;
+    private long id;
     private String type;
     private String groupname;
     private String image;
@@ -37,11 +36,11 @@ public class Group implements java.io.Serializable {
     public Group() {
     }
 
-    public Group(String id) {
+    public Group(long id) {
         this.id = id;
     }
 
-    public Group(String id, String type, String groupname, String image, String image_thumb, Integer is_member, Long categoryId) {
+    public Group(long id, String type, String groupname, String image, String image_thumb, Integer is_member, Long categoryId) {
         this.id = id;
         this.type = type;
         this.groupname = groupname;
@@ -57,13 +56,11 @@ public class Group implements java.io.Serializable {
         myDao = daoSession != null ? daoSession.getGroupDao() : null;
     }
 
-    /** Not-null value. */
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

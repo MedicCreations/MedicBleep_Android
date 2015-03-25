@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
+import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.LobbyModel;
@@ -24,10 +25,10 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class RecentFragmentCaching {
+public class LobbyCaching {
 
-	public static List<Chat> getData(final Activity activity, final SpiceManager spiceManager, int page, final int toClear, final OnRecentFragmentDBChanged onDBChangeListener,
-			final OnRecentFragmentNetworkResult onNetworkListener) {
+	public static List<Chat> getData(final Activity activity, final SpiceManager spiceManager, int page, final int toClear, final OnLobbyDBChanged onDBChangeListener,
+			final OnLobbyNetworkResult onNetworkListener) {
 
 		List<Chat> resultArray = getDBData(activity);
 
@@ -90,86 +91,7 @@ public class RecentFragmentCaching {
 	}
 
 	private static Chat handleOldData(com.clover.spika.enterprise.chat.models.greendao.Chat chat) {
-
-		Chat finalChat = new Chat();
-
-		finalChat.id = (int) chat.getId();
-		finalChat.chat_id = chat.getChat_id().intValue();
-		finalChat.chat_name = chat.getChat_name();
-		finalChat.seen_by = chat.getSeen_by();
-		finalChat.total_count = chat.getTotal_count();
-		finalChat.image_thumb = chat.getImage_thumb();
-		finalChat.image = chat.getImage();
-		finalChat.admin_id = chat.getAdmin_id();
-		finalChat.is_active = chat.getIs_active();
-		finalChat.type = chat.getType();
-		finalChat.is_private = chat.getIs_private();
-		finalChat.password = chat.getPassword();
-		finalChat.unread = chat.getUnread();
-		finalChat.is_member = chat.getIs_member();
-
-		if (chat.getCategory() != null) {
-
-			com.clover.spika.enterprise.chat.models.Category finalCategory = new com.clover.spika.enterprise.chat.models.Category();
-
-			finalCategory.id = (int) chat.getCategory().getId();
-			finalCategory.name = chat.getCategory().getName();
-
-			finalChat.category = finalCategory;
-		}
-
-		if (chat.getUser() != null) {
-
-			com.clover.spika.enterprise.chat.models.User finalUser = new com.clover.spika.enterprise.chat.models.User();
-
-			finalUser.id = (int) chat.getUser().getId();
-			finalUser.user_id = chat.getUser().getUser_id().intValue();
-			finalUser.firstname = chat.getUser().getFirstname();
-			finalUser.lastname = chat.getUser().getLastname();
-			finalUser.type = chat.getUser().getType();
-			finalUser.image = chat.getUser().getImage();
-			finalUser.image_thumb = chat.getUser().getImage_thumb();
-			finalUser.is_member = chat.getUser().getIs_member();
-			finalUser.is_admin = chat.getUser().getIs_admin();
-			finalUser.name = chat.getUser().getName();
-			finalUser.groupname = chat.getUser().getGroupname();
-			finalUser.chat_id = chat.getUser().getChat_id();
-			finalUser.is_user = chat.getUser().getIs_user();
-			finalUser.is_group = chat.getUser().getIs_group();
-			finalUser.is_room = chat.getUser().getIs_room();
-
-			finalChat.user = finalUser;
-		}
-
-		if (chat.getMessage() != null) {
-
-			com.clover.spika.enterprise.chat.models.Message finalMessage = new com.clover.spika.enterprise.chat.models.Message();
-
-			finalMessage.id = String.valueOf(chat.getMessage().getId());
-			finalMessage.chat_id = String.valueOf(chat.getMessage().getChat_id());
-			finalMessage.user_id = String.valueOf(chat.getMessage().getUser_id());
-			finalMessage.firstname = chat.getMessage().getFirstname();
-			finalMessage.lastname = chat.getMessage().getLastname();
-			finalMessage.image = chat.getMessage().getImage();
-			finalMessage.text = chat.getMessage().getText();
-			finalMessage.file_id = chat.getMessage().getFile_id();
-			finalMessage.thumb_id = chat.getMessage().getThumb_id();
-			finalMessage.longitude = chat.getMessage().getLongitude();
-			finalMessage.latitude = chat.getMessage().getLatitude();
-			finalMessage.created = chat.getMessage().getCreated();
-			finalMessage.modified = chat.getMessage().getModified();
-			finalMessage.child_list = chat.getMessage().getChild_list();
-			finalMessage.image_thumb = chat.getMessage().getImage_thumb();
-			finalMessage.type = chat.getMessage().getType();
-			finalMessage.root_id = chat.getMessage().getRoot_id();
-			finalMessage.parent_id = chat.getMessage().getParent_id();
-			finalMessage.isMe = chat.getMessage().getIsMe();
-			finalMessage.isFailed = chat.getMessage().getIsFailed();
-
-			finalChat.last_message = finalMessage;
-		}
-
-		return finalChat;
+		return DaoUtils.convertDaoChatToChatModel(chat);
 	}
 
 	public static class HandleNewData extends CustomSpiceRequest<Void> {
@@ -177,9 +99,9 @@ public class RecentFragmentCaching {
 		private Activity activity;
 		private List<Chat> chats;
 		private int toClear;
-		private OnRecentFragmentDBChanged onDBChangeListener;
+		private OnLobbyDBChanged onDBChangeListener;
 
-		public HandleNewData(Activity activity, List<Chat> chats, int toClear, OnRecentFragmentDBChanged onDBChangeListener) {
+		public HandleNewData(Activity activity, List<Chat> chats, int toClear, OnLobbyDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
@@ -276,11 +198,11 @@ public class RecentFragmentCaching {
 		}
 	}
 
-	public interface OnRecentFragmentDBChanged {
+	public interface OnLobbyDBChanged {
 		public void onRecentDBChanged(List<Chat> usableData, int isClear);
 	}
 
-	public interface OnRecentFragmentNetworkResult {
+	public interface OnLobbyNetworkResult {
 		public void onRecentNetworkResult(int totalCount);
 	}
 

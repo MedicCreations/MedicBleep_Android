@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -19,11 +18,12 @@ import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyDBChanged;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.LobbyCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -35,7 +35,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ChooseLobbyActivity extends BaseActivity implements OnItemClickListener {
+public class ChooseLobbyActivity extends BaseActivity implements OnItemClickListener, OnLobbyDBChanged, OnLobbyNetworkResult {
 
 	private PullToRefreshListView mainListView;
 	private RecentAdapter adapter;
@@ -43,6 +43,9 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
+
+	private final int CLEAR_ALL = 0;
+	private final int CHECK_FOR_NEW_DATA = 2;
 
 	public static void start(Context c, String fileId, String thumbId) {
 		c.startActivity(new Intent(c, ChooseLobbyActivity.class).putExtra(Const.FILE_ID, fileId).putExtra(Const.THUMB_ID, thumbId).putExtra(Const.TYPE, Const.MSG_TYPE_PHOTO));
@@ -76,7 +79,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 
-		getLobby(0, true);
+		getLobby(0, CLEAR_ALL);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -89,29 +92,34 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getLobby(mCurrentIndex, false);
+			getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
 		}
 	};
 
-	private void setData(List<Chat> data, boolean toClearPrevious) {
+	private void setData(List<Chat> data, int toClearPrevious) {
 		if (mainListView == null) {
 			return;
 		}
-		
+
 		for (Chat item : data) {
 			item.last_message = Message.decryptContent(this, item.last_message);
 		}
-		
-		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+
+		if (toClearPrevious == CLEAR_ALL) {
+			currentCount = data.size();
+		}
+
+		if (toClearPrevious == CLEAR_ALL) {
 			adapter.setData(data);
-		else
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+
+		if (toClearPrevious == CLEAR_ALL) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -132,41 +140,18 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		}
 	}
 
-	public void getLobby(int page, final boolean toClear) {
-		
-		handleProgress(true);
-		
-		LobbySpice.GetLobbyByType getLobbyType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE, this);
-		spiceManager.execute(getLobbyType, new CustomSpiceListener<LobbyModel>(){
-			
+	public void getLobby(int page, final int toClear) {
+
+		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(this, spiceManager, page, toClear, this, this);
+		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
+
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, ChooseLobbyActivity.this);
-			}
-			
-			@Override
-			public void onRequestSuccess(LobbyModel result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-				
-				String message = getResources().getString(R.string.e_something_went_wrong);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.all_chats.total_count;
-					setData(result.all_chats.chats, toClear);
-
-				} else {
-
-					if(result != null && !TextUtils.isEmpty(result.getMessage())){
-						message = result.getMessage();
-					}
-
-					Utils.onFailedUniversal(message, ChooseLobbyActivity.this);
-				}
+				setData(result, toClear);
 			}
+
 		});
 	}
 
@@ -187,6 +172,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	}
 
 	public void uploadFile(Uri file, final Chat chat) {
+
 		if (file.toString().contains("file://")) {
 			try {
 				String path = file.toString().substring(7);
@@ -215,7 +201,6 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
 			dialog.setFailed(getString(R.string.e_something_went_wrong));
 		}
-
 	}
 
 	public void sendMessage(int type, final Chat chat, String text, String fileId, String thumbId, String longitude, String latitude) {
@@ -243,6 +228,16 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onRecentDBChanged(List<Chat> usableData, int isClear) {
+		setData(usableData, isClear);
+	}
+
+	@Override
+	public void onRecentNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
 	}
 
 }

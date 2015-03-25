@@ -17,7 +17,7 @@ import com.clover.spika.enterprise.chat.models.greendao.Group;
 /** 
  * DAO for table GROUP.
 */
-public class GroupDao extends AbstractDao<Group, String> {
+public class GroupDao extends AbstractDao<Group, Long> {
 
     public static final String TABLENAME = "GROUP";
 
@@ -26,7 +26,7 @@ public class GroupDao extends AbstractDao<Group, String> {
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {
-        public final static Property Id = new Property(0, String.class, "id", true, "ID");
+        public final static Property Id = new Property(0, long.class, "id", true, "ID");
         public final static Property Type = new Property(1, String.class, "type", false, "TYPE");
         public final static Property Groupname = new Property(2, String.class, "groupname", false, "GROUPNAME");
         public final static Property Image = new Property(3, String.class, "image", false, "IMAGE");
@@ -51,7 +51,7 @@ public class GroupDao extends AbstractDao<Group, String> {
     public static void createTable(SQLiteDatabase db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'GROUP' (" + //
-                "'ID' TEXT PRIMARY KEY NOT NULL UNIQUE ," + // 0: id
+                "'ID' INTEGER PRIMARY KEY NOT NULL UNIQUE ," + // 0: id
                 "'TYPE' TEXT," + // 1: type
                 "'GROUPNAME' TEXT," + // 2: groupname
                 "'IMAGE' TEXT," + // 3: image
@@ -70,7 +70,7 @@ public class GroupDao extends AbstractDao<Group, String> {
     @Override
     protected void bindValues(SQLiteStatement stmt, Group entity) {
         stmt.clearBindings();
-        stmt.bindString(1, entity.getId());
+        stmt.bindLong(1, entity.getId());
  
         String type = entity.getType();
         if (type != null) {
@@ -111,15 +111,15 @@ public class GroupDao extends AbstractDao<Group, String> {
 
     /** @inheritdoc */
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.getLong(offset + 0);
     }    
 
     /** @inheritdoc */
     @Override
     public Group readEntity(Cursor cursor, int offset) {
         Group entity = new Group( //
-            cursor.getString(offset + 0), // id
+            cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // type
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // groupname
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // image
@@ -133,7 +133,7 @@ public class GroupDao extends AbstractDao<Group, String> {
     /** @inheritdoc */
     @Override
     public void readEntity(Cursor cursor, Group entity, int offset) {
-        entity.setId(cursor.getString(offset + 0));
+        entity.setId(cursor.getLong(offset + 0));
         entity.setType(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setGroupname(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setImage(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
@@ -144,13 +144,14 @@ public class GroupDao extends AbstractDao<Group, String> {
     
     /** @inheritdoc */
     @Override
-    protected String updateKeyAfterInsert(Group entity, long rowId) {
-        return entity.getId();
+    protected Long updateKeyAfterInsert(Group entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     /** @inheritdoc */
     @Override
-    public String getKey(Group entity) {
+    public Long getKey(Group entity) {
         if(entity != null) {
             return entity.getId();
         } else {
