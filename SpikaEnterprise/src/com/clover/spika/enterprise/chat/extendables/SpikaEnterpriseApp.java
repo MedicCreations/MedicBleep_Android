@@ -7,7 +7,6 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
@@ -23,11 +22,11 @@ public class SpikaEnterpriseApp extends Application {
 	private static Intent socketIntent;
 
 	private static boolean isCallInBackground = false;
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
+		
 		JNAesCrypto.isEncryptionEnabled = getResources().getBoolean(R.bool.enable_global_encryption);
 		setAppContext(getApplicationContext());
 
@@ -38,7 +37,7 @@ public class SpikaEnterpriseApp extends Application {
 			stopService(poolingIntent);
 		}
 	}
-
+	
 	public static void startSocket() {
 		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
 			return;

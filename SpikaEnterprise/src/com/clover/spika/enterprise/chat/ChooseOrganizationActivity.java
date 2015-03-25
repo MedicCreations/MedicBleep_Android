@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,14 +71,9 @@ public class ChooseOrganizationActivity extends LoginBaseActivity implements OnI
 		
 		try {
 			executeLoginApi(username, password, organizationId, extras, true);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 
 }

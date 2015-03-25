@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,18 @@ import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
+import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
+import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.HandleNewData;
 import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentDBChanged;
 import com.clover.spika.enterprise.chat.caching.RecentFragmentCaching.OnRecentFragmentNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.RecentFragmentCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -49,11 +55,11 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (allData.size() < 1) {
-			getLobby(0, CLEAR_ALL);
-		} else {
-			getLobby(0, CHECK_FOR_NEW_DATA);
-		}
+		// if (allData.size() < 1) {
+		// getLobby(0, CLEAR_ALL);
+		// } else {
+		getLobby(0, CHECK_FOR_NEW_DATA);
+		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -146,6 +152,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		allData.addAll(adapter.getData());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void getLobby(int page, final int toClear) {
 
 		// boolean toShowProgress = true;
@@ -192,17 +199,50 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			if (!isFound) {
 				mCurrentIndex = 0;
 				getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
+			} else {
+				LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(mCurrentIndex, Const.ALL_TOGETHER_TYPE, getActivity());
+				spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>() {
+
+					@Override
+					public void onRequestFailure(SpiceException ex) {
+						super.onRequestFailure(ex);
+						Utils.onFailedUniversal(null, getActivity());
+					}
+
+					@Override
+					public void onRequestSuccess(final LobbyModel result) {
+						super.onRequestSuccess(result);
+
+						String message = getActivity().getResources().getString(R.string.e_something_went_wrong);
+
+						if (result.getCode() == Const.API_SUCCESS) {
+
+							mTotalCount = result.all_chats.total_count;
+
+							HandleNewData handleNewData = new HandleNewData(getActivity(), result.all_chats.chats, CHECK_FOR_NEW_DATA, RecentFragment.this);
+							spiceManager.execute(handleNewData, null);
+
+						} else {
+
+							if (result != null && !TextUtils.isEmpty(result.getMessage())) {
+								message = result.getMessage();
+							}
+
+							Utils.onFailedUniversal(message, getActivity());
+						}
+					}
+				});
 			}
 		}
 	}
 
 	@Override
-	public void onDBChanged(List<Chat> usableData, int isClear) {
+	public void onRecentDBChanged(List<Chat> usableData, int isClear) {
 		setData(usableData, isClear);
 	}
 
 	@Override
-	public void onNetworkResult(int totalCount) {
+	public void onRecentNetworkResult(int totalCount) {
 		mTotalCount = totalCount;
 	}
 }

@@ -82,7 +82,7 @@ public class RecentAdapter extends BaseAdapter {
 		boolean isFound = false;
 
 		int finalChatId = 0;
-
+		
 		try {
 			finalChatId = Integer.valueOf(chatId);
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class RecentAdapter extends BaseAdapter {
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-
+			
 			if (data.get(i).getId() == finalChatId) {
 
 				isFound = true;

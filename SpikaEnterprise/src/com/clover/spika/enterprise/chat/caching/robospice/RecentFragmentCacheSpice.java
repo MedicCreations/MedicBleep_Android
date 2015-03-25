@@ -41,5 +41,4 @@ public class RecentFragmentCacheSpice {
 			return RecentFragmentCaching.getData(activity, spiceManager, page, toClear, onDBChangeListener, onNetworkListener);
 		}
 	}
-	
 }

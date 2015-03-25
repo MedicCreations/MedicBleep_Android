@@ -71,12 +71,12 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.octo.android.robospice.SpiceManager;
 
 public class BaseActivity extends SlidingFragmentActivity {
-	
+
 	/* GreenDAO cache */
 	private SQLiteDatabase db;
 	private DaoMaster daoMaster;
 	private DaoSession daoSession;
-	
+
 	/* Handling push notifications display */
 	List<LocalPush> qPush = new ArrayList<LocalPush>();
 	boolean isPushShowing = false;
@@ -117,12 +117,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onStop() {
-		
+
 		if (mBound) {
 			unbindService(mConnection);
 			mBound = false;
 		}
-		
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		spiceManager.shouldStop();
 		super.onStop();
@@ -161,7 +161,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		/* GreenDAO */
 		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
 		db = helper.getWritableDatabase();
@@ -201,11 +201,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
-	
-	public DaoSession getDaoSession(){
+
+	public DaoSession getDaoSession() {
 		return daoSession;
 	}
-	
+
 	protected void setActiveClass(String actClass) {
 		activeClass = actClass;
 	}
@@ -642,19 +642,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 					dialog.setOnDismissListener(dissmisListener);
 				}
 			} else if (typeOfReceiver == Const.CALL_USER) {
-				
+
 				Logger.custom("d", "LOG", "CALLING");
-				
+
 			} else if (typeOfReceiver == Const.CALL_RECEIVE) {
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
 				User user = (User) intent.getSerializableExtra(Const.USER);
 				Logger.custom("d", "LOG", "RINGING");
-				
+
 				mService.callRinging(sessionId);
 				showCallingPopup(user, sessionId, true, false);
-				
+
 			} else if (typeOfReceiver == Const.CALL_ANSWER) {
-				
+
 				Logger.custom("d", "LOG", "ANSWER");
 				mService.leaveMyRoom();
 

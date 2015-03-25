@@ -49,7 +49,7 @@ public class RecentFragmentCaching {
 				if (result.getCode() == Const.API_SUCCESS) {
 
 					if (onNetworkListener != null) {
-						onNetworkListener.onNetworkResult(result.all_chats.total_count);
+						onNetworkListener.onRecentNetworkResult(result.all_chats.total_count);
 					}
 
 					HandleNewData handleNewData = new HandleNewData(activity, result.all_chats.chats, toClear, onDBChangeListener);
@@ -172,7 +172,7 @@ public class RecentFragmentCaching {
 		return finalChat;
 	}
 
-	private static class HandleNewData extends CustomSpiceRequest<Void> {
+	public static class HandleNewData extends CustomSpiceRequest<Void> {
 
 		private Activity activity;
 		private List<Chat> chats;
@@ -191,13 +191,23 @@ public class RecentFragmentCaching {
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
 
-			handleNewData(activity, chats, toClear, onDBChangeListener);
+			handleNewData(activity, chats);
+
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					if (onDBChangeListener != null) {
+						onDBChangeListener.onRecentDBChanged(getDBData(activity), toClear);
+					}
+				}
+			});
 
 			return null;
 		}
 	}
 
-	private static void handleNewData(Activity activity, List<Chat> networkData, int isClear, OnRecentFragmentDBChanged onDBChangeListener) {
+	private static void handleNewData(Activity activity, List<Chat> networkData) {
 
 		if (activity instanceof BaseActivity) {
 
@@ -263,19 +273,15 @@ public class RecentFragmentCaching {
 
 				chatDao.insertOrReplace(finalChatModel);
 			}
-
-			if (onDBChangeListener != null) {
-				onDBChangeListener.onDBChanged(getDBData(activity), isClear);
-			}
 		}
 	}
 
 	public interface OnRecentFragmentDBChanged {
-		public void onDBChanged(List<Chat> usableData, int isClear);
+		public void onRecentDBChanged(List<Chat> usableData, int isClear);
 	}
 
 	public interface OnRecentFragmentNetworkResult {
-		public void onNetworkResult(int totalCount);
+		public void onRecentNetworkResult(int totalCount);
 	}
 
 }

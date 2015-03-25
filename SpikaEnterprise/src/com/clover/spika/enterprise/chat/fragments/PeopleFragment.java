@@ -177,6 +177,8 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	public void getUsers(int page, String search, final boolean toClear) {
+		
+		// TODO
 
 		handleProgress(true);
 
