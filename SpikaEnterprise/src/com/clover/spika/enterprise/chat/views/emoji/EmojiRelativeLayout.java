@@ -129,7 +129,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 
 				return 0;
 			}
-			
+			 
 		});
 		
 		StickersHolder holder = new StickersHolder();
