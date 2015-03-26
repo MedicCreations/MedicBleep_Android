@@ -7,7 +7,7 @@ package com.clover.spika.enterprise.chat.models.greendao;
 /**
  * Entity mapped to table USER.
  */
-public class User implements java.io.Serializable {
+public class User {
 
     private long id;
     private Long user_id;

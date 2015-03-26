@@ -11,7 +11,7 @@ import de.greenrobot.dao.DaoException;
 /**
  * Entity mapped to table CHAT.
  */
-public class Chat implements java.io.Serializable {
+public class Chat {
 
     private long id;
     private Long chat_id;
@@ -28,6 +28,7 @@ public class Chat implements java.io.Serializable {
     private String unread;
     private Integer is_member;
     private Long modified;
+    private Boolean isRecent;
     private Long categoryId;
     private Long userIdProperty;
     private Long messageIdProperty;
@@ -59,7 +60,7 @@ public class Chat implements java.io.Serializable {
         this.id = id;
     }
 
-    public Chat(long id, Long chat_id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Long categoryId, Long userIdProperty, Long messageIdProperty) {
+    public Chat(long id, Long chat_id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Boolean isRecent, Long categoryId, Long userIdProperty, Long messageIdProperty) {
         this.id = id;
         this.chat_id = chat_id;
         this.chat_name = chat_name;
@@ -75,6 +76,7 @@ public class Chat implements java.io.Serializable {
         this.unread = unread;
         this.is_member = is_member;
         this.modified = modified;
+        this.isRecent = isRecent;
         this.categoryId = categoryId;
         this.userIdProperty = userIdProperty;
         this.messageIdProperty = messageIdProperty;
@@ -204,6 +206,14 @@ public class Chat implements java.io.Serializable {
 
     public void setModified(Long modified) {
         this.modified = modified;
+    }
+
+    public Boolean getIsRecent() {
+        return isRecent;
+    }
+
+    public void setIsRecent(Boolean isRecent) {
+        this.isRecent = isRecent;
     }
 
     public Long getCategoryId() {

@@ -10,7 +10,7 @@ import de.greenrobot.dao.DaoException;
 /**
  * Entity mapped to table GROUP.
  */
-public class Group implements java.io.Serializable {
+public class Group {
 
     private long id;
     private String type;

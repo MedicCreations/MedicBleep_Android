@@ -106,11 +106,12 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			return;
 		}
 
+		// TODO check this out
 		for (Chat item : data) {
 			try {
 				item.last_message = Message.decryptContent(getActivity(), item.last_message);
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 
@@ -128,8 +129,9 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			adapter.addData(data);
 		}
 
-		if (toClearPrevious == CLEAR_ALL)
+		if (toClearPrevious == CLEAR_ALL) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 

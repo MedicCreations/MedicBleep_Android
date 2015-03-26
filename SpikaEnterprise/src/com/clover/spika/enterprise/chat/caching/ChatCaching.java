@@ -230,7 +230,7 @@ public class ChatCaching {
 				Log.d("LOG", "insert");
 				com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(networkData.chat_id),
 						Long.valueOf(networkData.chat_id), networkData.chat_name, networkData.seen_by, networkData.total_count, networkData.image_thumb, networkData.image, networkData.admin_id,
-						networkData.is_active, networkData.type, networkData.is_private, networkData.password, networkData.unread, networkData.is_member, networkData.modified, finalCategoryModelId,
+						networkData.is_active, networkData.type, networkData.is_private, networkData.password, networkData.unread, networkData.is_member, networkData.modified, true, finalCategoryModelId,
 						finalUserModelId, finalMessageModelId);
 				chatDao.insert(finalChatModel);
 			}

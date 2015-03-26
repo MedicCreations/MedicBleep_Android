@@ -10,7 +10,7 @@ import de.greenrobot.dao.DaoException;
 /**
  * Entity mapped to table MAP_KEY_VALUE_USER_DETAILS.
  */
-public class MapKeyValueUserDetails implements java.io.Serializable {
+public class MapKeyValueUserDetails {
 
     private Long id;
     private String key;
