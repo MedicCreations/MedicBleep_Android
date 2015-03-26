@@ -10,7 +10,6 @@ package com.clover.spika.enterprise.chat.models.greendao;
 public class User {
 
     private long id;
-    private Long user_id;
     private String firstname;
     private String lastname;
     private Integer type;
@@ -35,9 +34,8 @@ public class User {
         this.id = id;
     }
 
-    public User(long id, Long user_id, String firstname, String lastname, Integer type, String image, String image_thumb, Boolean is_member, Integer is_admin, String name, String groupname, String chat_id, Integer is_user, Integer is_group, Integer is_room) {
+    public User(long id, String firstname, String lastname, Integer type, String image, String image_thumb, Boolean is_member, Integer is_admin, String name, String groupname, String chat_id, Integer is_user, Integer is_group, Integer is_room) {
         this.id = id;
-        this.user_id = user_id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.type = type;
@@ -59,14 +57,6 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
     }
 
     public String getFirstname() {

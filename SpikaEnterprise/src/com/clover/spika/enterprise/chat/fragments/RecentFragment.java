@@ -107,6 +107,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		}
 
 		for (Chat item : data) {
+			// TODO XXX FIXME Ovo treba obavezno riješiti
 			item.last_message = Message.decryptContent(getActivity(), item.last_message);
 		}
 

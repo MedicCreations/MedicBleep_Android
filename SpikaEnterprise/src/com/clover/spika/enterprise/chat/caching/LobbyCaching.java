@@ -83,7 +83,12 @@ public class LobbyCaching {
 			if (lista != null) {
 
 				for (com.clover.spika.enterprise.chat.models.greendao.Chat chat : lista) {
-					resultArray.add(handleOldData(chat));
+
+					Chat item = handleOldData(chat);
+
+					if (item != null) {
+						resultArray.add(item);
+					}
 				}
 			}
 		}
@@ -144,12 +149,23 @@ public class LobbyCaching {
 
 				Long finalCategoryModelId = 0L;
 				if (chat.category != null) {
-					com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
-							Long.valueOf(chat.category.id), chat.category.name);
 
-					// TODO
-					categoryDao.insertOrReplace(finalCategoryModel);
-					finalCategoryModelId = finalCategoryModel.getId();
+					if (categoryDao.queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(chat.category.id)).count() > 0) {
+
+						com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = categoryDao.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(chat.category.id)).unique();
+
+						categoryDao.update(finalCategoryModel);
+						finalCategoryModelId = finalCategoryModel.getId();
+
+					} else {
+
+						com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
+								Long.valueOf(chat.category.id), chat.category.name);
+
+						categoryDao.insert(finalCategoryModel);
+						finalCategoryModelId = finalCategoryModel.getId();
+					}
 				}
 
 				Long finalUserModelId = 0L;
@@ -181,38 +197,60 @@ public class LobbyCaching {
 
 						com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = userDao.queryBuilder()
 								.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(chat.user.organization.id)).unique();
-						
-						
-						finalUserModel.setId((long) chat.user.id);
-						
-						if(chat.user.user_id != 0){
-							
+
+						finalUserModel.setId((long) chat.user.getId());
+
+						if (chat.user.user_id != 0) {
+							finalUserModel.setId((long) chat.user.user_id);
 						}
-//						finalUserModel
-//						
-//						(long) chat.user.user_id,
-//						chat.user.firstname,
-//						chat.user.lastname,
-//						chat.user.type,
-//						chat.user.image,
-//						chat.user.image_thumb,
-//						chat.user.is_member,
-//						chat.user.is_admin,
-//						chat.user.name,
-//						chat.user.groupname,
-//						chat.user.chat_id,
-//						chat.user.is_user,
-//						chat.user.is_group,
-//						chat.user.is_room
+
+						if (chat.user.firstname != null) {
+							finalUserModel.setFirstname(chat.user.firstname);
+						}
+
+						if (chat.user.lastname != null) {
+							finalUserModel.setLastname(chat.user.lastname);
+						}
+
+						if (chat.user.type != 0) {
+							finalUserModel.setType(chat.user.type);
+						}
+
+						if (chat.user.image != null) {
+							finalUserModel.setImage(chat.user.image);
+						}
+
+						if (chat.user.image_thumb != null) {
+							finalUserModel.setImage_thumb(chat.user.image_thumb);
+						}
+
+						finalUserModel.setIs_member(chat.user.is_member);
+						finalUserModel.setIs_admin(chat.user.is_admin);
+
+						if (chat.user.name != null) {
+							finalUserModel.setName(chat.user.name);
+						}
+
+						if (chat.user.groupname != null) {
+							finalUserModel.setGroupname(chat.user.groupname);
+						}
+
+						if (chat.user.chat_id != null) {
+							finalUserModel.setChat_id(chat.user.chat_id);
+						}
+
+						finalUserModel.setIs_user(chat.user.is_user);
+						finalUserModel.setIs_group(chat.user.is_group);
+						finalUserModel.setIs_room(chat.user.is_room);
 
 						userDao.update(finalUserModel);
 						finalUserModelId = finalUserModel.getId();
-						
+
 					} else {
-						
-						com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) chat.user.id,
-								(long) chat.user.user_id, chat.user.firstname, chat.user.lastname, chat.user.type, chat.user.image, chat.user.image_thumb, chat.user.is_member,
-								chat.user.is_admin, chat.user.name, chat.user.groupname, chat.user.chat_id, chat.user.is_user, chat.user.is_group, chat.user.is_room);
+
+						com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) chat.user.getId(),
+								chat.user.firstname, chat.user.lastname, chat.user.type, chat.user.image, chat.user.image_thumb, chat.user.is_member, chat.user.is_admin,
+								chat.user.name, chat.user.groupname, chat.user.chat_id, chat.user.is_user, chat.user.is_group, chat.user.is_room);
 
 						userDao.insert(finalUserModel);
 						finalUserModelId = finalUserModel.getId();
@@ -317,12 +355,11 @@ public class LobbyCaching {
 					}
 				}
 
-				if (chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).count() > 0) {
+				if (chatDao.queryBuilder().where(Properties.Id.eq(chat.getId())).count() > 0) {
 
-					com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).unique();
+					com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Id.eq(chat.getId())).unique();
 
-					usedChatModel.setChat_id(Long.valueOf(chat.chat_id));
-					usedChatModel.setId(Long.valueOf(chat.id));
+					usedChatModel.setId(Long.valueOf(chat.getId()));
 
 					if (chat.chat_name != null) {
 						usedChatModel.setChat_name(chat.chat_name);
@@ -382,9 +419,9 @@ public class LobbyCaching {
 
 					chatDao.update(usedChatModel);
 				} else {
-					com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.chat_id),
-							Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type,
-							chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, true, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+					com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.getId()),
+							chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password,
+							chat.unread, chat.is_member, chat.modified, true, finalCategoryModelId, finalUserModelId, finalMessageModelId);
 					chatDao.insert(finalChatModel);
 				}
 			}

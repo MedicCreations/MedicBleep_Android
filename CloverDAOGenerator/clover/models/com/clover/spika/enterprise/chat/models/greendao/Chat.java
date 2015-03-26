@@ -14,7 +14,6 @@ import de.greenrobot.dao.DaoException;
 public class Chat {
 
     private long id;
-    private Long chat_id;
     private String chat_name;
     private String seen_by;
     private Integer total_count;
@@ -60,9 +59,8 @@ public class Chat {
         this.id = id;
     }
 
-    public Chat(long id, Long chat_id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Boolean isRecent, Long categoryId, Long userIdProperty, Long messageIdProperty) {
+    public Chat(long id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Boolean isRecent, Long categoryId, Long userIdProperty, Long messageIdProperty) {
         this.id = id;
-        this.chat_id = chat_id;
         this.chat_name = chat_name;
         this.seen_by = seen_by;
         this.total_count = total_count;
@@ -94,14 +92,6 @@ public class Chat {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getChat_id() {
-        return chat_id;
-    }
-
-    public void setChat_id(Long chat_id) {
-        this.chat_id = chat_id;
     }
 
     public String getChat_name() {

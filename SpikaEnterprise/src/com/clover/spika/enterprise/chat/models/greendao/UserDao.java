@@ -24,20 +24,19 @@ public class UserDao extends AbstractDao<User, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, long.class, "id", true, "ID");
-        public final static Property User_id = new Property(1, Long.class, "user_id", false, "USER_ID");
-        public final static Property Firstname = new Property(2, String.class, "firstname", false, "FIRSTNAME");
-        public final static Property Lastname = new Property(3, String.class, "lastname", false, "LASTNAME");
-        public final static Property Type = new Property(4, Integer.class, "type", false, "TYPE");
-        public final static Property Image = new Property(5, String.class, "image", false, "IMAGE");
-        public final static Property Image_thumb = new Property(6, String.class, "image_thumb", false, "IMAGE_THUMB");
-        public final static Property Is_member = new Property(7, Boolean.class, "is_member", false, "IS_MEMBER");
-        public final static Property Is_admin = new Property(8, Integer.class, "is_admin", false, "IS_ADMIN");
-        public final static Property Name = new Property(9, String.class, "name", false, "NAME");
-        public final static Property Groupname = new Property(10, String.class, "groupname", false, "GROUPNAME");
-        public final static Property Chat_id = new Property(11, String.class, "chat_id", false, "CHAT_ID");
-        public final static Property Is_user = new Property(12, Integer.class, "is_user", false, "IS_USER");
-        public final static Property Is_group = new Property(13, Integer.class, "is_group", false, "IS_GROUP");
-        public final static Property Is_room = new Property(14, Integer.class, "is_room", false, "IS_ROOM");
+        public final static Property Firstname = new Property(1, String.class, "firstname", false, "FIRSTNAME");
+        public final static Property Lastname = new Property(2, String.class, "lastname", false, "LASTNAME");
+        public final static Property Type = new Property(3, Integer.class, "type", false, "TYPE");
+        public final static Property Image = new Property(4, String.class, "image", false, "IMAGE");
+        public final static Property Image_thumb = new Property(5, String.class, "image_thumb", false, "IMAGE_THUMB");
+        public final static Property Is_member = new Property(6, Boolean.class, "is_member", false, "IS_MEMBER");
+        public final static Property Is_admin = new Property(7, Integer.class, "is_admin", false, "IS_ADMIN");
+        public final static Property Name = new Property(8, String.class, "name", false, "NAME");
+        public final static Property Groupname = new Property(9, String.class, "groupname", false, "GROUPNAME");
+        public final static Property Chat_id = new Property(10, String.class, "chat_id", false, "CHAT_ID");
+        public final static Property Is_user = new Property(11, Integer.class, "is_user", false, "IS_USER");
+        public final static Property Is_group = new Property(12, Integer.class, "is_group", false, "IS_GROUP");
+        public final static Property Is_room = new Property(13, Integer.class, "is_room", false, "IS_ROOM");
     };
 
 
@@ -54,20 +53,19 @@ public class UserDao extends AbstractDao<User, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'USER' (" + //
                 "'ID' INTEGER PRIMARY KEY NOT NULL UNIQUE ," + // 0: id
-                "'USER_ID' INTEGER," + // 1: user_id
-                "'FIRSTNAME' TEXT," + // 2: firstname
-                "'LASTNAME' TEXT," + // 3: lastname
-                "'TYPE' INTEGER," + // 4: type
-                "'IMAGE' TEXT," + // 5: image
-                "'IMAGE_THUMB' TEXT," + // 6: image_thumb
-                "'IS_MEMBER' INTEGER," + // 7: is_member
-                "'IS_ADMIN' INTEGER," + // 8: is_admin
-                "'NAME' TEXT," + // 9: name
-                "'GROUPNAME' TEXT," + // 10: groupname
-                "'CHAT_ID' TEXT," + // 11: chat_id
-                "'IS_USER' INTEGER," + // 12: is_user
-                "'IS_GROUP' INTEGER," + // 13: is_group
-                "'IS_ROOM' INTEGER);"); // 14: is_room
+                "'FIRSTNAME' TEXT," + // 1: firstname
+                "'LASTNAME' TEXT," + // 2: lastname
+                "'TYPE' INTEGER," + // 3: type
+                "'IMAGE' TEXT," + // 4: image
+                "'IMAGE_THUMB' TEXT," + // 5: image_thumb
+                "'IS_MEMBER' INTEGER," + // 6: is_member
+                "'IS_ADMIN' INTEGER," + // 7: is_admin
+                "'NAME' TEXT," + // 8: name
+                "'GROUPNAME' TEXT," + // 9: groupname
+                "'CHAT_ID' TEXT," + // 10: chat_id
+                "'IS_USER' INTEGER," + // 11: is_user
+                "'IS_GROUP' INTEGER," + // 12: is_group
+                "'IS_ROOM' INTEGER);"); // 13: is_room
     }
 
     /** Drops the underlying database table. */
@@ -82,74 +80,69 @@ public class UserDao extends AbstractDao<User, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId());
  
-        Long user_id = entity.getUser_id();
-        if (user_id != null) {
-            stmt.bindLong(2, user_id);
-        }
- 
         String firstname = entity.getFirstname();
         if (firstname != null) {
-            stmt.bindString(3, firstname);
+            stmt.bindString(2, firstname);
         }
  
         String lastname = entity.getLastname();
         if (lastname != null) {
-            stmt.bindString(4, lastname);
+            stmt.bindString(3, lastname);
         }
  
         Integer type = entity.getType();
         if (type != null) {
-            stmt.bindLong(5, type);
+            stmt.bindLong(4, type);
         }
  
         String image = entity.getImage();
         if (image != null) {
-            stmt.bindString(6, image);
+            stmt.bindString(5, image);
         }
  
         String image_thumb = entity.getImage_thumb();
         if (image_thumb != null) {
-            stmt.bindString(7, image_thumb);
+            stmt.bindString(6, image_thumb);
         }
  
         Boolean is_member = entity.getIs_member();
         if (is_member != null) {
-            stmt.bindLong(8, is_member ? 1l: 0l);
+            stmt.bindLong(7, is_member ? 1l: 0l);
         }
  
         Integer is_admin = entity.getIs_admin();
         if (is_admin != null) {
-            stmt.bindLong(9, is_admin);
+            stmt.bindLong(8, is_admin);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(10, name);
+            stmt.bindString(9, name);
         }
  
         String groupname = entity.getGroupname();
         if (groupname != null) {
-            stmt.bindString(11, groupname);
+            stmt.bindString(10, groupname);
         }
  
         String chat_id = entity.getChat_id();
         if (chat_id != null) {
-            stmt.bindString(12, chat_id);
+            stmt.bindString(11, chat_id);
         }
  
         Integer is_user = entity.getIs_user();
         if (is_user != null) {
-            stmt.bindLong(13, is_user);
+            stmt.bindLong(12, is_user);
         }
  
         Integer is_group = entity.getIs_group();
         if (is_group != null) {
-            stmt.bindLong(14, is_group);
+            stmt.bindLong(13, is_group);
         }
  
         Integer is_room = entity.getIs_room();
         if (is_room != null) {
-            stmt.bindLong(15, is_room);
+            stmt.bindLong(14, is_room);
         }
     }
 
@@ -164,20 +157,19 @@ public class UserDao extends AbstractDao<User, Long> {
     public User readEntity(Cursor cursor, int offset) {
         User entity = new User( //
             cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // user_id
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // firstname
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // lastname
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // type
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // image
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // image_thumb
-            cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0, // is_member
-            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8), // is_admin
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // name
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // groupname
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // chat_id
-            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // is_user
-            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13), // is_group
-            cursor.isNull(offset + 14) ? null : cursor.getInt(offset + 14) // is_room
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // firstname
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // lastname
+            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // type
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // image
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // image_thumb
+            cursor.isNull(offset + 6) ? null : cursor.getShort(offset + 6) != 0, // is_member
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // is_admin
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // name
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // groupname
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // chat_id
+            cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11), // is_user
+            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // is_group
+            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13) // is_room
         );
         return entity;
     }
@@ -186,20 +178,19 @@ public class UserDao extends AbstractDao<User, Long> {
     @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
         entity.setId(cursor.getLong(offset + 0));
-        entity.setUser_id(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setFirstname(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setLastname(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setType(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setImage(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setImage_thumb(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setIs_member(cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0);
-        entity.setIs_admin(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
-        entity.setName(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setGroupname(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
-        entity.setChat_id(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setIs_user(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
-        entity.setIs_group(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
-        entity.setIs_room(cursor.isNull(offset + 14) ? null : cursor.getInt(offset + 14));
+        entity.setFirstname(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setLastname(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setType(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
+        entity.setImage(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setImage_thumb(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setIs_member(cursor.isNull(offset + 6) ? null : cursor.getShort(offset + 6) != 0);
+        entity.setIs_admin(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setName(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setGroupname(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setChat_id(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setIs_user(cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11));
+        entity.setIs_group(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
+        entity.setIs_room(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
      }
     
     /** @inheritdoc */

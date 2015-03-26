@@ -69,7 +69,6 @@ public class CloverDaoGenerator {
 
 		// User
 		user.addLongProperty("id").notNull().unique().primaryKey();
-		user.addLongProperty("user_id");
 		user.addStringProperty("firstname");
 		user.addStringProperty("lastname");
 		user.addIntProperty("type");
@@ -112,7 +111,6 @@ public class CloverDaoGenerator {
 
 		// Chat
 		chat.addLongProperty("id").notNull().unique().primaryKey();
-		chat.addLongProperty("chat_id");
 		chat.addStringProperty("chat_name");
 		chat.addStringProperty("seen_by");
 		chat.addIntProperty("total_count");

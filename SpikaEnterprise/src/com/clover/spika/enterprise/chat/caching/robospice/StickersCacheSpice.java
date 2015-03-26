@@ -1,20 +1,17 @@
 package com.clover.spika.enterprise.chat.caching.robospice;
 
-import java.util.List;
 
 import android.app.Activity;
 
 import com.clover.spika.enterprise.chat.caching.StickersCaching;
 import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersDBChanged;
 import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersNetworkResult;
-import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.octo.android.robospice.SpiceManager;
 
 public class StickersCacheSpice {
 
-	@SuppressWarnings("rawtypes")
 	public static class GetData extends CustomSpiceRequest<StickersHolder> {
 
 		private Activity activity;

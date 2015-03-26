@@ -57,8 +57,8 @@ public class RecentAdapter extends BaseAdapter {
 		data.addAll(list);
 		notifyDataSetChanged();
 	}
-	
-	public List<Chat> getData(){
+
+	public List<Chat> getData() {
 		return data;
 	}
 
@@ -82,7 +82,7 @@ public class RecentAdapter extends BaseAdapter {
 		boolean isFound = false;
 
 		int finalChatId = 0;
-		
+
 		try {
 			finalChatId = Integer.valueOf(chatId);
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class RecentAdapter extends BaseAdapter {
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-			
+
 			if (data.get(i).getId() == finalChatId) {
 
 				isFound = true;
@@ -134,10 +134,10 @@ public class RecentAdapter extends BaseAdapter {
 
 		// set image to null
 		holder.recentImage.setImageDrawable(null);
-		
-		if(getItem(position).type == Const.C_PRIVATE){
+
+		if (getItem(position).type == Const.C_PRIVATE) {
 			defaultImage = R.drawable.default_user_image;
-		}else{
+		} else {
 			defaultImage = R.drawable.default_group_image;
 		}
 
