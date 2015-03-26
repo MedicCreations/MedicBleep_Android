@@ -262,7 +262,7 @@ public class Message implements Parcelable {
 	}
 
 	public static Message decryptContent(Context ctx, Message msg) {
-
+		
 		switch (msg.getType()) {
 
 		case Const.MSG_TYPE_DEFAULT:

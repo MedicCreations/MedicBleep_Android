@@ -27,24 +27,23 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     */
     public static class Properties {
         public final static Property Id = new Property(0, long.class, "id", true, "ID");
-        public final static Property Chat_id = new Property(1, Long.class, "chat_id", false, "CHAT_ID");
-        public final static Property Chat_name = new Property(2, String.class, "chat_name", false, "CHAT_NAME");
-        public final static Property Seen_by = new Property(3, String.class, "seen_by", false, "SEEN_BY");
-        public final static Property Total_count = new Property(4, Integer.class, "total_count", false, "TOTAL_COUNT");
-        public final static Property Image_thumb = new Property(5, String.class, "image_thumb", false, "IMAGE_THUMB");
-        public final static Property Image = new Property(6, String.class, "image", false, "IMAGE");
-        public final static Property Admin_id = new Property(7, String.class, "admin_id", false, "ADMIN_ID");
-        public final static Property Is_active = new Property(8, Integer.class, "is_active", false, "IS_ACTIVE");
-        public final static Property Type = new Property(9, Integer.class, "type", false, "TYPE");
-        public final static Property Is_private = new Property(10, Integer.class, "is_private", false, "IS_PRIVATE");
-        public final static Property Password = new Property(11, String.class, "password", false, "PASSWORD");
-        public final static Property Unread = new Property(12, String.class, "unread", false, "UNREAD");
-        public final static Property Is_member = new Property(13, Integer.class, "is_member", false, "IS_MEMBER");
-        public final static Property Modified = new Property(14, Long.class, "modified", false, "MODIFIED");
-        public final static Property IsRecent = new Property(15, Boolean.class, "isRecent", false, "IS_RECENT");
-        public final static Property CategoryId = new Property(16, Long.class, "categoryId", false, "CATEGORY_ID");
-        public final static Property UserIdProperty = new Property(17, Long.class, "userIdProperty", false, "USER_ID_PROPERTY");
-        public final static Property MessageIdProperty = new Property(18, Long.class, "messageIdProperty", false, "MESSAGE_ID_PROPERTY");
+        public final static Property Chat_name = new Property(1, String.class, "chat_name", false, "CHAT_NAME");
+        public final static Property Seen_by = new Property(2, String.class, "seen_by", false, "SEEN_BY");
+        public final static Property Total_count = new Property(3, Integer.class, "total_count", false, "TOTAL_COUNT");
+        public final static Property Image_thumb = new Property(4, String.class, "image_thumb", false, "IMAGE_THUMB");
+        public final static Property Image = new Property(5, String.class, "image", false, "IMAGE");
+        public final static Property Admin_id = new Property(6, String.class, "admin_id", false, "ADMIN_ID");
+        public final static Property Is_active = new Property(7, Integer.class, "is_active", false, "IS_ACTIVE");
+        public final static Property Type = new Property(8, Integer.class, "type", false, "TYPE");
+        public final static Property Is_private = new Property(9, Integer.class, "is_private", false, "IS_PRIVATE");
+        public final static Property Password = new Property(10, String.class, "password", false, "PASSWORD");
+        public final static Property Unread = new Property(11, String.class, "unread", false, "UNREAD");
+        public final static Property Is_member = new Property(12, Integer.class, "is_member", false, "IS_MEMBER");
+        public final static Property Modified = new Property(13, Long.class, "modified", false, "MODIFIED");
+        public final static Property IsRecent = new Property(14, Boolean.class, "isRecent", false, "IS_RECENT");
+        public final static Property CategoryId = new Property(15, Long.class, "categoryId", false, "CATEGORY_ID");
+        public final static Property UserIdProperty = new Property(16, Long.class, "userIdProperty", false, "USER_ID_PROPERTY");
+        public final static Property MessageIdProperty = new Property(17, Long.class, "messageIdProperty", false, "MESSAGE_ID_PROPERTY");
     };
 
     private DaoSession daoSession;
@@ -64,24 +63,23 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'CHAT' (" + //
                 "'ID' INTEGER PRIMARY KEY NOT NULL UNIQUE ," + // 0: id
-                "'CHAT_ID' INTEGER," + // 1: chat_id
-                "'CHAT_NAME' TEXT," + // 2: chat_name
-                "'SEEN_BY' TEXT," + // 3: seen_by
-                "'TOTAL_COUNT' INTEGER," + // 4: total_count
-                "'IMAGE_THUMB' TEXT," + // 5: image_thumb
-                "'IMAGE' TEXT," + // 6: image
-                "'ADMIN_ID' TEXT," + // 7: admin_id
-                "'IS_ACTIVE' INTEGER," + // 8: is_active
-                "'TYPE' INTEGER," + // 9: type
-                "'IS_PRIVATE' INTEGER," + // 10: is_private
-                "'PASSWORD' TEXT," + // 11: password
-                "'UNREAD' TEXT," + // 12: unread
-                "'IS_MEMBER' INTEGER," + // 13: is_member
-                "'MODIFIED' INTEGER," + // 14: modified
-                "'IS_RECENT' INTEGER," + // 15: isRecent
-                "'CATEGORY_ID' INTEGER," + // 16: categoryId
-                "'USER_ID_PROPERTY' INTEGER," + // 17: userIdProperty
-                "'MESSAGE_ID_PROPERTY' INTEGER);"); // 18: messageIdProperty
+                "'CHAT_NAME' TEXT," + // 1: chat_name
+                "'SEEN_BY' TEXT," + // 2: seen_by
+                "'TOTAL_COUNT' INTEGER," + // 3: total_count
+                "'IMAGE_THUMB' TEXT," + // 4: image_thumb
+                "'IMAGE' TEXT," + // 5: image
+                "'ADMIN_ID' TEXT," + // 6: admin_id
+                "'IS_ACTIVE' INTEGER," + // 7: is_active
+                "'TYPE' INTEGER," + // 8: type
+                "'IS_PRIVATE' INTEGER," + // 9: is_private
+                "'PASSWORD' TEXT," + // 10: password
+                "'UNREAD' TEXT," + // 11: unread
+                "'IS_MEMBER' INTEGER," + // 12: is_member
+                "'MODIFIED' INTEGER," + // 13: modified
+                "'IS_RECENT' INTEGER," + // 14: isRecent
+                "'CATEGORY_ID' INTEGER," + // 15: categoryId
+                "'USER_ID_PROPERTY' INTEGER," + // 16: userIdProperty
+                "'MESSAGE_ID_PROPERTY' INTEGER);"); // 17: messageIdProperty
     }
 
     /** Drops the underlying database table. */
@@ -96,94 +94,89 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getId());
  
-        Long chat_id = entity.getChat_id();
-        if (chat_id != null) {
-            stmt.bindLong(2, chat_id);
-        }
- 
         String chat_name = entity.getChat_name();
         if (chat_name != null) {
-            stmt.bindString(3, chat_name);
+            stmt.bindString(2, chat_name);
         }
  
         String seen_by = entity.getSeen_by();
         if (seen_by != null) {
-            stmt.bindString(4, seen_by);
+            stmt.bindString(3, seen_by);
         }
  
         Integer total_count = entity.getTotal_count();
         if (total_count != null) {
-            stmt.bindLong(5, total_count);
+            stmt.bindLong(4, total_count);
         }
  
         String image_thumb = entity.getImage_thumb();
         if (image_thumb != null) {
-            stmt.bindString(6, image_thumb);
+            stmt.bindString(5, image_thumb);
         }
  
         String image = entity.getImage();
         if (image != null) {
-            stmt.bindString(7, image);
+            stmt.bindString(6, image);
         }
  
         String admin_id = entity.getAdmin_id();
         if (admin_id != null) {
-            stmt.bindString(8, admin_id);
+            stmt.bindString(7, admin_id);
         }
  
         Integer is_active = entity.getIs_active();
         if (is_active != null) {
-            stmt.bindLong(9, is_active);
+            stmt.bindLong(8, is_active);
         }
  
         Integer type = entity.getType();
         if (type != null) {
-            stmt.bindLong(10, type);
+            stmt.bindLong(9, type);
         }
  
         Integer is_private = entity.getIs_private();
         if (is_private != null) {
-            stmt.bindLong(11, is_private);
+            stmt.bindLong(10, is_private);
         }
  
         String password = entity.getPassword();
         if (password != null) {
-            stmt.bindString(12, password);
+            stmt.bindString(11, password);
         }
  
         String unread = entity.getUnread();
         if (unread != null) {
-            stmt.bindString(13, unread);
+            stmt.bindString(12, unread);
         }
  
         Integer is_member = entity.getIs_member();
         if (is_member != null) {
-            stmt.bindLong(14, is_member);
+            stmt.bindLong(13, is_member);
         }
  
         Long modified = entity.getModified();
         if (modified != null) {
-            stmt.bindLong(15, modified);
+            stmt.bindLong(14, modified);
         }
  
         Boolean isRecent = entity.getIsRecent();
         if (isRecent != null) {
-            stmt.bindLong(16, isRecent ? 1l: 0l);
+            stmt.bindLong(15, isRecent ? 1l: 0l);
         }
  
         Long categoryId = entity.getCategoryId();
         if (categoryId != null) {
-            stmt.bindLong(17, categoryId);
+            stmt.bindLong(16, categoryId);
         }
  
         Long userIdProperty = entity.getUserIdProperty();
         if (userIdProperty != null) {
-            stmt.bindLong(18, userIdProperty);
+            stmt.bindLong(17, userIdProperty);
         }
  
         Long messageIdProperty = entity.getMessageIdProperty();
         if (messageIdProperty != null) {
-            stmt.bindLong(19, messageIdProperty);
+            stmt.bindLong(18, messageIdProperty);
         }
     }
 
@@ -204,24 +197,23 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     public Chat readEntity(Cursor cursor, int offset) {
         Chat entity = new Chat( //
             cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // chat_id
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // chat_name
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // seen_by
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // total_count
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // image_thumb
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // image
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // admin_id
-            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8), // is_active
-            cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9), // type
-            cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10), // is_private
-            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // password
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12), // unread
-            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13), // is_member
-            cursor.isNull(offset + 14) ? null : cursor.getLong(offset + 14), // modified
-            cursor.isNull(offset + 15) ? null : cursor.getShort(offset + 15) != 0, // isRecent
-            cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16), // categoryId
-            cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17), // userIdProperty
-            cursor.isNull(offset + 18) ? null : cursor.getLong(offset + 18) // messageIdProperty
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // chat_name
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // seen_by
+            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // total_count
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // image_thumb
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // image
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // admin_id
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // is_active
+            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8), // type
+            cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9), // is_private
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // password
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // unread
+            cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // is_member
+            cursor.isNull(offset + 13) ? null : cursor.getLong(offset + 13), // modified
+            cursor.isNull(offset + 14) ? null : cursor.getShort(offset + 14) != 0, // isRecent
+            cursor.isNull(offset + 15) ? null : cursor.getLong(offset + 15), // categoryId
+            cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16), // userIdProperty
+            cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17) // messageIdProperty
         );
         return entity;
     }
@@ -230,24 +222,23 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     @Override
     public void readEntity(Cursor cursor, Chat entity, int offset) {
         entity.setId(cursor.getLong(offset + 0));
-        entity.setChat_id(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
-        entity.setChat_name(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setSeen_by(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setTotal_count(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setImage_thumb(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setImage(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setAdmin_id(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setIs_active(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
-        entity.setType(cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9));
-        entity.setIs_private(cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10));
-        entity.setPassword(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
-        entity.setUnread(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
-        entity.setIs_member(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
-        entity.setModified(cursor.isNull(offset + 14) ? null : cursor.getLong(offset + 14));
-        entity.setIsRecent(cursor.isNull(offset + 15) ? null : cursor.getShort(offset + 15) != 0);
-        entity.setCategoryId(cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16));
-        entity.setUserIdProperty(cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17));
-        entity.setMessageIdProperty(cursor.isNull(offset + 18) ? null : cursor.getLong(offset + 18));
+        entity.setChat_name(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setSeen_by(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setTotal_count(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
+        entity.setImage_thumb(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setImage(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setAdmin_id(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setIs_active(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setType(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
+        entity.setIs_private(cursor.isNull(offset + 9) ? null : cursor.getInt(offset + 9));
+        entity.setPassword(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setUnread(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setIs_member(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
+        entity.setModified(cursor.isNull(offset + 13) ? null : cursor.getLong(offset + 13));
+        entity.setIsRecent(cursor.isNull(offset + 14) ? null : cursor.getShort(offset + 14) != 0);
+        entity.setCategoryId(cursor.isNull(offset + 15) ? null : cursor.getLong(offset + 15));
+        entity.setUserIdProperty(cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16));
+        entity.setMessageIdProperty(cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17));
      }
     
     /** @inheritdoc */

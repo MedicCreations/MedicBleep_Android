@@ -16,7 +16,7 @@ public class DaoUtils {
 		Chat finalChat = new Chat();
 
 		finalChat.id = (int) chat.getId();
-		finalChat.chat_id = chat.getChat_id().intValue();
+		finalChat.chat_id = (int) chat.getId();
 		finalChat.chat_name = chat.getChat_name();
 		finalChat.seen_by = chat.getSeen_by();
 		finalChat.total_count = chat.getTotal_count();
@@ -74,7 +74,6 @@ public class DaoUtils {
 		User finalUser = new User();
 
 		finalUser.id = (int) user.getId();
-		finalUser.user_id = user.getUser_id().intValue();
 		finalUser.firstname = user.getFirstname();
 		finalUser.lastname = user.getLastname();
 		finalUser.type = user.getType();
