@@ -35,7 +35,9 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
@@ -48,21 +50,17 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel> {
-
-	private static final int FROM_CATEGORY = 11;
+public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel>,
+		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
 
 	private TextView noItems;
 
@@ -96,7 +94,10 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private TextView filterRooms;
 
 	private int currentFilter = GlobalModel.Type.ALL;
-	
+
+	private final int CLEAR_ALL = 0;
+	private final int CHECK_FOR_NEW_DATA = 2;
+
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
 	@Override
@@ -125,7 +126,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		if (!isCategoriesEnabled) {
 			header.findViewById(R.id.belowCategoryLayout).setVisibility(View.GONE);
 			categoryLayout.setVisibility(View.GONE);
-		}else{
+		} else {
 			header.findViewById(R.id.belowCategoryLayout).setVisibility(View.VISIBLE);
 			categoryLayout.setVisibility(View.VISIBLE);
 		}
@@ -172,20 +173,20 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		});
 
 		mSwitchPrivate = (Switch) header.findViewById(R.id.switch_private_room);
-		
+
 		boolean isPrivateRoomEnabled = getResources().getBoolean(R.bool.enable_private_room);
 
 		if (!isPrivateRoomEnabled) {
 			header.findViewById(R.id.layoutPrivate).setVisibility(View.GONE);
 			header.findViewById(R.id.belowPrivateLayout).setVisibility(View.GONE);
-		}else{
+		} else {
 			header.findViewById(R.id.layoutPrivate).setVisibility(View.VISIBLE);
 			header.findViewById(R.id.belowPrivateLayout).setVisibility(View.VISIBLE);
 		}
-		
+
 		mEtPassword = (RobotoThinEditText) header.findViewById(R.id.etPassword);
 		mEtPasswordRepeat = (RobotoThinEditText) header.findViewById(R.id.etPasswordRepeat);
-		
+
 		boolean isPasswordEnabled = getResources().getBoolean(R.bool.enable_room_password);
 
 		if (!isPasswordEnabled) {
@@ -193,7 +194,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 			header.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.GONE);
 			header.findViewById(R.id.belowPasswordLayout).setVisibility(View.GONE);
 			header.findViewById(R.id.belowPasswordRepeatLayout).setVisibility(View.GONE);
-		}else{
+		} else {
 			header.findViewById(R.id.layoutPassword).setVisibility(View.VISIBLE);
 			header.findViewById(R.id.layoutPasswordRepeat).setVisibility(View.VISIBLE);
 			header.findViewById(R.id.belowPasswordLayout).setVisibility(View.VISIBLE);
@@ -235,10 +236,10 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 				return false;
 			}
 		});
-		
+
 		etSearch.addTextChangedListener(textWatacher);
 
-		getListItems(mCurrentIndex, null, false, currentFilter);
+		getListItems(mCurrentIndex, null, CHECK_FOR_NEW_DATA, currentFilter);
 
 		setInitialTextToTxtUsers();
 
@@ -254,15 +255,17 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		return rootView;
 	}
-	
+
 	private TextWatcher textWatacher = new TextWatcher() {
-		
+
 		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {}
-		
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
 		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-		
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
 		@Override
 		public void afterTextChanged(Editable s) {
 			adapter.manageData(s.toString(), allData);
@@ -296,24 +299,27 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getListItems(mCurrentIndex, mSearchData, false, currentFilter);
+			getListItems(mCurrentIndex, mSearchData, CHECK_FOR_NEW_DATA, currentFilter);
 		}
 	};
 
-	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, int toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious) {
+		if (toClearPrevious == CLEAR_ALL) {
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious) {
+		if (toClearPrevious == CLEAR_ALL) {
+			adapter.setData(data);
+		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
 			adapter.setData(data);
 		} else {
 			adapter.addData(data);
 		}
-		if (toClearPrevious) {
+
+		if (toClearPrevious == CLEAR_ALL) {
 			mainListView.getRefreshableView().setSelection(0);
 		}
 
@@ -330,39 +336,21 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		} else if (currentCount < mTotalCount) {
 			mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
-		
+
 		allData.clear();
 		allData.addAll(adapter.getData());
 	}
 
-	public void getListItems(int page, String search, final boolean toClear, int type) {
-		
-		handleProgress(true);
+	public void getListItems(int page, String search, final int toClear, int type) {
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(mCurrentIndex, null, null, type, search, getActivity());
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
+		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.getTotalCount();
-					setData(result.getModelsList(), toClear);
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, getActivity());
-				}
+				setData(result, toClear);
 			}
 		});
 	}
@@ -375,7 +363,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		} else {
 			mSearchData = data;
 		}
-		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
 	}
 
 	@Override
@@ -425,7 +413,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
 	}
 
 	private void filterUsersGo() {
@@ -445,7 +433,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
 	}
 
 	private void filterGroupsGo() {
@@ -465,7 +453,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
 	}
 
 	private void filterRoomsGo() {
@@ -485,7 +473,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(15);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
 	}
 
 	private void showDialog() {
@@ -557,19 +545,19 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		ChooseCategoryDialog dialog = new ChooseCategoryDialog(getActivity(), UseType.CHOOSE_CATEGORY, Integer.parseInt(mCategoryId));
 		dialog.show();
 		dialog.setListener(new ChooseCategoryDialog.OnActionClick() {
-			
+
 			@Override
 			public void onCloseClick(Dialog d) {
 				d.dismiss();
 			}
-			
+
 			@Override
 			public void onCategorySelect(String categoryId, String categoryName, Dialog d) {
 				mCategoryId = categoryId;
 				setCategory(categoryName);
 				d.dismiss();
 			}
-			
+
 			@Override
 			public void onAcceptClick(Dialog d) {
 				d.dismiss();
@@ -760,5 +748,15 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	public void onDestroy() {
 		Helper.setRoomThumbId(getActivity(), "");
 		super.onDestroy();
+	}
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, int isClear) {
+		setData(usableData, isClear);
 	}
 }

@@ -77,7 +77,8 @@ public class LobbyCaching {
 		if (activity instanceof BaseActivity) {
 
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-			List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder().orderDesc(Properties.Modified).build().list();
+			List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder().where(Properties.Is_active.eq(true)).orderDesc(Properties.Modified).build()
+					.list();
 
 			if (lista != null) {
 
@@ -191,7 +192,7 @@ public class LobbyCaching {
 
 				if (chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).count() > 0) {
 					com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).unique();
-					
+
 					usedChatModel.setChat_id(Long.valueOf(chat.chat_id));
 					usedChatModel.setId(Long.valueOf(chat.chat_id));
 					usedChatModel.setChat_name(chat.chat_name);
@@ -210,12 +211,13 @@ public class LobbyCaching {
 					usedChatModel.setCategoryId(finalCategoryModelId);
 					usedChatModel.setUserIdProperty(finalUserModelId);
 					usedChatModel.setMessageIdProperty(finalMessageModelId);
-					
+					usedChatModel.setIsRecent(true);
+
 					chatDao.update(usedChatModel);
 				} else {
 					com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.chat_id),
 							Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type,
-							chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+							chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, true, finalCategoryModelId, finalUserModelId, finalMessageModelId);
 					chatDao.insert(finalChatModel);
 				}
 			}

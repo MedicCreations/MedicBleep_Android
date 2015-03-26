@@ -8,13 +8,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.ProfileGroupActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
@@ -116,7 +114,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener{
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					mTotalCount = result.totalCount;
+					mTotalCount = result.total_count;
 					setData((List<GlobalModel>) result.getModelsList(), clearPrevious);
 
 				} else {

@@ -10,7 +10,7 @@ import de.greenrobot.dao.DaoException;
 /**
  * Entity mapped to table MESSAGE.
  */
-public class Message implements java.io.Serializable {
+public class Message {
 
     private long id;
     private Long chat_id;

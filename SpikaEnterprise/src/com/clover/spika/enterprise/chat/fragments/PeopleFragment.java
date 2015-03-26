@@ -23,27 +23,28 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.PeopleAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
+public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
 
 	private TextView noItems;
 
 	PullToRefreshListView mainListView;
 	public PeopleAdapter adapter;
+
+	private final int CLEAR_ALL = 0;
+	private final int CHECK_FOR_NEW_DATA = 2;
 
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
@@ -87,7 +88,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		if (allData.size() > 1) {
 			adapter.addData(allData);
 		} else {
-			getUsers(mCurrentIndex, null, false);
+			getUsers(mCurrentIndex, null, CHECK_FOR_NEW_DATA);
 		}
 
 		if (getActivity() instanceof MainActivity) {
@@ -141,22 +142,29 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getUsers(mCurrentIndex, mSearchData, false);
+			getUsers(mCurrentIndex, mSearchData, CHECK_FOR_NEW_DATA);
 		}
 	};
 
-	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
+	private void setData(List<GlobalModel> data, int toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
+		if (toClearPrevious == CLEAR_ALL) {
+			currentCount = data.size();
+		}
+		
+		if (toClearPrevious == CLEAR_ALL) {
 			adapter.setData(data);
-		else
+		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
+			adapter.setData(data);
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+
+		if (toClearPrevious == CLEAR_ALL) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -176,36 +184,17 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		allData.addAll(adapter.getData());
 	}
 
-	public void getUsers(int page, String search, final boolean toClear) {
-		
-		// TODO implement caching
+	@SuppressWarnings("rawtypes")
+	public void getUsers(int page, String search, final int toClear) {
 
-		handleProgress(true);
+		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, Type.USER, search, getActivity());
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
-
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.getTotalCount();
-					setData(result.getModelsList(), toClear);
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, getActivity());
-				}
+				setData(result, toClear);
 			}
 		});
 	}
@@ -218,7 +207,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		} else {
 			mSearchData = data;
 		}
-		getUsers(mCurrentIndex, mSearchData, true);
+		getUsers(mCurrentIndex, mSearchData, CLEAR_ALL);
 	}
 
 	@Override
@@ -237,7 +226,16 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			} else {
 				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName(), user);
 			}
-
 		}
+	}
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, int isClear) {
+		setData(usableData, isClear);
 	}
 }

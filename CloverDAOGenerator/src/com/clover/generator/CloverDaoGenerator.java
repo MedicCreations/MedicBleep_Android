@@ -39,7 +39,6 @@ public class CloverDaoGenerator {
 		// Category
 		category.addLongProperty("id").notNull().unique().primaryKey();
 		category.addStringProperty("name");
-		category.implementsSerializable();
 
 		// Group
 		group.addLongProperty("id").notNull().unique().primaryKey();
@@ -51,13 +50,10 @@ public class CloverDaoGenerator {
 
 		Property categoryIdProperty = group.addLongProperty("categoryId").getProperty();
 		group.addToOne(category, categoryIdProperty);
-
-		group.implementsSerializable();
-
+		
 		// Organization
 		organization.addLongProperty("id").notNull().unique().primaryKey();
 		organization.addStringProperty("name");
-		organization.implementsSerializable();
 
 		// UserDetails in User
 		// List
@@ -73,7 +69,6 @@ public class CloverDaoGenerator {
 		listUserDetails.addToMany(mapKeyValueUserDetails, mapKeyValueUserDetailsProperty);
 		
 		listUserDetails.implementsSerializable();
-		mapKeyValueUserDetails.implementsSerializable();
 
 		// User
 		user.addLongProperty("id").notNull().unique().primaryKey();
@@ -98,8 +93,6 @@ public class CloverDaoGenerator {
 //		Property userDetailsIdProperty = group.addLongProperty("userDetailsId").getProperty();
 //		user.addToOne(listUserDetails, userDetailsIdProperty);
 
-		user.implementsSerializable();
-		
 		// Message
 		message.addLongProperty("id").notNull().unique().primaryKey();
 		message.addLongProperty("chat_id");
@@ -125,7 +118,6 @@ public class CloverDaoGenerator {
 		Property chatIdProperty = message.addLongProperty("chatIdProperty").getProperty();
 
 		message.addToOne(chat, chatIdProperty);
-		message.implementsSerializable();
 
 		// Chat
 		chat.addLongProperty("id").notNull().unique().primaryKey();
@@ -143,6 +135,7 @@ public class CloverDaoGenerator {
 		chat.addStringProperty("unread");
 		chat.addIntProperty("is_member");
 		chat.addLongProperty("modified");
+		chat.addBooleanProperty("isRecent");
 
 		Property categoryIdPropertyChat = chat.addLongProperty("categoryId").getProperty();
 		chat.addToOne(category, categoryIdPropertyChat);
@@ -154,7 +147,6 @@ public class CloverDaoGenerator {
 		chat.addToOne(message, messageIdPropertyChat);
 		
 		chat.addToMany(message, chatIdProperty);
-		chat.implementsSerializable();
 		
 		//Stickers
 		stickers.addLongProperty("id").notNull().unique().primaryKey();

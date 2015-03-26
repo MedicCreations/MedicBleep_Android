@@ -7,7 +7,7 @@ package com.clover.spika.enterprise.chat.models.greendao;
 /**
  * Entity mapped to table CATEGORY.
  */
-public class Category implements java.io.Serializable {
+public class Category {
 
     private long id;
     private String name;
