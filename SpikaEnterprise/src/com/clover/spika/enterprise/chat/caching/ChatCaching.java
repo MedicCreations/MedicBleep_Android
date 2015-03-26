@@ -197,7 +197,7 @@ public class ChatCaching {
 
 			}
 			
-			if (chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.id)).count() > 0) {
+			if (chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.chat_id)).count() > 0) {
 				Log.d("LOG", "update " + networkData.chat.chat_id);
 				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat_id)).unique();
 				
@@ -220,7 +220,7 @@ public class ChatCaching {
 				usedChatModel.setModified(networkData.chat.modified);
 				usedChatModel.setCategoryId(finalCategoryModelId);
 				usedChatModel.setUserIdProperty(finalUserModelId);
-				usedChatModel.setMessageIdProperty(finalMessageModelId);
+				usedChatModel.setMessageIdProperty(usedChatModel.getMessageIdProperty());
 				
 				chatDao.update(usedChatModel);
 			} else {
