@@ -690,7 +690,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 //		handleProgress(processing);
 		// TODO add caching
-		
+		Log.i("LOG", "SADA CHAT ID: "  + chatId);
 		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, 
 				isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, this);
 		
@@ -790,8 +790,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void manageGetMessages(Chat chat, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isClear, boolean isPagging) {
 		isRunning = false;
 		
-		Log.e("LOG", chat.messages.toString());
-		Log.w("LOG", adapter.getData().toString());
 		if(chat.messages.equals(activeChat)){
 			Log.d("LOG", "same");
 			return;
@@ -1013,8 +1011,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	public void onChatNetworkResult(int totalCount) {
-		Log.d("LOG", "NETWORK");
-		totalItems = totalCount;
+		Log.d("LOG", "NETWORK, TOTAL COUNT: " + totalCount);
+		if(totalItems != totalCount){
+			totalItems = totalCount;
+			adapter.setTotalCount(totalItems);
+		}
 	}
 
 	@Override

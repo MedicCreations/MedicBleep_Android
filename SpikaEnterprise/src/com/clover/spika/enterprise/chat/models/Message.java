@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
@@ -214,53 +213,19 @@ public class Message implements Parcelable {
 
 	@Override
 	public boolean equals(Object o) {
-		Log.i("LOG", "SADAI NIKADA");
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-
 		Message message = (Message) o;
 
-		if (isFailed != message.isFailed)
-			return false;
-		if (isMe != message.isMe)
-			return false;
-		if (parent_id != message.parent_id)
-			return false;
-		if (root_id != message.root_id)
-			return false;
-		if (type != message.type)
-			return false;
-		if (chat_id != null ? !chat_id.equals(message.chat_id) : message.chat_id != null)
-			return false;
-		if (child_list != null ? !child_list.equals(message.child_list) : message.child_list != null)
-			return false;
 		if (created != null ? !created.equals(message.created) : message.created != null)
-			return false;
-		if (file_id != null ? !file_id.equals(message.file_id) : message.file_id != null)
-			return false;
-		if (firstname != null ? !firstname.equals(message.firstname) : message.firstname != null)
 			return false;
 		if (id != null ? !id.equals(message.id) : message.id != null)
 			return false;
-		if (image != null ? !image.equals(message.image) : message.image != null)
-			return false;
-		if (lastname != null ? !lastname.equals(message.lastname) : message.lastname != null)
-			return false;
-		if (latitude != null ? !latitude.equals(message.latitude) : message.latitude != null)
-			return false;
-		if (longitude != null ? !longitude.equals(message.longitude) : message.longitude != null)
-			return false;
 		if (modified != null ? !modified.equals(message.modified) : message.modified != null)
 			return false;
-		if (text != null ? !text.equals(message.text) : message.text != null)
-			return false;
-		if (thumb_id != null ? !thumb_id.equals(message.thumb_id) : message.thumb_id != null)
-			return false;
-		if (user_id != null ? !user_id.equals(message.user_id) : message.user_id != null)
-			return false;
-
+		
 		return true;
 	}
 

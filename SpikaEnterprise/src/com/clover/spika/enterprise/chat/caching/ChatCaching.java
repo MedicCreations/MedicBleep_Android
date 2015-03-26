@@ -125,7 +125,7 @@ public class ChatCaching {
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onChatDBChanged(getDBData(activity, (long) chat.chat.chat_id), toClear, isPagging, isNewMsg, isSend, isRefresh);
+						onDBChangeListener.onChatDBChanged(getDBData(activity, (long) chat.chat.getId()), toClear, isPagging, isNewMsg, isSend, isRefresh);
 					}
 				}
 			});
@@ -200,30 +200,24 @@ public class ChatCaching {
 
 				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 						Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude, mess.latitude,
-						mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, (long) networkData.chat.chat_id);
+						mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, (long) networkData.chat.getId());
 
 				messageDao.insertOrReplace(finalMessageModel);
 
 			}
 
-			if (chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.chat_id)).count() > 0) {
-				Log.d("LOG", "update " + networkData.chat.chat_id);
-				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.chat_id)).unique();
+			if (chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.getId())).count() > 0) {
+				Log.d("LOG", "update " + networkData.chat.getId());
+				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.getId())).unique();
 
-				Log.d("LOG", "ZATO OVDJE NE DOLAZI");
-				Log.d("LOG", "SIZE OFF22: " + usedChatModel.getMessageList().size());
-				Log.d("LOG", "PPP POSLIJE");
-
-				Log.i("LOG", "CHAT: " + networkData.chat.toString());
-
-				usedChatModel.setChat_id(Long.valueOf(networkData.chat.chat_id));
-				usedChatModel.setId(Long.valueOf(networkData.chat.chat_id));
+				usedChatModel.setChat_id(Long.valueOf(networkData.chat.getId()));
+				usedChatModel.setId(Long.valueOf(networkData.chat.getId()));
 				if (networkData.chat.chat_name != null)
 					usedChatModel.setChat_name(networkData.chat.chat_name);
 				if (networkData.chat.seen_by != null)
 					usedChatModel.setSeen_by(networkData.chat.seen_by);
-				if ((Integer) networkData.chat.total_count != null)
-					usedChatModel.setTotal_count(networkData.chat.total_count);
+				if ((Integer) networkData.total_count != null)
+					usedChatModel.setTotal_count(networkData.total_count);
 				if (networkData.chat.image_thumb != null)
 					usedChatModel.setImage_thumb(networkData.chat.image_thumb);
 				if (networkData.chat.image != null)
@@ -244,9 +238,15 @@ public class ChatCaching {
 					usedChatModel.setIs_member(networkData.chat.is_member);
 				if ((Long) networkData.chat.modified != null)
 					usedChatModel.setModified(networkData.chat.modified);
-				usedChatModel.setCategoryId(finalCategoryModelId);
-				usedChatModel.setUserIdProperty(finalUserModelId);
-				usedChatModel.setMessageIdProperty(usedChatModel.getMessageIdProperty());
+				if(finalCategoryModelId != 0){
+					usedChatModel.setCategoryId(finalCategoryModelId);
+				}
+				if(finalUserModelId != 0){
+					usedChatModel.setUserIdProperty(finalUserModelId);
+				}
+				if(finalMessageModelId != 0){
+					usedChatModel.setMessageIdProperty(finalMessageModelId);
+				}
 
 				chatDao.update(usedChatModel);
 			} else {

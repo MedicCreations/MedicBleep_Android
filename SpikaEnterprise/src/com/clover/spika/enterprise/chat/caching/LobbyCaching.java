@@ -197,7 +197,9 @@ public class LobbyCaching {
 					usedChatModel.setId(Long.valueOf(chat.chat_id));
 					usedChatModel.setChat_name(chat.chat_name);
 					usedChatModel.setSeen_by(chat.seen_by);
-					usedChatModel.setTotal_count(chat.total_count);
+					if((Integer)chat.total_count != null || chat.total_count != 0){
+						usedChatModel.setTotal_count(chat.total_count);
+					}
 					usedChatModel.setImage_thumb(chat.image_thumb);
 					usedChatModel.setImage(chat.image);
 					usedChatModel.setAdmin_id(chat.image);
