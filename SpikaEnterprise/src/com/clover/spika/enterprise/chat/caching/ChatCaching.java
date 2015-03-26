@@ -82,11 +82,15 @@ public class ChatCaching {
 			com.clover.spika.enterprise.chat.models.greendao.Chat chatBase = chatDao.queryBuilder().where(Properties.Chat_id.eq(chatId)).build().unique();
 			
 			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(chatId)).count();
-			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
+			
+			if(chatBase == null)
+				return null;
+			
+			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + (chatBase!= null ? chatBase.getMessageList().size() : "NULL JE"));
 			
 			chat = handleOldData(chatBase);
 			
-			if(tempCount != chatBase.getMessageList().size()){
+			if(chatBase.getMessageList() != null && tempCount != chatBase.getMessageList().size()){
 				Log.e("LOG", "RECORRECT MESSAGE LIST");
 				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(chatId)).build().list();
 				chat.messages = DaoUtils.converDaoMessagesToMessagesModel(tempMess);

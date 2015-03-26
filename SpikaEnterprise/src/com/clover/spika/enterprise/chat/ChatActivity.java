@@ -490,18 +490,21 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					chatName = result.chat_name;
 
 					setTitle(chatName);
-					adapter.clearItems();
-					totalItems = Integer.valueOf(result.total_count);
-					adapter.addItems(result.messages, true);
-					adapter.setSeenBy(result.seen_by);
-					adapter.setTotalCount(Integer.valueOf(result.total_count));
-					if (adapter.getCount() > 0) {
-						chatListView.setSelectionFromTop(adapter.getCount(), 0);
-					}
-
+					
+					getMessages(true, false, false, false, false, false);
+					
+//					adapter.clearItems();
+//					totalItems = Integer.valueOf(result.total_count);
+//					adapter.addItems(result.messages, true);
+//					adapter.setSeenBy(result.seen_by);
+//					adapter.setTotalCount(Integer.valueOf(result.total_count));
+//					if (adapter.getCount() > 0) {
+//						chatListView.setSelectionFromTop(adapter.getCount(), 0);
+//					}
+//
 					checkForLeaveVoiceMessage(intent);
 
-					setNoItemsVisibility();
+//					setNoItemsVisibility();
 				}
 			});
 		}
@@ -788,6 +791,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void manageGetMessages(Chat chat, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isClear, boolean isPagging) {
 		isRunning = false;
 		
+		if(chat == null){
+			setNoItemsVisibility();
+			return;
+		}
+		
+		if(chat == null || chat.chat == null){
+			finish();
+		}
+		
 		Log.d("LOG", "SIZE OLD: " + activeChat.size()+", new suze: "+chat.messages.size());
 		if(chat.messages.equals(activeChat)){
 			Log.d("LOG", "same");
@@ -798,10 +810,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		
 		activeChat.clear();
 		activeChat.addAll(chat.messages);
-		
-		if(chat == null || chat.chat == null){
-			finish();
-		}
 		
 		chatParams(chat.chat);
 
@@ -1020,7 +1028,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	public void onChatDBChanged(Chat usableData, boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh) {
-		Log.d("LOG", "DB CHANGE, size: " + + usableData.messages.size());
+		Log.d("LOG", "DB CHANGE, size: " + (usableData != null ? usableData.messages.size() : "NULL JE"));
 		manageGetMessages(usableData, isNewMsg, isSend, isRefresh, isClear, isPagging);
 	}
 }
