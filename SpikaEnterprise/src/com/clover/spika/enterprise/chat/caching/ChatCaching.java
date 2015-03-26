@@ -76,6 +76,7 @@ public class ChatCaching {
 		if (activity instanceof BaseActivity) {
 
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
+			Log.i("LOG", "CCC " + chatId);
 			com.clover.spika.enterprise.chat.models.greendao.Chat chatBase = chatDao.queryBuilder().where(Properties.Chat_id.eq(chatId)).build().unique();
 			
 			Log.d("LOG", "SIZE OFF2222: " + chatBase.getMessageList().size());
@@ -116,7 +117,7 @@ public class ChatCaching {
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onChatDBChanged(getDBData(activity, (long) chat.chat_id), toClear);
+						onDBChangeListener.onChatDBChanged(getDBData(activity, (long) chat.chat.chat_id), toClear);
 					}
 				}
 			});
@@ -199,9 +200,11 @@ public class ChatCaching {
 			
 			if (chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.chat_id)).count() > 0) {
 				Log.d("LOG", "update " + networkData.chat.chat_id);
-				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat_id)).unique();
+				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(networkData.chat.chat_id)).unique();
 				
+				Log.d("LOG", "ZATO OVDJE NE DOLAZI");
 				Log.d("LOG", "SIZE OFF22: " + usedChatModel.getMessageList().size());
+				Log.d("LOG", "PPP POSLIJE");
 				
 				usedChatModel.setChat_id(Long.valueOf(networkData.chat.chat_id));
 				usedChatModel.setId(Long.valueOf(networkData.chat.chat_id));
