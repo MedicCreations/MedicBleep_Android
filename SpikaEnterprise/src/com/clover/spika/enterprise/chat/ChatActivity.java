@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -785,8 +786,20 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 //		});
 	}
 
+	List<Message> activeChat =  new ArrayList<Message>();
 	protected void manageGetMessages(Chat chat, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isClear, boolean isPagging) {
 		isRunning = false;
+		
+		Log.e("LOG", chat.messages.toString());
+		Log.w("LOG", adapter.getData().toString());
+		if(chat.messages.equals(activeChat)){
+			Log.d("LOG", "same");
+			return;
+		}else{
+			Log.d("LOG", "not same");
+		}
+		
+		activeChat = chat.messages;
 		
 		if(chat == null || chat.chat == null){
 			finish();
@@ -1005,8 +1018,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	}
 
 	@Override
-	public void onChatDBChanged(Chat usableData, boolean isClear) {
+	public void onChatDBChanged(Chat usableData, boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh) {
 		Log.d("LOG", "DB CHANGE");
-//		manageGetMessages(usableData, false, false, false, isClear, false);
+		manageGetMessages(usableData, isNewMsg, isSend, isRefresh, isClear, isPagging);
 	}
 }

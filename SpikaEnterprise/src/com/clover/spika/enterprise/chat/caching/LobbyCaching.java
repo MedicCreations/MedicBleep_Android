@@ -77,7 +77,7 @@ public class LobbyCaching {
 		if (activity instanceof BaseActivity) {
 
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-			List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder().where(Properties.Is_active.eq(true)).orderDesc(Properties.Modified).build()
+			List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder().where(Properties.IsRecent.eq(true)).orderDesc(Properties.Modified).build()
 					.list();
 
 			if (lista != null) {

@@ -3,6 +3,7 @@ package com.clover.spika.enterprise.chat.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
@@ -213,6 +214,7 @@ public class Message implements Parcelable {
 
 	@Override
 	public boolean equals(Object o) {
+		Log.i("LOG", "SADAI NIKADA");
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
