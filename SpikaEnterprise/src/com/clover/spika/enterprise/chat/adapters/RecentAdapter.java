@@ -149,46 +149,46 @@ public class RecentAdapter extends BaseAdapter {
 
 		((RoundImageView) holder.recentImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 
-//		switch (item.last_message.getType()) {
-//		case Const.MSG_TYPE_DEFAULT:
-//			holder.lastMessage.setText(item.last_message.getText());
-//			break;
-//		case Const.MSG_TYPE_DELETED:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.deleted));
-//			break;
-//		case Const.MSG_TYPE_FILE:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.file));
-//			break;
-//		case Const.MSG_TYPE_GIF:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.smiley));
-//			break;
-//		case Const.MSG_TYPE_LOCATION:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.location));
-//			break;
-//		case Const.MSG_TYPE_PHOTO:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.photo));
-//			break;
-//		case Const.MSG_TYPE_VIDEO:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.video));
-//			break;
-//		case Const.MSG_TYPE_VOICE:
-//			holder.lastMessage.setText(mContext.getResources().getString(R.string.audio));
-//			break;
-//
-//		default:
-//			holder.lastMessage.setText("");
-//			break;
-//		}
-//
-//		holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
-//
-//		if (Integer.parseInt(item.unread) > 0) {
-//			holder.unreadText.setVisibility(View.VISIBLE);
-//			holder.unreadText.setText(item.unread);
-//		} else {
-//			holder.unreadText.setVisibility(View.INVISIBLE);
-//			holder.unreadText.setText("");
-//		}
+		switch (item.last_message.getType()) {
+		case Const.MSG_TYPE_DEFAULT:
+			holder.lastMessage.setText(item.last_message.getText());
+			break;
+		case Const.MSG_TYPE_DELETED:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.deleted));
+			break;
+		case Const.MSG_TYPE_FILE:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.file));
+			break;
+		case Const.MSG_TYPE_GIF:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.smiley));
+			break;
+		case Const.MSG_TYPE_LOCATION:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.location));
+			break;
+		case Const.MSG_TYPE_PHOTO:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.photo));
+			break;
+		case Const.MSG_TYPE_VIDEO:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.video));
+			break;
+		case Const.MSG_TYPE_VOICE:
+			holder.lastMessage.setText(mContext.getResources().getString(R.string.audio));
+			break;
+
+		default:
+			holder.lastMessage.setText("");
+			break;
+		}
+
+		holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
+
+		if (Integer.parseInt(item.unread) > 0) {
+			holder.unreadText.setVisibility(View.VISIBLE);
+			holder.unreadText.setText(item.unread);
+		} else {
+			holder.unreadText.setVisibility(View.INVISIBLE);
+			holder.unreadText.setText("");
+		}
 
 		return convertView;
 	}

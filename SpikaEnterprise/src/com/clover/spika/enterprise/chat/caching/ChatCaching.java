@@ -82,8 +82,7 @@ public class ChatCaching {
 			com.clover.spika.enterprise.chat.models.greendao.Chat chatBase = chatDao.queryBuilder().where(Properties.Chat_id.eq(chatId)).build().unique();
 			
 			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(chatId)).count();
-			Log.e("LOG", "TEMP COUNT: " + tempCount);
-			Log.d("LOG", "SIZE OFF2222: " + chatBase.getMessageList().size());
+			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
 			
 			chat = handleOldData(chatBase);
 			
@@ -207,7 +206,7 @@ public class ChatCaching {
 
 			for (Message mess : networkData.messages) {
 
-				Log.d("LOG", "SAVING TO DATABASE, ID: " + mess.id + ", chat id: " + networkData.chat.getId());
+//				Log.d("LOG", "SAVING TO DATABASE, ID: " + mess.id + ", chat id: " + networkData.chat.getId());
 
 				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 						Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude, mess.latitude,
