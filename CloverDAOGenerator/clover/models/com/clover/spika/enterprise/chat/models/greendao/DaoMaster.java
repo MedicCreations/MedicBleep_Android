@@ -9,7 +9,7 @@ import de.greenrobot.dao.AbstractDaoMaster;
 import de.greenrobot.dao.identityscope.IdentityScopeType;
 
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
-import com.clover.spika.enterprise.chat.models.greendao.GroupDao;
+import com.clover.spika.enterprise.chat.models.greendao.GroupsDao;
 import com.clover.spika.enterprise.chat.models.greendao.OrganizationDao;
 import com.clover.spika.enterprise.chat.models.greendao.ListUserDetailsDao;
 import com.clover.spika.enterprise.chat.models.greendao.MapKeyValueUserDetailsDao;
@@ -28,7 +28,7 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(SQLiteDatabase db, boolean ifNotExists) {
         CategoryDao.createTable(db, ifNotExists);
-        GroupDao.createTable(db, ifNotExists);
+        GroupsDao.createTable(db, ifNotExists);
         OrganizationDao.createTable(db, ifNotExists);
         ListUserDetailsDao.createTable(db, ifNotExists);
         MapKeyValueUserDetailsDao.createTable(db, ifNotExists);
@@ -41,7 +41,7 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(SQLiteDatabase db, boolean ifExists) {
         CategoryDao.dropTable(db, ifExists);
-        GroupDao.dropTable(db, ifExists);
+        GroupsDao.dropTable(db, ifExists);
         OrganizationDao.dropTable(db, ifExists);
         ListUserDetailsDao.dropTable(db, ifExists);
         MapKeyValueUserDetailsDao.dropTable(db, ifExists);
@@ -81,7 +81,7 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(SQLiteDatabase db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(CategoryDao.class);
-        registerDaoClass(GroupDao.class);
+        registerDaoClass(GroupsDao.class);
         registerDaoClass(OrganizationDao.class);
         registerDaoClass(ListUserDetailsDao.class);
         registerDaoClass(MapKeyValueUserDetailsDao.class);

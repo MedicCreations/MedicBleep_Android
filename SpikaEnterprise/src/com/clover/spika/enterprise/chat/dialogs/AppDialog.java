@@ -36,7 +36,12 @@ public class AppDialog extends Dialog {
 
 	public AppDialog(final Context context, boolean isFinish) {
 		super(context, R.style.Theme_Dialog);
-		setOwnerActivity((Activity) context);
+
+		try {
+			setOwnerActivity((Activity) context);
+		} catch (Exception e) {
+			dismiss();
+		}
 
 		this.isFinish = isFinish;
 	}

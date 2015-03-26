@@ -29,7 +29,7 @@ public class DaoUtils {
 		finalChat.password = chat.getPassword();
 		finalChat.unread = chat.getUnread();
 		finalChat.is_member = chat.getIs_member();
-		
+
 		finalChat.chat = finalChat.copyChat(finalChat);
 
 		if (chat.getCategory() != null) {
@@ -43,8 +43,8 @@ public class DaoUtils {
 		if (chat.getMessage() != null) {
 			finalChat.last_message = convertDaoMessageToMessageModel(chat.getMessage());
 		}
-		
-		if (chat.getMessageList() != null){
+
+		if (chat.getMessageList() != null) {
 			finalChat.messages = convertDaoListMessage(chat.getMessageList());
 		}
 
@@ -53,8 +53,7 @@ public class DaoUtils {
 
 	private static List<Message> convertDaoListMessage(List<com.clover.spika.enterprise.chat.models.greendao.Message> messageList) {
 		List<Message> finalList = new ArrayList<Message>();
-		for(com.clover.spika.enterprise.chat.models.greendao.Message item : messageList){
-//			Log.i("LOG", "GET FROM DATABASE");
+		for (com.clover.spika.enterprise.chat.models.greendao.Message item : messageList) {
 			finalList.add(convertDaoMessageToMessageModel(item));
 		}
 		return finalList;
@@ -131,7 +130,7 @@ public class DaoUtils {
 		return newMessList;
 	}
 
-	public static Group convertDaoGroupToGroupModel(com.clover.spika.enterprise.chat.models.greendao.Group group) {
+	public static Group convertDaoGroupToGroupModel(com.clover.spika.enterprise.chat.models.greendao.Groups group) {
 
 		Group finalGroup = new Group();
 
@@ -140,11 +139,6 @@ public class DaoUtils {
 		finalGroup.groupname = group.getGroupname();
 		finalGroup.image = group.getImage();
 		finalGroup.image_thumb = group.getImage_thumb();
-
-		if (group.getCategory() != null) {
-			finalGroup.category = convertDaoCategoryToCategoryModel(group.getCategory());
-		}
-
 		finalGroup.is_member = group.getIs_member();
 
 		return finalGroup;

@@ -10,7 +10,7 @@ import de.greenrobot.dao.identityscope.IdentityScopeType;
 import de.greenrobot.dao.internal.DaoConfig;
 
 import com.clover.spika.enterprise.chat.models.greendao.Category;
-import com.clover.spika.enterprise.chat.models.greendao.Group;
+import com.clover.spika.enterprise.chat.models.greendao.Groups;
 import com.clover.spika.enterprise.chat.models.greendao.Organization;
 import com.clover.spika.enterprise.chat.models.greendao.ListUserDetails;
 import com.clover.spika.enterprise.chat.models.greendao.MapKeyValueUserDetails;
@@ -20,7 +20,7 @@ import com.clover.spika.enterprise.chat.models.greendao.Chat;
 import com.clover.spika.enterprise.chat.models.greendao.Stickers;
 
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
-import com.clover.spika.enterprise.chat.models.greendao.GroupDao;
+import com.clover.spika.enterprise.chat.models.greendao.GroupsDao;
 import com.clover.spika.enterprise.chat.models.greendao.OrganizationDao;
 import com.clover.spika.enterprise.chat.models.greendao.ListUserDetailsDao;
 import com.clover.spika.enterprise.chat.models.greendao.MapKeyValueUserDetailsDao;
@@ -39,7 +39,7 @@ import com.clover.spika.enterprise.chat.models.greendao.StickersDao;
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig categoryDaoConfig;
-    private final DaoConfig groupDaoConfig;
+    private final DaoConfig groupsDaoConfig;
     private final DaoConfig organizationDaoConfig;
     private final DaoConfig listUserDetailsDaoConfig;
     private final DaoConfig mapKeyValueUserDetailsDaoConfig;
@@ -49,7 +49,7 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig stickersDaoConfig;
 
     private final CategoryDao categoryDao;
-    private final GroupDao groupDao;
+    private final GroupsDao groupsDao;
     private final OrganizationDao organizationDao;
     private final ListUserDetailsDao listUserDetailsDao;
     private final MapKeyValueUserDetailsDao mapKeyValueUserDetailsDao;
@@ -65,8 +65,8 @@ public class DaoSession extends AbstractDaoSession {
         categoryDaoConfig = daoConfigMap.get(CategoryDao.class).clone();
         categoryDaoConfig.initIdentityScope(type);
 
-        groupDaoConfig = daoConfigMap.get(GroupDao.class).clone();
-        groupDaoConfig.initIdentityScope(type);
+        groupsDaoConfig = daoConfigMap.get(GroupsDao.class).clone();
+        groupsDaoConfig.initIdentityScope(type);
 
         organizationDaoConfig = daoConfigMap.get(OrganizationDao.class).clone();
         organizationDaoConfig.initIdentityScope(type);
@@ -90,7 +90,7 @@ public class DaoSession extends AbstractDaoSession {
         stickersDaoConfig.initIdentityScope(type);
 
         categoryDao = new CategoryDao(categoryDaoConfig, this);
-        groupDao = new GroupDao(groupDaoConfig, this);
+        groupsDao = new GroupsDao(groupsDaoConfig, this);
         organizationDao = new OrganizationDao(organizationDaoConfig, this);
         listUserDetailsDao = new ListUserDetailsDao(listUserDetailsDaoConfig, this);
         mapKeyValueUserDetailsDao = new MapKeyValueUserDetailsDao(mapKeyValueUserDetailsDaoConfig, this);
@@ -100,7 +100,7 @@ public class DaoSession extends AbstractDaoSession {
         stickersDao = new StickersDao(stickersDaoConfig, this);
 
         registerDao(Category.class, categoryDao);
-        registerDao(Group.class, groupDao);
+        registerDao(Groups.class, groupsDao);
         registerDao(Organization.class, organizationDao);
         registerDao(ListUserDetails.class, listUserDetailsDao);
         registerDao(MapKeyValueUserDetails.class, mapKeyValueUserDetailsDao);
@@ -112,7 +112,7 @@ public class DaoSession extends AbstractDaoSession {
     
     public void clear() {
         categoryDaoConfig.getIdentityScope().clear();
-        groupDaoConfig.getIdentityScope().clear();
+        groupsDaoConfig.getIdentityScope().clear();
         organizationDaoConfig.getIdentityScope().clear();
         listUserDetailsDaoConfig.getIdentityScope().clear();
         mapKeyValueUserDetailsDaoConfig.getIdentityScope().clear();
@@ -126,8 +126,8 @@ public class DaoSession extends AbstractDaoSession {
         return categoryDao;
     }
 
-    public GroupDao getGroupDao() {
-        return groupDao;
+    public GroupsDao getGroupsDao() {
+        return groupsDao;
     }
 
     public OrganizationDao getOrganizationDao() {
