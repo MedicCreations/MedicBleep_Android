@@ -201,6 +201,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 	}
+	
+	//***********DEBUG DROP TABLE
+	protected void dropAllMessages() {
+		daoSession.getMessageDao().deleteAll();
+	}
+	//***********************
 
 	public DaoSession getDaoSession() {
 		return daoSession;

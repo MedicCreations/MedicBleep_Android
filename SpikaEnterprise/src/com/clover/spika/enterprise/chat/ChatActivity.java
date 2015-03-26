@@ -790,6 +790,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void manageGetMessages(Chat chat, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isClear, boolean isPagging) {
 		isRunning = false;
 		
+		Log.d("LOG", "SIZE OLD: " + activeChat.size()+", new suze: "+chat.messages.size());
 		if(chat.messages.equals(activeChat)){
 			Log.d("LOG", "same");
 			return;
@@ -797,7 +798,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			Log.d("LOG", "not same");
 		}
 		
-		activeChat = chat.messages;
+		activeChat.clear();
+		activeChat.addAll(chat.messages);
 		
 		if(chat == null || chat.chat == null){
 			finish();
@@ -1021,6 +1023,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	@Override
 	public void onChatDBChanged(Chat usableData, boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh) {
 		Log.d("LOG", "DB CHANGE");
+		Log.d("LOG", "NA DBCHANGED SIZE: " + usableData.messages.size());
 		manageGetMessages(usableData, isNewMsg, isSend, isRefresh, isClear, isPagging);
 	}
 }

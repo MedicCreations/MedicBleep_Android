@@ -120,6 +120,16 @@ public class DaoUtils {
 
 		return finalMessage;
 	}
+	
+	public static List<Message> converDaoMessagesToMessagesModel(List<com.clover.spika.enterprise.chat.models.greendao.Message> messages) {
+
+		List<Message> newMessList = new ArrayList<Message>();
+		for(com.clover.spika.enterprise.chat.models.greendao.Message item : messages){
+			newMessList.add(convertDaoMessageToMessageModel(item));
+		}
+
+		return newMessList;
+	}
 
 	public static Group convertDaoGroupToGroupModel(com.clover.spika.enterprise.chat.models.greendao.Group group) {
 

@@ -29,6 +29,7 @@ import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -150,6 +151,8 @@ public class MainActivity extends BaseActivity {
 				}
 			});
 		}
+		
+		dropAllMessages();
 		
 	}
 	
