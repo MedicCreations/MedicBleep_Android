@@ -27,7 +27,7 @@ public class CloverDaoGenerator {
 	private static void generateTables(Schema schema) {
 		
 		Entity category = schema.addEntity("Category");
-		Entity group = schema.addEntity("Group");
+		Entity groups = schema.addEntity("Groups");
 		Entity organization = schema.addEntity("Organization");
 		Entity listUserDetails = schema.addEntity("ListUserDetails");
 		Entity mapKeyValueUserDetails = schema.addEntity("MapKeyValueUserDetails");
@@ -41,16 +41,13 @@ public class CloverDaoGenerator {
 		category.addStringProperty("name");
 
 		// Group
-		group.addLongProperty("id").notNull().unique().primaryKey();
-		group.addStringProperty("type");
-		group.addStringProperty("groupname");
-		group.addStringProperty("image");
-		group.addStringProperty("image_thumb");
-		group.addIntProperty("is_member");
+		groups.addLongProperty("id").notNull().unique().primaryKey();
+		groups.addStringProperty("type");
+		groups.addStringProperty("groupname");
+		groups.addStringProperty("image");
+		groups.addStringProperty("image_thumb");
+		groups.addIntProperty("is_member");
 
-		Property categoryIdProperty = group.addLongProperty("categoryId").getProperty();
-		group.addToOne(category, categoryIdProperty);
-		
 		// Organization
 		organization.addLongProperty("id").notNull().unique().primaryKey();
 		organization.addStringProperty("name");
@@ -86,12 +83,6 @@ public class CloverDaoGenerator {
 		user.addIntProperty("is_user");
 		user.addIntProperty("is_group");
 		user.addIntProperty("is_room");
-
-//		Property organizationIdProperty = group.addLongProperty("organizationId").getProperty();
-//		user.addToOne(organization, organizationIdProperty);
-//
-//		Property userDetailsIdProperty = group.addLongProperty("userDetailsId").getProperty();
-//		user.addToOne(listUserDetails, userDetailsIdProperty);
 
 		// Message
 		message.addLongProperty("id").notNull().unique().primaryKey();

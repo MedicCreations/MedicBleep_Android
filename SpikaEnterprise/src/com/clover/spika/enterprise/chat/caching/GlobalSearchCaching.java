@@ -12,14 +12,16 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
+import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao;
-import com.clover.spika.enterprise.chat.models.greendao.GroupDao;
+import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
+import com.clover.spika.enterprise.chat.models.greendao.GroupsDao;
+import com.clover.spika.enterprise.chat.models.greendao.Groups;
 import com.clover.spika.enterprise.chat.models.greendao.MessageDao;
 import com.clover.spika.enterprise.chat.models.greendao.OrganizationDao;
 import com.clover.spika.enterprise.chat.models.greendao.UserDao;
-import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -86,12 +88,12 @@ public class GlobalSearchCaching {
 
 			} else if (type == GlobalModel.Type.GROUP) {
 
-				GroupDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Group> lista = groupDao.queryBuilder().build().list();
+				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
+				List<Groups> lista = groupDao.queryBuilder().build().list();
 
 				if (lista != null) {
 
-					for (com.clover.spika.enterprise.chat.models.greendao.Group group : lista) {
+					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : lista) {
 						resultArray.add(handleOldGroupData(group));
 					}
 				}
@@ -120,19 +122,15 @@ public class GlobalSearchCaching {
 					}
 				}
 
-				// TODO
-				// GroupDao groupDao = ((BaseActivity)
-				// activity).getDaoSession().getGroupDao();
-				// List<com.clover.spika.enterprise.chat.models.greendao.Group>
-				// groupList = groupDao.queryBuilder().build().list();
-				//
-				// if (groupList != null) {
-				//
-				// for (com.clover.spika.enterprise.chat.models.greendao.Group
-				// group : groupList) {
-				// resultArray.add(handleOldGroupData(group));
-				// }
-				// }
+				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
+				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
+
+				if (groupList != null) {
+
+					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : groupList) {
+						resultArray.add(handleOldGroupData(group));
+					}
+				}
 
 				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
 				List<com.clover.spika.enterprise.chat.models.greendao.User> userList = userDao.queryBuilder().build().list();
@@ -158,7 +156,7 @@ public class GlobalSearchCaching {
 		return result;
 	}
 
-	private static GlobalModel handleOldGroupData(com.clover.spika.enterprise.chat.models.greendao.Group group) {
+	private static GlobalModel handleOldGroupData(com.clover.spika.enterprise.chat.models.greendao.Groups group) {
 
 		GlobalModel result = new GlobalModel();
 		result.type = GlobalModel.Type.GROUP;
@@ -222,7 +220,7 @@ public class GlobalSearchCaching {
 			OrganizationDao organizationDao = ((BaseActivity) activity).getDaoSession().getOrganizationDao();
 			MessageDao messageDao = ((BaseActivity) activity).getDaoSession().getMessageDao();
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-			GroupDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupDao();
+			GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
 
 			for (GlobalModel globalModel : networkData) {
 
@@ -234,21 +232,37 @@ public class GlobalSearchCaching {
 							(long) user.user_id, user.firstname, user.lastname, user.type, user.image, user.image_thumb, user.is_member, user.is_admin, user.name, user.groupname,
 							user.chat_id, user.is_user, user.is_group, user.is_room);
 
+					// TODO
 					userDao.insertOrReplace(finalUserModel);
 
 				} else if (globalModel.type == GlobalModel.Type.GROUP) {
 
+					Group group = globalModel.group;
+
 					// TODO
-					// Group group = globalModel.group;
-					//
-					// com.clover.spika.enterprise.chat.models.greendao.Group
-					// finalGroupModel = new
-					// com.clover.spika.enterprise.chat.models.greendao.Group(group.id,
-					// group.type,
-					// group.groupname, group.image, group.image_thumb,
-					// group.is_member, 0L);
-					//
-					// groupDao.insertOrReplace(finalGroupModel);
+					if (groupDao.queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.GroupsDao.Properties.Id.eq(group.id)).count() > 0) {
+
+						com.clover.spika.enterprise.chat.models.greendao.Groups groupModel = groupDao.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.GroupsDao.Properties.Id.eq(group.id)).unique();
+
+						com.clover.spika.enterprise.chat.models.greendao.Groups finalGroupModel = new com.clover.spika.enterprise.chat.models.greendao.Groups();
+
+						finalGroupModel.setId(groupModel.getId());
+						finalGroupModel.setType(group.type);
+						finalGroupModel.setGroupname(group.groupname);
+						finalGroupModel.setImage(group.image);
+						finalGroupModel.setImage_thumb(group.image_thumb);
+						finalGroupModel.setIs_member(group.is_member);
+
+						groupDao.update(finalGroupModel);
+
+					} else {
+
+						com.clover.spika.enterprise.chat.models.greendao.Groups finalGroupModel = new com.clover.spika.enterprise.chat.models.greendao.Groups(group.id, group.type,
+								group.groupname, group.image, group.image_thumb, group.is_member);
+
+						groupDao.insert(finalGroupModel);
+					}
 
 				} else if (globalModel.type == GlobalModel.Type.CHAT) {
 
@@ -259,6 +273,7 @@ public class GlobalSearchCaching {
 						com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
 								Long.valueOf(chat.category.id), chat.category.name);
 
+						// TODO
 						categoryDao.insertOrReplace(finalCategoryModel);
 						finalCategoryModelId = finalCategoryModel.getId();
 					}
@@ -272,19 +287,15 @@ public class GlobalSearchCaching {
 							finalOrganizationModel = new com.clover.spika.enterprise.chat.models.greendao.Organization((Long.valueOf(chat.user.organization.id)),
 									chat.user.organization.name);
 
+							// TODO
 							organizationDao.insertOrReplace(finalOrganizationModel);
-						}
-
-						if (chat.user.details != null && !chat.user.details.isEmpty()) {
-
-							// TODO user details needs to implemented in the DB
-							// com.clover.spika.enterprise.chat.models.greendao.ListUserDetails
 						}
 
 						com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) chat.user.id,
 								(long) chat.user.user_id, chat.user.firstname, chat.user.lastname, chat.user.type, chat.user.image, chat.user.image_thumb, chat.user.is_member,
 								chat.user.is_admin, chat.user.name, chat.user.groupname, chat.user.chat_id, chat.user.is_user, chat.user.is_group, chat.user.is_room);
 
+						// TODO
 						userDao.insertOrReplace(finalUserModel);
 						finalUserModelId = finalUserModel.getId();
 					}
@@ -298,11 +309,14 @@ public class GlobalSearchCaching {
 								chat.last_message.image_thumb, chat.last_message.type, chat.last_message.root_id, chat.last_message.parent_id, chat.last_message.isMe,
 								chat.last_message.isFailed, (long) chat.chat_id);
 
+						// TODO
 						messageDao.insertOrReplace(finalMessageModel);
 						finalMessageModelId = finalMessageModel.getId();
 					}
-					
+
+					// TODO
 					if (chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).count() > 0) {
+
 						com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).unique();
 
 						usedChatModel.setChat_id(Long.valueOf(chat.chat_id));
@@ -326,9 +340,12 @@ public class GlobalSearchCaching {
 
 						chatDao.update(usedChatModel);
 					} else {
-						com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.chat_id),
-								Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type,
-								chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, false, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+
+						com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(
+								Long.valueOf(chat.chat_id), Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image,
+								chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, false, finalCategoryModelId,
+								finalUserModelId, finalMessageModelId);
+
 						chatDao.insert(finalChatModel);
 					}
 				}

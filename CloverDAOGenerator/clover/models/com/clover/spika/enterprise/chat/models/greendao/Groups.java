@@ -5,9 +5,9 @@ package com.clover.spika.enterprise.chat.models.greendao;
 // KEEP INCLUDES - put your custom includes here
 // KEEP INCLUDES END
 /**
- * Entity mapped to table GROUP.
+ * Entity mapped to table GROUPS.
  */
-public class Group {
+public class Groups {
 
     private long id;
     private String type;
@@ -19,14 +19,14 @@ public class Group {
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
-    public Group() {
+    public Groups() {
     }
 
-    public Group(long id) {
+    public Groups(long id) {
         this.id = id;
     }
 
-    public Group(long id, String type, String groupname, String image, String image_thumb, Integer is_member) {
+    public Groups(long id, String type, String groupname, String image, String image_thumb, Integer is_member) {
         this.id = id;
         this.type = type;
         this.groupname = groupname;

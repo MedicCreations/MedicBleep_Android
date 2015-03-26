@@ -106,13 +106,8 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			return;
 		}
 
-		// TODO check this out
 		for (Chat item : data) {
-			try {
-				item.last_message = Message.decryptContent(getActivity(), item.last_message);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			item.last_message = Message.decryptContent(getActivity(), item.last_message);
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
