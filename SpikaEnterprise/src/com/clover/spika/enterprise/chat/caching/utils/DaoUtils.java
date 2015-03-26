@@ -1,5 +1,8 @@
 package com.clover.spika.enterprise.chat.caching.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Group;
@@ -26,6 +29,8 @@ public class DaoUtils {
 		finalChat.password = chat.getPassword();
 		finalChat.unread = chat.getUnread();
 		finalChat.is_member = chat.getIs_member();
+		
+		finalChat.chat = finalChat.copyChat(finalChat);
 
 		if (chat.getCategory() != null) {
 			finalChat.category = convertDaoCategoryToCategoryModel(chat.getCategory());
@@ -38,8 +43,21 @@ public class DaoUtils {
 		if (chat.getMessage() != null) {
 			finalChat.last_message = convertDaoMessageToMessageModel(chat.getMessage());
 		}
+		
+		if (chat.getMessageList() != null){
+			finalChat.messages = convertDaoListMessage(chat.getMessageList());
+		}
 
 		return finalChat;
+	}
+
+	private static List<Message> convertDaoListMessage(List<com.clover.spika.enterprise.chat.models.greendao.Message> messageList) {
+		List<Message> finalList = new ArrayList<Message>();
+		for(com.clover.spika.enterprise.chat.models.greendao.Message item : messageList){
+//			Log.i("LOG", "GET FROM DATABASE");
+			finalList.add(convertDaoMessageToMessageModel(item));
+		}
+		return finalList;
 	}
 
 	public static Category convertDaoCategoryToCategoryModel(com.clover.spika.enterprise.chat.models.greendao.Category category) {

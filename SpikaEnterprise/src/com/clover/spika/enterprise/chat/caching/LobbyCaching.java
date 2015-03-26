@@ -189,11 +189,35 @@ public class LobbyCaching {
 					finalMessageModelId = finalMessageModel.getId();
 				}
 
-				com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.chat_id),
-						Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type,
-						chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, finalCategoryModelId, finalUserModelId, finalMessageModelId);
-
-				chatDao.insertOrReplace(finalChatModel);
+				if (chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).count() > 0) {
+					com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Chat_id.eq(chat.chat_id)).unique();
+					
+					usedChatModel.setChat_id(Long.valueOf(chat.chat_id));
+					usedChatModel.setId(Long.valueOf(chat.chat_id));
+					usedChatModel.setChat_name(chat.chat_name);
+					usedChatModel.setSeen_by(chat.seen_by);
+					usedChatModel.setTotal_count(chat.total_count);
+					usedChatModel.setImage_thumb(chat.image_thumb);
+					usedChatModel.setImage(chat.image);
+					usedChatModel.setAdmin_id(chat.image);
+					usedChatModel.setIs_active(chat.is_active);
+					usedChatModel.setType(chat.type);
+					usedChatModel.setIs_private(chat.is_private);
+					usedChatModel.setPassword(chat.password);
+					usedChatModel.setUnread(chat.unread);
+					usedChatModel.setIs_member(chat.is_member);
+					usedChatModel.setModified(chat.modified);
+					usedChatModel.setCategoryId(finalCategoryModelId);
+					usedChatModel.setUserIdProperty(finalUserModelId);
+					usedChatModel.setMessageIdProperty(finalMessageModelId);
+					
+					chatDao.update(usedChatModel);
+				} else {
+					com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.chat_id),
+							Long.valueOf(chat.chat_id), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type,
+							chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+					chatDao.insert(finalChatModel);
+				}
 			}
 		}
 	}

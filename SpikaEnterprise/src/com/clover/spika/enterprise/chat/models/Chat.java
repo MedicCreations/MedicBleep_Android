@@ -50,4 +50,36 @@ public class Chat extends BaseModel {
 	public boolean isMember(){
 		return this.is_member == 0 ? false : true;
 	}
+
+	@Override
+	public String toString() {
+		return "Chat [chat=" + chat + ", id=" + id + ", chat_id=" + chat_id + ", chat_name=" + chat_name + ", seen_by=" + seen_by + ", total_count=" + total_count + ", messages=" + messages
+				+ ", user=" + user + ", image_thumb=" + image_thumb + ", image=" + image + ", admin_id=" + admin_id + ", is_active=" + is_active + ", type=" + type + ", is_private=" + is_private
+				+ ", password=" + password + ", unread=" + unread + ", category=" + category + ", is_member=" + is_member + ", last_message=" + last_message + ", modified=" + modified
+				+ ", isSelected=" + isSelected + ", isNewMsg=" + isNewMsg + ", isRefresh=" + isRefresh + ", isClear=" + isClear + ", isSend=" + isSend + ", isPagging=" + isPagging + ", adapterCount="
+				+ adapterCount + "]";
+	}
+	
+	public Chat copyChat(Chat toCopy){
+		Chat chat = new Chat();
+		
+		chat.id = toCopy.id;
+		chat.chat_id = toCopy.chat_id;
+		chat.chat_name = toCopy.chat_name;
+		chat.seen_by = toCopy.seen_by;
+		chat.total_count = toCopy.total_count;
+		chat.image_thumb = toCopy.image_thumb;
+		chat.image = toCopy.image;
+		chat.admin_id = toCopy.admin_id;
+		chat.is_active = toCopy.is_active;
+		chat.type = toCopy.type;
+		chat.is_private = toCopy.is_private;
+		chat.password = toCopy.password;
+		chat.unread = toCopy.unread;
+		chat.is_member = toCopy.is_member;
+		chat.modified = toCopy.modified;
+		
+		return chat;
+	}
+	
 }
