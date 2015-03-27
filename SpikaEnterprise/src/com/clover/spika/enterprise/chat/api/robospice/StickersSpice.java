@@ -11,7 +11,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
-public class EmojiSpice {
+public class StickersSpice {
 	
 	public static class GetEmoji extends CustomSpiceRequest<StickersHolder> {
 

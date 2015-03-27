@@ -17,7 +17,7 @@ import com.squareup.okhttp.ResponseBody;
 
 public class RoomsSpice {
 
-	public static class GetDistinctUserOK extends CustomSpiceRequest<ConfirmUsersList> {
+	public static class GetDistinctUser extends CustomSpiceRequest<ConfirmUsersList> {
 
 		private Context ctx;
 		private String userIds;
@@ -26,7 +26,7 @@ public class RoomsSpice {
 		private String groupAllIds;
 		private String roomAllIds;
 
-		public GetDistinctUserOK(String userIds, String groupIds, String roomIds, String groupAllIds, String roomAllIds, Context context) {
+		public GetDistinctUser(String userIds, String groupIds, String roomIds, String groupAllIds, String roomAllIds, Context context) {
 			super(ConfirmUsersList.class);
 
 			this.ctx = context;

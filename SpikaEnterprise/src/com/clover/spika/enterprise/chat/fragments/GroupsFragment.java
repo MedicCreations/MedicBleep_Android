@@ -31,7 +31,7 @@ import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GroupsAdapter;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -250,7 +250,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			catId = String.valueOf(categoryId);
 		}
 
-		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, catId, Type.CHAT, search, toClear, this, this);
+		GlobalCachingSpice.GlobalSearch globalSearch = new GlobalCachingSpice.GlobalSearch(getActivity(), spiceManager, page, null, catId, Type.CHAT, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
