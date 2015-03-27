@@ -14,7 +14,9 @@ import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -125,7 +127,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -134,7 +136,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 				onApiResponse(result);
 			}
@@ -144,7 +146,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	private void sendFile(String fileName, String fileId) {
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null, mRootId, mMessageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -153,7 +155,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 				onApiResponse(result);
 			}
@@ -166,7 +168,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -175,7 +177,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 				onApiResponse(result);
 			}
@@ -203,7 +205,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	}
 
 	@Override
-	protected void onMessageDeleted() {
+	protected void onMessageDeleted(Message message) {
 		getThreads();
 	}
 
@@ -256,14 +258,14 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			ThreadsAdapter threadsAdapter = (ThreadsAdapter) parent.getAdapter();
 			mMessageId = threadsAdapter.getItem(position).getMessage().getId();
 			if (threadsAdapter.getItem(position).getMessage().isMe()) {
-				deleteMessage(threadsAdapter.getItem(position).getMessage().getId());
+				deleteMessage(threadsAdapter.getItem(position).getMessage());
 			}
 		}
 		return true;
 	}
 
-	public void onApiResponse(Integer result) {
-		if (result == Const.API_SUCCESS) {
+	public void onApiResponse(SendMessageResponse result) {
+		if (result.getCode() == Const.API_SUCCESS) {
 			etMessage.setText("");
 			hideKeyboard(etMessage);
 
@@ -273,7 +275,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			getThreads();
 		} else {
 			AppDialog dialog = new AppDialog(this, false);
-			dialog.setFailed(result);
+			dialog.setFailed(result.getCode());
 		}
 	}
 

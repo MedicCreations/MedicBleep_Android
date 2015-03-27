@@ -26,6 +26,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -205,7 +206,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		handleProgress(true);
 
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, String.valueOf(chat.getId()), text, fileId, thumbId, longitude, latitude, null, null, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -214,14 +215,14 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 
-				if (result == Const.API_SUCCESS) {
+				if (result.getCode() == Const.API_SUCCESS) {
 					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.password, chat.user);
 				} else {
 					AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
-					dialog.setFailed(result);
+					dialog.setFailed(result.getCode());
 				}
 			}
 		});

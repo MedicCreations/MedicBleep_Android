@@ -15,7 +15,7 @@ import com.clover.spika.enterprise.chat.models.User;
 public class Const {
 
 	// Version constants
-	public static final String BASE_URL = "https://www.spikaent.com/msg/server/v1";
+	public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
@@ -212,6 +212,7 @@ public class Const {
 	public static final int MSG_TYPE_FILE = 6;
 	public static final int MSG_TYPE_DELETED = 7;
 	public static final int MSG_TYPE_GIF = 9;
+	public static final int MSG_TYPE_TEMP_MESS = 999;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;

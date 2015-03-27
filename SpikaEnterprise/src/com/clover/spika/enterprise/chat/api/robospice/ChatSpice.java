@@ -3,16 +3,16 @@ package com.clover.spika.enterprise.chat.api.robospice;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -381,7 +381,7 @@ public class ChatSpice {
 		}
 	}
 
-	public static class SendMessage extends CustomSpiceRequest<Integer> {
+	public static class SendMessage extends CustomSpiceRequest<SendMessageResponse> {
 
 		private Context ctx;
 
@@ -396,7 +396,7 @@ public class ChatSpice {
 		private String parentId;
 
 		public SendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId, String parentId, Context context) {
-			super(Integer.class);
+			super(SendMessageResponse.class);
 
 			this.ctx = context;
 			this.type = type;
@@ -411,7 +411,7 @@ public class ChatSpice {
 		}
 
 		@Override
-		public Integer loadDataFromNetwork() throws Exception {
+		public SendMessageResponse loadDataFromNetwork() throws Exception {
 
 			FormEncodingBuilder formBuilder = new FormEncodingBuilder();
 
@@ -458,14 +458,10 @@ public class ChatSpice {
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
 			
-			try {
-				JSONObject jsonObject = new JSONObject(responseBody);
-				return jsonObject.getInt(Const.CODE);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			ObjectMapper mapper = new ObjectMapper();
 
-			return Const.E_FAILED;
+			return mapper.readValue(responseBody, SendMessageResponse.class);
+			
 		}
 	}
 
@@ -520,6 +516,8 @@ public class ChatSpice {
 			String responseBody = resBody.string();
 			
 			ObjectMapper mapper = new ObjectMapper();
+			
+			Logger.custom("e", "LOG", responseBody);
 
 			Chat result = mapper.readValue(responseBody, Chat.class);
 
@@ -533,7 +531,7 @@ public class ChatSpice {
 
 				return result;
 			} else {
-				return null;
+				return result;
 			}
 		}
 	}
@@ -583,6 +581,8 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+			
+			Logger.custom("i", "LOG", responseBody);
 
 			ObjectMapper mapper = new ObjectMapper();
 

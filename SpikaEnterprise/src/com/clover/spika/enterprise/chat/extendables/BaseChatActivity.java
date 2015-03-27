@@ -65,6 +65,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.StickersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.models.User;
@@ -695,32 +696,32 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		}
 	}
 
-	protected void deleteMessage(final String messageId) {
+	protected void deleteMessage(final Message message) {
 		AppDialog deleteDialog = new AppDialog(this, false);
 		deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
 
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
 
-				handleProgress(true);
+//				handleProgress(true);
 
-				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(messageId, BaseChatActivity.this);
+				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(message.getId(), BaseChatActivity.this);
 				spiceManager.execute(deleteMessage, new CustomSpiceListener<BaseModel>() {
 
 					@Override
 					public void onRequestFailure(SpiceException arg0) {
 						super.onRequestFailure(arg0);
-						handleProgress(false);
+//						handleProgress(false);
 						Utils.onFailedUniversal(null, BaseChatActivity.this);
 					}
 
 					@Override
 					public void onRequestSuccess(BaseModel result) {
 						super.onRequestSuccess(result);
-						handleProgress(false);
+//						handleProgress(false);
 
 						if (result.getCode() == Const.API_SUCCESS) {
-							onMessageDeleted();
+							onMessageDeleted(message);
 						} else {
 							AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 							dialog.setFailed(result.getCode());
@@ -1033,7 +1034,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 	 */
 	protected abstract void onChatPushUpdated();
 
-	protected abstract void onMessageDeleted();
+	protected abstract void onMessageDeleted(Message message);
 
 	/**
 	 * Called as a callback method after user has selected a file.

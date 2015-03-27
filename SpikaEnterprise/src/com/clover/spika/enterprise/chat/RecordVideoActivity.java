@@ -30,6 +30,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
@@ -132,7 +133,7 @@ public class RecordVideoActivity extends BaseActivity {
 
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -141,16 +142,16 @@ public class RecordVideoActivity extends BaseActivity {
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 
-				if (result == Const.API_SUCCESS) {
+				if (result.getCode() == Const.API_SUCCESS) {
 
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);
 					dialog.setSucceed();
 				} else {
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, false);
-					dialog.setFailed(result);
+					dialog.setFailed(result.getCode());
 				}
 			}
 		});

@@ -73,7 +73,7 @@ public class Logger {
 			return;
 		}
 
-		Log.i(Const.VERBOSE + type, message);
+		Log.v(Const.VERBOSE + type, message);
 	}
 
 	public static void e(String message) {

@@ -31,6 +31,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -472,7 +473,7 @@ public class RecordAudioActivity extends BaseActivity {
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), mFileName, fileId, null, null, null,
 				rootId, messageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -481,10 +482,10 @@ public class RecordAudioActivity extends BaseActivity {
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 
-				if (result == Const.API_SUCCESS) {
+				if (result.getCode() == Const.API_SUCCESS) {
 					AppDialog dialog = new AppDialog(RecordAudioActivity.this, true);
 					dialog.setSucceed();
 				} else {

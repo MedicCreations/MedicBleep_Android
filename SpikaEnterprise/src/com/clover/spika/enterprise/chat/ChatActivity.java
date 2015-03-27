@@ -29,7 +29,6 @@ import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatDBChanged;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice;
-import com.clover.spika.enterprise.chat.caching.robospice.StickersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -40,18 +39,18 @@ import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.Stickers;
-import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
-import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, OnChatNetworkResult{
 
@@ -92,8 +91,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				if (parent.getAdapter() != null) {
 					Message message = (Message) parent.getAdapter().getItem(position);
-					if (message.isMe()) {
-						deleteMessage(message.getId());
+					if (message.isMe() && message.type != Const.MSG_TYPE_DELETED) {
+						deleteMessage(message);
 					}
 				}
 				return true;
@@ -104,8 +103,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onLongClick(Message message) {
-				if (message.isMe()) {
-					deleteMessage(message.getId());
+				if (message.isMe() && message.type != Const.MSG_TYPE_DELETED) {
+					deleteMessage(message);
 				}
 			}
 
@@ -155,7 +154,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
 			} else {
-				getMessages(true, true, true, false, false, true);
+				getMessages(true, true, true, false, false, true); 
 			}
 		} else {
 			isResume = true;
@@ -424,7 +423,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (!TextUtils.isEmpty(chatPassword)) {
 
 				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
-					getMessages(true, true, true, false, false, false);
+					getMessages(true, true, true, false, false, false);//TODO CHECKING FOR DATABSE
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
 					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
@@ -433,7 +432,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						@Override
 						public void onPositiveButtonClick(View v, Dialog d) {
 							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
-							getMessages(true, true, true, false, false, false);
+							getMessages(true, true, true, false, false, false);//TODO CHECKING FOR DATABSE
 						}
 					});
 					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
@@ -453,7 +452,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				}
 
 			} else {
-				getMessages(true, true, true, false, false, false);
+				getMessages(true, true, true, false, false, false); 
 			}
 		} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
@@ -540,8 +539,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		isActive = chat.is_active;
 		if (isActive == 0) {
-			etMessage.setFocusable(false);
-		}
+			etMessage.setFocusable(false); 
+		} 
 		isPrivate = chat.is_private;
 
 		if (chat.category != null) {
@@ -564,12 +563,26 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	}
 
-	private void callNewMsgs() {
-		if (adapter.getCount() > 0) {
-			getMessages(false, false, false, true, true, false);
-		} else {
-			getMessages(true, true, true, false, true, false);
-		}
+	private void callNewMsgs(Message mess) {
+		mess.isMe = true;
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
+				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
+				Long.valueOf(mess.getChat_id()));
+		getDaoSession().getMessageDao().insert(messDao);
+		adapter.addNewMessage(mess);
+//		if (adapter.getCount() > 0) {
+//			mess.isMe = true;
+//			com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
+//					Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
+//					mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
+//					Long.valueOf(mess.getChat_id()));
+//			getDaoSession().getMessageDao().insert(messDao);
+//			adapter.addNewMessage(mess);
+////			getMessages(false, false, false, true, true, false);//TODO CHECKING WITH DATABASE
+//		} else {
+//			getMessages(true, true, true, false, true, false);//TODO CHECKING WITH DATABASE
+//		}
 	}
 
 	@Override
@@ -615,34 +628,38 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 
-		handleProgress(true);
+//		handleProgress(true);
+		if(type == Const.MSG_TYPE_DEFAULT) adapter.addTempMessage(text);
+		chatListView.setSelectionFromTop(adapter.getCount(), 0);
+		etMessage.setText("");
+		
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
-				handleProgress(false);
+//				handleProgress(false);
 				Utils.onFailedUniversal(null, ChatActivity.this);
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
-				handleProgress(false);
+			public void onRequestSuccess(SendMessageResponse result) {
+//				handleProgress(false);
 
-				if (result == Const.API_SUCCESS) {
+				if (result.getCode() == Const.API_SUCCESS) {
 
-					etMessage.setText("");
+//					etMessage.setText("");
 					if (type != Const.MSG_TYPE_DEFAULT)
 						forceClose();
 
-					callNewMsgs();
+					callNewMsgs(result.message_model);
 				} else {
 					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(result);
-					if (result == Const.E_CHAT_INACTIVE) {
+					dialog.setFailed(result.getCode());
+					if (result.getCode() == Const.E_CHAT_INACTIVE) {
 						isActive = 0;
-						etMessage.setText("");
 						etMessage.setFocusable(false);
+						adapter.deleteAllTempChat();
 					}
 				}
 			}
@@ -651,12 +668,19 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	protected void onChatPushUpdated() {
-		getMessages(false, false, false, true, false, true);
+		getMessages(false, false, false, true, false, true);//TODO CHECKING WITH DATABASE
 	}
 
 	@Override
-	protected void onMessageDeleted() {
-		getMessages(false, false, false, true, false, true);
+	protected void onMessageDeleted(Message mess) {
+		mess.setType(Const.MSG_TYPE_DELETED);
+		adapter.setMessageDelted(mess.getId());
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
+				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
+				Long.valueOf(mess.getChat_id()));
+		
+		getDaoSession().getMessageDao().update(messDao);
 	}
 
 	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
@@ -859,7 +883,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				chatListView.setSelectionFromTop(adapter.getCount(), 0);
 			}
 		}
-
+		
 		setNoItemsVisibility();
 	}
 

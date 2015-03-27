@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
@@ -594,7 +595,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -603,15 +604,15 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 
 				AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
 
-				if (result == Const.API_SUCCESS) {
+				if (result.getCode() == Const.API_SUCCESS) {
 					dialog.setSucceed();
 				} else {
-					dialog.setFailed(result);
+					dialog.setFailed(result.getCode());
 				}
 			}
 		});

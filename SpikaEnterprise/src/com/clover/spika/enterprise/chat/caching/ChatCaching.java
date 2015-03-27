@@ -79,13 +79,10 @@ public class ChatCaching {
 		if (activity instanceof BaseActivity) {
 
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-			Log.i("LOG", "CCC " + id);
 			com.clover.spika.enterprise.chat.models.greendao.Chat chatBase = chatDao.queryBuilder().where(Properties.Id.eq(id)).build().unique();
 			
 			if(chatBase == null)
 				return null;
-
-			Log.d("LOG", "SIZE OFF2222: " + chatBase.getMessageList().size());
 
 			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
 					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id)).count();
@@ -138,8 +135,6 @@ public class ChatCaching {
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
 			
-			Log.d("LOG", chat.messages.toString());
-			Log.i("LOG", chat.toString());
 			if(chat.messages != null && chat.messages.size() > 0){ // if chat.messages == null or size == 0, don't save chat in database
 				Log.d("LOG", "saving chat to database");
 				handleNewData(activity, chat);

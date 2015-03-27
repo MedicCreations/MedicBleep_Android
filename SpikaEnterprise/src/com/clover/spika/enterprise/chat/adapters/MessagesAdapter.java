@@ -25,7 +25,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,12 +138,15 @@ public class MessagesAdapter extends BaseAdapter {
 
 		// set items to null
 		holder.meMsgLayout.setVisibility(View.GONE);
+		holder.meMsgLayout.setAlpha(1f);
 		holder.youMsgLayout.setVisibility(View.GONE);
 
 		holder.meMsgContent.setVisibility(View.GONE);
 		holder.meMsgContent.setTypeface(null, Typeface.NORMAL);
+		holder.meMsgContent.setTextColor(Color.WHITE);
 		holder.youMsgContent.setVisibility(View.GONE);
 		holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
+		holder.youMsgContent.setTextColor(Color.WHITE);
 
 		holder.meViewImage.setVisibility(View.GONE);
 		holder.youViewImage.setVisibility(View.GONE);
@@ -197,8 +199,13 @@ public class MessagesAdapter extends BaseAdapter {
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
 				holder.meMsgLayoutBack.setPadding(padding, padding, padding, padding);
 			}
-
-			if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
+			
+			if (msg.getType() == Const.MSG_TYPE_TEMP_MESS) {
+				holder.meMsgLayout.setAlpha(.4f);
+				holder.meMsgContent.setVisibility(View.VISIBLE);
+				holder.meMsgContent.setTextColor(Color.LTGRAY);
+				holder.meMsgContent.setText(msg.getText());
+			}else if (msg.getType() == Const.MSG_TYPE_DEFAULT) {
 				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
@@ -994,6 +1001,56 @@ public class MessagesAdapter extends BaseAdapter {
 		public void onLongClick(Message message);
 
 		public void onSimpleClick(Message message);
+	}
+	
+	public void setMessageDelted(String messageId) {
+		for(Message item : data){
+			if(item.getId().equals(messageId)){
+				item.type = Const.MSG_TYPE_DELETED;
+				break;
+			}
+		}
+		notifyDataSetChanged();
+	}
+	
+	private List<Message> tempMessageList = new ArrayList<Message>();
+	public void addTempMessage(String text) {
+		Message tempMess = new Message();
+		tempMess.setText(text);
+		tempMess.type = Const.MSG_TYPE_TEMP_MESS;
+		tempMess.isMe = true;
+		tempMess.created = String.valueOf((int)(System.currentTimeMillis() / 1000));
+		try {
+			tempMess.id = String.valueOf(Long.valueOf(data.get(data.size() - 1).id) + 10);
+		} catch (Exception e) {
+			tempMess.id = "10";
+		}
+		tempMessageList.add(tempMess);
+		data.add(tempMess);
+		notifyDataSetChanged();
+	}
+	
+	public void deleteAllTempChat() {
+		for(Message item : tempMessageList){
+			data.remove(item);
+		}
+		tempMessageList.clear();
+		notifyDataSetChanged();
+	}
+	
+	public void addNewMessage(Message mess) {
+		mess = Message.decryptContent(ctx, mess);
+		for(Message item : tempMessageList){
+			if(item.text.equals(mess.text)){
+				data.remove(item);
+				tempMessageList.remove(item);
+				break;
+			}
+		}
+		data.add(mess);
+		Collections.sort(data, new MessageSortingById());
+		addSeparatorDate();
+		notifyDataSetChanged();
 	}
 
 	public class ViewHolderChatMsg {
