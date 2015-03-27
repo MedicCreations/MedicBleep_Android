@@ -13,6 +13,8 @@ import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
+import com.clover.spika.enterprise.chat.NewPasscodeActivity;
+import com.clover.spika.enterprise.chat.SMSVerificationActivity;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.models.Login;
@@ -23,6 +25,7 @@ import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -32,6 +35,8 @@ public abstract class LoginBaseActivity extends Activity {
 	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 
 	private AppProgressAlertDialog progressBar;
+	
+	private Bundle tempExtras;
 
 	public void handleProgress(boolean showProgress) {
 
@@ -175,18 +180,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
 
-					new GoogleUtils().getPushToken(LoginBaseActivity.this);
-
-					final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
-
-					if (extras != null) {
-						intent.putExtras(extras);
-					}
-					
-					SpikaEnterpriseApp.startSocket();
-					
-					startActivity(intent);
-					finish();
+					checkPasscodeSet(extras);
 
 				} else {
 
@@ -219,4 +213,53 @@ public abstract class LoginBaseActivity extends Activity {
 		});
 	}
 
+	
+	void checkPasscodeSet (final Bundle extras) {
+		if (!PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
+			tempExtras = extras;
+			Intent intent = new Intent(this, SMSVerificationActivity.class);
+			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
+			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
+		}
+		else {
+			continueToMainActivity(extras);
+		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (Const.REQUEST_PHONE_NUMBER == requestCode) {
+			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
+		}
+		else if (Const.REQUEST_NEW_PASSCODE == requestCode) {
+			if (resultCode == Activity.RESULT_OK) {
+				PasscodeUtility.getInstance().setSessionValid(true);
+
+				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
+										
+					PasscodeUtility.getInstance().setPasscode(this, data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
+					PasscodeUtility.getInstance().setPasscodeEnabled(this, true);
+				}
+			} else {
+				PasscodeUtility.getInstance().setSessionValid(false);
+			}
+			continueToMainActivity(tempExtras);
+		}
+	}
+	
+	void continueToMainActivity (final Bundle extras) {
+		new GoogleUtils().getPushToken(LoginBaseActivity.this);
+
+		final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
+
+		if (extras != null) {
+			intent.putExtras(extras);
+		}
+		
+		SpikaEnterpriseApp.startSocket();
+		
+		startActivity(intent);
+		finish();
+	}
 }

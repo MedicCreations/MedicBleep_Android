@@ -141,6 +141,10 @@
     <string name="message_deleted">[deleted]</string>
     <string name="flash_decrypting">Decrypting&#8230;</string>
     <string name="remove">Remove</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="submit">Submit</string>
+    <string name="change_phone_number">Change Phone Number</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>

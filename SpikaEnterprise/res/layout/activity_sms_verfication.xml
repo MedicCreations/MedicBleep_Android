@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue">
+
+    <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/smsLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:text="@string/spika_big"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/smsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:paddingBottom="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="30dp" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp" >
+
+            <ImageView
+                android:id="@+id/inputFieldImg"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:contentDescription="@null"
+                android:src="@drawable/login_key" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+                android:id="@+id/inputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/inputFieldImg"
+                android:layout_alignTop="@+id/inputFieldImg"
+                android:layout_toRightOf="@+id/inputFieldImg"
+                android:background="@null"
+                android:hint="@string/phone_number"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/inputFieldImg"
+                android:layout_marginTop="10dp"
+                android:background="@color/default_blue" />
+        </RelativeLayout>
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+            android:id="@+id/submitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/selector_green"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/submit"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        
+        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+            android:id="@+id/changePhoneNumberButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/selector_green"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/change_phone_number"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+	        android:id="@+id/phoneNumberTextView"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="SMS with verification code sent to:\n+xxx xxx-xxxx-xxxx"
+	        android:gravity="center"
+	        android:background="@null"
+	        android:maxLines="3"
+	        android:paddingLeft="5dp"
+	        android:paddingRight="5dp" />
+    </LinearLayout>
+
+</RelativeLayout>

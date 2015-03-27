@@ -145,6 +145,11 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.clover.spika.enterprise.chat.SMSVerificationActivity"
+            android:label="SMSVerificationActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.clover.spika.enterprise.chat.ProfileOtherActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />

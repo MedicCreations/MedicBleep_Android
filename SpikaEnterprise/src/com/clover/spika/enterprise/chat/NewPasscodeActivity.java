@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -29,15 +31,24 @@ public class NewPasscodeActivity extends Activity {
 
 	private LinkedList<Integer> enteredValuesList = new LinkedList<Integer>();
 
+	ImageButton backButton;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_passcode);
 
-		ImageButton backButton = (ImageButton) findViewById(R.id.goBack);
+		backButton = (ImageButton) findViewById(R.id.goBack);
 		if (backButton != null) {
-			backButton.setVisibility(View.VISIBLE);
+			backButton.setVisibility(View.INVISIBLE);
 		}
+		
+		backButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {	
+				backButtonLogic();
+			}
+		});
 		
 		((TextView)findViewById(R.id.description)).setText(R.string.enter_a_passcode);
 	}
@@ -112,6 +123,7 @@ public class NewPasscodeActivity extends Activity {
 			if (TextUtils.isEmpty(PasscodeUtility.getInstance().getTemporaryPasscode())) {
 				PasscodeUtility.getInstance().setTemporaryPasscode(builder.toString());
 				enteredValuesList.clear();
+				backButton.setVisibility(View.VISIBLE);
 
 				reDraw();
 				((TextView)findViewById(R.id.description)).setText(R.string.re_enter_your_passcode);
@@ -125,7 +137,7 @@ public class NewPasscodeActivity extends Activity {
 				setResult(RESULT_OK, resultData);
 
 				PasscodeUtility.getInstance().setTemporaryPasscode(null);
-
+				
 				finish();
 			} else {
 				// error password
@@ -150,6 +162,16 @@ public class NewPasscodeActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		exitActivity(null);
+		backButtonLogic();
+	}
+	
+	void backButtonLogic () {
+		if (PasscodeUtility.getInstance().getTemporaryPasscode().length() > 0) {
+			PasscodeUtility.getInstance().setTemporaryPasscode(null);
+			enteredValuesList.clear();
+			reDraw();
+			((TextView)findViewById(R.id.description)).setText(R.string.enter_a_passcode);
+			backButton.setVisibility(View.INVISIBLE);
+		}
 	}
 }

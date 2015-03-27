@@ -35,6 +35,8 @@ public class Const {
 	public static final int PASSCODE_ENTRY_VALIDATION_REQUEST = 21000;
 	public static final int REQUEST_NEW_PASSCODE = 9001;
 	public static final int REQUEST_REMOVE_PASSCODE = 9002;
+	public static final int REQUEST_PHONE_NUMBER = 9003;
+	public static final int REQUEST_VERIFICATION_CODE = 9004;
 
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
