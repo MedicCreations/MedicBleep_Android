@@ -32,7 +32,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 public class GlobalSearchCaching {
 
 	public static List<GlobalModel> getData(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String categoryId, final int type,
-			String searchTerm, final int toClear, final OnGlobalSearchDBChanged onDBChangeListener, final OnGlobalSearchNetworkResult onNetworkListener) {
+			String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener, final OnGlobalSearchNetworkResult onNetworkListener) {
 
 		List<GlobalModel> resultArray = getDBData(activity, type);
 
@@ -208,11 +208,11 @@ public class GlobalSearchCaching {
 
 		private Activity activity;
 		private List<GlobalModel> globalModel;
-		private int toClear;
+		private boolean toClear;
 		private int type;
 		private OnGlobalSearchDBChanged onDBChangeListener;
 
-		public HandleNewData(Activity activity, List<GlobalModel> globalModel, int toClear, int type, OnGlobalSearchDBChanged onDBChangeListener) {
+		public HandleNewData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalSearchDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
@@ -546,6 +546,9 @@ public class GlobalSearchCaching {
 								finalMessageModel.setParent_id(chat.chat_id);
 							}
 
+							messageDao.update(finalMessageModel);
+							finalMessageModelId = finalMessageModel.getId();
+
 						} else {
 							com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
 									Long.valueOf(chat.last_message.id), Long.valueOf(chat.last_message.chat_id), Long.valueOf(chat.last_message.user_id),
@@ -554,7 +557,7 @@ public class GlobalSearchCaching {
 									chat.last_message.child_list, chat.last_message.image_thumb, chat.last_message.type, chat.last_message.root_id, chat.last_message.parent_id,
 									chat.last_message.isMe, chat.last_message.isFailed, (long) chat.chat_id);
 
-							messageDao.insertOrReplace(finalMessageModel);
+							messageDao.insert(finalMessageModel);
 							finalMessageModelId = finalMessageModel.getId();
 						}
 					}
@@ -564,24 +567,65 @@ public class GlobalSearchCaching {
 						com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Id.eq(chat.getId())).unique();
 
 						usedChatModel.setId(Long.valueOf(chat.getId()));
-						usedChatModel.setChat_name(chat.chat_name);
-						usedChatModel.setSeen_by(chat.seen_by);
-						usedChatModel.setTotal_count(chat.total_count);
-						usedChatModel.setImage_thumb(chat.image_thumb);
-						usedChatModel.setImage(chat.image);
-						usedChatModel.setAdmin_id(chat.image);
+
+						if (chat.chat_name != null) {
+							usedChatModel.setChat_name(chat.chat_name);
+						}
+
+						if (chat.seen_by != null) {
+							usedChatModel.setSeen_by(chat.seen_by);
+						}
+
+						if ((Integer) chat.total_count != null || chat.total_count != 0) {
+							usedChatModel.setTotal_count(chat.total_count);
+						}
+
+						if (chat.image_thumb != null) {
+							usedChatModel.setImage_thumb(chat.image_thumb);
+						}
+
+						if (chat.image != null) {
+							usedChatModel.setImage(chat.image);
+						}
+
+						if (chat.admin_id != null) {
+							usedChatModel.setAdmin_id(chat.admin_id);
+						}
+
 						usedChatModel.setIs_active(chat.is_active);
 						usedChatModel.setType(chat.type);
 						usedChatModel.setIs_private(chat.is_private);
-						usedChatModel.setPassword(chat.password);
-						usedChatModel.setUnread(chat.unread);
+
+						if (chat.password != null) {
+							usedChatModel.setPassword(chat.password);
+						}
+
+						if (chat.unread != null) {
+							usedChatModel.setUnread(chat.unread);
+						}
+
 						usedChatModel.setIs_member(chat.is_member);
-						usedChatModel.setModified(chat.modified);
-						usedChatModel.setCategoryId(finalCategoryModelId);
-						usedChatModel.setUserIdProperty(finalUserModelId);
-						usedChatModel.setMessageIdProperty(finalMessageModelId);
+
+						if (chat.modified != 0L) {
+							usedChatModel.setModified(chat.modified);
+						}
+
+						if (finalCategoryModelId != 0L) {
+							usedChatModel.setCategoryId(finalCategoryModelId);
+						}
+
+						if (finalUserModelId != 0L) {
+							usedChatModel.setUserIdProperty(finalUserModelId);
+						}
+
+						if (finalMessageModelId != 0L) {
+							usedChatModel.setMessageIdProperty(finalMessageModelId);
+						}
+
+						usedChatModel.setIsRecent(true);
 
 						chatDao.update(usedChatModel);
+
 					} else {
 
 						com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(
@@ -596,7 +640,7 @@ public class GlobalSearchCaching {
 	}
 
 	public interface OnGlobalSearchDBChanged {
-		public void onGlobalSearchDBChanged(List<GlobalModel> usableData, int isClear);
+		public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear);
 	}
 
 	public interface OnGlobalSearchNetworkResult {

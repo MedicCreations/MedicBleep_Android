@@ -44,9 +44,6 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
-	private final int CLEAR_ALL = 0;
-	private final int CHECK_FOR_NEW_DATA = 2;
-
 	public static void start(Context c, String fileId, String thumbId) {
 		c.startActivity(new Intent(c, ChooseLobbyActivity.class).putExtra(Const.FILE_ID, fileId).putExtra(Const.THUMB_ID, thumbId).putExtra(Const.TYPE, Const.MSG_TYPE_PHOTO));
 	}
@@ -79,7 +76,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		mainListView.setAdapter(adapter);
 		mainListView.setOnRefreshListener(refreshListener2);
 
-		getLobby(0, CLEAR_ALL);
+		getLobby(0, true);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -92,11 +89,11 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
+			getLobby(mCurrentIndex, false);
 		}
 	};
 
-	private void setData(List<Chat> data, int toClearPrevious) {
+	private void setData(List<Chat> data, boolean toClearPrevious) {
 		if (mainListView == null) {
 			return;
 		}
@@ -107,17 +104,17 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			adapter.setData(data);
 		} else {
 			adapter.addData(data);
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
 		}
 
@@ -140,7 +137,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		}
 	}
 
-	public void getLobby(int page, final int toClear) {
+	public void getLobby(int page, final boolean toClear) {
 
 		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(this, spiceManager, page, toClear, this, this);
 		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
@@ -231,7 +228,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	}
 
 	@Override
-	public void onRecentDBChanged(List<Chat> usableData, int isClear) {
+	public void onRecentDBChanged(List<Chat> usableData, boolean isClear) {
 		setData(usableData, isClear);
 	}
 

@@ -95,9 +95,6 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	private int currentFilter = GlobalModel.Type.ALL;
 
-	private final int CLEAR_ALL = 0;
-	private final int CHECK_FOR_NEW_DATA = 2;
-
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
 	@Override
@@ -239,7 +236,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 		etSearch.addTextChangedListener(textWatacher);
 
-		getListItems(mCurrentIndex, null, CHECK_FOR_NEW_DATA, currentFilter);
+		getListItems(mCurrentIndex, null, false, currentFilter);
 
 		setInitialTextToTxtUsers();
 
@@ -299,27 +296,25 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getListItems(mCurrentIndex, mSearchData, CHECK_FOR_NEW_DATA, currentFilter);
+			getListItems(mCurrentIndex, mSearchData, false, currentFilter);
 		}
 	};
 
-	private void setData(List<GlobalModel> data, int toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
-			adapter.setData(data);
-		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
+		if (toClearPrevious) {
 			adapter.setData(data);
 		} else {
 			adapter.addData(data);
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
 		}
 
@@ -341,7 +336,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		allData.addAll(adapter.getData());
 	}
 
-	public void getListItems(int page, String search, final int toClear, int type) {
+	public void getListItems(int page, String search, final boolean toClear, int type) {
 
 		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
@@ -363,7 +358,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		} else {
 			mSearchData = data;
 		}
-		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	@Override
@@ -413,7 +408,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	private void filterUsersGo() {
@@ -433,7 +428,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	private void filterGroupsGo() {
@@ -453,7 +448,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(12);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	private void filterRoomsGo() {
@@ -473,7 +468,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		filterRooms.setTextSize(15);
 
 		mCurrentIndex = 0;
-		getListItems(mCurrentIndex, mSearchData, CLEAR_ALL, currentFilter);
+		getListItems(mCurrentIndex, mSearchData, true, currentFilter);
 	}
 
 	private void showDialog() {
@@ -756,7 +751,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	@Override
-	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, int isClear) {
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
 		setData(usableData, isClear);
 	}
 }

@@ -24,15 +24,16 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -42,7 +43,8 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel> {
+public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel>, OnGlobalSearchDBChanged,
+		OnGlobalSearchNetworkResult {
 
 	PullToRefreshListView mainList;
 	InviteRemoveAdapter adapter;
@@ -178,16 +180,20 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainList.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
+
+		if (toClearPrevious) {
 			currentCount = data.size();
+		}
 
-		if (toClearPrevious)
+		if (toClearPrevious) {
 			adapter.setData(data);
-		else
+		} else {
 			adapter.addData(data);
+		}
 
-		if (toClearPrevious)
+		if (toClearPrevious) {
 			mainList.getRefreshableView().setSelection(0);
+		}
 
 		mainList.onRefreshComplete();
 
@@ -200,32 +206,14 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	private void getUsers(int page, String search, final boolean toClear) {
 
-		handleProgress(true);
+		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(this, spiceManager, page, null, chatId, Type.ALL, search, toClear, this, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, null, Type.ALL, search, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
-
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, InvitePeopleActivity.this);
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.getTotalCount();
-					setData(result.getModelsList(), toClear);
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, InvitePeopleActivity.this);
-				}
+				setData(result, toClear);
 			}
 		});
 	}
@@ -408,6 +396,16 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 		invitedPeople.setText(span);
+	}
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		setData(usableData, isClear);
 	}
 
 }

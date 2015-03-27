@@ -19,11 +19,11 @@ public class LobbyCacheSpice {
 		private Activity activity;
 		private SpiceManager spiceManager;
 		private int page;
-		private int toClear;
+		private boolean toClear;
 		private OnLobbyDBChanged onDBChangeListener;
 		private OnLobbyNetworkResult onNetworkListener;
 
-		public GetData(Activity activity, SpiceManager spiceManager, int page, int toClear, OnLobbyDBChanged onDBChangeListener, OnLobbyNetworkResult onNetworkListener) {
+		public GetData(Activity activity, SpiceManager spiceManager, int page, boolean toClear, OnLobbyDBChanged onDBChangeListener, OnLobbyNetworkResult onNetworkListener) {
 			super(List.class);
 
 			this.activity = activity;

@@ -27,7 +27,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class LobbyCaching {
 
-	public static List<Chat> getData(final Activity activity, final SpiceManager spiceManager, int page, final int toClear, final OnLobbyDBChanged onDBChangeListener,
+	public static List<Chat> getData(final Activity activity, final SpiceManager spiceManager, int page, final boolean toClear, final OnLobbyDBChanged onDBChangeListener,
 			final OnLobbyNetworkResult onNetworkListener) {
 
 		List<Chat> resultArray = getDBData(activity);
@@ -104,10 +104,10 @@ public class LobbyCaching {
 
 		private Activity activity;
 		private List<Chat> chats;
-		private int toClear;
+		private boolean toClear;
 		private OnLobbyDBChanged onDBChangeListener;
 
-		public HandleNewData(Activity activity, List<Chat> chats, int toClear, OnLobbyDBChanged onDBChangeListener) {
+		public HandleNewData(Activity activity, List<Chat> chats, boolean toClear, OnLobbyDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
@@ -341,6 +341,9 @@ public class LobbyCaching {
 						if (chat.chat_id != 0) {
 							finalMessageModel.setParent_id(chat.chat_id);
 						}
+						
+						messageDao.update(finalMessageModel);
+						finalMessageModelId = finalMessageModel.getId();
 
 					} else {
 						com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
@@ -350,7 +353,7 @@ public class LobbyCaching {
 								chat.last_message.image_thumb, chat.last_message.type, chat.last_message.root_id, chat.last_message.parent_id, chat.last_message.isMe,
 								chat.last_message.isFailed, (long) chat.chat_id);
 
-						messageDao.insertOrReplace(finalMessageModel);
+						messageDao.insert(finalMessageModel);
 						finalMessageModelId = finalMessageModel.getId();
 					}
 				}
@@ -416,8 +419,9 @@ public class LobbyCaching {
 					}
 
 					usedChatModel.setIsRecent(true);
-
+					
 					chatDao.update(usedChatModel);
+					
 				} else {
 					com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.getId()),
 							chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password,
@@ -429,7 +433,7 @@ public class LobbyCaching {
 	}
 
 	public interface OnLobbyDBChanged {
-		public void onRecentDBChanged(List<Chat> usableData, int isClear);
+		public void onRecentDBChanged(List<Chat> usableData, boolean isClear);
 	}
 
 	public interface OnLobbyNetworkResult {

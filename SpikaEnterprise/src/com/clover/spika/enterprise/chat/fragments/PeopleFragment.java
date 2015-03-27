@@ -43,9 +43,6 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	PullToRefreshListView mainListView;
 	public PeopleAdapter adapter;
 
-	private final int CLEAR_ALL = 0;
-	private final int CHECK_FOR_NEW_DATA = 2;
-
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
@@ -88,7 +85,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		if (allData.size() > 1) {
 			adapter.addData(allData);
 		} else {
-			getUsers(mCurrentIndex, null, CHECK_FOR_NEW_DATA);
+			getUsers(mCurrentIndex, null, false);
 		}
 
 		if (getActivity() instanceof MainActivity) {
@@ -142,27 +139,25 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getUsers(mCurrentIndex, mSearchData, CHECK_FOR_NEW_DATA);
+			getUsers(mCurrentIndex, mSearchData, false);
 		}
 	};
 
-	private void setData(List<GlobalModel> data, int toClearPrevious) {
+	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			currentCount = data.size();
 		}
-		
-		if (toClearPrevious == CLEAR_ALL) {
-			adapter.setData(data);
-		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
+
+		if (toClearPrevious) {
 			adapter.setData(data);
 		} else {
 			adapter.addData(data);
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
 		}
 
@@ -185,7 +180,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void getUsers(int page, String search, final int toClear) {
+	public void getUsers(int page, String search, final boolean toClear) {
 
 		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
@@ -207,7 +202,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		} else {
 			mSearchData = data;
 		}
-		getUsers(mCurrentIndex, mSearchData, CLEAR_ALL);
+		getUsers(mCurrentIndex, mSearchData, true);
 	}
 
 	@Override
@@ -235,7 +230,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	@Override
-	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, int isClear) {
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
 		setData(usableData, isClear);
 	}
 }

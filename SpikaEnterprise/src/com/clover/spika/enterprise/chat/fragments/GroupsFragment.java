@@ -29,7 +29,9 @@ import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.GroupsAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -39,15 +41,12 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class GroupsFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
+public class GroupsFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
 
 	private TextView noItems;
 
@@ -61,7 +60,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	private EditText etSearch;
 
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
-	
+
 	private int categoryId = -1;
 	private boolean needRefreshOnResume = false;
 
@@ -75,7 +74,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(needRefreshOnResume){
+		if (needRefreshOnResume) {
 			mCurrentIndex = 0;
 			getGroups(0, null, true);
 			needRefreshOnResume = false;
@@ -115,39 +114,41 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			public void onCreateRoom() {
 				CreateRoomActivity.start(getActivity());
 			}
-			
+
 			@Override
 			public void onFilterClick() {
 				openChooseCategoryDialog();
 			}
-			
+
 		}, true);
-		
+
 		intentFilterRefreshRooms = new IntentFilter(Const.ACTION_REFRESH_ROOMS);
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiverRefreshRoom, intentFilterRefreshRooms);
 
 		return rootView;
 	}
-	
+
 	protected void openChooseCategoryDialog() {
 		ChooseCategoryDialog dialog = new ChooseCategoryDialog(getActivity(), UseType.SEARCH, categoryId);
 		dialog.show();
 		dialog.setListener(new ChooseCategoryDialog.OnActionClick() {
-			
+
 			@Override
 			public void onCloseClick(Dialog d) {
 				d.dismiss();
 			}
-			
+
 			@Override
 			public void onCategorySelect(String categoryId, String categoryName, Dialog d) {
 				GroupsFragment.this.categoryId = Integer.parseInt(categoryId);
 				filterGroups();
-				if(GroupsFragment.this.categoryId < 1) ((MainActivity)getActivity()).setFilterActivate(false);
-				else ((MainActivity)getActivity()).setFilterActivate(true);
+				if (GroupsFragment.this.categoryId < 1)
+					((MainActivity) getActivity()).setFilterActivate(false);
+				else
+					((MainActivity) getActivity()).setFilterActivate(true);
 				d.dismiss();
 			}
-			
+
 			@Override
 			public void onAcceptClick(Dialog d) {
 				d.dismiss();
@@ -167,14 +168,14 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			if(categoryId > 0){
+			if (categoryId > 0) {
 				adapter.manageData(categoryId, s.toString(), allData);
-			}else{
+			} else {
 				adapter.manageData(s.toString(), allData);
 			}
 		}
 	};
-	
+
 	protected void filterGroups() {
 		adapter.manageData(categoryId, allData);
 	}
@@ -213,15 +214,20 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
+		if (toClearPrevious) {
+			currentCount = data.size();
+		}
+
+		if (toClearPrevious) {
 			adapter.setData(data);
-		else
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -242,36 +248,20 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	public void getGroups(int page, String search, final boolean toClear) {
-		
-		handleProgress(true);
-		
+
 		String catId = null;
-		if(categoryId > 0) catId = String.valueOf(categoryId);
+		if (categoryId > 0) {
+			catId = String.valueOf(categoryId);
+		}
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, catId, Type.CHAT, search, getActivity());
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
+		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(getActivity(), spiceManager, page, null, catId, Type.CHAT, search, toClear, this, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.getTotalCount();
-					setData(result.getModelsList(), toClear);
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, getActivity());
-				}
+				setData(result, toClear);
 			}
 		});
 	}
@@ -305,10 +295,10 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
 		}
-		
+
 		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiverRefreshRoom);
 	}
-	
+
 	IntentFilter intentFilterRefreshRooms;
 	BroadcastReceiver receiverRefreshRoom = new BroadcastReceiver() {
 
@@ -317,5 +307,15 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			needRefreshOnResume = true;
 		}
 	};
-	
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		setData(usableData, isClear);
+	}
+
 }

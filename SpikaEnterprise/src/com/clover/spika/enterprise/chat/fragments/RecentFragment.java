@@ -34,10 +34,6 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class RecentFragment extends CustomFragment implements OnItemClickListener, OnLobbyDBChanged, OnLobbyNetworkResult {
 
-	private final int CLEAR_ALL = 0;
-	private final int DONT_CLEAR = 1;
-	private final int CHECK_FOR_NEW_DATA = 2;
-
 	private PullToRefreshListView mainListView;
 	private RecentAdapter adapter;
 	private TextView noItems;
@@ -55,7 +51,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
-		getLobby(0, CHECK_FOR_NEW_DATA);
+		getLobby(0, false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,35 +93,32 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
 			mCurrentIndex++;
-			getLobby(mCurrentIndex, DONT_CLEAR);
+			getLobby(mCurrentIndex, false);
 		}
 	};
 
-	private void setData(List<Chat> data, int toClearPrevious) {
+	private void setData(List<Chat> data, boolean toClearPrevious) {
 		if (mainListView == null) {
 			return;
 		}
 
 		for (Chat item : data) {
-			// TODO XXX FIXME Ovo treba obavezno riješiti
 			item.last_message = Message.decryptContent(getActivity(), item.last_message);
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
-			adapter.setData(data);
-		} else if (toClearPrevious == CHECK_FOR_NEW_DATA) {
+		if (toClearPrevious) {
 			adapter.setData(data);
 		} else {
 			adapter.addData(data);
 		}
 
-		if (toClearPrevious == CLEAR_ALL) {
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
 		}
 
@@ -152,7 +145,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void getLobby(int page, final int toClear) {
+	public void getLobby(int page, final boolean toClear) {
 
 		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(getActivity(), spiceManager, page, toClear, this, this);
 		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
@@ -183,7 +176,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			boolean isFound = adapter.incrementUnread(chatId);
 			if (!isFound) {
 				mCurrentIndex = 0;
-				getLobby(mCurrentIndex, CHECK_FOR_NEW_DATA);
+				getLobby(mCurrentIndex, false);
 			} else {
 				LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(mCurrentIndex, Const.ALL_TOGETHER_TYPE, getActivity());
 				spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>() {
@@ -204,7 +197,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 
 							mTotalCount = result.all_chats.total_count;
 
-							HandleNewData handleNewData = new HandleNewData(getActivity(), result.all_chats.chats, CHECK_FOR_NEW_DATA, RecentFragment.this);
+							HandleNewData handleNewData = new HandleNewData(getActivity(), result.all_chats.chats, false, RecentFragment.this);
 							spiceManager.execute(handleNewData, null);
 
 						} else {
@@ -222,7 +215,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	}
 
 	@Override
-	public void onRecentDBChanged(List<Chat> usableData, int isClear) {
+	public void onRecentDBChanged(List<Chat> usableData, boolean isClear) {
 		setData(usableData, isClear);
 	}
 

@@ -24,12 +24,12 @@ public class GlobalSearchCachingSpice {
 		private String categoryId;
 		private int type;
 		private String searchTerm;
-		private int toClear;
+		private boolean toClear;
 
 		private OnGlobalSearchDBChanged onDBChangeListener;
 		private OnGlobalSearchNetworkResult onNetworkListener;
 
-		public GetData(Activity activity, SpiceManager spiceManager, int page, String chatId, String categoryId, int type, String searchTerm, int toClear,
+		public GetData(Activity activity, SpiceManager spiceManager, int page, String chatId, String categoryId, int type, String searchTerm, boolean toClear,
 				OnGlobalSearchDBChanged onDBChangeListener, OnGlobalSearchNetworkResult onNetworkListener) {
 			super(List.class);
 
