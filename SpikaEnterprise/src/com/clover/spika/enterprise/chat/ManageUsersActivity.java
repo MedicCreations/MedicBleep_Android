@@ -20,10 +20,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberNetworkResult;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalSearchCachingSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
@@ -33,14 +34,11 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener,
-		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
+		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult {
 
 	private TextView mTitleTextView;
 
@@ -137,7 +135,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
 
-		GlobalSearchCachingSpice.GetData globalSearch = new GlobalSearchCachingSpice.GetData(this, spiceManager, currentIndex, chatId, null, Type.ALL, search, toClear, this, this);
+		GlobalCachingSpice.GlobalSearch globalSearch = new GlobalCachingSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.ALL, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
@@ -164,35 +162,18 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
 
-		handleProgress(true);
-
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(currentIndex, chatId, null, Type.ALL, this);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
-
-			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, ManageUsersActivity.this);
-			}
+		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(this, spiceManager, currentIndex, chatId, null, Type.ALL, toUpdateInviteMember, this,
+				this);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 
 			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
 
-				if (result.getCode() == Const.API_SUCCESS) {
+				mPagerAdapter.setMembers(result);
 
-					mPagerAdapter.setMemberTotalCount(result.getTotalCount());
-					mPagerAdapter.setMembers(result.getModelsList());
-
-					if (toUpdateInviteMember) {
-						getUsers(0, null, true, false);
-					}
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, ManageUsersActivity.this);
+				if (toUpdateInviteMember) {
+					getUsers(0, null, true, false);
 				}
 			}
 		});
@@ -408,6 +389,21 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
 		mPagerAdapter.setInviteUsers(usableData, isClear);
+	}
+
+	@Override
+	public void onGlobalMemberNetworkResult(int totalCount) {
+		mPagerAdapter.setMemberTotalCount(totalCount);
+	}
+
+	@Override
+	public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear) {
+
+		mPagerAdapter.setMembers(usableData);
+
+		if (isClear) {
+			getUsers(0, null, true, false);
+		}
 	}
 
 }

@@ -11,21 +11,19 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
-import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<GlobalModel> {
+public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<GlobalModel>, OnGlobalMemberDBChanged {
 
 	private String groupName;
 	private String groupId;
@@ -75,34 +73,15 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 
 	private void getUsersFromGroup() {
 
-		handleProgress(true);
-
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, null, groupId, Type.USER, this);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(this, spiceManager, -1, null, groupId, Type.USER, false, this, null);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, DeselectUsersInGroupActivity.this);
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
 
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					List<GlobalModel> members = result.getModelsList();
-					mUsers = generateUserList(members);
-
-					setListView();
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, DeselectUsersInGroupActivity.this);
-				}
+				mUsers = generateUserList(result);
+				setListView();
 			}
 		});
 	}
@@ -167,6 +146,12 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 		} else {
 			mUsersToPass.add(String.valueOf(((User) obj.getModel()).getId()));
 		}
+	}
+
+	@Override
+	public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		mUsers = generateUserList(usableData);
+		setListView();
 	}
 
 }

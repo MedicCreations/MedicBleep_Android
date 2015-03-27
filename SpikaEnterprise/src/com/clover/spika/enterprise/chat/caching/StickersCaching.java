@@ -7,7 +7,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.api.robospice.EmojiSpice;
+import com.clover.spika.enterprise.chat.api.robospice.StickersSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
@@ -27,7 +27,7 @@ public class StickersCaching {
 
 		StickersHolder resultArray = getDBData(activity);
 
-		EmojiSpice.GetEmoji getEmoji = new EmojiSpice.GetEmoji(activity);
+		StickersSpice.GetEmoji getEmoji = new StickersSpice.GetEmoji(activity);
 		spiceManager.execute(getEmoji, new CustomSpiceListener<StickersHolder>() {
 
 			@Override

@@ -31,7 +31,8 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class GlobalSearchCaching {
 
-	public static List<GlobalModel> getData(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String categoryId, final int type,
+	/* start: Caching calls */
+	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String categoryId, final int type,
 			String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener, final OnGlobalSearchNetworkResult onNetworkListener) {
 
 		List<GlobalModel> resultArray = getDBData(activity, type);
@@ -55,7 +56,7 @@ public class GlobalSearchCaching {
 						onNetworkListener.onGlobalSearchNetworkResult(result.getTotalCount());
 					}
 
-					HandleNewData handleNewData = new HandleNewData(activity, result.getModelsList(), toClear, type, onDBChangeListener);
+					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -67,6 +68,143 @@ public class GlobalSearchCaching {
 
 		return resultArray;
 	}
+
+	public static List<GlobalModel> GlobalMembers(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String groupId, final int type,
+			final boolean isToClear, final OnGlobalMemberDBChanged onDBChangeListener, final OnGlobalMemberNetworkResult onNetworkListener) {
+
+		List<GlobalModel> resultArray = getDBData(activity, type);
+
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type, activity);
+		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+
+			@Override
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				Utils.onFailedUniversal(null, activity);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
+				super.onRequestSuccess(result);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					if (onNetworkListener != null) {
+						onNetworkListener.onGlobalMemberNetworkResult(result.getTotalCount());
+					}
+
+					HandleNewMemberData handleNewData = new HandleNewMemberData(activity, result.getModelsList(), isToClear, type, onDBChangeListener);
+					spiceManager.execute(handleNewData, null);
+
+				} else {
+					String message = activity.getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, activity);
+				}
+			}
+		});
+
+		return resultArray;
+	}
+
+	/* end: Caching calls */
+
+	/* start: Interface callbacks */
+	public interface OnGlobalSearchDBChanged {
+		public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear);
+	}
+
+	public interface OnGlobalSearchNetworkResult {
+		public void onGlobalSearchNetworkResult(int totalCount);
+	}
+
+	public interface OnGlobalMemberDBChanged {
+		public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear);
+	}
+
+	public interface OnGlobalMemberNetworkResult {
+		public void onGlobalMemberNetworkResult(int totalCount);
+	}
+
+	/* end: Interface callbacks */
+
+	/* start: HandleNewData */
+	public static class HandleNewSearchData extends CustomSpiceRequest<Void> {
+
+		private Activity activity;
+		private List<GlobalModel> globalModel;
+		private boolean toClear;
+		private int type;
+		private OnGlobalSearchDBChanged onDBChangeListener;
+
+		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalSearchDBChanged onDBChangeListener) {
+			super(Void.class);
+
+			this.activity = activity;
+			this.globalModel = globalModel;
+			this.toClear = toClear;
+			this.type = type;
+			this.onDBChangeListener = onDBChangeListener;
+		}
+
+		@Override
+		public Void loadDataFromNetwork() throws Exception {
+
+			handleNewData(activity, globalModel);
+
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					if (onDBChangeListener != null) {
+						onDBChangeListener.onGlobalSearchDBChanged(getDBData(activity, type), toClear);
+					}
+				}
+			});
+
+			return null;
+		}
+	}
+
+	public static class HandleNewMemberData extends CustomSpiceRequest<Void> {
+
+		private Activity activity;
+		private List<GlobalModel> globalModel;
+		private boolean toClear;
+		private int type;
+		private OnGlobalMemberDBChanged onDBChangeListener;
+
+		public HandleNewMemberData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalMemberDBChanged onDBChangeListener) {
+			super(Void.class);
+
+			this.activity = activity;
+			this.globalModel = globalModel;
+			this.toClear = toClear;
+			this.type = type;
+			this.onDBChangeListener = onDBChangeListener;
+		}
+
+		@Override
+		public Void loadDataFromNetwork() throws Exception {
+
+			handleNewData(activity, globalModel);
+
+			activity.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					if (onDBChangeListener != null) {
+						onDBChangeListener.onGlobalMemberDBChanged(getDBData(activity, type), toClear);
+					}
+				}
+			});
+
+			return null;
+		}
+	}
+
+	/* end: HandleNewData */
+
+	/* start: Data handling */
 
 	private static List<GlobalModel> getDBData(Activity activity, int type) {
 
@@ -202,43 +340,6 @@ public class GlobalSearchCaching {
 		result.user = DaoUtils.convertDaoUserToUserModel(user);
 
 		return result;
-	}
-
-	public static class HandleNewData extends CustomSpiceRequest<Void> {
-
-		private Activity activity;
-		private List<GlobalModel> globalModel;
-		private boolean toClear;
-		private int type;
-		private OnGlobalSearchDBChanged onDBChangeListener;
-
-		public HandleNewData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalSearchDBChanged onDBChangeListener) {
-			super(Void.class);
-
-			this.activity = activity;
-			this.globalModel = globalModel;
-			this.toClear = toClear;
-			this.type = type;
-			this.onDBChangeListener = onDBChangeListener;
-		}
-
-		@Override
-		public Void loadDataFromNetwork() throws Exception {
-
-			handleNewData(activity, globalModel);
-
-			activity.runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalSearchDBChanged(getDBData(activity, type), toClear);
-					}
-				}
-			});
-
-			return null;
-		}
 	}
 
 	private static void handleNewData(Activity activity, List<GlobalModel> networkData) {
@@ -639,12 +740,6 @@ public class GlobalSearchCaching {
 		}
 	}
 
-	public interface OnGlobalSearchDBChanged {
-		public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear);
-	}
-
-	public interface OnGlobalSearchNetworkResult {
-		public void onGlobalSearchNetworkResult(int totalCount);
-	}
+	/* end: Data handling */
 
 }
