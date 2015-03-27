@@ -10,12 +10,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.clover.spika.enterprise.chat.api.ApiCallback;
-import com.clover.spika.enterprise.chat.api.LocationApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.api.robospice.LocationSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
@@ -131,17 +129,7 @@ public class LocationActivity extends BaseActivity {
 						mMap.clear();
 						mapMarker = mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.fromBitmap(mMapPinBlue)));
 
-						new LocationApi().getAddress(latitude, longitude, LocationActivity.this, new ApiCallback<String>() {
-
-							@Override
-							public void onApiResponse(Result<String> result) {
-								if (result.isSuccess()) {
-									locationAddress.setText(result.getResultData());
-								} else {
-
-								}
-							}
-						});
+						getAddress();
 					}
 				});
 
@@ -159,17 +147,7 @@ public class LocationActivity extends BaseActivity {
 			}
 		}
 
-		new LocationApi().getAddress(latitude, longitude, this, new ApiCallback<String>() {
-
-			@Override
-			public void onApiResponse(Result<String> result) {
-				if (result.isSuccess()) {
-					locationAddress.setText(result.getResultData());
-				} else {
-
-				}
-			}
-		});
+		getAddress();
 	}
 
 	private void sendMsg() {
@@ -197,6 +175,22 @@ public class LocationActivity extends BaseActivity {
 					dialog.setSucceed();
 				} else {
 					dialog.setFailed(result);
+				}
+			}
+		});
+	}
+	
+	private void getAddress(){
+		
+		LocationSpice.GetAddress getAddress = new LocationSpice.GetAddress(latitude, longitude, this);
+		spiceManager.execute(getAddress, new CustomSpiceListener<String>(){
+			
+			@Override
+			public void onRequestSuccess(String address) {
+				super.onRequestSuccess(address);
+				
+				if (address != null) {
+					locationAddress.setText(address);
 				}
 			}
 		});

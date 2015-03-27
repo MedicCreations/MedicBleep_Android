@@ -125,10 +125,11 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 		if (position != -1 && position != adapter.getCount()) {
 			GlobalModel user = adapter.getItem(position);
-			
+
 			User userUser = null;
-			
-			if(user.type == GlobalModel.Type.USER) userUser = (User) user.getModel();
+
+			if (user.type == GlobalModel.Type.USER)
+				userUser = (User) user.getModel();
 
 			ProfileOtherActivity.openOtherProfile(getActivity(), user.getId(), ((User) user.getModel()).getImage(),
 					((User) user.getModel()).getFirstName() + " " + ((User) user.getModel()).getLastName(), userUser);
@@ -335,15 +336,20 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		try {
 			// -2 is because of header and footer view
 			int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-			if (toClearPrevious)
-				currentCount = data.size();
 
-			if (toClearPrevious)
+			if (toClearPrevious) {
+				currentCount = data.size();
+			}
+
+			if (toClearPrevious) {
 				adapter.setData(data);
-			else
+			} else {
 				adapter.addData(data);
-			if (toClearPrevious)
+			}
+
+			if (toClearPrevious) {
 				mainListView.getRefreshableView().setSelection(0);
+			}
 
 			mainListView.onRefreshComplete();
 

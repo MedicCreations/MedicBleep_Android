@@ -103,7 +103,10 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		}
 
 		for (Chat item : data) {
-			item.last_message = Message.decryptContent(getActivity(), item.last_message);
+
+			if (item.last_message != null) {
+				item.last_message = Message.decryptContent(getActivity(), item.last_message);
+			}
 		}
 
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
@@ -112,11 +115,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious) {
-			adapter.setData(data);
-		} else {
-			adapter.addData(data);
-		}
+		adapter.setData(data);
 
 		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);

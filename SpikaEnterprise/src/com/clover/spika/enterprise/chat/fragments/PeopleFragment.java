@@ -151,11 +151,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious) {
-			adapter.setData(data);
-		} else {
-			adapter.addData(data);
-		}
+		adapter.setData(data);
 
 		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);

@@ -185,11 +185,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			currentCount = data.size();
 		}
 
-		if (toClearPrevious) {
-			adapter.setData(data);
-		} else {
-			adapter.addData(data);
-		}
+		adapter.setData(data);
 
 		if (toClearPrevious) {
 			mainList.getRefreshableView().setSelection(0);
