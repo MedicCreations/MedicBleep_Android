@@ -146,7 +146,6 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meMsgContent.setTextColor(Color.WHITE);
 		holder.youMsgContent.setVisibility(View.GONE);
 		holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
-		holder.youMsgContent.setTextColor(Color.WHITE);
 
 		holder.meViewImage.setVisibility(View.GONE);
 		holder.youViewImage.setVisibility(View.GONE);
@@ -992,7 +991,7 @@ public class MessagesAdapter extends BaseAdapter {
 			setEndOfSearch(false);
 		}
 	}
-
+	
 	public void setOnLongAndSimpleClickCustomListener(OnMessageLongAndSimpleClickCustomListener lis) {
 		listenerLongAndSimpleClick = lis;
 	}
@@ -1027,6 +1026,7 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 		tempMessageList.add(tempMess);
 		data.add(tempMess);
+		setEndOfSearch(true); // disable pagging while message sending to web
 		notifyDataSetChanged();
 	}
 	
@@ -1050,6 +1050,11 @@ public class MessagesAdapter extends BaseAdapter {
 		data.add(mess);
 		Collections.sort(data, new MessageSortingById());
 		addSeparatorDate();
+		if (data.size() >= totalCount) {
+			setEndOfSearch(true);
+		} else {
+			setEndOfSearch(false);
+		}
 		notifyDataSetChanged();
 	}
 

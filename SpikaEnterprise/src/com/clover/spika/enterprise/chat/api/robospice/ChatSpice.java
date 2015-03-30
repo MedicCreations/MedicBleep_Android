@@ -12,7 +12,6 @@ import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -297,7 +296,7 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, Chat.class);
@@ -517,8 +516,6 @@ public class ChatSpice {
 			
 			ObjectMapper mapper = new ObjectMapper();
 			
-			Logger.custom("e", "LOG", responseBody);
-
 			Chat result = mapper.readValue(responseBody, Chat.class);
 
 			if (result != null && result.getCode() == Const.API_SUCCESS) {
@@ -582,8 +579,6 @@ public class ChatSpice {
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
 			
-			Logger.custom("i", "LOG", responseBody);
-
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, Chat.class);

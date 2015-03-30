@@ -71,6 +71,18 @@ public class ChatCaching {
 
 		return resultArray;
 	}
+	
+	public static Chat startChat(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging, final boolean isNewMsg,
+			final boolean isSend, final boolean isRefresh, String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
+			final OnChatNetworkResult onNetworkListener, Chat chat) {
+		
+		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
+		
+		HandleNewData handleNewData = new HandleNewData(activity, chat, isClear, isPagging, isNewMsg, isSend, isRefresh, onDBChangeListener);
+		spiceManager.execute(handleNewData, null);
+
+		return resultArray;
+	}
 
 	private static Chat getDBData(Activity activity, long id) {
 
@@ -85,7 +97,8 @@ public class ChatCaching {
 				return null;
 
 			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
-					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id)).count();
+					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
+							com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).count();
 			
 			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
 
@@ -94,7 +107,8 @@ public class ChatCaching {
 			if (tempCount != chatBase.getMessageList().size()) {
 				Log.e("LOG", "RECORRECT MESSAGE LIST");
 				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
-						.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id)).build().list();
+						.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
+								com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).build().list();
 				chat.messages = DaoUtils.converDaoMessagesToMessagesModel(tempMess);
 			}
 

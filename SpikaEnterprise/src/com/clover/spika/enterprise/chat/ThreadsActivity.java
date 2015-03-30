@@ -1,9 +1,13 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -11,9 +15,12 @@ import com.clover.spika.enterprise.chat.adapters.ThreadsAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.caching.ThreadCaching.OnThreadDBChanged;
+import com.clover.spika.enterprise.chat.caching.ThreadCaching.OnThreadNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.ThreadCacheSpice;
+import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
-import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
@@ -22,11 +29,12 @@ import com.clover.spika.enterprise.chat.models.TreeNode;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, OnThreadDBChanged, OnThreadNetworkResult {
 
 	public static final String EXTRA_USER_ID = "com.clover.spika.enterprise.extra_user_id";
 	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.extra_root_id";
@@ -54,7 +62,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	private String mMessageId;
 	private String mUserId;
 
-	private int typeOfMessage = 0;
+	private List<Message> activeData = new ArrayList<Message>();
+	private List<Message> tempDataForSend = new ArrayList<Message>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,56 +100,130 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		getThreads();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void getThreads() {
-
-		handleProgress(true);
-		ChatSpice.GetThreads getThreads = new ChatSpice.GetThreads(mRootId, this);
-		spiceManager.execute(getThreads, new CustomSpiceListener<Chat>() {
+		
+		ThreadCacheSpice.GetData threadCacheSpice = new ThreadCacheSpice.GetData(this, spiceManager, mRootId,  this, this);
+		spiceManager.execute(threadCacheSpice, new CustomSpiceListener<List>() {
 
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
-				handleProgress(false);
 				Utils.onFailedUniversal(null, ThreadsActivity.this);
 			}
 
+			@SuppressWarnings({ "unchecked" })
 			@Override
-			public void onRequestSuccess(Chat result) {
-				handleProgress(false);
-				if (result.getCode() == Const.API_SUCCESS) {
-					threads = new TreeNode(result.messages);
-					((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
-
-					ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
-					for (int i = 0; i < threadsAdapter.getCount(); i++) {
-						if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
-							threadsAdapter.setSelectedItem(i);
-							chatListView.setSelection(i);
-							break;
-						}
+			public void onRequestSuccess(List result) {
+				if(result.size() < 1) return;
+				activeData.clear();
+				activeData.addAll(result);
+				
+				threads = new TreeNode(result);
+				((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
+				
+				ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+				for (int i = 0; i < threadsAdapter.getCount(); i++) {
+					if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
+						threadsAdapter.setSelectedItem(i);
+						chatListView.setSelection(i);
+						break;
 					}
 				}
+				
 			}
 		});
+		
 	}
 
+	
 	private void sendMessage(String text) {
-
-		handleProgress(true);
+		
+		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+		
+		Message tempMess = new Message();
+		tempMess.setText(text);
+		tempMess.type = Const.MSG_TYPE_TEMP_MESS;
+		tempMess.isMe = true;
+		tempMess.created = String.valueOf((int)(System.currentTimeMillis() / 1000));
+		tempMess.parent_id = Integer.valueOf(mMessageId);
+		tempMess.root_id = Integer.valueOf(mRootId);
+		tempMess.user_id = Helper.getUserId(this);
+		try {
+			tempMess.id = String.valueOf(Long.valueOf(activeData.get(activeData.size() -2).id) + 10);
+		} catch (Exception e) {
+			tempMess.id = String.valueOf(mMessageId + 10);
+		}
+		
+		Message decryptMess = Message.decryptContent(this, tempMess);
+		activeData.add(decryptMess);
+		tempDataForSend.add(decryptMess);
+		
+		List<Message> newList = new ArrayList<Message>();
+		newList.addAll(activeData);
+		
+		threads = new TreeNode(newList);
+		threadsAdapter.updateContentNoDecrypt(threads.asList());
+		
+		etMessage.setText("");
+		for (int i = 0; i < threadsAdapter.getCount(); i++) {
+			if (threadsAdapter.getItem(i).getMessage().getId().equals(tempMess.id)) {
+				chatListView.setSelection(i);
+				break;
+			}
+		}
+		for (int i = 0; i < threadsAdapter.getCount(); i++) {
+			if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
+				threadsAdapter.setSelectedItem(i);
+				break;
+			}
+		}
+		
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
-				handleProgress(false);
 				Utils.onFailedUniversal(null, ThreadsActivity.this);
 			}
 
 			@Override
 			public void onRequestSuccess(SendMessageResponse result) {
-				handleProgress(false);
 				onApiResponse(result);
 			}
 		});
+		
+	}
+	
+	private void addNewMessage(SendMessageResponse result) {
+		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+		
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = DaoUtils.convertMessageModelToMessageDao(null, result.message_model, Integer.valueOf(result.message_model.chat_id));
+		getDaoSession().getMessageDao().insert(messDao);
+		
+		Message newMess = Message.decryptContent(this, result.message_model);
+		
+		for(Message item : tempDataForSend){
+			if(item.text.equals(newMess.text)){
+				tempDataForSend.remove(item);
+				activeData.remove(item);
+				break;
+			}
+		}
+		
+		activeData.add(newMess);
+		
+		List<Message> newList = new ArrayList<Message>();
+		newList.addAll(activeData);
+		
+		threads = new TreeNode(newList);
+		threadsAdapter.updateContentNoDecrypt(threads.asList());
+		
+		for (int i = 0; i < threadsAdapter.getCount(); i++) {
+			if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
+				threadsAdapter.setSelectedItem(i);
+				break;
+			}
+		}
 	}
 
 	private void sendFile(String fileName, String fileId) {
@@ -163,8 +246,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	}
 
 	private void sendEmoji(String text) {
-		
-		typeOfMessage = Const.MSG_TYPE_GIF;
 		
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this);
@@ -266,13 +347,14 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 	public void onApiResponse(SendMessageResponse result) {
 		if (result.getCode() == Const.API_SUCCESS) {
-			etMessage.setText("");
-			hideKeyboard(etMessage);
 
-			if (typeOfMessage != Const.MSG_TYPE_DEFAULT)
+			if (result.message_model.type != Const.MSG_TYPE_DEFAULT){
 				forceClose();
+			}else{
+			}
+			addNewMessage(result);
 
-			getThreads();
+//			getThreads();
 		} else {
 			AppDialog dialog = new AppDialog(this, false);
 			dialog.setFailed(result.getCode());
@@ -292,5 +374,31 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	@Override
 	protected void activateChat() {
 
+	}
+
+	@Override
+	public void onThreadNetworkResult() {}
+
+	@Override
+	public void onThreadDBChanged(List<Message> usableData) {
+		if(activeData.equals(usableData)){
+			Log.d("LOG", "SAME IN THREAD");
+		}else{
+			Log.d("LOG", "NOT SAME IN THREAD");
+			activeData.clear();
+			activeData.addAll(usableData);
+			threads = new TreeNode(usableData);
+			((ThreadsAdapter) chatListView.getAdapter()).updateContent(threads.asList());
+			
+			ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+			for (int i = 0; i < threadsAdapter.getCount(); i++) {
+				if (threadsAdapter.getItem(i).getMessage().getId().equals(mMessageId)) {
+					threadsAdapter.setSelectedItem(i);
+					chatListView.setSelection(i);
+					break;
+				}
+			}
+		}
+		
 	}
 }

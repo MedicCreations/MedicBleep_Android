@@ -52,4 +52,37 @@ public class ChatCacheSpice {
 			return ChatCaching.getData(activity, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, onDBChangeListener, onNetworkListener);
 		}
 	}
+	
+	public static class StartChat extends CustomSpiceRequest<Chat> {
+
+		private Activity activity;
+		private SpiceManager spiceManager;
+		private Chat chat;
+		private String chatId;
+		private String msgId;
+		private OnChatDBChanged onDBChangeListener;
+		private OnChatNetworkResult onNetworkListener;
+		
+		
+		public StartChat(Activity activity, SpiceManager spiceManager, String chatId, String msgId, 
+				OnChatDBChanged onDBChangeListener, OnChatNetworkResult onNetworkListener, Chat chat) {
+			super(Chat.class);
+
+			this.activity = activity;
+			this.spiceManager = spiceManager;
+			this.chat = chat;
+			this.chatId = chatId;
+			this.msgId = msgId;
+			this.onDBChangeListener = onDBChangeListener;
+			this.onNetworkListener = onNetworkListener;
+		}
+
+		@Override
+		public Chat loadDataFromNetwork() throws Exception {
+			
+			return ChatCaching.startChat(activity, spiceManager, true, false, false, false, false, chatId, 
+					msgId, 0, onDBChangeListener, onNetworkListener, chat);
+
+		}
+	}
 }

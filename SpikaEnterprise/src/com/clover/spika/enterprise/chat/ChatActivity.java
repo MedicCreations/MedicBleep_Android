@@ -29,6 +29,7 @@ import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatDBChanged;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice.StartChat;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -212,6 +213,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	};
 
 	protected void kill() {
+		
+		hideKeyboard(etMessage);
 
 		finish();
 
@@ -423,7 +426,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (!TextUtils.isEmpty(chatPassword)) {
 
 				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
-					getMessages(true, true, true, false, false, false);//TODO CHECKING FOR DATABSE
+					getMessages(true, true, true, false, false, false);
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
 					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
@@ -432,7 +435,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						@Override
 						public void onPositiveButtonClick(View v, Dialog d) {
 							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
-							getMessages(true, true, true, false, false, false);//TODO CHECKING FOR DATABSE
+							getMessages(true, true, true, false, false, false);
+							d.dismiss();
 						}
 					});
 					dialog.setOnNegativeButtonClick(new OnNegativeButtonCLickListener() {
@@ -490,7 +494,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 					setTitle(chatName);
 					
-					getMessages(true, false, false, false, false, false);
+					startChat(result);
 					
 //					adapter.clearItems();
 //					totalItems = Integer.valueOf(result.total_count);
@@ -565,12 +569,18 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	private void callNewMsgs(Message mess) {
 		mess.isMe = true;
+		totalItems ++;
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
 				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
 				Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess);
+		
+		setNoItemsVisibility();
+		
+		chatListView.setSelectionFromTop(adapter.getCount(), 0);
+		
 //		if (adapter.getCount() > 0) {
 //			mess.isMe = true;
 //			com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
@@ -579,9 +589,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 //					Long.valueOf(mess.getChat_id()));
 //			getDaoSession().getMessageDao().insert(messDao);
 //			adapter.addNewMessage(mess);
-////			getMessages(false, false, false, true, true, false);//TODO CHECKING WITH DATABASE
+////			getMessages(false, false, false, true, true, false);
 //		} else {
-//			getMessages(true, true, true, false, true, false);//TODO CHECKING WITH DATABASE
+//			getMessages(true, true, true, false, true, false);
 //		}
 	}
 
@@ -668,7 +678,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	protected void onChatPushUpdated() {
-		getMessages(false, false, false, true, false, true);//TODO CHECKING WITH DATABASE
+		getMessages(false, false, false, true, false, true);
 	}
 
 	@Override
@@ -681,6 +691,31 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				Long.valueOf(mess.getChat_id()));
 		
 		getDaoSession().getMessageDao().update(messDao);
+	}
+	
+	protected void startChat(Chat result) {
+		if (!isRunning) {
+			isRunning = true;
+		} else {
+			return;
+		}
+		
+		ChatCacheSpice.StartChat startChatSpice = new StartChat(this, spiceManager, chatId, "-1", this, this, result);
+		spiceManager.execute(startChatSpice, new CustomSpiceListener<Chat>(){
+			
+			@Override
+			public void onRequestFailure(SpiceException ex) {
+				super.onRequestFailure(ex);
+				Utils.onFailedUniversal(null, ChatActivity.this);
+			}
+
+			@Override
+			public void onRequestSuccess(Chat result) {
+				super.onRequestSuccess(result);
+				manageGetMessages(result, false, false, false, true, false);
+			}
+			
+		});
 	}
 
 	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
