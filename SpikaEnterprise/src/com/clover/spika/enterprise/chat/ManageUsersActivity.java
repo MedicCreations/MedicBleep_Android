@@ -24,7 +24,7 @@ import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemb
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberNetworkResult;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
 import com.clover.spika.enterprise.chat.fragments.RemoveUsersFragment;
@@ -135,7 +135,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
 
-		GlobalCachingSpice.GlobalSearch globalSearch = new GlobalCachingSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.ALL, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.ALL, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
@@ -162,7 +162,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
 
-		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(this, spiceManager, currentIndex, chatId, null, Type.ALL, toUpdateInviteMember, this,
+		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, currentIndex, chatId, null, Type.ALL, toUpdateInviteMember, this,
 				this);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 

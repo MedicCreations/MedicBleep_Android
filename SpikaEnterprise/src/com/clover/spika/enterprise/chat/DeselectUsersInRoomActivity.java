@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
@@ -75,7 +75,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	private void getUsersFromRoom() {
 
-		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(this, spiceManager, -1, null, roomId, Type.USER, false, this, null);
+		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, -1, null, roomId, Type.USER, false, this, null);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 
 			@Override

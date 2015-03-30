@@ -18,7 +18,7 @@ import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -102,7 +102,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 
 	private void getUsers(final boolean clearPrevious) {
 
-		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(getOwnerActivity(), ((BaseActivity) getOwnerActivity()).spiceManager, mCurrentIndex,
+		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(getOwnerActivity(), ((BaseActivity) getOwnerActivity()).spiceManager, mCurrentIndex,
 				chatId, null, Type.USER, clearPrevious, this, this);
 		((BaseActivity) getOwnerActivity()).spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 

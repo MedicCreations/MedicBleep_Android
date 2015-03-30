@@ -13,7 +13,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.octo.android.robospice.SpiceManager;
 
-public class GlobalCachingSpice {
+public class GlobalCacheSpice {
 
 	@SuppressWarnings("rawtypes")
 	public static class GlobalSearch extends CustomSpiceRequest<List> {
