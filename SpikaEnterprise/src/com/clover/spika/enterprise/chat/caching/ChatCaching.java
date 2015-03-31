@@ -39,7 +39,7 @@ public class ChatCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, activity);
+//				Utils.onFailedUniversal(null, activity);
 			}
 
 			@Override

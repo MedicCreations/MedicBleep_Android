@@ -718,8 +718,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			
 		}
 		
-		
-		
 	}
 
 	@Override
@@ -752,7 +750,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, ChatActivity.this);
+//				Utils.onFailedUniversal(null, ChatActivity.this);
 			}
 
 			@Override
@@ -806,7 +804,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, ChatActivity.this);
+//				Utils.onFailedUniversal(null, ChatActivity.this);
 			}
 
 			@Override
@@ -819,77 +817,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			
 		});
 		
-//		ChatSpice.GetMessages getMessages = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this);
-//		spiceManager.execute(getMessages, new CustomSpiceListener<Chat>() {
-//
-//			@Override
-//			public void onRequestFailure(SpiceException ex) {
-//				handleProgress(false);
-//				Utils.onFailedUniversal(null, ChatActivity.this);
-//			}
-//
-//			@Override
-//			public void onRequestSuccess(Chat chat) {
-//				handleProgress(false);
-//
-//				isRunning = false;
-//				
-//				if(chat == null || chat.chat == null){
-//					finish();
-//				}
-//
-//				chatParams(chat.chat);
-//
-//				if (chat.user != null) {
-//					currentUser = chat.user;
-//				}
-//
-//				if (getIntent().getSerializableExtra(Const.USER) != null && currentUser == null) {
-//					currentUser = (User) getIntent().getSerializableExtra(Const.USER);
-//				}
-//
-//				setMenuByChatType();
-//
-//				if (TextUtils.isEmpty(mUserId)) {
-//					mUserId = chat.user == null ? "" : String.valueOf(chat.user.getId());
-//				}
-//
-//				adapter.addItems(chat.messages, isNewMsg);
-//				for (int i = 0; i < chat.messages.size(); i++) {
-//					if (chat.messages.get(i).getType() == Const.MSG_TYPE_DEFAULT) {
-//						if (chat.messages.get(i).getText().startsWith("http") && chat.messages.get(i).getText().endsWith(".gif")) {
-//							chat.messages.get(i).setType(Const.MSG_TYPE_GIF);
-//						}
-//					}
-//				}
-//				adapter.setSeenBy(chat.seen_by);
-//
-//				totalItems = Integer.valueOf(chat.total_count);
-//				adapter.setTotalCount(totalItems);
-//
-//				if (!isRefresh) {
-//					if (isClear || isSend) {
-//						chatListView.setSelectionFromTop(adapter.getCount(), 0);
-//					} else if (isPagging) {
-//						chatListView.setSelection(chat.messages.size());
-//					}
-//				} else {
-//					int visibleItem = chatListView.getFirstVisiblePosition();
-//
-//					boolean isScroll = false;
-//
-//					if ((adapter.getCount() - visibleItem) <= 15) {
-//						isScroll = true;
-//					}
-//
-//					if (isScroll && !isSend) {
-//						chatListView.setSelectionFromTop(adapter.getCount(), 0);
-//					}
-//				}
-//
-//				setNoItemsVisibility();
-//			}
-//		});
 	}
 
 	List<Message> activeChat =  new ArrayList<Message>();
