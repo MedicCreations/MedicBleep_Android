@@ -37,6 +37,7 @@ public class UserDao extends AbstractDao<User, Long> {
         public final static Property Is_user = new Property(11, Integer.class, "is_user", false, "IS_USER");
         public final static Property Is_group = new Property(12, Integer.class, "is_group", false, "IS_GROUP");
         public final static Property Is_room = new Property(13, Integer.class, "is_room", false, "IS_ROOM");
+        public final static Property Organization_id = new Property(14, Long.class, "organization_id", false, "ORGANIZATION_ID");
     };
 
 
@@ -65,7 +66,8 @@ public class UserDao extends AbstractDao<User, Long> {
                 "'CHAT_ID' TEXT," + // 10: chat_id
                 "'IS_USER' INTEGER," + // 11: is_user
                 "'IS_GROUP' INTEGER," + // 12: is_group
-                "'IS_ROOM' INTEGER);"); // 13: is_room
+                "'IS_ROOM' INTEGER," + // 13: is_room
+                "'ORGANIZATION_ID' INTEGER);"); // 14: organization_id
     }
 
     /** Drops the underlying database table. */
@@ -144,6 +146,11 @@ public class UserDao extends AbstractDao<User, Long> {
         if (is_room != null) {
             stmt.bindLong(14, is_room);
         }
+ 
+        Long organization_id = entity.getOrganization_id();
+        if (organization_id != null) {
+            stmt.bindLong(15, organization_id);
+        }
     }
 
     /** @inheritdoc */
@@ -169,7 +176,8 @@ public class UserDao extends AbstractDao<User, Long> {
             cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // chat_id
             cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11), // is_user
             cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12), // is_group
-            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13) // is_room
+            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13), // is_room
+            cursor.isNull(offset + 14) ? null : cursor.getLong(offset + 14) // organization_id
         );
         return entity;
     }
@@ -191,6 +199,7 @@ public class UserDao extends AbstractDao<User, Long> {
         entity.setIs_user(cursor.isNull(offset + 11) ? null : cursor.getInt(offset + 11));
         entity.setIs_group(cursor.isNull(offset + 12) ? null : cursor.getInt(offset + 12));
         entity.setIs_room(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
+        entity.setOrganization_id(cursor.isNull(offset + 14) ? null : cursor.getLong(offset + 14));
      }
     
     /** @inheritdoc */

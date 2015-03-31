@@ -32,17 +32,17 @@ public class UserDetailsAdapter extends BaseAdapter {
 	public UserDetailsAdapter(Context context, List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit) {
 
 		this.mContext = context;
-		
+
 		setNewData(userDetailValues, userDetails, isShowNotEdit);
-		
+
 	}
-	
-	public void setNewData(List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit){
+
+	public void setNewData(List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit) {
 		mUserDetailValues.clear();
 		for (UserDetail usDet : userDetailValues) {
 
 			boolean isAdd = !isShowNotEdit;
-			
+
 			if (userDetails != null) {
 				for (Map<String, String> val : userDetails) {
 					if (val.containsKey(usDet.getKey())) {
@@ -73,7 +73,7 @@ public class UserDetailsAdapter extends BaseAdapter {
 			}
 		}
 	}
-	
+
 	public void setShowNotEdit(boolean b) {
 		isShowNotEdit = b;
 	}
@@ -116,8 +116,8 @@ public class UserDetailsAdapter extends BaseAdapter {
 
 		holder.editLabel.setText(userDetail.getLabel());
 		holder.editValue.setText(userDetail.getValue());
-		
-		if(!isShowNotEdit){
+
+		if (!isShowNotEdit) {
 			holder.editValue.setOnClickListener(new View.OnClickListener() {
 
 				@Override
@@ -138,53 +138,53 @@ public class UserDetailsAdapter extends BaseAdapter {
 					});
 				}
 			});
-		}else{
+		} else {
 			holder.editValue.setClickable(false);
 		}
-		
-		if(isShowNotEdit){
+
+		if (isShowNotEdit) {
 			((View) holder.switchDetailPublic.getParent()).setVisibility(View.GONE);
-			if(userDetail.getKey().equals("email")){
+			if (userDetail.getKey().equals("email")) {
 				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
 				holder.editValue.setOnClickListener(new View.OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						Utils.emailIntent(mContext, userDetail.getValue(), "", "");
 					}
 				});
-			}else if(userDetail.getKey().equals("mobile_number") || userDetail.getKey().equals("phone_number") || userDetail.getKey().equals("fax")){
+			} else if (userDetail.getKey().equals("mobile_number") || userDetail.getKey().equals("phone_number") || userDetail.getKey().equals("fax")) {
 				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
 				holder.editValue.setOnClickListener(new View.OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						Utils.phoneIntent(mContext, userDetail.getValue());
 					}
 				});
-			}else if(userDetail.getKey().equals("home_address") || userDetail.getKey().equals("job_address")){
+			} else if (userDetail.getKey().equals("home_address") || userDetail.getKey().equals("job_address")) {
 				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
 				holder.editValue.setOnClickListener(new View.OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						Utils.mapIntent(mContext, userDetail.getValue());
 					}
 				});
-			}else if(userDetail.getKey().equals("web_site")){
+			} else if (userDetail.getKey().equals("web_site")) {
 				holder.editValue.setTextColor(mContext.getResources().getColor(R.color.default_blue));
 				holder.editValue.setOnClickListener(new View.OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
 						Utils.browserIntent(mContext, userDetail.getValue());
 					}
 				});
-			}else{
+			} else {
 				holder.editValue.setTextColor(Color.BLACK);
 				holder.editValue.setOnClickListener(null);
 			}
-		}else{
+		} else {
 			holder.switchDetailPublic.setChecked(userDetail.isPublicValue());
 			((View) holder.switchDetailPublic.getParent()).setVisibility(View.VISIBLE);
 			holder.switchSwitcher.setTag(position);

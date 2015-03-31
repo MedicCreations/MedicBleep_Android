@@ -121,12 +121,14 @@ public class StickersCaching {
 			
 			handleNewData(activity, stickers);
 			
+			final StickersHolder finalResult = getDBData(activity);
+			
 			activity.runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onStickersDBChanged(getDBData(activity));
+						onDBChangeListener.onStickersDBChanged(finalResult);
 					}
 				}
 			});

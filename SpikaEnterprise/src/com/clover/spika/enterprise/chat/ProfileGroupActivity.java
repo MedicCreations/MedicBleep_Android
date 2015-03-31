@@ -22,9 +22,9 @@ import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
@@ -235,7 +235,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
 
-		GlobalCachingSpice.GlobalMember globalMembers = new GlobalCachingSpice.GlobalMember(this, spiceManager, page, chatId, null, Type.ALL, toUpdateInviteMember, this, this);
+		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, page, chatId, null, Type.ALL, toUpdateInviteMember, this, this);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 
 			@Override

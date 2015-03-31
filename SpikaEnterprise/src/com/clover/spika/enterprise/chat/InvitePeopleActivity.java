@@ -25,9 +25,9 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
@@ -202,7 +202,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	private void getUsers(int page, String search, final boolean toClear) {
 
-		GlobalCachingSpice.GlobalSearch globalSearch = new GlobalCachingSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.ALL, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.ALL, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")

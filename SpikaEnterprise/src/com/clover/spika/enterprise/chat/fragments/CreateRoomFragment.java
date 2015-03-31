@@ -35,9 +35,9 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCachingSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
@@ -334,7 +334,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
 
-		GlobalCachingSpice.GlobalSearch globalSearch = new GlobalCachingSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")

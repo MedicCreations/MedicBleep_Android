@@ -4,16 +4,16 @@ import java.util.List;
 
 import android.app.Activity;
 
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalMemberNetworkResult;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalSearchCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.octo.android.robospice.SpiceManager;
 
-public class GlobalCachingSpice {
+public class GlobalCacheSpice {
 
 	@SuppressWarnings("rawtypes")
 	public static class GlobalSearch extends CustomSpiceRequest<List> {
@@ -50,7 +50,7 @@ public class GlobalCachingSpice {
 
 		@Override
 		public List<GlobalModel> loadDataFromNetwork() throws Exception {
-			return GlobalSearchCaching.GlobalSearch(activity, spiceManager, page, chatId, categoryId, type, searchTerm, toClear, onDBChangeListener, onNetworkListener);
+			return GlobalCaching.GlobalSearch(activity, spiceManager, page, chatId, categoryId, type, searchTerm, toClear, onDBChangeListener, onNetworkListener);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class GlobalCachingSpice {
 
 		@Override
 		public List<GlobalModel> loadDataFromNetwork() throws Exception {
-			return GlobalSearchCaching.GlobalMembers(activity, spiceManager, page, chatId, groupId, type, isToClear, onDBChangeListener, onNetworkListener);
+			return GlobalCaching.GlobalMembers(activity, spiceManager, page, chatId, groupId, type, isToClear, onDBChangeListener, onNetworkListener);
 		}
 	}
 

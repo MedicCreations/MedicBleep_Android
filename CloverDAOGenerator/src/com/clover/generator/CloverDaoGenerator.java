@@ -29,13 +29,21 @@ public class CloverDaoGenerator {
 		Entity category = schema.addEntity("Category");
 		Entity groups = schema.addEntity("Groups");
 		Entity organization = schema.addEntity("Organization");
-		Entity listUserDetails = schema.addEntity("ListUserDetails");
-		Entity mapKeyValueUserDetails = schema.addEntity("MapKeyValueUserDetails");
 		Entity user = schema.addEntity("User");
 		Entity message = schema.addEntity("Message");
 		Entity chat = schema.addEntity("Chat");
 		Entity stickers = schema.addEntity("Stickers");
-
+		Entity userDetails = schema.addEntity("UserDetails");
+		
+		// UserDetails
+		userDetails.addIdProperty().autoincrement();
+		userDetails.addLongProperty("user_id").notNull();
+		userDetails.addStringProperty("key");
+		userDetails.addStringProperty("label");
+		userDetails.addIntProperty("keyboard_type");
+		userDetails.addStringProperty("value");
+		userDetails.addIntProperty("public_value");
+		
 		// Category
 		category.addLongProperty("id").notNull().unique().primaryKey();
 		category.addStringProperty("name");
@@ -52,21 +60,6 @@ public class CloverDaoGenerator {
 		organization.addLongProperty("id").notNull().unique().primaryKey();
 		organization.addStringProperty("name");
 
-		// UserDetails in User
-		// List
-		listUserDetails.addIdProperty();
-		// Map
-		mapKeyValueUserDetails.addIdProperty();
-		mapKeyValueUserDetails.addStringProperty("key");
-		mapKeyValueUserDetails.addStringProperty("value");
-		
-		Property mapKeyValueUserDetailsProperty = mapKeyValueUserDetails.addLongProperty("listId").notNull().getProperty();
-
-		mapKeyValueUserDetails.addToOne(listUserDetails, mapKeyValueUserDetailsProperty);
-		listUserDetails.addToMany(mapKeyValueUserDetails, mapKeyValueUserDetailsProperty);
-		
-		listUserDetails.implementsSerializable();
-
 		// User
 		user.addLongProperty("id").notNull().unique().primaryKey();
 		user.addStringProperty("firstname");
@@ -82,6 +75,7 @@ public class CloverDaoGenerator {
 		user.addIntProperty("is_user");
 		user.addIntProperty("is_group");
 		user.addIntProperty("is_room");
+		user.addLongProperty("organization_id");
 
 		// Message
 		message.addLongProperty("id").notNull().unique().primaryKey();

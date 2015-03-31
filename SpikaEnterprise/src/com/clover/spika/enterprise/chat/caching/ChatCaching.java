@@ -92,18 +92,17 @@ public class ChatCaching {
 
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 			com.clover.spika.enterprise.chat.models.greendao.Chat chatBase = chatDao.queryBuilder().where(Properties.Id.eq(id)).build().unique();
-			
-			if(chatBase == null)
+
+			if (chatBase == null)
 				return null;
 
 			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
 					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
 							com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).count();
-			
 			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
 
 			chat = handleOldData(chatBase);
-			
+
 			if (tempCount != chatBase.getMessageList().size()) {
 				Log.e("LOG", "RECORRECT MESSAGE LIST");
 				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
@@ -148,14 +147,25 @@ public class ChatCaching {
 
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
-			
-			if(chat.messages != null && chat.messages.size() > 0){ // if chat.messages == null or size == 0, don't save chat in database
+
+			if (chat.messages != null && chat.messages.size() > 0) { // if
+																		// chat.messages
+																		// ==
+																		// null
+																		// or
+																		// size
+																		// == 0,
+																		// don't
+																		// save
+																		// chat
+																		// in
+																		// database
 				Log.d("LOG", "saving chat to database");
 				handleNewData(activity, chat);
-			}else{
+			} else {
 				Log.d("LOG", "dont saving chat to database");
 			}
-			
+
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
@@ -201,16 +211,11 @@ public class ChatCaching {
 					organizationDao.insertOrReplace(finalOrganizationModel);
 				}
 
-				if (networkData.user.details != null && !networkData.user.details.isEmpty()) {
-
-					// TODO user details needs to implemented in the DB
-					// com.clover.spika.enterprise.chat.models.greendao.ListUserDetails
-				}
-
 				com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) networkData.user.getId(),
 						networkData.user.firstname, networkData.user.lastname, networkData.user.type, networkData.user.image, networkData.user.image_thumb,
 						networkData.user.is_member, networkData.user.is_admin, networkData.user.name, networkData.user.groupname, networkData.user.chat_id,
-						networkData.user.is_user, networkData.user.is_group, networkData.user.is_room);
+						networkData.user.is_user, networkData.user.is_group, networkData.user.is_room, organizationDao != null ? Long.valueOf(networkData.user.organization.id)
+								: 0L);
 
 				userDao.insertOrReplace(finalUserModel);
 				finalUserModelId = finalUserModel.getId();

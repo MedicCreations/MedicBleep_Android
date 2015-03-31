@@ -107,13 +107,15 @@ public class LobbyCaching {
 		public Void loadDataFromNetwork() throws Exception {
 
 			handleNewData(activity, chats);
+			
+			final List<Chat> finalResult = getDBData(activity);
 
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onRecentDBChanged(getDBData(activity), toClear);
+						onDBChangeListener.onRecentDBChanged(finalResult, toClear);
 					}
 				}
 			});

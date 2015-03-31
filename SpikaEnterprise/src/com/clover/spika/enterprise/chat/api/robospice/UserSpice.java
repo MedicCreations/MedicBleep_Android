@@ -177,7 +177,7 @@ public class UserSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, UserWrapper.class);
