@@ -37,6 +37,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 
 	private boolean isInEditMode = false;
 
+	TextView saveProfile;
 	TextView btnCancel;
 
 	@Override
@@ -54,12 +55,20 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 		ImageButton btnBack = (ImageButton) findViewById(R.id.goBack);
 		btnBack.setOnClickListener(this);
 
-		RobotoRegularTextView saveProfile = (RobotoRegularTextView) findViewById(R.id.saveProfile);
+		saveProfile = (RobotoRegularTextView) findViewById(R.id.saveProfile);
 		saveProfile.setOnClickListener(this);
+		saveProfile.setText(getString(R.string.edit));
+
+		if (!isMyProfile) {
+			saveProfile.setVisibility(View.GONE);
+		}
 
 		btnCancel = (TextView) findViewById(R.id.cancelProfile);
+		btnCancel.setOnClickListener(ShowProfileActivity.this);
 
+		adapter = new UserDetailsAdapter(this, null, null, true);
 		listViewDetail = (ListView) findViewById(R.id.listUserDetails);
+		listViewDetail.setAdapter(adapter);
 
 		UserCacheSpice.GetProfile getProfileData = new UserCacheSpice.GetProfile(this, spiceManager, mUserId, true, this);
 		spiceManager.execute(getProfileData, new CustomSpiceListener<UserWrapper>() {
@@ -71,15 +80,9 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 				if (result != null && result.user != null && result.detail_values != null) {
 					userData = result;
 					setData(result);
-					btnCancel.setOnClickListener(ShowProfileActivity.this);
 				}
 			}
 		});
-
-		saveProfile.setText(getString(R.string.edit));
-
-		if (!isMyProfile)
-			saveProfile.setVisibility(View.GONE);
 	}
 
 	private View fillHeader(LayoutInflater inflater, UserWrapper user) {
@@ -109,35 +112,29 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 	}
 
 	protected void setData(UserWrapper user) {
+		adapter.setNewData(user.getUserDetailList(), user.getUser().getDetails(), true);
+
 		listViewDetail.removeHeaderView(header);
 		header = fillHeader(getLayoutInflater(), user);
 		listViewDetail.addHeaderView(header);
-
-		adapter = new UserDetailsAdapter(this, user.getUserDetailList(), user.getUser().getDetails(), true);
-		adapter.setShowNotEdit(true);
-
-		listViewDetail.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
 	}
 
 	private void setEditModeData() {
-		((TextView) findViewById(R.id.saveProfile)).setText(getString(R.string.save));
+		adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), false);
+
+		saveProfile.setText(getString(R.string.save));
 		btnCancel.setVisibility(View.VISIBLE);
 		isInEditMode = true;
-
-		adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), false);
-		adapter.setShowNotEdit(false);
-		adapter.notifyDataSetChanged();
 	}
 
 	private void backToShow(boolean withReload) {
-		((TextView) findViewById(R.id.saveProfile)).setText(getString(R.string.edit));
+		saveProfile.setText(getString(R.string.edit));
 		btnCancel.setVisibility(View.GONE);
 		isInEditMode = false;
 
 		if (withReload) {
 
-			UserCacheSpice.GetProfile getProfileData = new UserCacheSpice.GetProfile(this, spiceManager, Helper.getUserId(this), true, this);
+			UserCacheSpice.GetProfile getProfileData = new UserCacheSpice.GetProfile(this, spiceManager, mUserId, true, this);
 			spiceManager.execute(getProfileData, new CustomSpiceListener<UserWrapper>() {
 
 				@Override
@@ -147,15 +144,11 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 					if (result != null && result.user != null && result.detail_values != null) {
 						userData = result;
 						adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
-						adapter.setShowNotEdit(true);
-						adapter.notifyDataSetChanged();
 					}
 				}
 			});
 		} else {
 			adapter.setNewData(userData.getUserDetailList(), userData.getUser().getDetails(), true);
-			adapter.setShowNotEdit(true);
-			adapter.notifyDataSetChanged();
 		}
 	}
 
@@ -169,6 +162,11 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 			break;
 
 		case R.id.saveProfile:
+
+			if (adapter.getCount() == 0) {
+				break;
+			}
+
 			if (!isInEditMode) {
 				setEditModeData();
 			} else {
@@ -191,9 +189,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 						handleProgress(false);
 
 						if (result.getCode() == Const.API_SUCCESS) {
-
 							backToShow(true);
-
 						} else {
 							Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this);
 						}

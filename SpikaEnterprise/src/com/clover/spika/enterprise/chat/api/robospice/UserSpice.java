@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
@@ -257,7 +258,7 @@ public class UserSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, BaseModel.class);
