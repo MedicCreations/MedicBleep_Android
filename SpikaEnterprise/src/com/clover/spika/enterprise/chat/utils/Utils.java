@@ -449,28 +449,37 @@ public class Utils {
 		return false;
 	}
 
-	public static void onFailedUniversal(String message, final Context ctx) {
-		onFailedUniversal(message, ctx, true);
+	public static void onFailedUniversal(String message, final Context ctx, int code) {
+		onFailedUniversal(message, ctx, code, true);
 	}
-	
-	public static void onFailedUniversal(String message, final Context ctx, final boolean finishActivity) {
+
+	public static void onFailedUniversal(String message, final Context ctx) {
+		onFailedUniversal(message, ctx, 0, true);
+	}
+
+	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity) {
 
 		if (TextUtils.isEmpty(message)) {
 			message = ctx.getString(R.string.e_something_went_wrong);
 		}
 
-		AppDialog dialog = new AppDialog(ctx, false);
+		AppDialog dialog = new AppDialog(ctx, code == Const.E_CHAT_DELETED ? true : false);
 		dialog.setFailed(message);
-		dialog.setOnDismissListener(new OnDismissListener() {
 
-			@Override
-			public void onDismiss(DialogInterface dialog) {
+		if (code != Const.E_CHAT_DELETED) {
+			dialog.setOnDismissListener(new OnDismissListener() {
 
-				Intent intent = new Intent(ctx, LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				if(finishActivity) ctx.startActivity(intent);
-			}
-		});
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+
+					Intent intent = new Intent(ctx, LoginActivity.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					if (finishActivity) {
+						ctx.startActivity(intent);
+					}
+				}
+			});
+		}
 	}
 
 	/**

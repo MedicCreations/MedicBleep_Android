@@ -15,12 +15,14 @@ import com.clover.spika.enterprise.chat.models.User;
 public class Const {
 
 	// Version constants
+	// TODO remove to base url
+	// public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
 	public static final String BASE_URL = "http://192.241.212.29/dev/server/v1";
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
 	public static final int S_ITERATIONS = 3;
-	
+
 	// Socket and WebRtc Constants
 	public static final String WS_URL = "wss://www.spikaent.com";
 	public static final String WS_PORT = "32443";
@@ -323,7 +325,7 @@ public class Const {
 	public static final String POSITION = "position";
 	public static final String STICEKRS_HOLDER = "stickersHolder";
 	public static final String ACTION_REFRESH_ROOMS = "actionRefreshRoom";
-	
+
 	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
 	public static final String CALL_ACTION = "callAction";
 	public static final String SESSION_ID = "SessionId";

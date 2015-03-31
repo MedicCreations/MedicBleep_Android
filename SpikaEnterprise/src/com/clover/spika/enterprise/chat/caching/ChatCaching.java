@@ -8,9 +8,11 @@ import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.DeleteEntryCaching;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao;
@@ -28,7 +30,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 public class ChatCaching {
 
 	public static Chat getData(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging, final boolean isNewMsg,
-			final boolean isSend, final boolean isRefresh, String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
+			final boolean isSend, final boolean isRefresh, final String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
 			final OnChatNetworkResult onNetworkListener) {
 
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
@@ -63,7 +65,12 @@ public class ChatCaching {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, activity);
+					if (result.getCode() == Const.E_CHAT_DELETED) {
+						DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(activity, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+						spiceManager.execute(deleteEntry, null);
+					}
+
+					Utils.onFailedUniversal(message, activity, result.getCode());
 				}
 			}
 
@@ -71,13 +78,13 @@ public class ChatCaching {
 
 		return resultArray;
 	}
-	
+
 	public static Chat startChat(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging, final boolean isNewMsg,
 			final boolean isSend, final boolean isRefresh, String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
 			final OnChatNetworkResult onNetworkListener, Chat chat) {
-		
+
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
-		
+
 		HandleNewData handleNewData = new HandleNewData(activity, chat, isClear, isPagging, isNewMsg, isSend, isRefresh, onDBChangeListener);
 		spiceManager.execute(handleNewData, null);
 
@@ -96,7 +103,10 @@ public class ChatCaching {
 			if (chatBase == null)
 				return null;
 
-			long tempCount = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
+			long tempCount = ((BaseActivity) activity)
+					.getDaoSession()
+					.getMessageDao()
+					.queryBuilder()
 					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
 							com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).count();
 			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
@@ -105,7 +115,10 @@ public class ChatCaching {
 
 			if (tempCount != chatBase.getMessageList().size()) {
 				Log.e("LOG", "RECORRECT MESSAGE LIST");
-				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity).getDaoSession().getMessageDao().queryBuilder()
+				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity)
+						.getDaoSession()
+						.getMessageDao()
+						.queryBuilder()
 						.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
 								com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).build().list();
 				chat.messages = DaoUtils.converDaoMessagesToMessagesModel(tempMess);
@@ -147,15 +160,18 @@ public class ChatCaching {
 
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
-			
-			/* if chat.messages == null or size == 0, don't save chat in database*/
-			if (chat.messages != null && chat.messages.size() > 0) { 
+
+			/*
+			 * if chat.messages == null or size == 0, don't save chat in
+			 * database
+			 */
+			if (chat.messages != null && chat.messages.size() > 0) {
 				Log.d("LOG", "saving chat to database");
 				handleNewData(activity, chat);
 			} else {
 				Log.d("LOG", "dont save chat to database");
 			}
-			
+
 			final Chat finalResult = getDBData(activity, (long) chat.chat.getId());
 
 			activity.runOnUiThread(new Runnable() {

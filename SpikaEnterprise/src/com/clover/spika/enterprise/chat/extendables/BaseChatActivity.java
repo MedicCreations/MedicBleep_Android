@@ -962,9 +962,6 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			if (parent.getAdapter() != null) {
 
-				// SettingsItem item = (SettingsItem)
-				// parent.getAdapter().getItem(position);
-
 				if (position == SETTINGS_POSITION_FIRST) {
 					if (chatType == Const.C_PRIVATE) {
 						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName, currentUser);
@@ -986,7 +983,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 						// deactivate chat
 						deactivateChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_INACTIVE) {
-						// deactivate chat
+						// activate chat
 						activateChat();
 					}
 				} else if (position == SETTINGS_POSITION_FOURTH) {

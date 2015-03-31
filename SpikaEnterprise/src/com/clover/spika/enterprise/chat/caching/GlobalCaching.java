@@ -24,6 +24,7 @@ import com.clover.spika.enterprise.chat.models.greendao.UserDao;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -34,7 +35,9 @@ public class GlobalCaching {
 	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String categoryId, final int type,
 			String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener, final OnGlobalSearchNetworkResult onNetworkListener) {
 
-		List<GlobalModel> resultArray = getDBData(activity, type);
+		final String myId = Helper.getUserId(activity);
+
+		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
 
 		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm, activity);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
@@ -55,7 +58,7 @@ public class GlobalCaching {
 						onNetworkListener.onGlobalSearchNetworkResult(result.getTotalCount());
 					}
 
-					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, onDBChangeListener);
+					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, Integer.valueOf(myId), onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -71,7 +74,9 @@ public class GlobalCaching {
 	public static List<GlobalModel> GlobalMembers(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String groupId, final int type,
 			final boolean isToClear, final OnGlobalMemberDBChanged onDBChangeListener, final OnGlobalMemberNetworkResult onNetworkListener) {
 
-		List<GlobalModel> resultArray = getDBData(activity, type);
+		final String myId = Helper.getUserId(activity);
+
+		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
 
 		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type, activity);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
@@ -92,7 +97,7 @@ public class GlobalCaching {
 						onNetworkListener.onGlobalMemberNetworkResult(result.getTotalCount());
 					}
 
-					HandleNewMemberData handleNewData = new HandleNewMemberData(activity, result.getModelsList(), isToClear, type, onDBChangeListener);
+					HandleNewMemberData handleNewData = new HandleNewMemberData(activity, result.getModelsList(), isToClear, type, Integer.valueOf(myId), onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -133,15 +138,17 @@ public class GlobalCaching {
 		private List<GlobalModel> globalModel;
 		private boolean toClear;
 		private int type;
+		private int myId = 0;
 		private OnGlobalSearchDBChanged onDBChangeListener;
 
-		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalSearchDBChanged onDBChangeListener) {
+		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId, OnGlobalSearchDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
 			this.globalModel = globalModel;
 			this.toClear = toClear;
 			this.type = type;
+			this.myId = myId;
 			this.onDBChangeListener = onDBChangeListener;
 		}
 
@@ -150,7 +157,7 @@ public class GlobalCaching {
 
 			handleNewData(activity, globalModel);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type);
+			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
 
 			activity.runOnUiThread(new Runnable() {
 
@@ -172,15 +179,17 @@ public class GlobalCaching {
 		private List<GlobalModel> globalModel;
 		private boolean toClear;
 		private int type;
+		private int myId = 0;
 		private OnGlobalMemberDBChanged onDBChangeListener;
 
-		public HandleNewMemberData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, OnGlobalMemberDBChanged onDBChangeListener) {
+		public HandleNewMemberData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId, OnGlobalMemberDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
 			this.globalModel = globalModel;
 			this.toClear = toClear;
 			this.type = type;
+			this.myId = myId;
 			this.onDBChangeListener = onDBChangeListener;
 		}
 
@@ -189,7 +198,7 @@ public class GlobalCaching {
 
 			handleNewData(activity, globalModel);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type);
+			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
 
 			activity.runOnUiThread(new Runnable() {
 
@@ -209,7 +218,7 @@ public class GlobalCaching {
 
 	/* start: Data handling */
 
-	private static List<GlobalModel> getDBData(Activity activity, int type) {
+	private static List<GlobalModel> getDBData(Activity activity, int type, int myUserId) {
 
 		List<GlobalModel> resultArray = new ArrayList<GlobalModel>();
 
@@ -238,7 +247,6 @@ public class GlobalCaching {
 				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
 				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
 
-
 				if (groupList != null) {
 
 					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : groupList) {
@@ -254,7 +262,8 @@ public class GlobalCaching {
 			} else if (type == GlobalModel.Type.USER) {
 
 				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.User> lista = userDao.queryBuilder().build().list();
+				List<com.clover.spika.enterprise.chat.models.greendao.User> lista = userDao.queryBuilder()
+						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId)).build().list();
 
 				if (lista != null) {
 

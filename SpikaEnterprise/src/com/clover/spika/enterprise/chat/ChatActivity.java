@@ -28,6 +28,7 @@ import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatDBChanged;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.DeleteEntryCaching;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice.StartChat;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
@@ -36,6 +37,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
@@ -49,7 +51,7 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, OnChatNetworkResult{
+public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, OnChatNetworkResult {
 
 	private TextView noItems;
 
@@ -78,7 +80,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 						/* resend message */
 						resendMessage(message);
-					}else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
+					} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
 					}
@@ -113,7 +115,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 					/* resend message */
 					resendMessage(message);
-				}else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
+				} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
 				}
@@ -157,7 +159,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
 			} else {
-				getMessages(true, true, true, false, false, true); 
+				getMessages(true, true, true, false, false, true);
 			}
 		} else {
 			isResume = true;
@@ -215,7 +217,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	};
 
 	protected void kill() {
-		
+
 		hideKeyboard(etMessage);
 
 		finish();
@@ -351,59 +353,70 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
 				handleIntentSecondLevel(intent);
-//				try {
-//					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
-//
-//					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-//
-//					handleProgress(true);
-//					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
-//							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
-//					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
-//
-//						@Override
-//						public void onRequestFailure(SpiceException ex) {
-//							handleProgress(false);
-//							Utils.onFailedUniversal(null, ChatActivity.this);
-//						}
-//
-//						@Override
-//						public void onRequestSuccess(Login result) {
-//							handleProgress(false);
-//
-//							if (result.getCode() == Const.API_SUCCESS) {
-//
-//								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname,
-//										result.getToken());
-//								new GoogleUtils().getPushToken(ChatActivity.this);
-//
-//								handleIntentSecondLevel(intent);
-//
-//							} else {
-//
-//								String message = "";
-//								if (result.getCode() == Const.E_INVALID_TOKEN) {
-//									Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-//									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//									startActivity(intent);
-//								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
-//									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
-//									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
-//									startActivity(intent);
-//									finish();
-//									return;
-//								} else {
-//									message = result.getMessage();
-//								}
-//
-//								Utils.onFailedUniversal(message, ChatActivity.this);
-//							}
-//						}
-//					});
-//
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
+				// try {
+				// Logger.d("organization_id: " +
+				// intent.getExtras().getString(Const.ORGANIZATION_ID));
+				//
+				// String hashPassword =
+				// Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
+				//
+				// handleProgress(true);
+				// LoginSpice.LoginWithCredentials loginWithCredentials = new
+				// LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
+				// Const.USERNAME), hashPassword,
+				// intent.getExtras().getString(Const.ORGANIZATION_ID), this);
+				// spiceManager.execute(loginWithCredentials, new
+				// CustomSpiceListener<Login>() {
+				//
+				// @Override
+				// public void onRequestFailure(SpiceException ex) {
+				// handleProgress(false);
+				// Utils.onFailedUniversal(null, ChatActivity.this);
+				// }
+				//
+				// @Override
+				// public void onRequestSuccess(Login result) {
+				// handleProgress(false);
+				//
+				// if (result.getCode() == Const.API_SUCCESS) {
+				//
+				// Helper.setUserProperties(getApplicationContext(),
+				// result.getUserId(), result.image, result.image_thumb,
+				// result.firstname, result.lastname,
+				// result.getToken());
+				// new GoogleUtils().getPushToken(ChatActivity.this);
+				//
+				// handleIntentSecondLevel(intent);
+				//
+				// } else {
+				//
+				// String message = "";
+				// if (result.getCode() == Const.E_INVALID_TOKEN) {
+				// Intent intent = new Intent(ChatActivity.this,
+				// LoginActivity.class);
+				// intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				// startActivity(intent);
+				// } else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS)
+				// {
+				// Intent intent = new Intent(ChatActivity.this,
+				// ChangePasswordActivity.class);
+				// intent.putExtra(Const.TEMP_PASSWORD,
+				// SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
+				// startActivity(intent);
+				// finish();
+				// return;
+				// } else {
+				// message = result.getMessage();
+				// }
+				//
+				// Utils.onFailedUniversal(message, ChatActivity.this);
+				// }
+				// }
+				// });
+				//
+				// } catch (Exception e) {
+				// e.printStackTrace();
+				// }
 
 			} else {
 				handleIntentSecondLevel(intent);
@@ -459,7 +472,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				}
 
 			} else {
-				getMessages(true, true, true, false, false, false); 
+				getMessages(true, true, true, false, false, false);
 			}
 		} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
@@ -496,21 +509,21 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					chatName = result.chat_name;
 
 					setTitle(chatName);
-					
+
 					startChat(result);
-					
-//					adapter.clearItems();
-//					totalItems = Integer.valueOf(result.total_count);
-//					adapter.addItems(result.messages, true);
-//					adapter.setSeenBy(result.seen_by);
-//					adapter.setTotalCount(Integer.valueOf(result.total_count));
-//					if (adapter.getCount() > 0) {
-//						chatListView.setSelectionFromTop(adapter.getCount(), 0);
-//					}
-//
+
+					// adapter.clearItems();
+					// totalItems = Integer.valueOf(result.total_count);
+					// adapter.addItems(result.messages, true);
+					// adapter.setSeenBy(result.seen_by);
+					// adapter.setTotalCount(Integer.valueOf(result.total_count));
+					// if (adapter.getCount() > 0) {
+					// chatListView.setSelectionFromTop(adapter.getCount(), 0);
+					// }
+					//
 					checkForLeaveVoiceMessage(intent);
 
-//					setNoItemsVisibility();
+					// setNoItemsVisibility();
 				}
 			});
 		}
@@ -546,8 +559,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		isActive = chat.is_active;
 		if (isActive == 0) {
-			etMessage.setFocusable(false); 
-		} 
+			etMessage.setFocusable(false);
+		}
 		isPrivate = chat.is_private;
 
 		if (chat.category != null) {
@@ -569,22 +582,22 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		setSettingsItems(chatType);
 
 	}
-	
-	private void replaceTempMessWithRealMess(Message mess, Message tempMess){
+
+	private void replaceTempMessWithRealMess(Message mess, Message tempMess) {
 		mess.isMe = true;
-		totalItems ++;
+		totalItems++;
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
-				Long.valueOf(mess.getChat_id()));
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
+						.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess, tempMess);
-		
+
 		setNoItemsVisibility();
-		
+
 		chatListView.setSelectionFromTop(adapter.getCount(), 0);
 	}
-	
+
 	protected void resendMessage(Message message) {
 		adapter.prepareResend(message);
 		sendMessage(Const.MSG_TYPE_DEFAULT, chatId, message.text, null, null, null, null);
@@ -592,18 +605,18 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	private void addRealMess(Message mess) {
 		mess.isMe = true;
-		totalItems ++;
+		totalItems++;
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
-				Long.valueOf(mess.getChat_id()));
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
+						.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess);
-		
+
 		setNoItemsVisibility();
-		
+
 		chatListView.setSelectionFromTop(adapter.getCount(), 0);
-		
+
 	}
 
 	@Override
@@ -646,15 +659,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected int getUserId() {
 		return Integer.valueOf(mUserId);
 	}
-	
+
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 
-		if(type == Const.MSG_TYPE_DEFAULT){
-			if(type == Const.MSG_TYPE_DEFAULT){
+		if (type == Const.MSG_TYPE_DEFAULT) {
+			if (type == Const.MSG_TYPE_DEFAULT) {
 				final Message tempMessage = adapter.addTempMessage(text);
 				chatListView.setSelectionFromTop(adapter.getCount(), 0);
 				etMessage.setText("");
-				
+
 				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
 				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
@@ -683,15 +696,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						}
 					}
 				});
-			}else{
+			} else {
 				etMessage.setText("");
-				
+
 				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
 				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 					@Override
 					public void onRequestFailure(SpiceException ex) {
-						Utils.onFailedUniversal(null, ChatActivity.this, false);
+						Utils.onFailedUniversal(null, ChatActivity.this, 0, false);
 					}
 
 					@Override
@@ -715,9 +728,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					}
 				});
 			}
-			
+
 		}
-		
 	}
 
 	@Override
@@ -731,26 +743,26 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		adapter.setMessageDelted(mess.getId());
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
 				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
-				Long.valueOf(mess.getChat_id()));
-		
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
+						.getChat_id()));
+
 		getDaoSession().getMessageDao().update(messDao);
 	}
-	
+
 	protected void startChat(Chat result) {
 		if (!isRunning) {
 			isRunning = true;
 		} else {
 			return;
 		}
-		
+
 		ChatCacheSpice.StartChat startChatSpice = new StartChat(this, spiceManager, chatId, "-1", this, this, result);
-		spiceManager.execute(startChatSpice, new CustomSpiceListener<Chat>(){
-			
+		spiceManager.execute(startChatSpice, new CustomSpiceListener<Chat>() {
+
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-//				Utils.onFailedUniversal(null, ChatActivity.this);
+				// Utils.onFailedUniversal(null, ChatActivity.this);
 			}
 
 			@Override
@@ -758,7 +770,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				super.onRequestSuccess(result);
 				manageGetMessages(result, false, false, false, true, false);
 			}
-			
+
 		});
 	}
 
@@ -794,18 +806,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			}
 		}
 
-//		handleProgress(processing);
 		// TODO add caching
-		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, 
-				isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this, this);
-		
-		spiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>(){
-			
-			@Override
-			public void onRequestFailure(SpiceException ex) {
-				super.onRequestFailure(ex);
-//				Utils.onFailedUniversal(null, ChatActivity.this);
-			}
+		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this,
+				this);
+
+		spiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {
 
 			@Override
 			public void onRequestSuccess(Chat result) {
@@ -814,37 +819,36 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				adapter.setSpiceManager(spiceManager);
 				
 				manageGetMessages(result, isNewMsg, isSend, isRefresh, isClear, isPagging);
-				
 			}
-			
+
 		});
-		
 	}
 
-	List<Message> activeChat =  new ArrayList<Message>();
+	List<Message> activeChat = new ArrayList<Message>();
+
 	protected void manageGetMessages(Chat chat, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isClear, boolean isPagging) {
 		isRunning = false;
-		
-		if(chat == null){
+
+		if (chat == null) {
 			setNoItemsVisibility();
 			return;
 		}
-		
-		if(chat == null || chat.chat == null){
+
+		if (chat == null || chat.chat == null) {
 			finish();
 		}
-		
-		Log.d("LOG", "SIZE OLD: " + activeChat.size()+", new suze: "+chat.messages.size());
-		if(chat.messages.equals(activeChat)){
+
+		Log.d("LOG", "SIZE OLD: " + activeChat.size() + ", new suze: " + chat.messages.size());
+		if (chat.messages.equals(activeChat)) {
 			Log.d("LOG", "same");
 			return;
-		}else{
+		} else {
 			Log.d("LOG", "not same");
 		}
-		
+
 		activeChat.clear();
 		activeChat.addAll(chat.messages);
-		
+
 		chatParams(chat.chat);
 
 		if (chat.user != null) {
@@ -893,7 +897,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				chatListView.setSelectionFromTop(adapter.getCount(), 0);
 			}
 		}
-		
+
 		setNoItemsVisibility();
 	}
 
@@ -915,6 +919,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
+
+					DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+					spiceManager.execute(deleteEntry, null);
+
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
 					dialog.setSucceed();
 				} else {
@@ -998,6 +1006,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						handleProgress(false);
 
 						if (result.getCode() == Const.API_SUCCESS) {
+
+							DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+							spiceManager.execute(deleteEntry, null);
+
 							AppDialog dialog = new AppDialog(ChatActivity.this, true);
 							dialog.setSucceed();
 						} else {
@@ -1016,11 +1028,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				dialog.dismiss();
 			}
 		});
-		
+
 		Intent inBroadcast = new Intent();
 		inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(inBroadcast);
-		
+
 	}
 
 	@Override
@@ -1054,7 +1066,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	@Override
 	public void onChatNetworkResult(int totalCount) {
 		Log.d("LOG", "NETWORK, TOTAL COUNT: " + totalCount);
-		if(totalItems != totalCount){
+		if (totalItems != totalCount) {
 			totalItems = totalCount;
 			adapter.setTotalCount(totalItems);
 		}
