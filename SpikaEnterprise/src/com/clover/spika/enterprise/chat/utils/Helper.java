@@ -542,7 +542,7 @@ public class Helper {
 	public static void logout(Context ctx) {
 		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
-		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		SpikaEnterpriseApp.stopSocket();
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
