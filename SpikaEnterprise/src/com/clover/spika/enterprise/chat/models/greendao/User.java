@@ -23,6 +23,7 @@ public class User {
     private Integer is_user;
     private Integer is_group;
     private Integer is_room;
+    private Long organization_id;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -34,7 +35,7 @@ public class User {
         this.id = id;
     }
 
-    public User(long id, String firstname, String lastname, Integer type, String image, String image_thumb, Boolean is_member, Integer is_admin, String name, String groupname, String chat_id, Integer is_user, Integer is_group, Integer is_room) {
+    public User(long id, String firstname, String lastname, Integer type, String image, String image_thumb, Boolean is_member, Integer is_admin, String name, String groupname, String chat_id, Integer is_user, Integer is_group, Integer is_room, Long organization_id) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -49,6 +50,7 @@ public class User {
         this.is_user = is_user;
         this.is_group = is_group;
         this.is_room = is_room;
+        this.organization_id = organization_id;
     }
 
     public long getId() {
@@ -161,6 +163,14 @@ public class User {
 
     public void setIs_room(Integer is_room) {
         this.is_room = is_room;
+    }
+
+    public Long getOrganization_id() {
+        return organization_id;
+    }
+
+    public void setOrganization_id(Long organization_id) {
+        this.organization_id = organization_id;
     }
 
     // KEEP METHODS - put your custom methods here

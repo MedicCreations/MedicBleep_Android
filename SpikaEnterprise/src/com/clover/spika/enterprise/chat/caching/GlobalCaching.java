@@ -29,7 +29,7 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class GlobalSearchCaching {
+public class GlobalCaching {
 
 	/* start: Caching calls */
 	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String categoryId, final int type,
@@ -150,13 +150,15 @@ public class GlobalSearchCaching {
 		public Void loadDataFromNetwork() throws Exception {
 
 			handleNewData(activity, globalModel);
+			
+			final List<GlobalModel> finalResult = getDBData(activity, type);
 
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalSearchDBChanged(getDBData(activity, type), toClear);
+						onDBChangeListener.onGlobalSearchDBChanged(finalResult, toClear);
 					}
 				}
 			});
@@ -187,13 +189,15 @@ public class GlobalSearchCaching {
 		public Void loadDataFromNetwork() throws Exception {
 
 			handleNewData(activity, globalModel);
+			
+			final List<GlobalModel> finalResult = getDBData(activity, type);
 
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalMemberDBChanged(getDBData(activity, type), toClear);
+						onDBChangeListener.onGlobalMemberDBChanged(finalResult, toClear);
 					}
 				}
 			});

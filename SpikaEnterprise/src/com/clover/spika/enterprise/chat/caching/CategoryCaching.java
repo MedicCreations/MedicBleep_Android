@@ -28,8 +28,8 @@ public class CategoryCaching {
 		CategoryList resultArray = getDBData(activity);
 
 		CategorySpice.GetCategory getCategory = new CategorySpice.GetCategory(activity);
-		spiceManager.execute(getCategory, new CustomSpiceListener<CategoryList>(){
-			
+		spiceManager.execute(getCategory, new CustomSpiceListener<CategoryList>() {
+
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
@@ -47,7 +47,7 @@ public class CategoryCaching {
 					if (onNetworkListener != null) {
 						onNetworkListener.onCategoryNetworkResult();
 					}
-					
+
 					HandleNewData handleNewData = new HandleNewData(activity, result.categories, onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
@@ -60,7 +60,7 @@ public class CategoryCaching {
 					Utils.onFailedUniversal(message, activity);
 				}
 			}
-			
+
 		});
 
 		return resultArray;
@@ -114,35 +114,37 @@ public class CategoryCaching {
 
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
-			
+
 			handleNewData(activity, categories);
-			
+
+			final CategoryList finalResult = getDBData(activity);
+
 			activity.runOnUiThread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onCategoryDBChanged(getDBData(activity));
+						onDBChangeListener.onCategoryDBChanged(finalResult);
 					}
 				}
 			});
-			
+
 			return null;
 		}
 	}
 
 	private static void handleNewData(Activity activity, List<Category> networkData) {
-		
+
 		if (activity instanceof BaseActivity) {
 
 			CategoryDao categoryDao = ((BaseActivity) activity).getDaoSession().getCategoryDao();
 			categoryDao.deleteAll();
-			
+
 			for (Category cat : networkData) {
 
-				com.clover.spika.enterprise.chat.models.greendao.Category finalCatModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
-						Long.valueOf(cat.id), cat.name);
-				
+				com.clover.spika.enterprise.chat.models.greendao.Category finalCatModel = new com.clover.spika.enterprise.chat.models.greendao.Category(Long.valueOf(cat.id),
+						cat.name);
+
 				categoryDao.insert(finalCatModel);
 			}
 		}

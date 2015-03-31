@@ -9,6 +9,8 @@ import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Organization;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.UserDetail;
+import com.clover.spika.enterprise.chat.models.greendao.UserDetails;
 
 public class DaoUtils {
 
@@ -353,6 +355,10 @@ public class DaoUtils {
 				userDao.setChat_id(user.chat_id);
 			}
 
+			if (user.organization != null) {
+				userDao.setOrganization_id(Long.valueOf(user.organization.id));
+			}
+
 			userDao.setIs_user(user.is_user);
 			userDao.setIs_group(user.is_group);
 			userDao.setIs_room(user.is_room);
@@ -360,7 +366,8 @@ public class DaoUtils {
 		} else {
 
 			userDao = new com.clover.spika.enterprise.chat.models.greendao.User((long) user.getId(), user.firstname, user.lastname, user.type, user.image, user.image_thumb,
-					user.is_member, user.is_admin, user.name, user.groupname, user.chat_id, user.is_user, user.is_group, user.is_room);
+					user.is_member, user.is_admin, user.name, user.groupname, user.chat_id, user.is_user, user.is_group, user.is_room,
+					user.organization != null ? Long.valueOf(user.organization.id) : 0L);
 		}
 
 		return userDao;
@@ -409,6 +416,38 @@ public class DaoUtils {
 		}
 
 		return groupDao;
+	}
+
+	public static UserDetail convertDaoUserDetailToUserDetailModel(UserDetails detail) {
+
+		UserDetail result = new UserDetail();
+
+		result.key = detail.getKey();
+		result.label = detail.getLabel();
+		result.keyboard_type = detail.getKeyboard_type() != null ? detail.getKeyboard_type() : 0;
+		result.value = detail.getValue();
+		result.public_value = detail.getPublic_value();
+
+		return result;
+	}
+
+	public static UserDetails convertUserDetailModelToUserDetailDao(UserDetail detail, String userId) {
+
+		UserDetails result = new UserDetails(Long.valueOf(detail.id), Long.valueOf(userId), detail.key, detail.label, detail.keyboard_type, detail.value, detail.public_value);
+
+		return result;
+	}
+
+	public static Organization convertDaoOrganizationToOrganizationModel(com.clover.spika.enterprise.chat.models.greendao.Organization daoOrganization) {
+
+		Organization result = new Organization();
+
+		if (daoOrganization != null) {
+			result.id = String.valueOf(daoOrganization.getId());
+			result.name = daoOrganization.getName();
+		}
+
+		return result;
 	}
 
 }
