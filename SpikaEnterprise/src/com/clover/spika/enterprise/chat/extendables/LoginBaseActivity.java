@@ -222,6 +222,9 @@ public abstract class LoginBaseActivity extends Activity {
 			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
 		}
 		else {
+			if (this instanceof LoginActivity) {
+				PasscodeUtility.getInstance().setSessionValid(true);
+			}
 			continueToMainActivity(extras);
 		}
 	}
