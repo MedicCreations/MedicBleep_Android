@@ -154,7 +154,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			tempMess.id = String.valueOf(mMessageId + 10);
 		}
 		
-		Message decryptMess = Message.decryptContent(this, tempMess);
+		final Message decryptMess = Message.decryptContent(this, tempMess);
 		activeData.add(decryptMess);
 		tempDataForSend.add(decryptMess);
 		
@@ -183,7 +183,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
-				Utils.onFailedUniversal(null, ThreadsActivity.this);
+				decryptMess.type = Const.MSG_TYPE_TEMP_MESS_ERROR;
+				setErrorMessage(decryptMess);
 			}
 
 			@Override
@@ -194,6 +195,18 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		
 	}
 	
+	protected void setErrorMessage(Message decryptMess) {
+		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
+		threadsAdapter.notifyDataSetChanged();
+	}
+	
+	private void resendMessage(Message message) {
+		activeData.remove(message);
+		tempDataForSend.remove(message);
+		
+		sendMessage(message.getText());
+	}
+
 	private void addNewMessage(SendMessageResponse result) {
 		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
 		
@@ -329,8 +342,12 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
-		threadsAdapter.setSelectedItem(position);
-		mMessageId = threadsAdapter.getItem(position).getMessage().getId();
+		if(threadsAdapter.getItem(position).getMessage().type == Const.MSG_TYPE_TEMP_MESS_ERROR){
+			resendMessage(threadsAdapter.getItem(position).getMessage());
+		}else if(threadsAdapter.getItem(position).getMessage().type != Const.MSG_TYPE_TEMP_MESS){
+			threadsAdapter.setSelectedItem(position);
+			mMessageId = threadsAdapter.getItem(position).getMessage().getId();
+		}
 	}
 
 	@Override
@@ -338,7 +355,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		if (parent.getAdapter() != null) {
 			ThreadsAdapter threadsAdapter = (ThreadsAdapter) parent.getAdapter();
 			mMessageId = threadsAdapter.getItem(position).getMessage().getId();
-			if (threadsAdapter.getItem(position).getMessage().isMe()) {
+			if (threadsAdapter.getItem(position).getMessage().isMe() && threadsAdapter.getItem(position).getMessage().type != Const.MSG_TYPE_DELETED
+					&& threadsAdapter.getItem(position).getMessage().type != Const.MSG_TYPE_TEMP_MESS
+					&& threadsAdapter.getItem(position).getMessage().type != Const.MSG_TYPE_TEMP_MESS_ERROR) {
 				deleteMessage(threadsAdapter.getItem(position).getMessage());
 			}
 		}
@@ -354,7 +373,6 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			}
 			addNewMessage(result);
 
-//			getThreads();
 		} else {
 			AppDialog dialog = new AppDialog(this, false);
 			dialog.setFailed(result.getCode());

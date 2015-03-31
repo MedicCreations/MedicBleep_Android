@@ -70,8 +70,9 @@ public class ThreadsAdapter extends BaseAdapter {
 	private static final int VIEW_TYPE_DELETED = 6;
 	private static final int VIEW_TYPE_GIF = 7;
 	private static final int VIEW_TYPE_TEMP_MSG= 8;
+	private static final int VIEW_TYPE_TEMP_MSG_ERROR= 9;
 
-	private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_TEMP_MSG + 1;
+	private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_TEMP_MSG_ERROR + 1;
 
 	private static final int INDENTATION_PADDING = 50;
 
@@ -179,6 +180,9 @@ public class ThreadsAdapter extends BaseAdapter {
 			
 		case Const.MSG_TYPE_TEMP_MESS:
 			return VIEW_TYPE_TEMP_MSG;
+			
+		case Const.MSG_TYPE_TEMP_MESS_ERROR:
+			return VIEW_TYPE_TEMP_MSG_ERROR;
 
 		case Const.MSG_TYPE_DEFAULT:
 		default:
@@ -244,6 +248,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			case VIEW_TYPE_MESSAGE:
 			case VIEW_TYPE_TEMP_MSG:
+			case VIEW_TYPE_TEMP_MSG_ERROR:
 			default:
 				convertView = inflateMessage(holder, parent);
 				break;
@@ -288,6 +293,10 @@ public class ThreadsAdapter extends BaseAdapter {
 			
 		case VIEW_TYPE_TEMP_MSG:
 			populateTempMessage(holder, node, position);
+			break;
+			
+		case VIEW_TYPE_TEMP_MSG_ERROR:
+			populateTempMessageError(holder, node, position);
 			break;
 
 		case VIEW_TYPE_MESSAGE:
@@ -441,6 +450,39 @@ public class ThreadsAdapter extends BaseAdapter {
 
 		holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
 		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+		holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+		
+		holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+		holder.relativeLayoutHolder.setAlpha(0.6f);
+	}
+	
+	private void populateTempMessageError(ViewHolder holder, TreeNode node, int position) {
+		holder.textViewUser.setVisibility(View.INVISIBLE);
+		holder.imageViewUser.setVisibility(View.INVISIBLE);
+		holder.textViewMessage.setText(node.getMessage().getText());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+
+		int textWidth = node.getMessage().getTextWidth();
+
+		if (textWidth == -1) {
+			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+
+		int timeWidth = node.getMessage().getTimeWidth();
+
+		if (timeWidth == -1) {
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+
+		if (textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
+		} else {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
+		}
+
+		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.red));
 		holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
 		
 		holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);

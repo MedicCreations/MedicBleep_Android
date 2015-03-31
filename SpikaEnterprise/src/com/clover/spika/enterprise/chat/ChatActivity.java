@@ -18,7 +18,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
@@ -26,7 +25,6 @@ import com.clover.spika.enterprise.chat.adapters.MessagesAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatDBChanged;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice;
@@ -38,7 +36,6 @@ import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
@@ -47,9 +44,7 @@ import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -665,7 +660,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 					@Override
 					public void onRequestFailure(SpiceException ex) {
-//						Utils.onFailedUniversal(null, ChatActivity.this, false);
 						adapter.tempMessageError(tempMessage);
 					}
 
