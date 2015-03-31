@@ -213,6 +213,7 @@ public class Const {
 	public static final int MSG_TYPE_DELETED = 7;
 	public static final int MSG_TYPE_GIF = 9;
 	public static final int MSG_TYPE_TEMP_MESS = 999;
+	public static final int MSG_TYPE_TEMP_MESS_ERROR = 9999;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;

@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
@@ -79,7 +80,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (parent.getAdapter() != null) {
 					Message message = (Message) parent.getAdapter().getItem(position);
-					if (message.getType() != Const.MSG_TYPE_DELETED) {
+					if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
+						/* resend message */
+						resendMessage(message);
+					}else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
 					}
@@ -111,7 +115,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onSimpleClick(Message message) {
-				if (message.getType() != Const.MSG_TYPE_DELETED) {
+				if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
+					/* resend message */
+					resendMessage(message);
+				}else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
 				}
@@ -567,8 +574,28 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		setSettingsItems(chatType);
 
 	}
+	
+	private void replaceTempMessWithRealMess(Message mess, Message tempMess){
+		mess.isMe = true;
+		totalItems ++;
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
+				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
+				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
+				Long.valueOf(mess.getChat_id()));
+		getDaoSession().getMessageDao().insert(messDao);
+		adapter.addNewMessage(mess, tempMess);
+		
+		setNoItemsVisibility();
+		
+		chatListView.setSelectionFromTop(adapter.getCount(), 0);
+	}
+	
+	protected void resendMessage(Message message) {
+		adapter.prepareResend(message);
+		sendMessage(Const.MSG_TYPE_DEFAULT, chatId, message.text, null, null, null, null);
+	}
 
-	private void callNewMsgs(Message mess) {
+	private void addRealMess(Message mess) {
 		mess.isMe = true;
 		totalItems ++;
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
@@ -582,18 +609,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		
 		chatListView.setSelectionFromTop(adapter.getCount(), 0);
 		
-//		if (adapter.getCount() > 0) {
-//			mess.isMe = true;
-//			com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
-//					Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-//					mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
-//					Long.valueOf(mess.getChat_id()));
-//			getDaoSession().getMessageDao().insert(messDao);
-//			adapter.addNewMessage(mess);
-////			getMessages(false, false, false, true, true, false);
-//		} else {
-//			getMessages(true, true, true, false, true, false);
-//		}
 	}
 
 	@Override
@@ -636,45 +651,81 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected int getUserId() {
 		return Integer.valueOf(mUserId);
 	}
-
+	
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 
-//		handleProgress(true);
-		if(type == Const.MSG_TYPE_DEFAULT) adapter.addTempMessage(text);
-		chatListView.setSelectionFromTop(adapter.getCount(), 0);
-		etMessage.setText("");
-		
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
+		if(type == Const.MSG_TYPE_DEFAULT){
+			if(type == Const.MSG_TYPE_DEFAULT){
+				final Message tempMessage = adapter.addTempMessage(text);
+				chatListView.setSelectionFromTop(adapter.getCount(), 0);
+				etMessage.setText("");
+				
+				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
-			@Override
-			public void onRequestFailure(SpiceException ex) {
-//				handleProgress(false);
-				Utils.onFailedUniversal(null, ChatActivity.this);
-			}
-
-			@Override
-			public void onRequestSuccess(SendMessageResponse result) {
-//				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-//					etMessage.setText("");
-					if (type != Const.MSG_TYPE_DEFAULT)
-						forceClose();
-
-					callNewMsgs(result.message_model);
-				} else {
-					AppDialog dialog = new AppDialog(ChatActivity.this, false);
-					dialog.setFailed(result.getCode());
-					if (result.getCode() == Const.E_CHAT_INACTIVE) {
-						isActive = 0;
-						etMessage.setFocusable(false);
-						adapter.deleteAllTempChat();
+					@Override
+					public void onRequestFailure(SpiceException ex) {
+//						Utils.onFailedUniversal(null, ChatActivity.this, false);
+						adapter.tempMessageError(tempMessage);
 					}
-				}
+
+					@Override
+					public void onRequestSuccess(SendMessageResponse result) {
+
+						if (result.getCode() == Const.API_SUCCESS) {
+
+							if (type != Const.MSG_TYPE_DEFAULT)
+								forceClose();
+
+							replaceTempMessWithRealMess(result.message_model, tempMessage);
+						} else {
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+							dialog.setFailed(result.getCode());
+							if (result.getCode() == Const.E_CHAT_INACTIVE) {
+								isActive = 0;
+								etMessage.setFocusable(false);
+								adapter.deleteAllTempChat();
+							}
+						}
+					}
+				});
+			}else{
+				etMessage.setText("");
+				
+				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
+
+					@Override
+					public void onRequestFailure(SpiceException ex) {
+						Utils.onFailedUniversal(null, ChatActivity.this, false);
+					}
+
+					@Override
+					public void onRequestSuccess(SendMessageResponse result) {
+
+						if (result.getCode() == Const.API_SUCCESS) {
+
+							if (type != Const.MSG_TYPE_DEFAULT)
+								forceClose();
+
+							addRealMess(result.message_model);
+						} else {
+							AppDialog dialog = new AppDialog(ChatActivity.this, false);
+							dialog.setFailed(result.getCode());
+							if (result.getCode() == Const.E_CHAT_INACTIVE) {
+								isActive = 0;
+								etMessage.setFocusable(false);
+								adapter.deleteAllTempChat();
+							}
+						}
+					}
+				});
 			}
-		});
+			
+		}
+		
+		
+		
 	}
 
 	@Override

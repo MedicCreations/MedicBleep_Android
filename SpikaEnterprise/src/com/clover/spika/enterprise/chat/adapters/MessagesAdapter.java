@@ -199,7 +199,12 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgLayoutBack.setPadding(padding, padding, padding, padding);
 			}
 			
-			if (msg.getType() == Const.MSG_TYPE_TEMP_MESS) {
+			if (msg.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
+				holder.meMsgLayout.setAlpha(.4f);
+				holder.meMsgContent.setVisibility(View.VISIBLE);
+				holder.meMsgContent.setTextColor(ctx.getResources().getColor(R.color.red));
+				holder.meMsgContent.setText(msg.getText());
+			}else if (msg.getType() == Const.MSG_TYPE_TEMP_MESS) {
 				holder.meMsgLayout.setAlpha(.4f);
 				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setTextColor(Color.LTGRAY);
@@ -1013,7 +1018,7 @@ public class MessagesAdapter extends BaseAdapter {
 	}
 	
 	private List<Message> tempMessageList = new ArrayList<Message>();
-	public void addTempMessage(String text) {
+	public Message addTempMessage(String text) {
 		Message tempMess = new Message();
 		tempMess.setText(text);
 		tempMess.type = Const.MSG_TYPE_TEMP_MESS;
@@ -1028,6 +1033,7 @@ public class MessagesAdapter extends BaseAdapter {
 		data.add(tempMess);
 		setEndOfSearch(true); // disable pagging while message sending to web
 		notifyDataSetChanged();
+		return tempMess;
 	}
 	
 	public void deleteAllTempChat() {
@@ -1047,6 +1053,42 @@ public class MessagesAdapter extends BaseAdapter {
 				break;
 			}
 		}
+		data.add(mess);
+		Collections.sort(data, new MessageSortingById());
+		addSeparatorDate();
+		if (data.size() >= totalCount) {
+			setEndOfSearch(true);
+		} else {
+			setEndOfSearch(false);
+		}
+		notifyDataSetChanged();
+	}
+	
+	public void tempMessageError(Message tempMessage) {
+		tempMessage.type = Const.MSG_TYPE_TEMP_MESS_ERROR;
+		if (data.size() >= totalCount) {
+			setEndOfSearch(true);
+		} else {
+			setEndOfSearch(false);
+		}
+		notifyDataSetChanged();
+	}
+	
+	public void prepareResend(Message message) {
+		tempMessageList.remove(message);
+		data.remove(message);
+		if (data.size() >= totalCount) {
+			setEndOfSearch(true);
+		} else {
+			setEndOfSearch(false);
+		}
+		notifyDataSetChanged();
+	}
+	
+	public void addNewMessage(Message mess, Message tempToRemove) {
+		mess = Message.decryptContent(ctx, mess);
+		tempMessageList.remove(tempToRemove);
+		data.remove(tempToRemove);
 		data.add(mess);
 		Collections.sort(data, new MessageSortingById());
 		addSeparatorDate();

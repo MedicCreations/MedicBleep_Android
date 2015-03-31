@@ -450,6 +450,10 @@ public class Utils {
 	}
 
 	public static void onFailedUniversal(String message, final Context ctx) {
+		onFailedUniversal(message, ctx, true);
+	}
+	
+	public static void onFailedUniversal(String message, final Context ctx, final boolean finishActivity) {
 
 		if (TextUtils.isEmpty(message)) {
 			message = ctx.getString(R.string.e_something_went_wrong);
@@ -464,7 +468,7 @@ public class Utils {
 
 				Intent intent = new Intent(ctx, LoginActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				ctx.startActivity(intent);
+				if(finishActivity) ctx.startActivity(intent);
 			}
 		});
 	}

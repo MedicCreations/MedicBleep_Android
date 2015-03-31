@@ -147,31 +147,23 @@ public class ChatCaching {
 
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
-
-			if (chat.messages != null && chat.messages.size() > 0) { // if
-																		// chat.messages
-																		// ==
-																		// null
-																		// or
-																		// size
-																		// == 0,
-																		// don't
-																		// save
-																		// chat
-																		// in
-																		// database
+			
+			/* if chat.messages == null or size == 0, don't save chat in database*/
+			if (chat.messages != null && chat.messages.size() > 0) { 
 				Log.d("LOG", "saving chat to database");
 				handleNewData(activity, chat);
 			} else {
-				Log.d("LOG", "dont saving chat to database");
+				Log.d("LOG", "dont save chat to database");
 			}
+			
+			final Chat finalResult = getDBData(activity, (long) chat.chat.getId());
 
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onChatDBChanged(getDBData(activity, (long) chat.chat.getId()), toClear, isPagging, isNewMsg, isSend, isRefresh);
+						onDBChangeListener.onChatDBChanged(finalResult, toClear, isPagging, isNewMsg, isSend, isRefresh);
 					}
 				}
 			});
@@ -214,8 +206,7 @@ public class ChatCaching {
 				com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) networkData.user.getId(),
 						networkData.user.firstname, networkData.user.lastname, networkData.user.type, networkData.user.image, networkData.user.image_thumb,
 						networkData.user.is_member, networkData.user.is_admin, networkData.user.name, networkData.user.groupname, networkData.user.chat_id,
-						networkData.user.is_user, networkData.user.is_group, networkData.user.is_room, organizationDao != null ? Long.valueOf(networkData.user.organization.id)
-								: 0L);
+						networkData.user.is_user, networkData.user.is_group, networkData.user.is_room, finalOrganizationModel != null ? finalOrganizationModel.getId() : 0L);
 
 				userDao.insertOrReplace(finalUserModel);
 				finalUserModelId = finalUserModel.getId();
