@@ -266,8 +266,7 @@ public class ChatCaching {
 					usedChatModel.setIs_private(networkData.chat.is_private);
 				if (networkData.chat.password != null)
 					usedChatModel.setPassword(networkData.chat.password);
-				if (networkData.chat.unread != null)
-					usedChatModel.setUnread(networkData.chat.unread);
+				usedChatModel.setUnread("0");
 				if ((Integer) networkData.chat.is_member != null)
 					usedChatModel.setIs_member(networkData.chat.is_member);
 				if ((Long) networkData.chat.modified != null)

@@ -811,6 +811,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			public void onRequestSuccess(Chat result) {
 				super.onRequestSuccess(result);
 				
+				adapter.setSpiceManager(spiceManager);
+				
 				manageGetMessages(result, isNewMsg, isSend, isRefresh, isClear, isPagging);
 				
 			}

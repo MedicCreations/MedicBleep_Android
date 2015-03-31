@@ -25,6 +25,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,6 +105,10 @@ public class MessagesAdapter extends BaseAdapter {
 		
 		displayWidth = context.getResources().getDisplayMetrics().widthPixels;
 		typeface = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Regular.ttf");
+	}
+	
+	public void setSpiceManager(SpiceManager manager){
+		imageLoaderSpice.setSpiceManager(manager);
 	}
 
 	@Override
@@ -213,9 +218,9 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgContent.setVisibility(View.VISIBLE);
 				holder.meMsgContent.setText(msg.getText());
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
-
+				
 				holder.meViewImage.setImageDrawable(null);
-				imageLoaderSpice.displayImage(holder.meViewImage, msg.getThumb_id(), ImageLoaderSpice.NO_IMAGE);
+				imageLoaderSpice.displayImage(holder.meViewImage, msg.thumb_id, ImageLoaderSpice.NO_IMAGE);
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
 				holder.meViewImage.setOnClickListener(new OnClickListener() {

@@ -30,6 +30,7 @@ import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
+import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
@@ -38,6 +39,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
+import com.clover.spika.enterprise.chat.models.greendao.Message;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.share.ChooseLobbyActivity;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -560,6 +562,8 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				AppDialog dialog = new AppDialog(CameraFullPhotoActivity.this, true);
 
 				if (result.getCode() == Const.API_SUCCESS) {
+					Message newMessage = DaoUtils.convertMessageModelToMessageDao(null, result.message_model, Integer.valueOf(result.message_model.chat_id));
+					getDaoSession().getMessageDao().insert(newMessage);
 					dialog.setSucceed();
 				} else {
 					dialog.setFailed(result.getCode());
