@@ -1,7 +1,11 @@
 package com.clover.spika.enterprise.chat;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,11 +17,10 @@ import android.widget.EditText;
 
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends LoginBaseActivity {
 
@@ -104,6 +107,19 @@ public class LoginActivity extends LoginBaseActivity {
 		if (!errorLock) {
 
 			try {
+				
+				if(TextUtils.isEmpty(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME))){
+					//database is allready recreated
+				}else if(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME).equals(username.getText().toString())){
+					//no need to recreated empty database
+				}else{
+					//recreate empty database
+					DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
+					SQLiteDatabase db;
+					db = helper.getWritableDatabase();
+					DaoMaster.dropAllTables(db, true);
+					DaoMaster.createAllTables(db, true);
+				}
 
 				executePreLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
 
