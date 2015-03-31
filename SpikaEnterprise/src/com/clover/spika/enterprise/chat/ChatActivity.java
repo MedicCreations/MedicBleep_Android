@@ -348,59 +348,60 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			if (intent.getExtras().containsKey(Const.FROM_NOTIFICATION) && intent.getExtras().getBoolean(Const.FROM_NOTIFICATION, false)) {
 				intent.getExtras().remove(Const.FROM_NOTIFICATION);
-				try {
-					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
-
-					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
-
-					handleProgress(true);
-					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
-							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
-					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
-
-						@Override
-						public void onRequestFailure(SpiceException ex) {
-							handleProgress(false);
-							Utils.onFailedUniversal(null, ChatActivity.this);
-						}
-
-						@Override
-						public void onRequestSuccess(Login result) {
-							handleProgress(false);
-
-							if (result.getCode() == Const.API_SUCCESS) {
-
-								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname,
-										result.getToken());
-								new GoogleUtils().getPushToken(ChatActivity.this);
-
-								handleIntentSecondLevel(intent);
-
-							} else {
-
-								String message = "";
-								if (result.getCode() == Const.E_INVALID_TOKEN) {
-									Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
-									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									startActivity(intent);
-								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
-									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
-									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
-									startActivity(intent);
-									finish();
-									return;
-								} else {
-									message = result.getMessage();
-								}
-
-								Utils.onFailedUniversal(message, ChatActivity.this);
-							}
-						}
-					});
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				handleIntentSecondLevel(intent);
+//				try {
+//					Logger.d("organization_id: " + intent.getExtras().getString(Const.ORGANIZATION_ID));
+//
+//					String hashPassword = Utils.getHexString(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD));
+//
+//					handleProgress(true);
+//					LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(
+//							Const.USERNAME), hashPassword, intent.getExtras().getString(Const.ORGANIZATION_ID), this);
+//					spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
+//
+//						@Override
+//						public void onRequestFailure(SpiceException ex) {
+//							handleProgress(false);
+//							Utils.onFailedUniversal(null, ChatActivity.this);
+//						}
+//
+//						@Override
+//						public void onRequestSuccess(Login result) {
+//							handleProgress(false);
+//
+//							if (result.getCode() == Const.API_SUCCESS) {
+//
+//								Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname,
+//										result.getToken());
+//								new GoogleUtils().getPushToken(ChatActivity.this);
+//
+//								handleIntentSecondLevel(intent);
+//
+//							} else {
+//
+//								String message = "";
+//								if (result.getCode() == Const.E_INVALID_TOKEN) {
+//									Intent intent = new Intent(ChatActivity.this, LoginActivity.class);
+//									intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//									startActivity(intent);
+//								} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
+//									Intent intent = new Intent(ChatActivity.this, ChangePasswordActivity.class);
+//									intent.putExtra(Const.TEMP_PASSWORD, SpikaEnterpriseApp.getSharedPreferences(ChatActivity.this).getCustomString(Const.PASSWORD));
+//									startActivity(intent);
+//									finish();
+//									return;
+//								} else {
+//									message = result.getMessage();
+//								}
+//
+//								Utils.onFailedUniversal(message, ChatActivity.this);
+//							}
+//						}
+//					});
+//
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
 
 			} else {
 				handleIntentSecondLevel(intent);

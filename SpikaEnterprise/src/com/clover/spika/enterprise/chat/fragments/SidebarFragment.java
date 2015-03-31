@@ -14,6 +14,7 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -155,6 +156,8 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 			break;
 
 		case R.id.logout:
+			
+			((BaseActivity)getActivity()).dropDatabase();
 			
 			handleProgress(true);
 			UserSpice.Logout logout = new UserSpice.Logout(getActivity());

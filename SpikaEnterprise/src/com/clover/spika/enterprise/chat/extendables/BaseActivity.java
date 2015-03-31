@@ -207,6 +207,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 		daoSession.getMessageDao().deleteAll();
 	}
 	//***********************
+	
+	// ***********DROP DATABASE
+	public void dropDatabase() {
+		DaoMaster.dropAllTables(db, true);
+		DaoMaster.createAllTables(db, true);
+	}
+	// ***********************
 
 	public DaoSession getDaoSession() {
 		return daoSession;
