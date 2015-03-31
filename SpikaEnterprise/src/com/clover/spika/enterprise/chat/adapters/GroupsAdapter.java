@@ -14,8 +14,8 @@ import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.octo.android.robospice.SpiceManager;

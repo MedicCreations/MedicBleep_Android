@@ -18,7 +18,6 @@ import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
 import com.clover.spika.enterprise.chat.models.greendao.GroupsDao;
-import com.clover.spika.enterprise.chat.models.greendao.Groups;
 import com.clover.spika.enterprise.chat.models.greendao.MessageDao;
 import com.clover.spika.enterprise.chat.models.greendao.OrganizationDao;
 import com.clover.spika.enterprise.chat.models.greendao.UserDao;
@@ -150,7 +149,7 @@ public class GlobalCaching {
 		public Void loadDataFromNetwork() throws Exception {
 
 			handleNewData(activity, globalModel);
-			
+
 			final List<GlobalModel> finalResult = getDBData(activity, type);
 
 			activity.runOnUiThread(new Runnable() {
@@ -189,7 +188,7 @@ public class GlobalCaching {
 		public Void loadDataFromNetwork() throws Exception {
 
 			handleNewData(activity, globalModel);
-			
+
 			final List<GlobalModel> finalResult = getDBData(activity, type);
 
 			activity.runOnUiThread(new Runnable() {
@@ -219,7 +218,8 @@ public class GlobalCaching {
 			if (type == GlobalModel.Type.CHAT) {
 
 				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder().build().list();
+				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder()
+						.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP)).build().list();
 
 				if (lista != null) {
 
@@ -236,11 +236,12 @@ public class GlobalCaching {
 			} else if (type == GlobalModel.Type.GROUP) {
 
 				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
-				List<Groups> lista = groupDao.queryBuilder().build().list();
+				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
 
-				if (lista != null) {
 
-					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : lista) {
+				if (groupList != null) {
+
+					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : groupList) {
 
 						GlobalModel item = handleOldGroupData(group);
 

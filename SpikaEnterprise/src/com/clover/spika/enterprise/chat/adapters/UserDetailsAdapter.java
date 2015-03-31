@@ -32,12 +32,17 @@ public class UserDetailsAdapter extends BaseAdapter {
 	public UserDetailsAdapter(Context context, List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit) {
 
 		this.mContext = context;
-
 		setNewData(userDetailValues, userDetails, isShowNotEdit);
-
 	}
 
 	public void setNewData(List<UserDetail> userDetailValues, List<Map<String, String>> userDetails, boolean isShowNotEdit) {
+
+		setShowNotEdit(isShowNotEdit);
+
+		if (userDetailValues == null) {
+			return;
+		}
+
 		mUserDetailValues.clear();
 		for (UserDetail usDet : userDetailValues) {
 
@@ -72,9 +77,11 @@ public class UserDetailsAdapter extends BaseAdapter {
 				mUserDetailValues.add(usDet);
 			}
 		}
+
+		notifyDataSetChanged();
 	}
 
-	public void setShowNotEdit(boolean b) {
+	private void setShowNotEdit(boolean b) {
 		isShowNotEdit = b;
 	}
 
@@ -84,6 +91,11 @@ public class UserDetailsAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
+
+		if (mUserDetailValues == null) {
+			return 0;
+		}
+
 		return mUserDetailValues.size();
 	}
 

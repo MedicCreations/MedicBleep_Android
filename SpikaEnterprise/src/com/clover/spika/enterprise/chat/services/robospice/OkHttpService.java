@@ -17,7 +17,7 @@ public class OkHttpService extends OkHttpSpiceService {
 	
 	@Override
 	public int getThreadCount() {
-		return 5;
+		return 3;
 	}
 
 }
