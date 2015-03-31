@@ -87,14 +87,13 @@ public class PasscodeUtility {
 	}
 
 	public boolean validate(Context ctx, String requestedPasscode) {
-		if (this.passcode == null) {
-			this.passcode = SpikaEnterpriseApp.getSharedPreferences(ctx).getPasscode();
+		
+		this.passcode = SpikaEnterpriseApp.getSharedPreferences(ctx).getPasscode();
 
-			// if, by any chance, passcode length is wrong, react as if entered
-			// passcode is false and thus not validated
-			if (this.passcode.length() != 4)
-				return false;
-		}
+		// if, by any chance, passcode length is wrong, react as if entered
+		// passcode is false and thus not validated
+		if (this.passcode.length() != 4)
+			return false;
 
 		return this.passcode.equals(requestedPasscode);
 	}
