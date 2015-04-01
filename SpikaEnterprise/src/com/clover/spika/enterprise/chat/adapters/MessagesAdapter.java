@@ -335,7 +335,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
 			} else if (msg.type == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
-				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+				holder.meThreadIndicator.setImageResource(R.drawable.send_mess_failed);
 			}else {
 				holder.meThreadIndicator.setImageDrawable(null);
 				holder.meThreadIndicator.setVisibility(View.GONE);
