@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,7 +14,9 @@ import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
@@ -24,6 +27,8 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
@@ -175,8 +180,12 @@ public abstract class LoginBaseActivity extends Activity {
 
 					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
 
-					new GoogleUtils().getPushToken(LoginBaseActivity.this);
-
+					int googlePlayServiceResult = GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this);
+					
+					if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+						new GoogleUtils().getPushToken(LoginBaseActivity.this);
+					}
+					
 					final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
 
 					if (extras != null) {
@@ -185,8 +194,24 @@ public abstract class LoginBaseActivity extends Activity {
 					
 					SpikaEnterpriseApp.startSocket();
 					
-					startActivity(intent);
-					finish();
+					AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
+					dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+						
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							startActivity(intent);
+							finish();
+						}
+					});
+					
+					if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+						startActivity(intent);
+						finish();
+					}else if(GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this) == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED){
+						dialog.setInfo(getString(R.string.please_update_your_google_play_service_for_receiving_push_notification_));
+					}else{
+						dialog.setInfo(getString(R.string.please_install_google_play_service_for_receiving_push_notification_));
+					}
 
 				} else {
 

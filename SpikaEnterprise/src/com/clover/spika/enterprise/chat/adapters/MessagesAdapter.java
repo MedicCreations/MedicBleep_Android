@@ -333,7 +333,10 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getRootId() > 0) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
 				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
-			} else {
+			} else if (msg.type == Const.MSG_TYPE_TEMP_MESS_ERROR) {
+				holder.meThreadIndicator.setVisibility(View.VISIBLE);
+				holder.meThreadIndicator.setImageResource(R.drawable.ic_thread_reply);
+			}else {
 				holder.meThreadIndicator.setImageDrawable(null);
 				holder.meThreadIndicator.setVisibility(View.GONE);
 			}
@@ -1023,7 +1026,8 @@ public class MessagesAdapter extends BaseAdapter {
 	}
 	
 	private List<Message> tempMessageList = new ArrayList<Message>();
-	public Message addTempMessage(String text) {
+	public Message addTempMessage(String text, int type) {
+		if(type != Const.MSG_TYPE_DEFAULT) return null;
 		Message tempMess = new Message();
 		tempMess.setText(text);
 		tempMess.type = Const.MSG_TYPE_TEMP_MESS;

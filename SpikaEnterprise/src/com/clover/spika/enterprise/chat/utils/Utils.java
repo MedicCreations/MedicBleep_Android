@@ -59,12 +59,16 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+import com.octo.android.robospice.exception.NoNetworkException;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 /**
  * Utils
@@ -458,7 +462,18 @@ public class Utils {
 	}
 
 	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity) {
+		onFailedUniversal(message, ctx, code, finishActivity, null, null);
+	}
+	
+	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity, SpiceException ex, OnInternetErrorListener listener) {
 
+		if(ex != null && ex instanceof NoNetworkException){
+			if(listener != null){
+				listener.onInternetError();
+			}
+			return;
+		}
+		
 		if (TextUtils.isEmpty(message)) {
 			message = ctx.getString(R.string.e_something_went_wrong);
 		}

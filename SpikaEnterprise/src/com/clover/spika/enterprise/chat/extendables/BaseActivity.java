@@ -55,8 +55,8 @@ import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
-import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
+import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -93,9 +93,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private boolean gotoCallActivity = false;
 
 	private String activeClass = MainActivity.class.getName();
+	
+	protected TextView viewForReturnToCall = null;
+	protected TextView viewForNoInternetConnection = null;
+	
+	private User tempActiveUser = null;
+	private boolean isAllreadyDissmis = false;
 
 	public SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 	private ImageLoaderSpice imageLoaderSpice;
+	
+	private IntentFilter intentFilterSocket;
+	private IntentFilter intentFilterInternetChangeState = new IntentFilter(Const.INTERNET_CONNECTION_CHANGE_ACTION);
 
 	public ImageLoaderSpice getImageLoader() {
 		return imageLoaderSpice;
@@ -200,6 +209,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+		
+		LocalBroadcastManager.getInstance(this).registerReceiver(internetChageStateRec, intentFilterInternetChangeState);
 	}
 	
 	//***********DEBUG DROP TABLE MESSAGES
@@ -244,6 +255,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onDestroy() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(internetChageStateRec);
 		super.onDestroy();
 	}
 
@@ -597,7 +609,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	};
 
-	IntentFilter intentFilterSocket;
 	BroadcastReceiver rec = new BroadcastReceiver() {
 
 		@Override
@@ -930,8 +941,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 			popupCall.setVisibility(View.VISIBLE);
 	}
 
-	protected TextView viewForReturnToCall = null;
-
 	protected void setViewWhenCallIsInBackground(final int idFoBaseView, int idOfActionLayout, boolean isMainActivity) {
 		hidePopupCall();
 
@@ -963,9 +972,42 @@ public class BaseActivity extends SlidingFragmentActivity {
 			}
 		});
 	}
+	
+	protected void setViewNoInternetConnection(final int idFoBaseView, int idOfActionLayout) {
+		if(viewForNoInternetConnection != null) {
+			return;
+		}
+		viewForNoInternetConnection = new TextView(this);
+		viewForNoInternetConnection.setBackgroundColor(getResources().getColor(R.color.red));
+		viewForNoInternetConnection.setText(getString(R.string.no_internet_connection_));
+		viewForNoInternetConnection.setTextColor(Color.WHITE);
+		viewForNoInternetConnection.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+		viewForNoInternetConnection.setGravity(Gravity.CENTER);
+		((ViewGroup) findViewById(idFoBaseView)).addView(viewForNoInternetConnection);
+		viewForNoInternetConnection.getLayoutParams().height = (int) getResources().getDimension(R.dimen.menu_height);
+		viewForNoInternetConnection.getLayoutParams().width = android.widget.RelativeLayout.LayoutParams.MATCH_PARENT;
+		viewForNoInternetConnection.setId(2);
 
-	private User tempActiveUser = null;
-	private boolean isAllreadyDissmis = false;
+		((android.widget.RelativeLayout.LayoutParams) findViewById(idOfActionLayout).getLayoutParams()).addRule(RelativeLayout.BELOW, viewForNoInternetConnection.getId());
+	}
+	
+	protected void removeViewNoInternetConnection(){
+		((ViewGroup) viewForNoInternetConnection.getParent()).removeView(viewForNoInternetConnection);
+		viewForNoInternetConnection = null;
+	}
+	
+	protected BroadcastReceiver internetChageStateRec = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getIntExtra(Const.INTERNET_STATE, Const.HAS_NOT_INTERNET) == Const.HAS_INTERNET){
+				if(viewForNoInternetConnection != null){
+					((ViewGroup) viewForNoInternetConnection.getParent()).removeView(viewForNoInternetConnection);
+					viewForNoInternetConnection = null;
+				}
+			}
+		}
+	};
 
 	private void dissmisCallingPopup() {
 		if (popupCall == null)

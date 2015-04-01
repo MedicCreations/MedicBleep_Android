@@ -184,7 +184,7 @@ public class RecentAdapter extends BaseAdapter {
 			holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
 		}
 
-		if (Integer.parseInt(item.unread) > 0) {
+		if (item.unread != null && Integer.parseInt(item.unread) > 0) {
 			holder.unreadText.setVisibility(View.VISIBLE);
 			holder.unreadText.setText(item.unread);
 		} else {

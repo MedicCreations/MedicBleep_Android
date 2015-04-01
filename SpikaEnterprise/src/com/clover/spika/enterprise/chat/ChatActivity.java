@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickL
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Message;
@@ -49,9 +50,10 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, OnChatNetworkResult {
+public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, OnChatNetworkResult, OnInternetErrorListener {
 
 	private TextView noItems;
 
@@ -79,7 +81,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					Message message = (Message) parent.getAdapter().getItem(position);
 					if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 						/* resend message */
-						resendMessage(message);
+						showResendDialog(message);
 					} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
@@ -114,7 +116,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			public void onSimpleClick(Message message) {
 				if (message.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 					/* resend message */
-					resendMessage(message);
+					showResendDialog(message);
 				} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
 					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
@@ -487,7 +489,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				@Override
 				public void onRequestFailure(SpiceException ex) {
 					handleProgress(false);
-					Utils.onFailedUniversal(null, ChatActivity.this);
+					Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
 				}
 
 				@Override
@@ -597,6 +599,18 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		chatListView.setSelectionFromTop(adapter.getCount(), 0);
 	}
+	
+	protected void showResendDialog(final Message message) {
+		AppDialog dialog = new AppDialog(this, false);
+		dialog.setYesNo(getString(R.string.resend_message), getString(R.string.resend), getString(R.string.cancel));
+		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+			
+			@Override
+			public void onPositiveButtonClick(View v, Dialog d) {
+				resendMessage(message);
+			}
+		});
+	}
 
 	protected void resendMessage(Message message) {
 		adapter.prepareResend(message);
@@ -662,74 +676,58 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {
 
-		if (type == Const.MSG_TYPE_DEFAULT) {
-			if (type == Const.MSG_TYPE_DEFAULT) {
-				final Message tempMessage = adapter.addTempMessage(text);
-				chatListView.setSelectionFromTop(adapter.getCount(), 0);
-				etMessage.setText("");
+		/* if message type is deafult add temp message to adapter (see method in adapter) */
+		final Message tempMessage = adapter.addTempMessage(text, type);
+		if(tempMessage != null )
+			setNoItemsVisibility();
 
-				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
-				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
+		if (type == Const.MSG_TYPE_DEFAULT)
+			chatListView.setSelectionFromTop(adapter.getCount(), 0);
 
-					@Override
-					public void onRequestFailure(SpiceException ex) {
-						adapter.tempMessageError(tempMessage);
+		etMessage.setText("");
+
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
+
+			@Override
+			public void onRequestFailure(SpiceException ex) {
+				/* if message type is deafult replace temp message with type error else show dialog */
+				if (type == Const.MSG_TYPE_DEFAULT) {
+					adapter.tempMessageError(tempMessage);
+					if(ex instanceof NoNetworkException){
+						setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
 					}
-
-					@Override
-					public void onRequestSuccess(SendMessageResponse result) {
-
-						if (result.getCode() == Const.API_SUCCESS) {
-
-							if (type != Const.MSG_TYPE_DEFAULT)
-								forceClose();
-
-							replaceTempMessWithRealMess(result.message_model, tempMessage);
-						} else {
-							AppDialog dialog = new AppDialog(ChatActivity.this, false);
-							dialog.setFailed(result.getCode());
-							if (result.getCode() == Const.E_CHAT_INACTIVE) {
-								isActive = 0;
-								etMessage.setFocusable(false);
-								adapter.deleteAllTempChat();
-							}
-						}
-					}
-				});
-			} else {
-				etMessage.setText("");
-
-				ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
-				spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
-
-					@Override
-					public void onRequestFailure(SpiceException ex) {
-						Utils.onFailedUniversal(null, ChatActivity.this, 0, false);
-					}
-
-					@Override
-					public void onRequestSuccess(SendMessageResponse result) {
-
-						if (result.getCode() == Const.API_SUCCESS) {
-
-							if (type != Const.MSG_TYPE_DEFAULT)
-								forceClose();
-
-							addRealMess(result.message_model);
-						} else {
-							AppDialog dialog = new AppDialog(ChatActivity.this, false);
-							dialog.setFailed(result.getCode());
-							if (result.getCode() == Const.E_CHAT_INACTIVE) {
-								isActive = 0;
-								etMessage.setFocusable(false);
-								adapter.deleteAllTempChat();
-							}
-						}
-					}
-				});
+				} else {
+					Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
+				}
 			}
 
-		}
+			@Override
+			public void onRequestSuccess(SendMessageResponse result) {
+
+				if (result.getCode() == Const.API_SUCCESS) {
+
+					if (type != Const.MSG_TYPE_DEFAULT)
+						forceClose();
+
+					/* if message type is deafult replace temp message with real message else add real message */
+					adapter.setSeenBy("");
+					if (type == Const.MSG_TYPE_DEFAULT && tempMessage != null) {
+						replaceTempMessWithRealMess(result.message_model, tempMessage);
+					} else {
+						addRealMess(result.message_model);
+					}
+				} else {
+					AppDialog dialog = new AppDialog(ChatActivity.this, false);
+					dialog.setFailed(result.getCode());
+					if (result.getCode() == Const.E_CHAT_INACTIVE) {
+						isActive = 0;
+						etMessage.setFocusable(false);
+						adapter.deleteAllTempChat();
+					}
+				}
+			}
+		});
 	}
 
 	@Override
@@ -811,6 +809,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				this);
 
 		spiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {
+			
+			@Override
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+			}
 
 			@Override
 			public void onRequestSuccess(Chat result) {
@@ -911,7 +914,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ChatActivity.this);
+				Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
 			}
 
 			@Override
@@ -964,7 +967,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ChatActivity.this);
+				Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
 			}
 
 			@Override
@@ -998,7 +1001,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					@Override
 					public void onRequestFailure(SpiceException ex) {
 						handleProgress(false);
-						Utils.onFailedUniversal(null, ChatActivity.this);
+						Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
 					}
 
 					@Override
@@ -1045,7 +1048,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ChatActivity.this);
+				Utils.onFailedUniversal(null, ChatActivity.this, 0, false, ex, ChatActivity.this);
 			}
 
 			@Override
@@ -1076,5 +1079,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	public void onChatDBChanged(Chat usableData, boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh) {
 		Log.d("LOG", "DB CHANGE, size: " + (usableData != null ? usableData.messages.size() : "NULL JE"));
 		manageGetMessages(usableData, isNewMsg, isSend, isRefresh, isClear, isPagging);
+	}
+
+	@Override
+	public void onInternetError() {
+		setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
 	}
 }
