@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -388,7 +389,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private void filterAllGo() {
-
+		
 		currentFilter = GlobalModel.Type.ALL;
 
 		filterAll.setTextColor(getActivity().getResources().getColor(R.color.text_blue));

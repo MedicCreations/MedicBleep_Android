@@ -152,7 +152,7 @@ public class UserCaching {
 					}
 				}
 
-				result.user.details = details;
+				result.user.setDetails(details);
 				result.detail_values = wrapperData;
 			}
 		}
@@ -211,11 +211,11 @@ public class UserCaching {
 				}
 			}
 
-			if (networkData.user.details != null) {
+			if (networkData.user.getDetails() != null) {
 
 				UserDetailsDao userDetailDao = ((BaseActivity) activity).getDaoSession().getUserDetailsDao();
 
-				for (Map<String, String> networkDetail : networkData.user.details) {
+				for (Map<String, String> networkDetail : networkData.user.getDetails()) {
 
 					UserDetail currentDetailsValue = new UserDetail();
 

@@ -53,8 +53,9 @@ public class GlobalSpice {
 
 			requestParams.put(Const.PAGE, String.valueOf(page));
 			requestParams.put(Const.TYPE, String.valueOf(type));
-
+			
 			if (!TextUtils.isEmpty(chatId)) {
+				Logger.custom("Vida", chatId);
 				requestParams.put(Const.CHAT_ID, chatId);
 			}
 
@@ -76,8 +77,8 @@ public class GlobalSpice {
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
 			
-			Logger.d(responseBody);
-
+			Logger.custom("Vida", responseBody);
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, GlobalResponse.class);

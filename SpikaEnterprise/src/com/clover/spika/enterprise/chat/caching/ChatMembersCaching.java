@@ -3,7 +3,11 @@ package com.clover.spika.enterprise.chat.caching;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
@@ -11,77 +15,37 @@ import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao;
-import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
+import com.clover.spika.enterprise.chat.models.greendao.ChatMembers;
+import com.clover.spika.enterprise.chat.models.greendao.ChatMembersDao;
 import com.clover.spika.enterprise.chat.models.greendao.GroupsDao;
 import com.clover.spika.enterprise.chat.models.greendao.MessageDao;
 import com.clover.spika.enterprise.chat.models.greendao.OrganizationDao;
 import com.clover.spika.enterprise.chat.models.greendao.UserDao;
+import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class GlobalCaching {
+import de.greenrobot.dao.query.QueryBuilder;
+
+public class ChatMembersCaching {
 
 	/* start: Caching calls */
-	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId,
-			String categoryId, final int type, String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
-			final OnGlobalSearchNetworkResult onNetworkListener) {
+	public static List<GlobalModel> GetChatMembers(final Activity activity, final SpiceManager spiceManager, final String chatId,
+			final OnChatMembersDBChanged onDBChangeListener) {
 
-		final String myId = Helper.getUserId(activity);
+		List<GlobalModel> resultArray = getDBData(activity, chatId);
 
-		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
-
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm, activity);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
-
-			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, activity);
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
-				super.onRequestSuccess(result);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					if (onNetworkListener != null) {
-						onNetworkListener.onGlobalSearchNetworkResult(result.getTotalCount());
-					}
-
-					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, Integer
-							.valueOf(myId), onDBChangeListener);
-					spiceManager.execute(handleNewData, null);
-
-				} else {
-					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity);
-				}
-			}
-		});
-
-		return resultArray;
-	}
-
-	public static List<GlobalModel> GlobalMembers(final Activity activity, final SpiceManager spiceManager, int page, String chatId, String groupId,
-			final int type, final boolean isToClear, final OnGlobalMemberDBChanged onDBChangeListener,
-			final OnGlobalMemberNetworkResult onNetworkListener) {
-
-		final String myId = Helper.getUserId(activity);
-
-		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
-
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type, activity);
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, chatId, null, Type.ALL, activity);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
@@ -96,12 +60,7 @@ public class GlobalCaching {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					if (onNetworkListener != null) {
-						onNetworkListener.onGlobalMemberNetworkResult(result.getTotalCount());
-					}
-
-					HandleNewMemberData handleNewData = new HandleNewMemberData(activity, result.getModelsList(), isToClear, type, Integer
-							.valueOf(myId), onDBChangeListener);
+					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), chatId, onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -117,20 +76,8 @@ public class GlobalCaching {
 	/* end: Caching calls */
 
 	/* start: Interface callbacks */
-	public interface OnGlobalSearchDBChanged {
-		public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear);
-	}
-
-	public interface OnGlobalSearchNetworkResult {
-		public void onGlobalSearchNetworkResult(int totalCount);
-	}
-
-	public interface OnGlobalMemberDBChanged {
-		public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear);
-	}
-
-	public interface OnGlobalMemberNetworkResult {
-		public void onGlobalMemberNetworkResult(int totalCount);
+	public interface OnChatMembersDBChanged {
+		public void onChatMembersDBChanged(List<GlobalModel> usableData);
 	}
 
 	/* end: Interface callbacks */
@@ -140,78 +87,31 @@ public class GlobalCaching {
 
 		private Activity activity;
 		private List<GlobalModel> globalModel;
-		private boolean toClear;
-		private int type;
-		private int myId = 0;
-		private OnGlobalSearchDBChanged onDBChangeListener;
+		private String chatId;
+		private OnChatMembersDBChanged onDBChangeListener;
 
-		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId,
-				OnGlobalSearchDBChanged onDBChangeListener) {
+		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, String chatId, OnChatMembersDBChanged onDBChangeListener) {
 			super(Void.class);
 
 			this.activity = activity;
 			this.globalModel = globalModel;
-			this.toClear = toClear;
-			this.type = type;
-			this.myId = myId;
+			this.chatId = chatId;
 			this.onDBChangeListener = onDBChangeListener;
 		}
 
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
 
-			handleNewData(activity, globalModel);
+			handleNewData(activity, globalModel, chatId);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
-
-			activity.runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalSearchDBChanged(finalResult, toClear);
-					}
-				}
-			});
-
-			return null;
-		}
-	}
-
-	public static class HandleNewMemberData extends CustomSpiceRequest<Void> {
-
-		private Activity activity;
-		private List<GlobalModel> globalModel;
-		private boolean toClear;
-		private int type;
-		private int myId = 0;
-		private OnGlobalMemberDBChanged onDBChangeListener;
-
-		public HandleNewMemberData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId,
-				OnGlobalMemberDBChanged onDBChangeListener) {
-			super(Void.class);
-
-			this.activity = activity;
-			this.globalModel = globalModel;
-			this.toClear = toClear;
-			this.type = type;
-			this.myId = myId;
-			this.onDBChangeListener = onDBChangeListener;
-		}
-
-		@Override
-		public Void loadDataFromNetwork() throws Exception {
-
-			handleNewData(activity, globalModel);
-
-			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
+			final List<GlobalModel> finalResult = getDBData(activity, chatId);
 
 			activity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
 					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalMemberDBChanged(finalResult, toClear);
+						onDBChangeListener.onChatMembersDBChanged(finalResult);
 					}
 				}
 			});
@@ -224,147 +124,99 @@ public class GlobalCaching {
 
 	/* start: Data handling */
 
-	private static List<GlobalModel> getDBData(Activity activity, int type, int myUserId) {
+	private static List<GlobalModel> getDBData(Activity activity, String chatId) {
 
 		List<GlobalModel> resultArray = new ArrayList<GlobalModel>();
 
 		if (activity instanceof BaseActivity) {
 
-			if (type == GlobalModel.Type.CHAT) {
+			ChatMembersDao chatMembersDao = ((BaseActivity) activity).getDaoSession().getChatMembersDao();
 
-				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
+			ChatMembers chatMembers = chatMembersDao.queryBuilder()
+					.where(com.clover.spika.enterprise.chat.models.greendao.ChatMembersDao.Properties.Id.eq(Integer.valueOf(chatId))).build()
+					.unique();
 
-				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder()
-						.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP)).build().list();
+			if (chatMembers != null) {
 
-				if (lista != null) {
+				try {
 
-					for (com.clover.spika.enterprise.chat.models.greendao.Chat chat : lista) {
+					JSONObject members = new JSONObject(chatMembers.getChatMembers());
+					JSONArray users = members.getJSONArray("users");
+					JSONArray groups = members.getJSONArray("groups");
+					JSONArray chats = members.getJSONArray("chats");
 
-						GlobalModel item = handleOldChatData(chat);
+					Log.d("Vida", "users: " + users.toString());
+					Log.d("Vida", "groups: " + groups.toString());
+					Log.d("Vida", "chats: " + chats.toString());
 
-						if (item.chat != null) {
+					UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
+
+					for (int i = 0; i < users.length(); i++) {
+
+						String value = users.getString(i);
+
+						com.clover.spika.enterprise.chat.models.greendao.User user = userDao.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(Integer.valueOf(value))).unique();
+
+						if (user != null) {
+
+							Log.d("Vida", "ID users: " + value);
+							GlobalModel item = handleOldUserData(user);
 							resultArray.add(item);
 						}
 					}
-				}
 
-			} else if (type == GlobalModel.Type.GROUP) {
+					GroupsDao groupsDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
 
-				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
+					for (int i = 0; i < groups.length(); i++) {
 
-				if (groupList != null) {
+						String value = groups.getString(i);
 
-					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : groupList) {
+						com.clover.spika.enterprise.chat.models.greendao.Groups group = groupsDao.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.GroupsDao.Properties.Id.eq(Integer.valueOf(value))).unique();
 
-						GlobalModel item = handleOldGroupData(group);
+						if (group != null) {
 
-						if (item.group != null) {
+							Log.d("Vida", "ID groups: " + value);
+							GlobalModel item = handleOldGroupData(group);
 							resultArray.add(item);
 						}
 					}
-				}
 
-			} else if (type == GlobalModel.Type.USER) {
+					ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 
-				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
+					for (int i = 0; i < chats.length(); i++) {
 
-				List<com.clover.spika.enterprise.chat.models.greendao.User> lista = userDao.queryBuilder()
-						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId)).build().list();
+						String value = chats.getString(i);
 
-				if (lista != null) {
+						QueryBuilder<com.clover.spika.enterprise.chat.models.greendao.Chat> qb = chatDao.queryBuilder();
 
-					for (com.clover.spika.enterprise.chat.models.greendao.User user : lista) {
+						qb.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP));
+						qb.where(Properties.Id.eq(Integer.valueOf(value)));
 
-						GlobalModel item = handleOldUserData(user);
+						com.clover.spika.enterprise.chat.models.greendao.Chat chat = qb.build().unique();
 
-						if (item.user != null) {
+						if (chat != null) {
+
+							Log.d("Vida", "ID chats: " + value);
+							GlobalModel item = handleOldChatData(chat);
 							resultArray.add(item);
 						}
 					}
-				}
-
-			} else if (type == GlobalModel.Type.ALL) {
-
-				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Chat> chatList = chatDao.queryBuilder().build().list();
-
-				if (chatList != null) {
-
-					for (com.clover.spika.enterprise.chat.models.greendao.Chat chat : chatList) {
-
-						GlobalModel item = handleOldChatData(chat);
-
-						if (item.chat != null) {
-							resultArray.add(item);
-						}
-					}
-				}
-
-				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
-
-				if (groupList != null) {
-
-					for (com.clover.spika.enterprise.chat.models.greendao.Groups group : groupList) {
-
-						GlobalModel item = handleOldGroupData(group);
-
-						if (item.group != null) {
-							resultArray.add(item);
-						}
-					}
-				}
-
-				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.User> userList = userDao.queryBuilder().build().list();
-
-				if (userList != null) {
-
-					for (com.clover.spika.enterprise.chat.models.greendao.User user : userList) {
-
-						GlobalModel item = handleOldUserData(user);
-
-						if (item.user != null) {
-							resultArray.add(item);
-						}
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
 
+		Log.d("Vida", "resultArray: " + resultArray.size());
+
 		return resultArray;
 	}
 
-	private static GlobalModel handleOldChatData(com.clover.spika.enterprise.chat.models.greendao.Chat chat) {
+	private static void handleNewData(Activity activity, List<GlobalModel> networkData, String chatId) {
 
-		GlobalModel result = new GlobalModel();
-		result.type = GlobalModel.Type.CHAT;
-		result.chat = DaoUtils.convertDaoChatToChatModel(chat);
-
-		return result;
-	}
-
-	private static GlobalModel handleOldGroupData(com.clover.spika.enterprise.chat.models.greendao.Groups group) {
-
-		GlobalModel result = new GlobalModel();
-		result.type = GlobalModel.Type.GROUP;
-		result.group = DaoUtils.convertDaoGroupToGroupModel(group);
-
-		return result;
-	}
-
-	private static GlobalModel handleOldUserData(com.clover.spika.enterprise.chat.models.greendao.User user) {
-
-		GlobalModel result = new GlobalModel();
-		result.type = GlobalModel.Type.USER;
-		result.user = DaoUtils.convertDaoUserToUserModel(user);
-
-		return result;
-	}
-
-	private static void handleNewData(Activity activity, List<GlobalModel> networkData) {
+		Log.d("Vida", "networkData: " + networkData.size());
 
 		if (activity instanceof BaseActivity) {
 
@@ -374,6 +226,10 @@ public class GlobalCaching {
 			MessageDao messageDao = ((BaseActivity) activity).getDaoSession().getMessageDao();
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 			GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
+
+			List<String> userIds = new ArrayList<String>();
+			List<String> groupIds = new ArrayList<String>();
+			List<String> chatIds = new ArrayList<String>();
 
 			for (GlobalModel globalModel : networkData) {
 
@@ -396,6 +252,8 @@ public class GlobalCaching {
 						userDao.insert(finalUserModel);
 					}
 
+					userIds.add(String.valueOf(user.getId()));
+
 				} else if (globalModel.type == GlobalModel.Type.GROUP) {
 
 					Group group = globalModel.group;
@@ -414,6 +272,8 @@ public class GlobalCaching {
 
 						groupDao.insert(finalGroupModel);
 					}
+
+					groupIds.add(String.valueOf(group.getId()));
 
 				} else if (globalModel.type == GlobalModel.Type.CHAT) {
 
@@ -527,9 +387,74 @@ public class GlobalCaching {
 
 						chatDao.insert(finalChatModel);
 					}
+
+					chatIds.add(String.valueOf(chat.getId()));
 				}
 			}
+
+			Log.d("Vida", "userIds: " + userIds.size());
+			Log.d("Vida", "groupIds: " + groupIds.size());
+			Log.d("Vida", "chatIds: " + chatIds.size());
+
+			try {
+
+				JSONArray usersArray = new JSONArray();
+				for (String string : userIds) {
+					usersArray.put(string);
+				}
+
+				JSONArray groupsArray = new JSONArray();
+				for (String string : groupIds) {
+					groupsArray.put(string);
+				}
+
+				JSONArray chatsArray = new JSONArray();
+				for (String string : chatIds) {
+					chatsArray.put(string);
+				}
+
+				JSONObject chatMembers = new JSONObject();
+
+				chatMembers.put("users", usersArray);
+				chatMembers.put("groups", groupsArray);
+				chatMembers.put("chats", chatsArray);
+
+				ChatMembers members = new ChatMembers(Long.valueOf(chatId), chatMembers.toString());
+
+				ChatMembersDao chatMembersDao = ((BaseActivity) activity).getDaoSession().getChatMembersDao();
+				chatMembersDao.insertOrReplace(members);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+	}
+
+	private static GlobalModel handleOldChatData(com.clover.spika.enterprise.chat.models.greendao.Chat chat) {
+
+		GlobalModel result = new GlobalModel();
+		result.type = GlobalModel.Type.CHAT;
+		result.chat = DaoUtils.convertDaoChatToChatModel(chat);
+
+		return result;
+	}
+
+	private static GlobalModel handleOldGroupData(com.clover.spika.enterprise.chat.models.greendao.Groups group) {
+
+		GlobalModel result = new GlobalModel();
+		result.type = GlobalModel.Type.GROUP;
+		result.group = DaoUtils.convertDaoGroupToGroupModel(group);
+
+		return result;
+	}
+
+	private static GlobalModel handleOldUserData(com.clover.spika.enterprise.chat.models.greendao.User user) {
+
+		GlobalModel result = new GlobalModel();
+		result.type = GlobalModel.Type.USER;
+		result.user = DaoUtils.convertDaoUserToUserModel(user);
+
+		return result;
 	}
 
 	/* end: Data handling */

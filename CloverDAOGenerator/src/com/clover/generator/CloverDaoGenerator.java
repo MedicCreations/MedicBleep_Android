@@ -34,6 +34,11 @@ public class CloverDaoGenerator {
 		Entity chat = schema.addEntity("Chat");
 		Entity stickers = schema.addEntity("Stickers");
 		Entity userDetails = schema.addEntity("UserDetails");
+		Entity chatMembers = schema.addEntity("ChatMembers");
+		
+		// Chat Members
+		chatMembers.addLongProperty("id").notNull().unique().primaryKey();
+		chatMembers.addStringProperty("chatMembers");
 		
 		// UserDetails
 		userDetails.addIdProperty().autoincrement();

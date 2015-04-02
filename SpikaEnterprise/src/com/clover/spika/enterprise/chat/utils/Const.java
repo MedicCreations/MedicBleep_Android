@@ -15,9 +15,7 @@ import com.clover.spika.enterprise.chat.models.User;
 public class Const {
 
 	// Version constants
-	// TODO remove to base url
 	public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
-//	public static final String BASE_URL = "http://192.241.212.29/dev/server/v1";
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";

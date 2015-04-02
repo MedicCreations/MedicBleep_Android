@@ -135,6 +135,10 @@ public class User implements Serializable {
 	public List<Map<String, String>> getDetails() {
 		return details;
 	}
+	
+	public void setDetails(List<Map<String, String>> details) {
+		this.details = details;
+	}
 
 	public Organization getOrganization() {
 		return organization;

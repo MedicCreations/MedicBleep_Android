@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,16 +23,14 @@ import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
-import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
+import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -39,8 +38,8 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks, OnGlobalMemberDBChanged,
-		OnGlobalMemberNetworkResult {
+public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks,
+		OnChatMembersDBChanged {
 
 	ViewPager viewPager;
 	ToggleButton profileTab;
@@ -57,7 +56,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	private String categoryName = null;
 	private String categoryId = null;
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, String categoryId, String categoryName, String chatPassword) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, String categoryId,
+			String categoryName, String chatPassword) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -73,8 +73,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		context.startActivity(intent);
 	}
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate, String chatPassword,
-			String categoryId, String categoryName) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate,
+			String chatPassword, String categoryId, String categoryName) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -96,6 +96,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
+
+		Log.d("Vida", "I am here");
 
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
@@ -235,8 +237,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
 
-		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, page, chatId, null, Type.ALL, toUpdateInviteMember, this, this);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
+		ChatMembersCacheSpice.GetChatMembers chatMembers = new ChatMembersCacheSpice.GetChatMembers(this, spiceManager, chatId, this);
+		spiceManager.execute(chatMembers, new CustomSpiceListener<List>() {
 
 			@Override
 			public void onRequestSuccess(List result) {
@@ -356,12 +358,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	}
 
 	@Override
-	public void onGlobalMemberNetworkResult(int totalCount) {
-		profileFragmentPagerAdapter.setMemberTotalCount(totalCount);
-	}
-
-	@Override
-	public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear) {
+	public void onChatMembersDBChanged(List<GlobalModel> usableData) {
 		profileFragmentPagerAdapter.setMembers(usableData);
 	}
 
