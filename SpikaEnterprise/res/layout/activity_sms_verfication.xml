@@ -51,11 +51,12 @@
                 android:layout_toRightOf="@+id/inputFieldImg"
                 android:background="@null"
                 android:hint="@string/phone_number"
-                android:inputType="text"
+                android:inputType="phone"
                 android:maxLines="1"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:singleLine="true" />
+                android:singleLine="true" 
+                />
 
             <View
                 android:layout_width="match_parent"
@@ -97,7 +98,7 @@
 	        android:id="@+id/phoneNumberTextView"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:text="SMS with verification code sent to:\n+xxx xxx-xxxx-xxxx"
+	        android:text="@string/sms_sent_to"
 	        android:gravity="center"
 	        android:background="@null"
 	        android:maxLines="3"

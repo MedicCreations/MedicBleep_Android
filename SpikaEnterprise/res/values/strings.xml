@@ -145,6 +145,7 @@
     <string name="verification_code">Verification Code</string>
     <string name="submit">Submit</string>
     <string name="change_phone_number">Change Phone Number</string>
+    <string name="sms_sent_to">SMS with verification code sent to:\n</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
