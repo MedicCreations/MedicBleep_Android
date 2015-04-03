@@ -313,8 +313,15 @@ public class GlobalCaching {
 			} else if (type == GlobalModel.Type.ALL) {
 
 				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Chat> chatList = chatDao.queryBuilder().build().list();
-
+				
+				List<com.clover.spika.enterprise.chat.models.greendao.Chat> chatList;
+				
+				if(TextUtils.isEmpty(search)){
+					chatList = chatDao.queryBuilder().build().list();
+				}else{
+					chatList = chatDao.queryBuilder().where(Properties.Chat_name.like("%" + search + "%")).build().list();
+				}
+				
 				if (chatList != null) {
 
 					for (com.clover.spika.enterprise.chat.models.greendao.Chat chat : chatList) {
@@ -328,7 +335,15 @@ public class GlobalCaching {
 				}
 
 				GroupsDao groupDao = ((BaseActivity) activity).getDaoSession().getGroupsDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList = groupDao.queryBuilder().build().list();
+				List<com.clover.spika.enterprise.chat.models.greendao.Groups> groupList;
+				
+				if(TextUtils.isEmpty(search)){
+					groupList =  groupDao.queryBuilder().build().list();
+				}else{
+					groupList = groupDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.GroupsDao.Properties.Groupname.like("%" + search + "%"))
+							.build().list();
+				}
 
 				if (groupList != null) {
 
@@ -343,7 +358,16 @@ public class GlobalCaching {
 				}
 
 				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
-				List<com.clover.spika.enterprise.chat.models.greendao.User> userList = userDao.queryBuilder().build().list();
+				List<com.clover.spika.enterprise.chat.models.greendao.User> userList;
+				
+				if(TextUtils.isEmpty(search)){
+					userList  = userDao.queryBuilder().build().list();
+				}else{
+					userList = userDao.queryBuilder()
+							.whereOr(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Firstname.like("%" + search + "%"),
+									com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Lastname.like("%" + search + "%"))
+							.build().list();
+				}
 
 				if (userList != null) {
 

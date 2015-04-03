@@ -339,46 +339,16 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
 		
-		if(TextUtils.isEmpty(search)){ // get data from database
-			GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
-			spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
-				@SuppressWarnings("unchecked")
-				@Override
-				public void onRequestSuccess(List result) {
-					super.onRequestSuccess(result);
-					setData(result, toClear);
-				}
-			});
-		}else{
-			handleProgress(true);
-			GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, type, search, getActivity());
-			spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
-
-				@Override
-				public void onRequestFailure(SpiceException arg0) {
-					handleProgress(false);
-					super.onRequestFailure(arg0);
-					Utils.onFailedUniversal(null, getActivity(), 0 , false, arg0, null);
-				}
-
-				@Override
-				public void onRequestSuccess(GlobalResponse result) {
-					handleProgress(false);
-					super.onRequestSuccess(result);
-
-					if (result.getCode() == Const.API_SUCCESS) {
-						
-						mTotalCount = result.total_count;
-						setData(result.search_result, toClear);
-
-					} else {
-						String message = getActivity().getString(R.string.e_something_went_wrong);
-						Utils.onFailedUniversal(message, getActivity());
-					}
-				}
-			});
-		}
+			@SuppressWarnings("unchecked")
+			@Override
+			public void onRequestSuccess(List result) {
+				super.onRequestSuccess(result);
+				setData(result, toClear);
+			}
+		});
 		
 	}
 
