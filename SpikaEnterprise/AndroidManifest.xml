@@ -103,6 +103,9 @@
         <service
             android:name="com.clover.spika.enterprise.chat.services.robospice.OkHttpService"
             android:exported="false" />
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService"
+            android:exported="false" />
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
         <service android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService" />

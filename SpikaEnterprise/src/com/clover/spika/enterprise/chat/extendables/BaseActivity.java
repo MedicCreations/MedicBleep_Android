@@ -58,7 +58,9 @@ import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
+import com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -100,7 +102,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private User tempActiveUser = null;
 	private boolean isAllreadyDissmis = false;
 
-	public SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	public SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
+	public SpiceManager offlineSpiceManager = new CustomSpiceManager(SpiceOfflineService.class);
 	private ImageLoaderSpice imageLoaderSpice;
 	
 	private IntentFilter intentFilterSocket;
@@ -114,6 +117,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onStart() {
 		super.onStart();
 		spiceManager.start(this);
+		offlineSpiceManager.start(this);
 
 		if (getResources().getBoolean(R.bool.enable_web_rtc)) {
 			Intent intent = new Intent(this, SocketService.class);
@@ -134,6 +138,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		spiceManager.shouldStop();
+		offlineSpiceManager.shouldStop();
 		super.onStop();
 	}
 

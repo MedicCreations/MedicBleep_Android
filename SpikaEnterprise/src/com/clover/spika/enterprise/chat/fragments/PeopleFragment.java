@@ -179,7 +179,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	public void getUsers(int page, String search, final boolean toClear) {
 
 		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+		offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
 			@Override

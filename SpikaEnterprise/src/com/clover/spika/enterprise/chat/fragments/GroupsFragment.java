@@ -251,7 +251,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		}
 
 		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, catId, Type.CHAT, search, toClear, this, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+		offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
 			@Override

@@ -808,7 +808,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this,
 				this);
 
-		spiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {
+		offlineSpiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {
 			
 			@Override
 			public void onRequestFailure(SpiceException arg0) {

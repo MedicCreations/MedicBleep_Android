@@ -19,10 +19,8 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class SidebarFragment extends CustomFragment implements OnClickListener {
@@ -41,7 +39,6 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 	HomeFragment lobbyFragment;
 	InformationFragment informationFragment;
 	
-	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 	private ImageLoaderSpice imageLoaderSpice;
 
 	public ImageLoaderSpice getImageLoader() {
@@ -57,20 +54,6 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		imageLoaderSpice = ImageLoaderSpice.getInstance(getActivity());
 		imageLoaderSpice.setSpiceManager(spiceManager);
 		image = Helper.getUserImage(getActivity());
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		spiceManager.start(getActivity());
-	}
-
-	@Override
-	public void onStop() {
-		if (spiceManager.isStarted()) {
-			spiceManager.shouldStop();
-		}
-		super.onStop();
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import com.clover.spika.enterprise.chat.fragments.PeopleFragment;
 import com.clover.spika.enterprise.chat.fragments.SidebarFragment;
 import com.clover.spika.enterprise.chat.listeners.OnCreateRoomListener;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
+import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -399,5 +400,17 @@ public class MainActivity extends BaseActivity {
 		}
 		return null;
 	}
+	
+	public OnInternetErrorListener getInternetErrorListener(){
+		return onInternetErrorListener;
+	}
+	
+	protected OnInternetErrorListener onInternetErrorListener = new OnInternetErrorListener() {
+		
+		@Override
+		public void onInternetError() {
+			setViewNoInternetConnection(R.id.baseLayout, R.id.actionBarLayout);
+		}
+	};
 	
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.text.TextUtils;
 
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
@@ -39,7 +40,11 @@ public class LobbyCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, activity);
+				if(activity instanceof MainActivity){
+					Utils.onFailedUniversal(null, activity, 0 , false, ex, ((MainActivity)activity).getInternetErrorListener());
+				}else{
+					Utils.onFailedUniversal(null, activity, 0 , false);
+				}
 			}
 
 			@Override

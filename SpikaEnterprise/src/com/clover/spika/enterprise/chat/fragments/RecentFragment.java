@@ -147,7 +147,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	public void getLobby(int page, final boolean toClear) {
 
 		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(getActivity(), spiceManager, page, toClear, this, this);
-		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
+		offlineSpiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
 			@Override

@@ -470,8 +470,9 @@ public class Utils {
 		if(ex != null && ex instanceof NoNetworkException){
 			if(listener != null){
 				listener.onInternetError();
+				return;
 			}
-			return;
+			message = ex.getMessage();
 		}
 		
 		if (TextUtils.isEmpty(message)) {

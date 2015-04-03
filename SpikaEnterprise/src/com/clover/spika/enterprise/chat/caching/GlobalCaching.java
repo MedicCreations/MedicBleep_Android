@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 
+import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
@@ -46,7 +47,11 @@ public class GlobalCaching {
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, activity);
+				if(activity instanceof MainActivity){
+					Utils.onFailedUniversal(null, activity, 0 , false, arg0, ((MainActivity)activity).getInternetErrorListener());
+				}else{
+					Utils.onFailedUniversal(null, activity, 0 , false);
+				}
 			}
 
 			@Override
