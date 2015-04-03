@@ -108,9 +108,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 			try {
 				
-				if(TextUtils.isEmpty(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME))){
-					//database is allready recreated
-				}else if(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME).equals(username.getText().toString())){
+				if(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME).equals(username.getText().toString())){
 					//no need to recreated empty database
 				}else{
 					//recreate empty database

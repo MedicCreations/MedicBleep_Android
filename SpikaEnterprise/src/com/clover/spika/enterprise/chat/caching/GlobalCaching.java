@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -34,12 +35,12 @@ public class GlobalCaching {
 
 	/* start: Caching calls */
 	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId,
-			String categoryId, final int type, String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
+			String categoryId, final int type, final String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
 			final OnGlobalSearchNetworkResult onNetworkListener) {
 
 		final String myId = Helper.getUserId(activity);
 
-		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
+		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), searchTerm);
 
 		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm, activity);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
@@ -65,7 +66,7 @@ public class GlobalCaching {
 					}
 
 					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, Integer
-							.valueOf(myId), onDBChangeListener);
+							.valueOf(myId), searchTerm, onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -84,7 +85,7 @@ public class GlobalCaching {
 
 		final String myId = Helper.getUserId(activity);
 
-		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId));
+		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), null);
 
 		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type, activity);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
@@ -148,9 +149,10 @@ public class GlobalCaching {
 		private boolean toClear;
 		private int type;
 		private int myId = 0;
+		private String search = null;
 		private OnGlobalSearchDBChanged onDBChangeListener;
 
-		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId,
+		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId, String search,
 				OnGlobalSearchDBChanged onDBChangeListener) {
 			super(Void.class);
 
@@ -159,6 +161,7 @@ public class GlobalCaching {
 			this.toClear = toClear;
 			this.type = type;
 			this.myId = myId;
+			this.search = search;
 			this.onDBChangeListener = onDBChangeListener;
 		}
 
@@ -167,7 +170,7 @@ public class GlobalCaching {
 
 			handleNewData(activity, globalModel);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
+			final List<GlobalModel> finalResult = getDBData(activity, type, myId, search);
 
 			activity.runOnUiThread(new Runnable() {
 
@@ -209,7 +212,7 @@ public class GlobalCaching {
 
 			handleNewData(activity, globalModel);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type, myId);
+			final List<GlobalModel> finalResult = getDBData(activity, type, myId, null);
 
 			activity.runOnUiThread(new Runnable() {
 
@@ -229,8 +232,8 @@ public class GlobalCaching {
 
 	/* start: Data handling */
 
-	private static List<GlobalModel> getDBData(Activity activity, int type, int myUserId) {
-
+	private static List<GlobalModel> getDBData(Activity activity, int type, int myUserId, String search) {
+		
 		List<GlobalModel> resultArray = new ArrayList<GlobalModel>();
 
 		if (activity instanceof BaseActivity) {
@@ -238,9 +241,17 @@ public class GlobalCaching {
 			if (type == GlobalModel.Type.CHAT) {
 
 				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
-
-				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista = chatDao.queryBuilder()
-						.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP)).build().list();
+				
+				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista;
+				
+				if(TextUtils.isEmpty(search)){
+					lista = chatDao.queryBuilder()
+							.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP)).build().list();
+				}else{
+					lista = chatDao.queryBuilder()
+							.whereOr(Properties.Type.eq(GlobalModel.Type.CHAT), Properties.Type.eq(GlobalModel.Type.GROUP))
+							.where(Properties.Chat_name.like("%" + search + "%")).build().list();
+				}
 
 				if (lista != null) {
 
@@ -274,9 +285,18 @@ public class GlobalCaching {
 			} else if (type == GlobalModel.Type.USER) {
 
 				UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
+				
+				List<com.clover.spika.enterprise.chat.models.greendao.User> lista;
 
-				List<com.clover.spika.enterprise.chat.models.greendao.User> lista = userDao.queryBuilder()
-						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId)).build().list();
+				if(TextUtils.isEmpty(search)){
+					lista = userDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId)).build().list();
+				}else{
+					lista = userDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId))
+							.whereOr(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Firstname.like("%" + search +"%"), 
+									com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Lastname.like("%" + search +"%")).build().list();
+				}
 
 				if (lista != null) {
 

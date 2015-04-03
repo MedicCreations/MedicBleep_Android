@@ -245,10 +245,13 @@ public class ThreadsAdapter extends BaseAdapter {
 			case VIEW_TYPE_FILE:
 				convertView = inflateMedia(holder, parent, type);
 				break;
-
+				
+			case VIEW_TYPE_TEMP_MSG_ERROR:
+				convertView = inflateErrorMessage(holder, parent);
+				break;
+				
 			case VIEW_TYPE_MESSAGE:
 			case VIEW_TYPE_TEMP_MSG:
-			case VIEW_TYPE_TEMP_MSG_ERROR:
 			default:
 				convertView = inflateMessage(holder, parent);
 				break;
@@ -328,6 +331,16 @@ public class ThreadsAdapter extends BaseAdapter {
 				}
 			});
 		}
+
+		return convertView;
+	}
+	
+	private View inflateErrorMessage(final ViewHolder holder, final ViewGroup parent) {
+		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_error_message, parent, false);
+
+		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
+		holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
+		holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 
 		return convertView;
 	}
@@ -458,7 +471,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	
 	private void populateTempMessageError(ViewHolder holder, TreeNode node, int position) {
 		holder.textViewUser.setVisibility(View.INVISIBLE);
-		holder.imageViewUser.setVisibility(View.INVISIBLE);
 		holder.textViewMessage.setText(node.getMessage().getText());
 		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 

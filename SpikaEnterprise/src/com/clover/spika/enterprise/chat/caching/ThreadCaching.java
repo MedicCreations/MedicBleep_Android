@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.ThreadsActivity;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
@@ -35,7 +36,11 @@ public class ThreadCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, activity);
+				if(activity instanceof ThreadsActivity){
+					Utils.onFailedUniversal(null, activity, 0, false, ex, ((ThreadsActivity)activity).getInternetErrorListener());
+				}else{
+					Utils.onFailedUniversal(null, activity, 0, false, ex, null);
+				}
 			}
 
 			@Override

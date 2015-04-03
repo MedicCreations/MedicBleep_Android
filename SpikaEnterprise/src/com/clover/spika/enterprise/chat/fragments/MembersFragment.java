@@ -81,6 +81,8 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 	}
 
 	public void setMembers(List<GlobalModel> members) {
+		if(getListView() == null) // if finish fragment before member is load from network
+			return;
 		int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
 
 		mUserAdapter.setData(members);

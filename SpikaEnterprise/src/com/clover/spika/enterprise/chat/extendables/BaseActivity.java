@@ -224,7 +224,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 	//***********************
 	
-	// ***********DROP DATABASE
+	// ***********DEBUG DROP DATABASE
 	public void dropDatabase() {
 		DaoMaster.dropAllTables(db, true);
 		DaoMaster.createAllTables(db, true);

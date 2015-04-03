@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.ThreadCacheSpice;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
+import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
@@ -32,6 +34,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, OnThreadDBChanged, OnThreadNetworkResult {
@@ -104,12 +107,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	private void getThreads() {
 		
 		ThreadCacheSpice.GetData threadCacheSpice = new ThreadCacheSpice.GetData(this, spiceManager, mRootId,  this, this);
-		spiceManager.execute(threadCacheSpice, new CustomSpiceListener<List>() {
-
-			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				Utils.onFailedUniversal(null, ThreadsActivity.this);
-			}
+		offlineSpiceManager.execute(threadCacheSpice, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings({ "unchecked" })
 			@Override
@@ -183,6 +181,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
+				if(ex instanceof NoNetworkException){
+					setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
+				}
 				decryptMess.type = Const.MSG_TYPE_TEMP_MESS_ERROR;
 				setErrorMessage(decryptMess);
 			}
@@ -198,6 +199,18 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	protected void setErrorMessage(Message decryptMess) {
 		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
 		threadsAdapter.notifyDataSetChanged();
+	}
+	
+	protected void showResendDialog(final Message message) {
+		AppDialog dialog = new AppDialog(this, false);
+		dialog.setYesNo(getString(R.string.resend_message), getString(R.string.resend), getString(R.string.cancel));
+		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+			
+			@Override
+			public void onPositiveButtonClick(View v, Dialog d) {
+				resendMessage(message);
+			}
+		});
 	}
 	
 	private void resendMessage(Message message) {
@@ -343,7 +356,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ThreadsAdapter threadsAdapter = (ThreadsAdapter) chatListView.getAdapter();
 		if(threadsAdapter.getItem(position).getMessage().type == Const.MSG_TYPE_TEMP_MESS_ERROR){
-			resendMessage(threadsAdapter.getItem(position).getMessage());
+			showResendDialog(threadsAdapter.getItem(position).getMessage());
 		}else if(threadsAdapter.getItem(position).getMessage().type != Const.MSG_TYPE_TEMP_MESS){
 			threadsAdapter.setSelectedItem(position);
 			mMessageId = threadsAdapter.getItem(position).getMessage().getId();
@@ -419,4 +432,16 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		}
 		
 	}
+	
+	public OnInternetErrorListener getInternetErrorListener(){
+		return onInternetErrorListener;
+	}
+	
+	protected OnInternetErrorListener onInternetErrorListener = new OnInternetErrorListener() {
+		
+		@Override
+		public void onInternetError() {
+			setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
+		}
+	};
 }

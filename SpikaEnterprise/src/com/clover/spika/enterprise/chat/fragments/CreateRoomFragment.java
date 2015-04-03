@@ -36,6 +36,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
@@ -51,14 +52,17 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel>,
 		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
@@ -334,17 +338,48 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	public void getListItems(int page, String search, final boolean toClear, int type) {
+		
+		if(TextUtils.isEmpty(search)){ // get data from database
+			GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
+			spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public void onRequestSuccess(List result) {
+					super.onRequestSuccess(result);
+					setData(result, toClear);
+				}
+			});
+		}else{
+			handleProgress(true);
+			GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, type, search, getActivity());
+			spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void onRequestSuccess(List result) {
-				super.onRequestSuccess(result);
-				setData(result, toClear);
-			}
-		});
+				@Override
+				public void onRequestFailure(SpiceException arg0) {
+					handleProgress(false);
+					super.onRequestFailure(arg0);
+					Utils.onFailedUniversal(null, getActivity(), 0 , false, arg0, null);
+				}
+
+				@Override
+				public void onRequestSuccess(GlobalResponse result) {
+					handleProgress(false);
+					super.onRequestSuccess(result);
+
+					if (result.getCode() == Const.API_SUCCESS) {
+						
+						mTotalCount = result.total_count;
+						setData(result.search_result, toClear);
+
+					} else {
+						String message = getActivity().getString(R.string.e_something_went_wrong);
+						Utils.onFailedUniversal(message, getActivity());
+					}
+				}
+			});
+		}
+		
 	}
 
 	@Override

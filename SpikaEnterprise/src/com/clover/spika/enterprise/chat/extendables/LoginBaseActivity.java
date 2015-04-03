@@ -200,12 +200,14 @@ public abstract class LoginBaseActivity extends Activity {
 						@Override
 						public void onDismiss(DialogInterface dialog) {
 							startActivity(intent);
+							overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 							finish();
 						}
 					});
 					
 					if(googlePlayServiceResult == ConnectionResult.SUCCESS){
 						startActivity(intent);
+						overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 						finish();
 					}else if(GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this) == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED){
 						dialog.setInfo(getString(R.string.please_update_your_google_play_service_for_receiving_push_notification_));
