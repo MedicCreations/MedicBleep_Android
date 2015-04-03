@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -36,7 +35,6 @@ import android.widget.TextView.OnEditorActionListener;
 import com.clover.spika.enterprise.chat.CreateRoomActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
@@ -52,17 +50,14 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class CreateRoomFragment extends CustomFragment implements OnSearchListener, OnClickListener, OnNextStepRoomListener, OnChangeListener<GlobalModel>,
 		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
@@ -101,6 +96,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private int currentFilter = GlobalModel.Type.ALL;
 
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
+	
+	private boolean isDataFromNet = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -268,9 +265,26 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
 		public void afterTextChanged(Editable s) {
-			adapter.manageData(s.toString(), allData);
+			if(isDataFromNet){
+				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 0, null, null, currentFilter, 
+						null, true, true, CreateRoomFragment.this, CreateRoomFragment.this);
+				spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onRequestSuccess(List result) {
+						super.onRequestSuccess(result);
+						allData.clear();
+						allData.addAll(result);
+					}
+				});
+				isDataFromNet = false;
+			}else {
+				adapter.manageData(s.toString(), allData);
+			}
 		}
 	};
 
@@ -337,7 +351,12 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		allData.addAll(adapter.getData());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void getListItems(int page, String search, final boolean toClear, int type) {
+		
+		if(!TextUtils.isEmpty(search)){
+			isDataFromNet = true;
+		}
 		
 		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, type, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
