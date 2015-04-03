@@ -233,12 +233,14 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
 
 		ChatMembersCacheSpice.GetChatMembers chatMembers = new ChatMembersCacheSpice.GetChatMembers(this, spiceManager, chatId, this);
 		spiceManager.execute(chatMembers, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);

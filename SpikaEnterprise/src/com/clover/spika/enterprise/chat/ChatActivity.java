@@ -479,7 +479,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		isOnCreate = false;
 
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
-
+			
 			if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
 				categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
 			}
@@ -885,8 +885,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			finish();
 		}
 
-		Log.d("LOG", "SIZE OLD: " + activeChat.size() + ", new suze: " + chat.messages.size());
-		if (chat.messages.equals(activeChat)) {
+		Log.d("LOG", "SIZE OLD: " + activeChat.size() + ", new size: " + chat.messages.size());
+		if (chat.messages.equals(activeChat) && chat.messages.size() != 0) {
 			Log.d("LOG", "same");
 			return;
 		} else {

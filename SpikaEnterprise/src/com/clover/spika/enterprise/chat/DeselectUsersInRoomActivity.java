@@ -11,18 +11,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
+import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
-public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<GlobalModel>, OnGlobalMemberDBChanged {
+public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<GlobalModel>, OnGlobalMemberDBChanged, OnChatMembersDBChanged {
 
 	private String roomName;
 	private String roomId;
@@ -39,6 +39,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 		intent.putExtra(Const.IS_ACTIVE, isChecked);
 		intent.putStringArrayListExtra(Const.USER_IDS, ids);
 		frag.startActivityForResult(intent, requestCode);
+		if(context instanceof BaseActivity) ((BaseActivity)context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
 	@Override
@@ -73,19 +74,32 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 		getUsersFromRoom();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void getUsersFromRoom() {
+		
+		ChatMembersCacheSpice.GetChatMembers chatMembers = new ChatMembersCacheSpice.GetChatMembers(this, spiceManager, roomId, this);
+		spiceManager.execute(chatMembers, new CustomSpiceListener<List>() {
 
-		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, -1, null, roomId, Type.USER, false, this, null);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
-
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-
 				mUsers = handleResult(result);
 				setListView();
 			}
 		});
+
+//		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, -1, null, roomId, Type.USER, false, this, null);
+//		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
+//
+//			@Override
+//			public void onRequestSuccess(List result) {
+//				super.onRequestSuccess(result);
+//
+//				mUsers = handleResult(result);
+//				setListView();
+//			}
+//		});
 	}
 
 	private List<GlobalModel> handleResult(List<GlobalModel> members) {
@@ -149,6 +163,12 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 
 	@Override
 	public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		mUsers = handleResult(usableData);
+		setListView();
+	}
+
+	@Override
+	public void onChatMembersDBChanged(List<GlobalModel> usableData) {
 		mUsers = handleResult(usableData);
 		setListView();
 	}
