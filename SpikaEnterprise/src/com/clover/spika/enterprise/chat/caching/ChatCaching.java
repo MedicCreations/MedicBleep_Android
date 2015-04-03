@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.caching.robospice.DeleteEntryCaching;
+import com.clover.spika.enterprise.chat.caching.robospice.EntryUtilsCaching;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -29,19 +29,20 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ChatCaching {
 
-	public static Chat getData(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging, final boolean isNewMsg,
-			final boolean isSend, final boolean isRefresh, final String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
-			final OnChatNetworkResult onNetworkListener) {
+	public static Chat getData(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging,
+			final boolean isNewMsg, final boolean isSend, final boolean isRefresh, final String chatId, String msgId, int adapterCount,
+			final OnChatDBChanged onDBChangeListener, final OnChatNetworkResult onNetworkListener) {
 
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
 
-		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, activity);
+		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount,
+				activity);
 		spiceManager.execute(getMessage, new CustomSpiceListener<Chat>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-//				Utils.onFailedUniversal(null, activity);
+				// Utils.onFailedUniversal(null, activity);
 			}
 
 			@Override
@@ -56,7 +57,8 @@ public class ChatCaching {
 						onNetworkListener.onChatNetworkResult(result.total_count);
 					}
 
-					HandleNewData handleNewData = new HandleNewData(activity, result, isClear, isPagging, isNewMsg, isSend, isRefresh, onDBChangeListener);
+					HandleNewData handleNewData = new HandleNewData(activity, result, isClear, isPagging, isNewMsg, isSend, isRefresh,
+							onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -66,22 +68,22 @@ public class ChatCaching {
 					}
 
 					if (result.getCode() == Const.E_CHAT_DELETED) {
-						DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(activity, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+						EntryUtilsCaching.DeleteEntry deleteEntry = new EntryUtilsCaching.DeleteEntry(activity, Integer.valueOf(chatId),
+								GlobalModel.Type.CHAT);
 						spiceManager.execute(deleteEntry, null);
 					}
 
 					Utils.onFailedUniversal(message, activity, result.getCode());
 				}
 			}
-
 		});
 
 		return resultArray;
 	}
 
-	public static Chat startChat(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging, final boolean isNewMsg,
-			final boolean isSend, final boolean isRefresh, String chatId, String msgId, int adapterCount, final OnChatDBChanged onDBChangeListener,
-			final OnChatNetworkResult onNetworkListener, Chat chat) {
+	public static Chat startChat(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging,
+			final boolean isNewMsg, final boolean isSend, final boolean isRefresh, String chatId, String msgId, int adapterCount,
+			final OnChatDBChanged onDBChangeListener, final OnChatNetworkResult onNetworkListener, Chat chat) {
 
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
 
@@ -109,12 +111,10 @@ public class ChatCaching {
 					.queryBuilder()
 					.where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Chat_id.eq(id),
 							com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).count();
-			Log.e("LOG", "TEMP COUNT: " + tempCount + ", messageList size: " + chatBase.getMessageList().size());
 
 			chat = handleOldData(chatBase);
 
 			if (tempCount != chatBase.getMessageList().size()) {
-				Log.e("LOG", "RECORRECT MESSAGE LIST");
 				List<com.clover.spika.enterprise.chat.models.greendao.Message> tempMess = ((BaseActivity) activity)
 						.getDaoSession()
 						.getMessageDao()
@@ -161,15 +161,11 @@ public class ChatCaching {
 		@Override
 		public Void loadDataFromNetwork() throws Exception {
 
-			/*
-			 * if chat.messages == null or size == 0, don't save chat in
-			 * database
-			 */
+			/* if chat.messages == null or size == 0, don't save chat in database */
 			if (chat.messages != null && chat.messages.size() > 0) {
-				Log.d("LOG", "saving chat to database");
 				handleNewData(activity, chat);
 			} else {
-				Log.d("LOG", "dont save chat to database");
+				// Log.d("LOG", "dont save chat to database");
 			}
 
 			final Chat finalResult = getDBData(activity, (long) chat.chat.getId());
@@ -199,67 +195,88 @@ public class ChatCaching {
 			ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 
 			Long finalCategoryModelId = 0L;
-			if (networkData.category != null) {
-				com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
-						Long.valueOf(networkData.category.id), networkData.category.name);
+			if (networkData.chat.category != null && networkData.chat.category.id != null && networkData.chat.category.name != null) {
 
-				categoryDao.insertOrReplace(finalCategoryModel);
-				finalCategoryModelId = finalCategoryModel.getId();
+				if (categoryDao.queryBuilder()
+						.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(networkData.chat.category.id)).count() > 0) {
+
+					com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = categoryDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(networkData.chat.category.id))
+							.unique();
+
+					categoryDao.update(finalCategoryModel);
+					finalCategoryModelId = finalCategoryModel.getId();
+
+				} else {
+
+					com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = DaoUtils.convertCategoryModelToCategoryDao(null,
+							networkData.chat.category);
+
+					categoryDao.insert(finalCategoryModel);
+					finalCategoryModelId = finalCategoryModel.getId();
+				}
 			}
 
 			Long finalUserModelId = 0L;
 			if (networkData.user != null) {
 
-				com.clover.spika.enterprise.chat.models.greendao.Organization finalOrganizationModel = null;
 				if (networkData.user.organization != null) {
 
-					finalOrganizationModel = new com.clover.spika.enterprise.chat.models.greendao.Organization((Long.valueOf(networkData.user.organization.id)),
-							networkData.user.organization.name);
+					if (organizationDao
+							.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.OrganizationDao.Properties.Id
+									.eq(networkData.user.organization.id)).count() > 0) {
 
-					organizationDao.insertOrReplace(finalOrganizationModel);
+						com.clover.spika.enterprise.chat.models.greendao.Organization finalOrganizationModel = organizationDao
+								.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.OrganizationDao.Properties.Id
+										.eq(networkData.user.organization.id)).unique();
+						finalOrganizationModel = DaoUtils.convertOrganizationModelToOrganizationDao(finalOrganizationModel,
+								networkData.user.organization);
+
+						organizationDao.update(finalOrganizationModel);
+
+					} else {
+						com.clover.spika.enterprise.chat.models.greendao.Organization finalOrganizationModel = DaoUtils
+								.convertOrganizationModelToOrganizationDao(null, networkData.user.organization);
+						organizationDao.insert(finalOrganizationModel);
+					}
 				}
 
-				com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = new com.clover.spika.enterprise.chat.models.greendao.User((long) networkData.user.getId(),
-						networkData.user.firstname, networkData.user.lastname, networkData.user.type, networkData.user.image, networkData.user.image_thumb,
-						networkData.user.is_member, networkData.user.is_admin, networkData.user.name, networkData.user.groupname, networkData.user.chat_id,
-						networkData.user.is_user, networkData.user.is_group, networkData.user.is_room, finalOrganizationModel != null ? finalOrganizationModel.getId() : 0L);
+				if (userDao.queryBuilder()
+						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.organization.id)).count() > 0) {
 
-				userDao.insertOrReplace(finalUserModel);
-				finalUserModelId = finalUserModel.getId();
+					com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = userDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.organization.id))
+							.unique();
+					finalUserModel = DaoUtils.convertUserModelToUserDao(finalUserModel, networkData.user);
+
+					userDao.update(finalUserModel);
+					finalUserModelId = finalUserModel.getId();
+
+				} else {
+
+					com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = DaoUtils.convertUserModelToUserDao(null, networkData.user);
+
+					userDao.insert(finalUserModel);
+					finalUserModelId = finalUserModel.getId();
+				}
 			}
-
-			Long finalMessageModelId = 0L;
-			if (networkData.last_message != null) {
-				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
-						Long.valueOf(networkData.last_message.id), Long.valueOf(networkData.last_message.chat_id), Long.valueOf(networkData.last_message.user_id),
-						networkData.last_message.firstname, networkData.last_message.lastname, networkData.last_message.image, networkData.last_message.text,
-						networkData.last_message.file_id, networkData.last_message.thumb_id, networkData.last_message.longitude, networkData.last_message.latitude,
-						networkData.last_message.created, networkData.last_message.modified, networkData.last_message.child_list, networkData.last_message.image_thumb,
-						networkData.last_message.type, networkData.last_message.root_id, networkData.last_message.parent_id, networkData.last_message.isMe,
-						networkData.last_message.isFailed, (long) networkData.chat_id);
-
-				messageDao.insertOrReplace(finalMessageModel);
-				finalMessageModelId = finalMessageModel.getId();
-			}
-
-			// TODO messages
 
 			for (Message mess : networkData.messages) {
 
-				// Log.d("LOG", "SAVING TO DATABASE");
-
-				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
-						Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-						mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed,
-						(long) networkData.chat.getId());
+				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
+						Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image,
+						mess.text, mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list,
+						mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, (long) networkData.chat.getId());
 
 				messageDao.insertOrReplace(finalMessageModel);
-
 			}
 
 			if (chatDao.queryBuilder().where(Properties.Id.eq(networkData.chat.getId())).count() > 0) {
-				Log.d("LOG", "update " + networkData.chat.getId());
-				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder().where(Properties.Id.eq(networkData.chat.getId())).unique();
+
+				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder()
+						.where(Properties.Id.eq(networkData.chat.getId())).unique();
 
 				usedChatModel.setId(Long.valueOf(networkData.chat.getId()));
 				if (networkData.chat.chat_name != null)
@@ -282,28 +299,27 @@ public class ChatCaching {
 					usedChatModel.setIs_private(networkData.chat.is_private);
 				if (networkData.chat.password != null)
 					usedChatModel.setPassword(networkData.chat.password);
-				usedChatModel.setUnread("0");
 				if ((Integer) networkData.chat.is_member != null)
 					usedChatModel.setIs_member(networkData.chat.is_member);
 				if ((Long) networkData.chat.modified != null)
 					usedChatModel.setModified(networkData.chat.modified);
+				
 				if (finalCategoryModelId != 0) {
 					usedChatModel.setCategoryId(finalCategoryModelId);
 				}
 				if (finalUserModelId != 0) {
 					usedChatModel.setUserIdProperty(finalUserModelId);
 				}
-				if (finalMessageModelId != 0) {
-					usedChatModel.setMessageIdProperty(finalMessageModelId);
-				}
+				usedChatModel.setUnread("0");
 
 				chatDao.update(usedChatModel);
 			} else {
-				Log.d("LOG", "insert");
-				com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(networkData.getId()),
-						networkData.chat_name, networkData.seen_by, networkData.total_count, networkData.image_thumb, networkData.image, networkData.admin_id,
-						networkData.is_active, networkData.type, networkData.is_private, networkData.password, networkData.unread, networkData.is_member, networkData.modified,
-						true, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+
+				com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(
+						Long.valueOf(networkData.getId()), networkData.chat_name, networkData.seen_by, networkData.total_count,
+						networkData.image_thumb, networkData.image, networkData.admin_id, networkData.is_active, networkData.type,
+						networkData.is_private, networkData.password, networkData.unread, networkData.is_member, networkData.modified, true,
+						finalCategoryModelId, finalUserModelId, 0L);
 				chatDao.insert(finalChatModel);
 			}
 		}

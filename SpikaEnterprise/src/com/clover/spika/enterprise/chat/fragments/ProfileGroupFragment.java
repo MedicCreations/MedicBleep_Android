@@ -174,8 +174,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	@Override
 	public void onClick(View view) {
 
-		Intent intent;
-
 		switch (view.getId()) {
 
 		case R.id.addPhoto:
@@ -296,6 +294,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	@Override
 	public void onResume() {
 		super.onResume();
+		
 		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
 			loadingLayout.setVisibility(View.VISIBLE);
 			imageId = Helper.getRoomThumbId(getActivity());

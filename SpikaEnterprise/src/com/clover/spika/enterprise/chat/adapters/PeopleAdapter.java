@@ -54,6 +54,10 @@ public class PeopleAdapter extends BaseAdapter {
 		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
 		imageLoaderSpice.setSpiceManager(manager);
 	}
+	
+	public void setSpiceManager(SpiceManager manager) {
+		imageLoaderSpice.setSpiceManager(manager);
+	}
 
 	public Context getContext() {
 		return mContext;

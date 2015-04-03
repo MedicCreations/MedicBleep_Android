@@ -7,7 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
@@ -145,10 +144,6 @@ public class ChatMembersCaching {
 					JSONArray groups = members.getJSONArray("groups");
 					JSONArray chats = members.getJSONArray("chats");
 
-					Log.d("Vida", "users: " + users.toString());
-					Log.d("Vida", "groups: " + groups.toString());
-					Log.d("Vida", "chats: " + chats.toString());
-
 					UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
 
 					for (int i = 0; i < users.length(); i++) {
@@ -160,7 +155,6 @@ public class ChatMembersCaching {
 
 						if (user != null) {
 
-							Log.d("Vida", "ID users: " + value);
 							GlobalModel item = handleOldUserData(user);
 							resultArray.add(item);
 						}
@@ -177,7 +171,6 @@ public class ChatMembersCaching {
 
 						if (group != null) {
 
-							Log.d("Vida", "ID groups: " + value);
 							GlobalModel item = handleOldGroupData(group);
 							resultArray.add(item);
 						}
@@ -198,7 +191,6 @@ public class ChatMembersCaching {
 
 						if (chat != null) {
 
-							Log.d("Vida", "ID chats: " + value);
 							GlobalModel item = handleOldChatData(chat);
 							resultArray.add(item);
 						}
@@ -209,14 +201,10 @@ public class ChatMembersCaching {
 			}
 		}
 
-		Log.d("Vida", "resultArray: " + resultArray.size());
-
 		return resultArray;
 	}
 
 	private static void handleNewData(Activity activity, List<GlobalModel> networkData, String chatId) {
-
-		Log.d("Vida", "networkData: " + networkData.size());
 
 		if (activity instanceof BaseActivity) {
 
@@ -391,10 +379,6 @@ public class ChatMembersCaching {
 					chatIds.add(String.valueOf(chat.getId()));
 				}
 			}
-
-			Log.d("Vida", "userIds: " + userIds.size());
-			Log.d("Vida", "groupIds: " + groupIds.size());
-			Log.d("Vida", "chatIds: " + chatIds.size());
 
 			try {
 

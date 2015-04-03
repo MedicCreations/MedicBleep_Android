@@ -340,7 +340,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					ChatActivity.startWithChatId(InvitePeopleActivity.this, String.valueOf(result.getId()), result.password, result.user);
+					ChatActivity.startWithChatId(InvitePeopleActivity.this, result, result.user);
 					finish();
 
 				} else {

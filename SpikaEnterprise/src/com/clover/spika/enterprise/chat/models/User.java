@@ -34,8 +34,8 @@ public class User implements Serializable {
 	public User() {
 	}
 
-	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember, List<Map<String, String>> details, boolean isSelected,
-			Organization org) {
+	public User(int id, String firstName, String lastName, String type, String image, String imageThumb, boolean isMember,
+			List<Map<String, String>> details, boolean isSelected, Organization org) {
 		super();
 		this.id = id;
 		this.firstname = firstName;
@@ -120,11 +120,11 @@ public class User implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		
-		if(this.is_admin == 0){
+
+		if (this.is_admin == 0) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -135,7 +135,7 @@ public class User implements Serializable {
 	public List<Map<String, String>> getDetails() {
 		return details;
 	}
-	
+
 	public void setDetails(List<Map<String, String>> details) {
 		this.details = details;
 	}
@@ -236,11 +236,10 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", user_id=" + user_id + ", firstname=" + firstname + ", lastname=" + lastname + ", type=" + type + ", image=" + image + ", image_thumb=" + image_thumb
-				+ ", is_member=" + is_member + ", is_admin=" + is_admin + ", name=" + name + ", groupname=" + groupname + ", chat_id=" + chat_id + ", is_user=" + is_user + ", is_group=" + is_group
-				+ ", is_room=" + is_room + ", details=" + details + ", organization=" + organization + ", isSelected=" + isSelected + "]";
+		return "User [id=" + id + ", user_id=" + user_id + ", firstname=" + firstname + ", lastname=" + lastname + ", type=" + type + ", image="
+				+ image + ", image_thumb=" + image_thumb + ", is_member=" + is_member + ", is_admin=" + is_admin + ", name=" + name + ", groupname="
+				+ groupname + ", chat_id=" + chat_id + ", is_user=" + is_user + ", is_group=" + is_group + ", is_room=" + is_room + ", details="
+				+ details + ", organization=" + organization + ", isSelected=" + isSelected + "]";
 	}
-	
-	
 
 }

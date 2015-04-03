@@ -176,8 +176,8 @@ public class LobbyCaching {
 			for (Chat chat : networkData) {
 
 				Long finalCategoryModelId = 0L;
-				if (chat.category != null) {
-
+				if (chat.category != null && chat.category.id != null && chat.category.name != null) {
+					
 					if (categoryDao.queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(chat.category.id)).count() > 0) {
 
 						com.clover.spika.enterprise.chat.models.greendao.Category finalCategoryModel = categoryDao.queryBuilder()

@@ -15,7 +15,6 @@ import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Request;
@@ -53,9 +52,8 @@ public class GlobalSpice {
 
 			requestParams.put(Const.PAGE, String.valueOf(page));
 			requestParams.put(Const.TYPE, String.valueOf(type));
-			
+
 			if (!TextUtils.isEmpty(chatId)) {
-				Logger.custom("Vida", chatId);
 				requestParams.put(Const.CHAT_ID, chatId);
 			}
 
@@ -69,16 +67,15 @@ public class GlobalSpice {
 
 			GetUrl getParameters = new GetUrl(requestParams);
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(Const.BASE_URL + Const.F_GLOBAL_SEARCH_URL + getParameters.toString()).get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx))
+					.url(Const.BASE_URL + Const.F_GLOBAL_SEARCH_URL + getParameters.toString()).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-			
-			Logger.custom("Vida", responseBody);
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, GlobalResponse.class);
@@ -122,14 +119,15 @@ public class GlobalSpice {
 
 			GetUrl getParameters = new GetUrl(requestParams);
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(Const.BASE_URL + Const.F_GLOBAL_MEMBERS_URL + getParameters.toString()).get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx))
+					.url(Const.BASE_URL + Const.F_GLOBAL_MEMBERS_URL + getParameters.toString()).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			JSONObject jsonObject = new JSONObject(responseBody);
 			int code = jsonObject.getInt(Const.CODE);
 

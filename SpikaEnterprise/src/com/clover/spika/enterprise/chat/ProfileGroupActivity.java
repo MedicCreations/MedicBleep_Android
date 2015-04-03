@@ -15,7 +15,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,9 +26,9 @@ import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembers
 import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -44,6 +43,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	ViewPager viewPager;
 	ToggleButton profileTab;
 	ToggleButton membersTab;
+
+	RobotoRegularTextView tvSaveRoom;
 
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
@@ -97,8 +98,6 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_group);
 
-		Log.d("Vida", "I am here");
-
 		findViewById(R.id.goBack).setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -107,7 +106,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		});
 
-		RobotoRegularTextView tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
+		tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
 		isAdmin = getIntent().getBooleanExtra(Const.IS_ADMIN, false);
 		if (isAdmin) {
 			tvSaveRoom.setVisibility(View.VISIBLE);
@@ -277,19 +276,18 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				String hashPassword = Utils.getHexString(newPassword);
 				requestParams.put(Const.PASSWORD, hashPassword);
 				Helper.storeChatPassword(ProfileGroupActivity.this, hashPassword, chatId);
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		requestParams.put(Const.CHAT_ID, chatId);
 		requestParams.put(Const.IS_PRIVATE, switchPrivate.isChecked() ? "1" : "0");
+		requestParams.put(Const.CATEGORY_ID, categoryId);
 
 		handleProgress(true);
 		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams, this);
-		spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
+		spiceManager.execute(updateChatAll, new CustomSpiceListener<Chat>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -298,7 +296,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 
 			@Override
-			public void onRequestSuccess(BaseModel result) {
+			public void onRequestSuccess(Chat result) {
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
@@ -317,6 +315,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 							e.printStackTrace();
 						}
 					}
+
+					intent.putExtra(Const.IS_UPDATE_ADMIN, true);
+					intent.putExtra(Const.IS_UPDATE_CATEGORY, true);
+					intent.putExtra(Const.CATEGORY_ID, categoryId);
+					intent.putExtra(Const.CATEGORY_NAME, categoryName);
 
 					LocalBroadcastManager.getInstance(ProfileGroupActivity.this).sendBroadcast(intent);
 
@@ -346,6 +349,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 	public void changeAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
+		if (!isAdmin) {
+			tvSaveRoom.setVisibility(View.GONE);
+		}
+
+		getMembers(-1, false);
 
 		Intent intent = getIntent();
 		intent.setAction(Const.IS_ADMIN);

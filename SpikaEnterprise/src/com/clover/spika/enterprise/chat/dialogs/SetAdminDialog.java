@@ -8,22 +8,25 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
-import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
+import com.clover.spika.enterprise.chat.caching.robospice.EntryUtilsCaching;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -32,7 +35,8 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult {
+public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult,
+		OnChatMembersDBChanged {
 
 	public SetAdminDialog(final Context context, String chatId) {
 		super(context, R.style.Theme_Dialog);
@@ -42,6 +46,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 	}
 
 	TextView noItems;
+	ProgressBar progressLoading;
 
 	PullToRefreshListView mainListView;
 	public InviteRemoveAdapter adapter;
@@ -49,7 +54,6 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 	private OnActionClick listener;
 
 	private String chatId;
-	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 
 	@Override
@@ -58,9 +62,11 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 		setContentView(R.layout.dialog_select_category);
 
 		noItems = (TextView) findViewById(R.id.noItems);
+		progressLoading = (ProgressBar) findViewById(R.id.progressLoading);
 		mainListView = (PullToRefreshListView) findViewById(R.id.mainListView);
 
-		adapter = new InviteRemoveAdapter(((BaseActivity) getOwnerActivity()).spiceManager, getOwnerActivity(), new ArrayList<GlobalModel>(), null, null);
+		adapter = new InviteRemoveAdapter(((BaseActivity) getOwnerActivity()).spiceManager, getOwnerActivity(), new ArrayList<GlobalModel>(), null,
+				null);
 		mainListView.setAdapter(adapter);
 		adapter.setCheckBox(false);
 		adapter.disableNameClick(true);
@@ -102,9 +108,9 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 
 	private void getUsers(final boolean clearPrevious) {
 
-		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(getOwnerActivity(), ((BaseActivity) getOwnerActivity()).spiceManager, mCurrentIndex,
-				chatId, null, Type.USER, clearPrevious, this, this);
-		((BaseActivity) getOwnerActivity()).spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
+		ChatMembersCacheSpice.GetChatMembers getMembers = new ChatMembersCacheSpice.GetChatMembers(getOwnerActivity(),
+				((BaseActivity) getOwnerActivity()).spiceManager, chatId, this);
+		((BaseActivity) getOwnerActivity()).spiceManager.execute(getMembers, new CustomSpiceListener<List>() {
 
 			@Override
 			public void onRequestSuccess(List result) {
@@ -115,6 +121,8 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 	}
 
 	public void setData(List<GlobalModel> data, boolean toClearPrevious) {
+
+		progressLoading.setVisibility(View.GONE);
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
 
@@ -155,7 +163,6 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 
 		@Override
 		public void onPullUpToRefresh(PullToRefreshBase refreshView) {
-			mCurrentIndex++;
 			getUsers(false);
 		}
 	};
@@ -178,7 +185,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 
 			((BaseActivity) getOwnerActivity()).handleProgress(true);
 			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params, getOwnerActivity());
-			((BaseActivity) getOwnerActivity()).spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
+			((BaseActivity) getOwnerActivity()).spiceManager.execute(updateChatAll, new CustomSpiceListener<Chat>() {
 
 				@Override
 				public void onRequestFailure(SpiceException ex) {
@@ -187,14 +194,24 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 				}
 
 				@Override
-				public void onRequestSuccess(BaseModel result) {
+				public void onRequestSuccess(Chat result) {
 					((BaseActivity) getOwnerActivity()).handleProgress(false);
 
 					if (result.getCode() == Const.API_SUCCESS) {
 
+						GlobalModel resultModel = new GlobalModel();
+						resultModel.chat = new Chat();
+						resultModel.chat.id = Integer.valueOf(chatId);
+						resultModel.chat.admin_id = String.valueOf(user.getId());
+
+						EntryUtilsCaching.UpdateEntry updateEntry = new EntryUtilsCaching.UpdateEntry(getOwnerActivity(), GlobalModel.Type.CHAT,
+								resultModel);
+						((BaseActivity) getOwnerActivity()).spiceManager.execute(updateEntry, null);
+
 						boolean isAdmin = false;
 
-						if (String.valueOf(user.getId()).equals(SpikaEnterpriseApp.getSharedPreferences(getOwnerActivity()).getCustomString(Const.USER_ID))) {
+						if (String.valueOf(user.getId()).equals(
+								SpikaEnterpriseApp.getSharedPreferences(getOwnerActivity()).getCustomString(Const.USER_ID))) {
 							isAdmin = true;
 						}
 
@@ -226,6 +243,11 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 	@Override
 	public void onGlobalMemberDBChanged(List<GlobalModel> usableData, boolean isClear) {
 		setData(usableData, isClear);
+	}
+
+	@Override
+	public void onChatMembersDBChanged(List<GlobalModel> usableData) {
+		setData(usableData, true);
 	}
 
 }

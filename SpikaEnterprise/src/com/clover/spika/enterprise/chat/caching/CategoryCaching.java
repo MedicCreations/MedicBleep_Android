@@ -92,7 +92,7 @@ public class CategoryCaching {
 
 		Category finalCategory = new Category();
 
-		finalCategory.id = (int) category.getId();
+		finalCategory.id = String.valueOf(category.getId());
 		finalCategory.name = category.getName();
 
 		return finalCategory;
@@ -142,8 +142,8 @@ public class CategoryCaching {
 
 			for (Category cat : networkData) {
 
-				com.clover.spika.enterprise.chat.models.greendao.Category finalCatModel = new com.clover.spika.enterprise.chat.models.greendao.Category(Long.valueOf(cat.id),
-						cat.name);
+				com.clover.spika.enterprise.chat.models.greendao.Category finalCatModel = new com.clover.spika.enterprise.chat.models.greendao.Category(
+						Long.valueOf(cat.id), cat.name);
 
 				categoryDao.insert(finalCatModel);
 			}

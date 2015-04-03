@@ -48,6 +48,10 @@ public class RecentAdapter extends BaseAdapter {
 		return mContext;
 	}
 
+	public void setSpiceManager(SpiceManager manager) {
+		imageLoaderSpice.setSpiceManager(manager);
+	}
+
 	public void setData(List<Chat> list) {
 		data = list;
 		notifyDataSetChanged();

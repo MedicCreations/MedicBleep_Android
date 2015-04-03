@@ -99,7 +99,7 @@ public class GlobalCaching {
 			public void onRequestSuccess(GlobalResponse result) {
 				super.onRequestSuccess(result);
 
-				if (result.getCode() == Const.API_SUCCESS) {
+				if (result != null && result.getCode() == Const.API_SUCCESS) {
 
 					if (onNetworkListener != null) {
 						onNetworkListener.onGlobalMemberNetworkResult(result.getTotalCount());

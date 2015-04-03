@@ -28,8 +28,8 @@ import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatDBChanged;
 import com.clover.spika.enterprise.chat.caching.ChatCaching.OnChatNetworkResult;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice;
-import com.clover.spika.enterprise.chat.caching.robospice.DeleteEntryCaching;
 import com.clover.spika.enterprise.chat.caching.robospice.ChatCacheSpice.StartChat;
+import com.clover.spika.enterprise.chat.caching.robospice.EntryUtilsCaching;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -84,7 +84,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						showResendDialog(message);
 					} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
+						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
+								chatImage, chatName, mUserId);
 					}
 				}
 			}
@@ -119,7 +120,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					showResendDialog(message);
 				} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb, chatImage, chatName, mUserId);
+					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
+							chatImage, chatName, mUserId);
 				}
 			}
 		});
@@ -157,6 +159,29 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		SpikaEnterpriseApp.setVideoPath(null);
 		SpikaEnterpriseApp.deleteSamsungPathImage();
 
+		EntryUtilsCaching.GetEntry getEntry = new EntryUtilsCaching.GetEntry(this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+		spiceManager.execute(getEntry, new CustomSpiceListener<GlobalModel>() {
+
+			@Override
+			public void onRequestSuccess(GlobalModel res) {
+				super.onRequestSuccess(res);
+
+				if (res.chat != null) {
+					if (!TextUtils.isEmpty(res.chat.admin_id)) {
+						isAdmin = Helper.getUserId(ChatActivity.this).equals(res.chat.admin_id) ? true : false;
+					} else {
+						isAdmin = false;
+					}
+
+					if (!isAdmin) {
+						chatType = Const.C_ROOM;
+					}
+
+					setSettingsItems(chatType);
+				}
+			}
+		});
+
 		if (isResume) {
 			if (adapter.getCount() > 0) {
 				getMessages(false, false, false, true, false, true);
@@ -190,7 +215,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				}
 
 				setSettingsItems(chatType);
-			} else if (intent.getExtras().containsKey(Const.IS_UPDATE_PRIVATE_PASSWORD)) {
+			}
+
+			if (intent.getExtras().containsKey(Const.IS_UPDATE_PRIVATE_PASSWORD)) {
 
 				if (intent.getExtras().containsKey(Const.IS_PRIVATE)) {
 					isPrivate = intent.getExtras().getInt(Const.IS_PRIVATE);
@@ -199,7 +226,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				if (intent.getExtras().containsKey(Const.PASSWORD)) {
 					chatPassword = intent.getExtras().getString(Const.PASSWORD);
 				}
-			} else if (intent.getExtras().containsKey(Const.IS_UPDATE_CATEGORY)) {
+			}
+
+			if (intent.getExtras().containsKey(Const.IS_UPDATE_CATEGORY)) {
 
 				if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
 					categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
@@ -209,7 +238,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
 				}
 			}
-
 		}
 	};
 
@@ -267,12 +295,32 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	 * @param chatId
 	 * @param password
 	 */
-	public static void startWithChatId(Context context, String chatId, String password, User user) {
+	public static void startWithChatId(Context context, Chat chat, User user) {
+
+		Intent intent = new Intent(context, ChatActivity.class);
+		intent.putExtra(Const.CHAT_ID, String.valueOf(chat.getId()));
+		intent.putExtra(Const.PASSWORD, chat.password);
+
+		if (chat.category != null && chat.category.id != null) {
+			intent.putExtra(Const.CATEGORY_ID, chat.category.id);
+			intent.putExtra(Const.CATEGORY_NAME, chat.category.name);
+		} else if (chat.chat != null) {
+			if (chat.chat != null && chat.chat.category != null && chat.chat.category.id != null) {
+				intent.putExtra(Const.CATEGORY_ID, chat.chat.category.id);
+				intent.putExtra(Const.CATEGORY_NAME, chat.chat.category.name);
+			}
+		}
+
+		intent.putExtra(Const.USER, user);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intent);
+	}
+
+	public static void startWithChatIdNoModel(Context context, String chatId, String password) {
 
 		Intent intent = new Intent(context, ChatActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.PASSWORD, password);
-		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
@@ -432,6 +480,14 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		if (intent.getExtras().containsKey(Const.CHAT_ID)) {
 
+			if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
+				categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
+			}
+
+			if (intent.getExtras().containsKey(Const.CATEGORY_NAME)) {
+				categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
+			}
+
 			if (chatId != null && intent.getExtras().getString(Const.CHAT_ID) != null && !chatId.equals(intent.getExtras().getString(Const.CHAT_ID))) {
 				adapter.clearItems();
 			}
@@ -443,11 +499,13 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			if (!TextUtils.isEmpty(chatPassword)) {
 
-				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null && Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
+				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null
+						&& Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
 					getMessages(true, true, true, false, false, false);
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
-					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big), chatPassword);
+					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big),
+							chatPassword);
 					dialog.setOnPositiveButtonClick(new OnPositiveButtonClickListener() {
 
 						@Override
@@ -482,8 +540,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			mUserId = intent.getExtras().getString(Const.USER_ID);
 
 			handleProgress(true);
-			ChatSpice.StartChat startChat = new ChatSpice.StartChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent.getExtras().getString(Const.LASTNAME),
-					this);
+			ChatSpice.StartChat startChat = new ChatSpice.StartChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent
+					.getExtras().getString(Const.LASTNAME), this);
 			spiceManager.execute(startChat, new CustomSpiceListener<Chat>() {
 
 				@Override
@@ -495,8 +553,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				@Override
 				public void onRequestSuccess(Chat result) {
 					handleProgress(false);
-
-					chatParams(result.chat);
 
 					if (result.user != null) {
 						currentUser = result.user;
@@ -514,18 +570,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 					startChat(result);
 
-					// adapter.clearItems();
-					// totalItems = Integer.valueOf(result.total_count);
-					// adapter.addItems(result.messages, true);
-					// adapter.setSeenBy(result.seen_by);
-					// adapter.setTotalCount(Integer.valueOf(result.total_count));
-					// if (adapter.getCount() > 0) {
-					// chatListView.setSelectionFromTop(adapter.getCount(), 0);
-					// }
-					//
 					checkForLeaveVoiceMessage(intent);
-
-					// setNoItemsVisibility();
 				}
 			});
 		}
@@ -588,10 +633,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	private void replaceTempMessWithRealMess(Message mess, Message tempMess) {
 		mess.isMe = true;
 		totalItems++;
-		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
-				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
-						.getChat_id()));
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
+				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
+				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess, tempMess);
 
@@ -599,12 +644,12 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		chatListView.setSelectionFromTop(adapter.getCount(), 0);
 	}
-	
+
 	protected void showResendDialog(final Message message) {
 		AppDialog dialog = new AppDialog(this, false);
 		dialog.setYesNo(getString(R.string.resend_message), getString(R.string.resend), getString(R.string.cancel));
 		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
-			
+
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
 				resendMessage(message);
@@ -620,10 +665,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	private void addRealMess(Message mess) {
 		mess.isMe = true;
 		totalItems++;
-		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
-				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
-						.getChat_id()));
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
+				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
+				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess);
 
@@ -678,7 +723,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		/* if message type is deafult add temp message to adapter (see method in adapter) */
 		final Message tempMessage = adapter.addTempMessage(text, type);
-		if(tempMessage != null )
+		if (tempMessage != null)
 			setNoItemsVisibility();
 
 		if (type == Const.MSG_TYPE_DEFAULT)
@@ -694,7 +739,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				/* if message type is deafult replace temp message with type error else show dialog */
 				if (type == Const.MSG_TYPE_DEFAULT) {
 					adapter.tempMessageError(tempMessage);
-					if(ex instanceof NoNetworkException){
+					if (ex instanceof NoNetworkException) {
 						setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
 					}
 				} else {
@@ -739,15 +784,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void onMessageDeleted(Message mess) {
 		mess.setType(Const.MSG_TYPE_DELETED);
 		adapter.setMessageDelted(mess.getId());
-		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(mess.id),
-				Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text, mess.file_id, mess.thumb_id, mess.longitude,
-				mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess
-						.getChat_id()));
+		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
+				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
+				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
 
 		getDaoSession().getMessageDao().update(messDao);
 	}
 
-	protected void startChat(Chat result) {
+	private void startChat(Chat result) {
 		if (!isRunning) {
 			isRunning = true;
 		} else {
@@ -772,7 +817,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		});
 	}
 
-	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend, final boolean isRefresh) {
+	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend,
+			final boolean isRefresh) {
 
 		if (!isRunning) {
 			isRunning = true;
@@ -804,12 +850,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			}
 		}
 
-		// TODO add caching
-		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, this,
-				this);
+		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh,
+				chatId, msgId, adapterCount, this, this);
 
 		offlineSpiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {
-			
+
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
@@ -818,12 +863,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			@Override
 			public void onRequestSuccess(Chat result) {
 				super.onRequestSuccess(result);
-				
+
 				adapter.setSpiceManager(spiceManager);
-				
+
 				manageGetMessages(result, isNewMsg, isSend, isRefresh, isClear, isPagging);
 			}
-
 		});
 	}
 
@@ -852,7 +896,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		activeChat.clear();
 		activeChat.addAll(chat.messages);
 
-		chatParams(chat.chat);
+		if (chat.chat != null) {
+			chatParams(chat.chat);
+		} else {
+			chatParams(chat);
+		}
 
 		if (chat.user != null) {
 			currentUser = chat.user;
@@ -923,7 +971,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+					EntryUtilsCaching.DeleteEntry deleteEntry = new EntryUtilsCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId),
+							GlobalModel.Type.CHAT);
 					spiceManager.execute(deleteEntry, null);
 
 					AppDialog dialog = new AppDialog(ChatActivity.this, true);
@@ -1010,7 +1059,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 						if (result.getCode() == Const.API_SUCCESS) {
 
-							DeleteEntryCaching.DeleteEntry deleteEntry = new DeleteEntryCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+							EntryUtilsCaching.DeleteEntry deleteEntry = new EntryUtilsCaching.DeleteEntry(ChatActivity.this, Integer.valueOf(chatId),
+									GlobalModel.Type.CHAT);
 							spiceManager.execute(deleteEntry, null);
 
 							AppDialog dialog = new AppDialog(ChatActivity.this, true);
