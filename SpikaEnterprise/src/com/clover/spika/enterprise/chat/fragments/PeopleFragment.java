@@ -49,6 +49,8 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 	private EditText etSearch;
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
+	
+	private boolean isDataFromNet = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -109,9 +111,27 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
-		public void afterTextChanged(Editable s) {
-			adapter.manageData(s.toString(), allData);
+		public void afterTextChanged(final Editable s) {
+			if(isDataFromNet){
+				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 
+						0, null, null, Type.USER, null, true, true, PeopleFragment.this, PeopleFragment.this);
+				offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onRequestSuccess(List result) {
+						super.onRequestSuccess(result);
+						allData.clear();
+						allData.addAll(result);
+						adapter.manageData(s.toString(), allData);
+					}
+				});
+				isDataFromNet = false;
+			}else {
+				adapter.manageData(s.toString(), allData);
+			}
 		}
 	};
 
@@ -181,6 +201,10 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 	@SuppressWarnings("rawtypes")
 	public void getUsers(int page, String search, final boolean toClear) {
+		
+		if(!TextUtils.isEmpty(search)){
+			isDataFromNet = true;
+		}
 
 		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
 		offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
@@ -193,7 +217,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			}
 		});
 	}
-
+	
 	@Override
 	public void onSearch(String data) {
 		mCurrentIndex = 0;

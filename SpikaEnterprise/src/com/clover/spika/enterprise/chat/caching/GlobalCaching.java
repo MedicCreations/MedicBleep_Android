@@ -34,13 +34,17 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 public class GlobalCaching {
 
 	/* start: Caching calls */
-	public static List<GlobalModel> GlobalSearch(final Activity activity, final SpiceManager spiceManager, int page, String chatId,
+	public static List<GlobalModel> GlobalSearch(final boolean justDatabase, final Activity activity, final SpiceManager spiceManager, int page, String chatId,
 			String categoryId, final int type, final String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
 			final OnGlobalSearchNetworkResult onNetworkListener) {
 
 		final String myId = Helper.getUserId(activity);
 
 		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), searchTerm);
+		
+		if(justDatabase){
+			return resultArray;
+		}
 
 		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm, activity);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {

@@ -63,6 +63,8 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 	private int categoryId = -1;
 	private boolean needRefreshOnResume = false;
+	
+	private boolean isDataFromNet = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -170,13 +172,40 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
-		public void afterTextChanged(Editable s) {
-			if (categoryId > 0) {
-				adapter.manageData(categoryId, s.toString(), allData);
-			} else {
-				adapter.manageData(s.toString(), allData);
+		public void afterTextChanged(final Editable s) {
+			if(isDataFromNet){
+				String catId = null;
+				if (categoryId > 0) {
+					catId = String.valueOf(categoryId);
+				}
+
+				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 0, null, catId, Type.CHAT, "", true, true, GroupsFragment.this, GroupsFragment.this);
+				offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onRequestSuccess(List result) {
+						super.onRequestSuccess(result);
+						allData.clear();
+						allData.addAll(result);
+						if (categoryId > 0) {
+							adapter.manageData(categoryId, s.toString(), allData);
+						} else {
+							adapter.manageData(s.toString(), allData);
+						}
+					}
+				});
+				isDataFromNet = false;
+			}else {
+				if (categoryId > 0) {
+					adapter.manageData(categoryId, s.toString(), allData);
+				} else {
+					adapter.manageData(s.toString(), allData);
+				}
 			}
+			
 		}
 	};
 
@@ -247,7 +276,12 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 		allData.addAll(adapter.getData());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void getGroups(int page, String search, final boolean toClear) {
+		
+		if(!TextUtils.isEmpty(search)){
+			isDataFromNet = true;
+		}
 
 		String catId = null;
 		if (categoryId > 0) {

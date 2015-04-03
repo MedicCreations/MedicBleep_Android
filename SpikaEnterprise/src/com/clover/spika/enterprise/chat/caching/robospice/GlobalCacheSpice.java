@@ -27,6 +27,7 @@ public class GlobalCacheSpice {
 		private int type;
 		private String searchTerm;
 		private boolean toClear;
+		private boolean justDatabase = false;
 
 		private OnGlobalSearchDBChanged onDBChangeListener;
 		private OnGlobalSearchNetworkResult onNetworkListener;
@@ -47,10 +48,28 @@ public class GlobalCacheSpice {
 			this.onDBChangeListener = onDBChangeListener;
 			this.onNetworkListener = onNetworkListener;
 		}
+		
+		public GlobalSearch(Activity activity, SpiceManager spiceManager, int page, String chatId, String categoryId, int type, String searchTerm, 
+				boolean toClear, boolean justDatabase, OnGlobalSearchDBChanged onDBChangeListener, OnGlobalSearchNetworkResult onNetworkListener) {
+			super(List.class);
+
+			this.activity = activity;
+
+			this.spiceManager = spiceManager;
+			this.page = page;
+			this.chatId = chatId;
+			this.categoryId = categoryId;
+			this.type = type;
+			this.searchTerm = searchTerm;
+			this.toClear = toClear;
+			this.justDatabase = justDatabase;
+			this.onDBChangeListener = onDBChangeListener;
+			this.onNetworkListener = onNetworkListener;
+		}
 
 		@Override
 		public List<GlobalModel> loadDataFromNetwork() throws Exception {
-			return GlobalCaching.GlobalSearch(activity, spiceManager, page, chatId, categoryId, type, searchTerm, toClear, onDBChangeListener, onNetworkListener);
+			return GlobalCaching.GlobalSearch(justDatabase, activity, spiceManager, page, chatId, categoryId, type, searchTerm, toClear, onDBChangeListener, onNetworkListener);
 		}
 	}
 
