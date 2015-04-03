@@ -321,9 +321,12 @@ public class GlobalCaching {
 				List<com.clover.spika.enterprise.chat.models.greendao.Chat> chatList;
 				
 				if(TextUtils.isEmpty(search)){
-					chatList = chatDao.queryBuilder().build().list();
+					chatList = chatDao.queryBuilder()
+							.where(Properties.Type.notEq(GlobalModel.Type.USER))
+							.build().list();
 				}else{
-					chatList = chatDao.queryBuilder().where(Properties.Chat_name.like("%" + search + "%")).build().list();
+					chatList = chatDao.queryBuilder().where(Properties.Chat_name.like("%" + search + "%"),
+							Properties.Type.notEq(GlobalModel.Type.USER)).build().list();
 				}
 				
 				if (chatList != null) {
@@ -365,11 +368,14 @@ public class GlobalCaching {
 				List<com.clover.spika.enterprise.chat.models.greendao.User> userList;
 				
 				if(TextUtils.isEmpty(search)){
-					userList  = userDao.queryBuilder().build().list();
+					userList  = userDao.queryBuilder()
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId))
+							.build().list();
 				}else{
 					userList = userDao.queryBuilder()
 							.whereOr(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Firstname.like("%" + search + "%"),
 									com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Lastname.like("%" + search + "%"))
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId))
 							.build().list();
 				}
 
@@ -473,8 +479,8 @@ public class GlobalCaching {
 					Chat chat = globalModel.chat;
 
 					Long finalCategoryModelId = 0L;
-					if (chat.category != null) {
-
+					if (chat.category != null && chat.category.id != null) {
+						
 						if (categoryDao.queryBuilder()
 								.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(chat.category.id)).count() > 0) {
 
@@ -565,7 +571,7 @@ public class GlobalCaching {
 					}
 
 					if (chatDao.queryBuilder().where(Properties.Id.eq(chat.getId())).count() > 0) {
-
+						
 						com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder()
 								.where(Properties.Id.eq(chat.getId())).unique();
 						usedChatModel = DaoUtils.convertChatModelToChatDao(usedChatModel, chat, finalCategoryModelId, finalUserModelId,
@@ -574,7 +580,7 @@ public class GlobalCaching {
 						chatDao.update(usedChatModel);
 
 					} else {
-
+						
 						com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = DaoUtils.convertChatModelToChatDao(null, chat,
 								finalCategoryModelId, finalUserModelId, finalMessageModelId, false);
 
