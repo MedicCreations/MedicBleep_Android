@@ -66,7 +66,7 @@ public class DaoUtils {
 
 		Category finalCategory = new Category();
 
-		finalCategory.id = (int) category.getId();
+		finalCategory.id = String.valueOf(category.getId());
 		finalCategory.name = category.getName();
 
 		return finalCategory;
@@ -146,14 +146,15 @@ public class DaoUtils {
 		return finalGroup;
 	}
 
-	public static com.clover.spika.enterprise.chat.models.greendao.Chat convertChatModelToChatDao(com.clover.spika.enterprise.chat.models.greendao.Chat chatDao, Chat chat,
-			long finalCategoryModelId, long finalUserModelId, long finalMessageModelId, boolean isRecent) {
+	public static com.clover.spika.enterprise.chat.models.greendao.Chat convertChatModelToChatDao(
+			com.clover.spika.enterprise.chat.models.greendao.Chat chatDao, Chat chat, long finalCategoryModelId, long finalUserModelId,
+			long finalMessageModelId, boolean isRecent) {
 
 		if (chatDao == null) {
 
-			chatDao = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.getId()), chat.chat_name, chat.seen_by, chat.total_count, chat.image_thumb,
-					chat.image, chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password, chat.unread, chat.is_member, chat.modified, isRecent,
-					finalCategoryModelId, finalUserModelId, finalMessageModelId);
+			chatDao = new com.clover.spika.enterprise.chat.models.greendao.Chat(Long.valueOf(chat.getId()), chat.chat_name, chat.seen_by,
+					chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password,
+					chat.unread, chat.is_member, chat.modified, isRecent, finalCategoryModelId, finalUserModelId, finalMessageModelId);
 
 		} else {
 
@@ -219,8 +220,8 @@ public class DaoUtils {
 		return chatDao;
 	}
 
-	public static com.clover.spika.enterprise.chat.models.greendao.Message convertMessageModelToMessageDao(com.clover.spika.enterprise.chat.models.greendao.Message messageDao,
-			Message message, int chatId) {
+	public static com.clover.spika.enterprise.chat.models.greendao.Message convertMessageModelToMessageDao(
+			com.clover.spika.enterprise.chat.models.greendao.Message messageDao, Message message, int chatId) {
 
 		if (messageDao != null) {
 
@@ -302,15 +303,17 @@ public class DaoUtils {
 			}
 
 		} else {
-			messageDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(message.id), Long.valueOf(message.chat_id), Long.valueOf(message.user_id),
-					message.firstname, message.lastname, message.image, message.text, message.file_id, message.thumb_id, message.longitude, message.latitude, message.created,
-					message.modified, message.child_list, message.image_thumb, message.type, message.root_id, message.parent_id, message.isMe, message.isFailed, (long) chatId);
+			messageDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(message.id), Long.valueOf(message.chat_id),
+					Long.valueOf(message.user_id), message.firstname, message.lastname, message.image, message.text, message.file_id,
+					message.thumb_id, message.longitude, message.latitude, message.created, message.modified, message.child_list,
+					message.image_thumb, message.type, message.root_id, message.parent_id, message.isMe, message.isFailed, (long) chatId);
 		}
 
 		return messageDao;
 	}
 
-	public static com.clover.spika.enterprise.chat.models.greendao.User convertUserModelToUserDao(com.clover.spika.enterprise.chat.models.greendao.User userDao, User user) {
+	public static com.clover.spika.enterprise.chat.models.greendao.User convertUserModelToUserDao(
+			com.clover.spika.enterprise.chat.models.greendao.User userDao, User user) {
 
 		if (userDao != null) {
 
@@ -365,9 +368,9 @@ public class DaoUtils {
 
 		} else {
 
-			userDao = new com.clover.spika.enterprise.chat.models.greendao.User((long) user.getId(), user.firstname, user.lastname, user.type, user.image, user.image_thumb,
-					user.is_member, user.is_admin, user.name, user.groupname, user.chat_id, user.is_user, user.is_group, user.is_room,
-					user.organization != null ? Long.valueOf(user.organization.id) : 0L);
+			userDao = new com.clover.spika.enterprise.chat.models.greendao.User((long) user.getId(), user.firstname, user.lastname, user.type,
+					user.image, user.image_thumb, user.is_member, user.is_admin, user.name, user.groupname, user.chat_id, user.is_user,
+					user.is_group, user.is_room, user.organization != null ? Long.valueOf(user.organization.id) : 0L);
 		}
 
 		return userDao;
@@ -399,7 +402,8 @@ public class DaoUtils {
 		return categoryDao;
 	}
 
-	public static com.clover.spika.enterprise.chat.models.greendao.Groups convertGroupModelToGroupDao(com.clover.spika.enterprise.chat.models.greendao.Groups groupDao, Group group) {
+	public static com.clover.spika.enterprise.chat.models.greendao.Groups convertGroupModelToGroupDao(
+			com.clover.spika.enterprise.chat.models.greendao.Groups groupDao, Group group) {
 
 		if (groupDao != null) {
 
@@ -411,7 +415,8 @@ public class DaoUtils {
 
 		} else {
 
-			groupDao = new com.clover.spika.enterprise.chat.models.greendao.Groups(group.id, group.type, group.groupname, group.image, group.image_thumb, group.is_member);
+			groupDao = new com.clover.spika.enterprise.chat.models.greendao.Groups(group.id, group.type, group.groupname, group.image,
+					group.image_thumb, group.is_member);
 
 		}
 
@@ -433,7 +438,8 @@ public class DaoUtils {
 
 	public static UserDetails convertUserDetailModelToUserDetailDao(UserDetail detail, String userId) {
 
-		UserDetails result = new UserDetails(Long.valueOf(detail.id), Long.valueOf(userId), detail.key, detail.label, detail.keyboard_type, detail.value, detail.public_value);
+		UserDetails result = new UserDetails(Long.valueOf(detail.id), Long.valueOf(userId), detail.key, detail.label, detail.keyboard_type,
+				detail.value, detail.public_value);
 
 		return result;
 	}

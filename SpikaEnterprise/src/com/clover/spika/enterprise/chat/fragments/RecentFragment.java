@@ -52,6 +52,10 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 	public void onResume() {
 		super.onResume();
 		getLobby(0, false);
+
+		if (adapter != null) {
+			adapter.setSpiceManager(spiceManager);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -164,8 +168,8 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 		position = position - 1;
 
 		if (position != -1 && position != adapter.getCount()) {
-			final Chat user = adapter.getItem(position);
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(user.getId()), user.password, null);
+			final Chat chat = adapter.getItem(position);
+			ChatActivity.startWithChatId(getActivity(), chat, null);
 		}
 	}
 

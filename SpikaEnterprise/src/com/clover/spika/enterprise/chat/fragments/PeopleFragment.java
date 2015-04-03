@@ -60,6 +60,10 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		if (adapter != null) {
+			adapter.setSpiceManager(spiceManager);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

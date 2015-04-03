@@ -352,7 +352,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		}
 
 		if (chatModelNew != null) {
-			ChatActivity.startWithChatId(this, String.valueOf(chatModelNew.getId()), chatModelNew.password, chatModelNew.user);
+			ChatActivity.startWithChatId(this, chatModelNew, chatModelNew.user);
 		}
 
 		finish();

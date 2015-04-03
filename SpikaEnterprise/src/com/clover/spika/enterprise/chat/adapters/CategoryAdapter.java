@@ -25,8 +25,8 @@ public class CategoryAdapter extends BaseAdapter {
 		this.cntx = context;
 		data = new ArrayList<Category>();
 	}
-	
-	public void setData(List<Category> list){
+
+	public void setData(List<Category> list) {
 		data = list;
 	}
 
@@ -47,16 +47,20 @@ public class CategoryAdapter extends BaseAdapter {
 		// Assign values
 		final Category category = (Category) getItem(position);
 
-		if (activeCatId < 1){
-			if (category.id == 0) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
-			else holder.catName.setTextColor(Color.BLACK);
-		}else{
-			if (category.id == activeCatId) holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
-			else holder.catName.setTextColor(Color.BLACK);
+		if (activeCatId < 1) {
+			if (Integer.valueOf(category.id) == 0)
+				holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
+			else
+				holder.catName.setTextColor(Color.BLACK);
+		} else {
+			if (Integer.valueOf(category.id) == activeCatId)
+				holder.catName.setTextColor(cntx.getResources().getColor(R.color.default_blue));
+			else
+				holder.catName.setTextColor(Color.BLACK);
 		}
-		
+
 		holder.catName.setText(category.name);
-		
+
 		return convertView;
 	}
 
@@ -69,8 +73,8 @@ public class CategoryAdapter extends BaseAdapter {
 	public int getCount() {
 		return this.data.size();
 	}
-	
-	public void setActiveCategory(int active){
+
+	public void setActiveCategory(int active) {
 		activeCatId = active;
 	}
 

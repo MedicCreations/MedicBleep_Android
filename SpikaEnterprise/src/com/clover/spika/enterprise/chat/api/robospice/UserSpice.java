@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -21,7 +20,6 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
@@ -167,9 +165,6 @@ public class UserSpice {
 			String responseBody = resBody.string();
 
 			ObjectMapper mapper = new ObjectMapper();
-
-			Log.d("Vida", "Greška");
-			Logger.custom("Vida", responseBody);
 
 			return mapper.readValue(responseBody, UserWrapper.class);
 		}

@@ -79,6 +79,10 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 			getGroups(0, null, true);
 			needRefreshOnResume = false;
 		}
+		
+		if (adapter != null) {
+			adapter.setSpiceManager(spiceManager);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -280,7 +284,7 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 
 		if (position != -1 && position != adapter.getCount()) {
 			Chat room = (Chat) adapter.getItem(position).getModel();
-			ChatActivity.startWithChatId(getActivity(), String.valueOf(room.getId()), room.password, null);
+			ChatActivity.startWithChatId(getActivity(), room, null);
 		}
 	}
 

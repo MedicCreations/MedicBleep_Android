@@ -17,6 +17,7 @@ public class CustomFragment extends Fragment {
 	private ImageLoaderSpice imageLoaderSpice;
 
 	public ImageLoaderSpice getImageLoader() {
+		imageLoaderSpice.setSpiceManager(spiceManager);
 		return imageLoaderSpice;
 	}
 

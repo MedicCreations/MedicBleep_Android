@@ -87,8 +87,6 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 				else dismiss();
 			}
 		});
-
-		
 	}
 	
 	public void setListener (OnActionClick lis){
@@ -99,9 +97,9 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 		List<Category> allData = new ArrayList<Category>();
 
 		if (UseType.CHOOSE_CATEGORY.equals(mUseType)) {
-			allData.add(new Category(0, getOwnerActivity().getResources().getString(R.string.none)));
+			allData.add(new Category("0", getOwnerActivity().getResources().getString(R.string.none)));
 		} else {
-			allData.add(new Category(0, getOwnerActivity().getResources().getString(R.string.all)));
+			allData.add(new Category("0", getOwnerActivity().getResources().getString(R.string.all)));
 		}
 
 		allData.addAll(data);
@@ -116,7 +114,6 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-
 	}
 
 	public void getCategory() {
@@ -140,11 +137,8 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 					findViewById(R.id.progressLoading).setVisibility(View.GONE);
 					setData(result.categories);
 				}
-				
 			}
-			
 		});
-		
 	}
 
 
@@ -157,7 +151,6 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 			Category category = adapter.getItem(position);
 			
 			if(listener != null) listener.onCategorySelect(String.valueOf(category.id), category.name, this);
-
 		}
 	}
 	
