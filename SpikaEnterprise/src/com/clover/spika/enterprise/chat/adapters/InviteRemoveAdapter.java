@@ -25,6 +25,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -56,6 +57,8 @@ public class InviteRemoveAdapter extends BaseAdapter {
 	private OnChangeListener<GlobalModel> changedListener;
 	private boolean showCheckBox = true;
 	private boolean disableNameClick = false;
+	
+	private boolean withoutMe = false;
 
 	public InviteRemoveAdapter(SpiceManager manager, Context context, List<GlobalModel> users, OnChangeListener<GlobalModel> listener, CustomFragment fragment) {
 		this.mContext = context;
@@ -83,6 +86,10 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		data.addAll(list);
 		handleHelperArrays();
 		notifyDataSetChanged();
+	}
+	
+	public void setWitoutMe(boolean withoutMe){
+		this.withoutMe = withoutMe;
 	}
 
 	private void handleHelperArrays() {
@@ -271,6 +278,12 @@ public class InviteRemoveAdapter extends BaseAdapter {
 				holder.isSelected.setChecked(true);
 			} else {
 				holder.isSelected.setChecked(false);
+			}
+			
+			if(withoutMe && item.getId() == Integer.valueOf(Helper.getUserId(mContext))){
+				holder.isSelected.setVisibility(View.INVISIBLE);
+			}else{
+				holder.isSelected.setVisibility(View.VISIBLE);
 			}
 
 			if (!item.isMember()) {

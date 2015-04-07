@@ -475,6 +475,8 @@ public class Utils {
 			message = ex.getMessage();
 		}
 		
+		message = Helper.errorDescriptions(ctx, code);
+		
 		if (TextUtils.isEmpty(message)) {
 			message = ctx.getString(R.string.e_something_went_wrong);
 		}

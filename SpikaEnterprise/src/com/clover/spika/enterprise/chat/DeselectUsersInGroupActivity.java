@@ -21,6 +21,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
 public class DeselectUsersInGroupActivity extends BaseActivity implements OnChangeListener<GlobalModel>, OnGlobalMemberDBChanged {
@@ -67,15 +68,20 @@ public class DeselectUsersInGroupActivity extends BaseActivity implements OnChan
 				finish();
 			}
 		});
+		
+		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
+		listView.setMode(PullToRefreshBase.Mode.DISABLED);
 
 		getUsersFromGroup();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void getUsersFromGroup() {
 
 		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, -1, null, groupId, Type.USER, false, this, null);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);

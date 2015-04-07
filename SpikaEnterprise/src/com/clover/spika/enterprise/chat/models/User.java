@@ -242,4 +242,104 @@ public class User implements Serializable {
 				+ details + ", organization=" + organization + ", isSelected=" + isSelected + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((chat_id == null) ? 0 : chat_id.hashCode());
+		result = prime * result + ((details == null) ? 0 : details.hashCode());
+		result = prime * result + ((firstname == null) ? 0 : firstname.hashCode());
+		result = prime * result + ((groupname == null) ? 0 : groupname.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((image == null) ? 0 : image.hashCode());
+		result = prime * result + ((image_thumb == null) ? 0 : image_thumb.hashCode());
+		result = prime * result + (isSelected ? 1231 : 1237);
+		result = prime * result + is_admin;
+		result = prime * result + is_group;
+		result = prime * result + (is_member ? 1231 : 1237);
+		result = prime * result + is_room;
+		result = prime * result + is_user;
+		result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((organization == null) ? 0 : organization.hashCode());
+		result = prime * result + type;
+		result = prime * result + user_id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (chat_id == null) {
+			if (other.chat_id != null)
+				return false;
+		} else if (!chat_id.equals(other.chat_id))
+			return false;
+		if (details == null) {
+			if (other.details != null)
+				return false;
+		} else if (!details.equals(other.details))
+			return false;
+		if (firstname == null) {
+			if (other.firstname != null)
+				return false;
+		} else if (!firstname.equals(other.firstname))
+			return false;
+		if (groupname == null) {
+			if (other.groupname != null)
+				return false;
+		} else if (!groupname.equals(other.groupname))
+			return false;
+		if (id != other.id)
+			return false;
+		if (image == null) {
+			if (other.image != null)
+				return false;
+		} else if (!image.equals(other.image))
+			return false;
+		if (image_thumb == null) {
+			if (other.image_thumb != null)
+				return false;
+		} else if (!image_thumb.equals(other.image_thumb))
+			return false;
+		if (isSelected != other.isSelected)
+			return false;
+		if (is_admin != other.is_admin)
+			return false;
+		if (is_group != other.is_group)
+			return false;
+		if (is_member != other.is_member)
+			return false;
+		if (is_room != other.is_room)
+			return false;
+		if (is_user != other.is_user)
+			return false;
+		if (lastname == null) {
+			if (other.lastname != null)
+				return false;
+		} else if (!lastname.equals(other.lastname))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (organization == null) {
+			if (other.organization != null)
+				return false;
+		} else if (!organization.equals(other.organization))
+			return false;
+		if (type != other.type)
+			return false;
+		if (user_id != other.user_id)
+			return false;
+		return true;
+	}
+
 }

@@ -33,6 +33,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		if (getListView() != null) {
 			mUserAdapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 			mUserAdapter.disableNameClick(true);
+			mUserAdapter.setWitoutMe(true);
 			getListView().setAdapter(mUserAdapter);
 		}
 

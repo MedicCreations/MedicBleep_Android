@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+    
     <TextView
         android:id="@+id/invitedPeople"
         android:layout_width="match_parent"
@@ -16,6 +16,35 @@
         android:padding="10dp"
         android:textColor="@color/text_blue"
         android:ems="13"/>
+    
+    <View
+        android:id="@+id/bottomLineAboveSearch"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/chat_menu_gray" />
+    
+    <EditText android:id="@+id/etSearchUsers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:singleLine="true"
+        android:hint="@string/search_for_people"
+        android:background="@color/trans"
+        android:textColorHint="@color/text_gray_image"
+        android:textCursorDrawable="@drawable/shape_text_cursor_drawable"
+        android:textColor="@android:color/black"
+        android:imeOptions="actionSearch"
+        android:visibility="gone"/>
+    
+    <View
+        android:id="@+id/bottomLineAboveListView"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/chat_menu_gray" />
 
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/main_list_view"

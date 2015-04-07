@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 
 public class DeselectUsersInRoomActivity extends BaseActivity implements OnChangeListener<GlobalModel>, OnGlobalMemberDBChanged, OnChatMembersDBChanged {
@@ -32,7 +33,7 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 	private List<String> mUsersToPass = new ArrayList<String>();
 
 	public static void startActivity(String roomName, int roomId, boolean isChecked, ArrayList<String> ids, @NonNull Context context, int requestCode, CustomFragment frag) {
-
+		
 		Intent intent = new Intent(context, DeselectUsersInRoomActivity.class);
 		intent.putExtra(Const.ROOM_ID, String.valueOf(roomId));
 		intent.putExtra(Const.ROOM_NAME, roomName);
@@ -70,6 +71,9 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 				finish();
 			}
 		});
+		
+		PullToRefreshListView listView = (PullToRefreshListView) findViewById(R.id.main_list_view);
+		listView.setMode(PullToRefreshBase.Mode.DISABLED);
 
 		getUsersFromRoom();
 	}
@@ -89,17 +93,6 @@ public class DeselectUsersInRoomActivity extends BaseActivity implements OnChang
 			}
 		});
 
-//		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, -1, null, roomId, Type.USER, false, this, null);
-//		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
-//
-//			@Override
-//			public void onRequestSuccess(List result) {
-//				super.onRequestSuccess(result);
-//
-//				mUsers = handleResult(result);
-//				setListView();
-//			}
-//		});
 	}
 
 	private List<GlobalModel> handleResult(List<GlobalModel> members) {

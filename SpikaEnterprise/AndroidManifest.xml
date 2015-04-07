@@ -159,7 +159,8 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ManageUsersActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.InvitePeopleActivity"
             android:launchMode="singleTop"

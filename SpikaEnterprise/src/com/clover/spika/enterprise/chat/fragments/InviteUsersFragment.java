@@ -4,26 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.clover.spika.enterprise.chat.ManageUsersActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.InviteRemoveAdapter;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
@@ -31,9 +42,9 @@ import com.clover.spika.enterprise.chat.listeners.OnInviteClickListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
-import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
@@ -42,7 +53,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListVie
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class InviteUsersFragment extends CustomFragment implements AdapterView.OnItemClickListener, OnChangeListener<GlobalModel>, OnSearchManageUsersListener,
-		OnInviteClickListener {
+		OnInviteClickListener, OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
 
 	public interface Callbacks {
 		void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember);
@@ -61,9 +72,14 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 	private int mCurrentIndex = 0;
 	private int mTotalCount = 0;
 	private String mSearchData = null;
+	private EditText etSearchUsers;
 
 	private TextView noItems;
 	private TextView txtUsers;
+	
+	private String mChatId = "0";
+	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
+	private boolean isDataFromNet = false;
 
 	public static InviteUsersFragment newInstance() {
 		InviteUsersFragment fragment = new InviteUsersFragment();
@@ -105,6 +121,22 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			noItems = (TextView) view.findViewById(R.id.noItems);
 			txtUsers = (TextView) view.findViewById(R.id.invitedPeople);
 			txtUsers.setMovementMethod(new ScrollingMovementMethod());
+			etSearchUsers = (EditText) view.findViewById(R.id.etSearchUsers);
+			etSearchUsers.setVisibility(View.VISIBLE);
+			etSearchUsers.setOnEditorActionListener(new OnEditorActionListener() {
+
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+						InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(etSearchUsers.getWindowToken(), 0);
+						onSearchInInvite(etSearchUsers.getText().toString());
+					}
+					return false;
+				}
+			});
+
+			etSearchUsers.addTextChangedListener(textWatacher);
 
 			mainListView = (PullToRefreshListView) view.findViewById(R.id.main_list_view);
 			mainListView.setAdapter(adapter);
@@ -113,11 +145,45 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 			if (getActivity() instanceof ManageUsersActivity) {
 				((ManageUsersActivity) getActivity()).setOnInviteClickListener(this);
+				mChatId = ((ManageUsersActivity) getActivity()).getChatId();
 			}
 
 			setInitialTextToTxtUsers();
 		}
 	}
+	
+	private TextWatcher textWatacher = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public void afterTextChanged(Editable s) {
+			if(isDataFromNet){
+				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 0, null, null, Type.ALL, null, 
+						true, true, InviteUsersFragment.this, InviteUsersFragment.this);
+				spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onRequestSuccess(List result) {
+						super.onRequestSuccess(result);
+						allData.clear();
+						allData.addAll(result);
+					}
+				});
+				isDataFromNet = false;
+			}else {
+				adapter.manageData(s.toString(), allData);
+			}
+		}
+	};
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -188,6 +254,11 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 	@Override
 	public void onSearchInInvite(String data) {
+		
+		if(!TextUtils.isEmpty(data)){
+			isDataFromNet = true;
+		}
+		
 		mCurrentIndex = 0;
 		if (TextUtils.isEmpty(data)) {
 			mSearchData = null;
@@ -364,6 +435,9 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			} else if (currentCount < mTotalCount) {
 				mainListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 			}
+			
+			allData.clear();
+			allData.addAll(adapter.getData());
 		} catch (Exception ignore) {
 		}
 	}
@@ -391,18 +465,6 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		span.setSpan(new ForegroundColorSpan(R.color.devil_gray), 0, selectedUsers.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 		txtUsers.setText(span);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		((ManageUsersActivity) getActivity()).setSearch(this);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		((ManageUsersActivity) getActivity()).disableSearch();
 	}
 
 	@Override
@@ -438,6 +500,16 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 				adapter.removeAllRoom(Integer.parseInt(roomId));
 			}
 		}
+	}
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		setData(usableData, isClear);
 	}
 
 }

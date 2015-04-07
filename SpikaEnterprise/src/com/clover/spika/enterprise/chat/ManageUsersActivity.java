@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,10 +21,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
+import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
 import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.InviteUsersFragment;
@@ -38,14 +41,11 @@ import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener,
-		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult {
+		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult, OnChatMembersDBChanged {
 
 	private TextView mTitleTextView;
 
 	/* Search bar */
-	private ImageButton searchBtn;
-	private EditText searchEt;
-	private ImageButton closeSearchBtn;
 	private ImageButton mInviteBtn;
 
 	private ManageUsersFragmentAdapter mPagerAdapter;
@@ -53,9 +53,6 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	private String chatId = "";
 
-	int screenWidth;
-	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
-	private OnSearchManageUsersListener mSearchListener;
 	private OnInviteClickListener mOnInviteClickListener;
 	private OnRemoveClickListener mOnRemoveClickListener;
 
@@ -63,6 +60,8 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	private ToggleButton removeTab;
 
 	private Chat chatModelNew = null;
+	
+	private List<GlobalModel> activeMembers = new ArrayList<GlobalModel>();
 
 	public static void startActivity(String chatId, Context context) {
 		Intent intent = new Intent(context, ManageUsersActivity.class);
@@ -75,6 +74,9 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat_members);
+		
+		//hide search from actionbar
+		findViewById(R.id.searchBtn).setVisibility(View.GONE);
 
 		inviteTab = (ToggleButton) findViewById(R.id.inviteTab);
 		inviteTab.setOnClickListener(this);
@@ -94,28 +96,19 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		mViewPager.setAdapter(mPagerAdapter);
 		mViewPager.setOnPageChangeListener(this);
 
-		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-		searchEt = (EditText) findViewById(R.id.searchEt);
-		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
 		mInviteBtn = (ImageButton) findViewById(R.id.inviteBtn);
 
-		screenWidth = getResources().getDisplayMetrics().widthPixels;
-
 		mTitleTextView = (TextView) findViewById(R.id.screenTitle);
-
-		closeSearchBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation,
-						(LinearLayout) findViewById(R.id.invitationOptions));
-			}
-		});
 
 		handleIntent(getIntent());
 
 		mInviteBtn.setOnClickListener(onInviteClick);
 		setTabsStates(mViewPager.getCurrentItem());
+		
+	}
+	
+	public String getChatId(){
+		return chatId;
 	}
 
 	@Override
@@ -159,17 +152,20 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 		});
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void getMembers(int currentIndex, final boolean toUpdateInviteMember) {
 
-		GlobalCacheSpice.GlobalMember globalMembers = new GlobalCacheSpice.GlobalMember(this, spiceManager, currentIndex, chatId, null, Type.ALL, toUpdateInviteMember, this,
-				this);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<List>() {
+		ChatMembersCacheSpice.GetChatMembers chatMembers = new ChatMembersCacheSpice.GetChatMembers(this, spiceManager, chatId, this);
+		spiceManager.execute(chatMembers, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
 
+				activeMembers.clear();
+				activeMembers.addAll(result);
 				mPagerAdapter.setMembers(result);
 
 				if (toUpdateInviteMember) {
@@ -192,13 +188,9 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 		setTabsStates(position);
 		if (0 == position) {
-			// invite users selected
 			mTitleTextView.setText(getString(R.string.invite));
-			setSearch(mSearchListener);
 		} else if (1 == position) {
-			// remove users selected
 			mTitleTextView.setText(getString(R.string.remove));
-			disableSearch();
 		}
 	}
 
@@ -289,54 +281,11 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	}
 
 	// ****************SEARCH HANDLING
-	public void setSearch(OnSearchManageUsersListener listener) {
-		mSearchListener = listener;
-		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
-	}
 
 	public void disableSearch() {
-		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, mTitleTextView, screenWidth, speedSearchAnimation, mInviteBtn,
-				(LinearLayout) findViewById(R.id.invitationOptions));
+//		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, mTitleTextView, screenWidth, speedSearchAnimation, mInviteBtn,
+//				(LinearLayout) findViewById(R.id.invitationOptions));
 	}
-
-	private OnClickListener searchOnClickListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if (searchEt.getVisibility() == View.GONE) {
-
-				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation,
-						(LinearLayout) findViewById(R.id.invitationOptions));
-			} else {
-
-				if (mSearchListener != null) {
-
-					String data = searchEt.getText().toString();
-					hideKeyboard(searchEt);
-					if (mViewPager.getCurrentItem() == 0) {
-						mSearchListener.onSearchInInvite(data);
-					}
-				}
-			}
-		}
-	};
-
-	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
-
-		@Override
-		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-				hideKeyboard(searchEt);
-				if (mSearchListener != null) {
-					String data = v.getText().toString();
-					if (mViewPager.getCurrentItem() == 0) {
-						mSearchListener.onSearchInInvite(data);
-					}
-				}
-			}
-			return false;
-		}
-	};
 
 	public void setNewChat(Chat chat) {
 		chatModelNew = chat;
@@ -344,12 +293,6 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 	@Override
 	public void onBackPressed() {
-
-		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, mInviteBtn, mTitleTextView, screenWidth, speedSearchAnimation,
-					(LinearLayout) findViewById(R.id.invitationOptions));
-			return;
-		}
 
 		if (chatModelNew != null) {
 			ChatActivity.startWithChatId(this, chatModelNew, chatModelNew.user);
@@ -403,6 +346,17 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
 		if (isClear) {
 			getUsers(0, null, true, false);
+		}
+	}
+
+	@Override
+	public void onChatMembersDBChanged(List<GlobalModel> usableData) {
+		if(!usableData.equals(activeMembers)){
+			activeMembers.clear();
+			activeMembers.addAll(usableData);
+			mPagerAdapter.setMembers(usableData);
+		}else{
+			Log.d("LOG", "EQUALS");
 		}
 	}
 
