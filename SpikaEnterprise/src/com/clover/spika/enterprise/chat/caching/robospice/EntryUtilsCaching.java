@@ -79,7 +79,9 @@ public class EntryUtilsCaching {
 					ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 					com.clover.spika.enterprise.chat.models.greendao.Chat chat = chatDao.load((long) id);
 					
-					result.chat = DaoUtils.convertDaoChatToChatModel(chat);
+					if(result.chat != null){
+						result.chat = DaoUtils.convertDaoChatToChatModel(chat);
+					}
 
 				} else if (type == GlobalModel.Type.GROUP) {
 

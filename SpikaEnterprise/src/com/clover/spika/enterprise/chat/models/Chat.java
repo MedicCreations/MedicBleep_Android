@@ -1,10 +1,14 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
-
+import java.util.ArrayList;
 import java.util.List;
 
-public class Chat extends BaseModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
+
+public class Chat extends BaseModel implements Parcelable{
 
 	public Chat chat;
 	public int id;
@@ -82,4 +86,92 @@ public class Chat extends BaseModel {
 		return chat;
 	}
 	
+	protected Chat(Parcel in) {
+        chat = (Chat) in.readValue(Chat.class.getClassLoader());
+        id = in.readInt();
+        chat_id = in.readInt();
+        chat_name = in.readString();
+        seen_by = in.readString();
+        total_count = in.readInt();
+        if (in.readByte() == 0x01) {
+            messages = new ArrayList<Message>();
+            in.readList(messages, Message.class.getClassLoader());
+        } else {
+            messages = null;
+        }
+        user = (User) in.readValue(User.class.getClassLoader());
+        image_thumb = in.readString();
+        image = in.readString();
+        admin_id = in.readString();
+        is_active = in.readInt();
+        type = in.readInt();
+        is_private = in.readInt();
+        password = in.readString();
+        unread = in.readString();
+        category = (Category) in.readValue(Category.class.getClassLoader());
+        is_member = in.readInt();
+        last_message = (Message) in.readValue(Message.class.getClassLoader());
+        modified = in.readLong();
+        isSelected = in.readByte() != 0x00;
+        isNewMsg = in.readByte() != 0x00;
+        isRefresh = in.readByte() != 0x00;
+        isClear = in.readByte() != 0x00;
+        isSend = in.readByte() != 0x00;
+        isPagging = in.readByte() != 0x00;
+        adapterCount = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(chat);
+        dest.writeInt(id);
+        dest.writeInt(chat_id);
+        dest.writeString(chat_name);
+        dest.writeString(seen_by);
+        dest.writeInt(total_count);
+        if (messages == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(messages);
+        }
+        dest.writeValue(user);
+        dest.writeString(image_thumb);
+        dest.writeString(image);
+        dest.writeString(admin_id);
+        dest.writeInt(is_active);
+        dest.writeInt(type);
+        dest.writeInt(is_private);
+        dest.writeString(password);
+        dest.writeString(unread);
+        dest.writeValue(category);
+        dest.writeInt(is_member);
+        dest.writeValue(last_message);
+        dest.writeLong(modified);
+        dest.writeByte((byte) (isSelected ? 0x01 : 0x00));
+        dest.writeByte((byte) (isNewMsg ? 0x01 : 0x00));
+        dest.writeByte((byte) (isRefresh ? 0x01 : 0x00));
+        dest.writeByte((byte) (isClear ? 0x01 : 0x00));
+        dest.writeByte((byte) (isSend ? 0x01 : 0x00));
+        dest.writeByte((byte) (isPagging ? 0x01 : 0x00));
+        dest.writeInt(adapterCount);
+    }
+
+    public static final Parcelable.Creator<Chat> CREATOR = new Parcelable.Creator<Chat>() {
+        @Override
+        public Chat createFromParcel(Parcel in) {
+            return new Chat(in);
+        }
+
+        @Override
+        public Chat[] newArray(int size) {
+            return new Chat[size];
+        }
+    };
 }
+	

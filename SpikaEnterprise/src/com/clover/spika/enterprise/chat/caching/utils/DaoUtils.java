@@ -17,7 +17,7 @@ public class DaoUtils {
 	public static Chat convertDaoChatToChatModel(com.clover.spika.enterprise.chat.models.greendao.Chat chat) {
 
 		Chat finalChat = new Chat();
-
+		
 		finalChat.id = (int) chat.getId();
 		finalChat.chat_id = (int) chat.getId();
 		finalChat.chat_name = chat.getChat_name();

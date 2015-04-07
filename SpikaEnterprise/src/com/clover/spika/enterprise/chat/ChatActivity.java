@@ -160,7 +160,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		SpikaEnterpriseApp.deleteSamsungPathImage();
 
 		EntryUtilsCaching.GetEntry getEntry = new EntryUtilsCaching.GetEntry(this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
-		spiceManager.execute(getEntry, new CustomSpiceListener<GlobalModel>() {
+		offlineSpiceManager.execute(getEntry, new CustomSpiceListener<GlobalModel>() {
 
 			@Override
 			public void onRequestSuccess(GlobalModel res) {
@@ -311,6 +311,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			}
 		}
 
+		intent.putExtra(Const.CHAT, chat);
 		intent.putExtra(Const.USER, user);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
@@ -584,7 +585,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	}
 
 	private void chatParams(Chat chat) {
-
+		
 		if (chat == null && TextUtils.isEmpty(chatName)) {
 			AppDialog dialog = new AppDialog(this, true);
 			dialog.setFailed(Const.E_SOMETHING_WENT_WRONG);
@@ -878,6 +879,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		if (chat == null) {
 			setNoItemsVisibility();
+			if(getIntent().hasExtra(Const.CHAT)){
+				chat = (Chat) getIntent().getParcelableExtra(Const.CHAT);
+				chatParams(chat);
+			}
 			return;
 		}
 
