@@ -13,6 +13,9 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.User;
 
 public class Const {
+	
+	//Database schema version
+	public static final int SCHEMA_VERSION = 32;
 
 	// Version constants
 	public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
