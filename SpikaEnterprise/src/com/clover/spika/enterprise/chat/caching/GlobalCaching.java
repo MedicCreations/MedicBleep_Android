@@ -75,7 +75,7 @@ public class GlobalCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false);
 				}
 			}
 		});
@@ -116,7 +116,7 @@ public class GlobalCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false);
 				}
 			}
 		});
@@ -243,7 +243,7 @@ public class GlobalCaching {
 		if (activity instanceof BaseActivity) {
 
 			if (type == GlobalModel.Type.CHAT) {
-
+				
 				ChatDao chatDao = ((BaseActivity) activity).getDaoSession().getChatDao();
 				
 				List<com.clover.spika.enterprise.chat.models.greendao.Chat> lista;
@@ -300,6 +300,8 @@ public class GlobalCaching {
 							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId))
 							.whereOr(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Firstname.like("%" + search +"%"), 
 									com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Lastname.like("%" + search +"%")).build().list();
+					
+//					SELECT * FROM user WHERE (CONCAT(firstname, ' ', lastname) LIKE '%ivo pe%')
 				}
 
 				if (lista != null) {

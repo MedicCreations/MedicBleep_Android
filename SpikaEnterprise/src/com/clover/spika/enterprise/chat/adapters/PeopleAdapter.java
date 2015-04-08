@@ -21,10 +21,10 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.fragments.PeopleFragment;
+import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnSwipeTouchListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.User;
@@ -81,9 +81,13 @@ public class PeopleAdapter extends BaseAdapter {
 		data.clear();
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
-			if (((User) data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+			String firstName = ((User) data.get(i).getModel()).getFirstName();
+			String lastName = ((User) data.get(i).getModel()).getLastName();
+			if (firstName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
-			} else if (((User) data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+			} else if (lastName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				continue;
+			} else if ((firstName + " " + lastName).toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
 			} else {
 				data.remove(i);

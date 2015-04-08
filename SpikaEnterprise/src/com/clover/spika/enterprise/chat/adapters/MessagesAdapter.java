@@ -242,10 +242,12 @@ public class MessagesAdapter extends BaseAdapter {
 					if(msg.isUserExpandContent()){
 						endString = "less";
 					}else{
-						myMsg = myMsg.substring(0, SUBSTRING_MESSAGE_AT);
+						int index = myMsg.indexOf(" ", SUBSTRING_MESSAGE_AT);
+						if(index == -1) index = SUBSTRING_MESSAGE_AT;
+						myMsg = myMsg.substring(0, index);
 					}
-					Spannable span = new SpannableString(myMsg + endString);
-					span.setSpan(new UnderlineSpan(), myMsg.length(), myMsg.length() + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+					Spannable span = new SpannableString(myMsg + " " + endString);
+					span.setSpan(new UnderlineSpan(), myMsg.length() + 1, myMsg.length() + 1 + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 					holder.meMsgContent.setText(span);
 					holder.meViewForReadMore.setVisibility(View.VISIBLE);
 					holder.meViewForReadMore.setOnClickListener(new View.OnClickListener() {
@@ -287,7 +289,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.meWebView.getSettings().setBuiltInZoomControls(true);
 				holder.meWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-				holder.meMsgLayoutBack.setBackgroundColor(Color.WHITE);
+				holder.meMsgLayoutBack.setBackgroundColor(Color.RED);
 
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
 				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.meWebView, style);
@@ -450,10 +452,12 @@ public class MessagesAdapter extends BaseAdapter {
 					if(msg.isUserExpandContent()){
 						endString = "less";
 					}else{
-						youMsg = youMsg.substring(0, SUBSTRING_MESSAGE_AT);
+						int index = youMsg.indexOf(" ", SUBSTRING_MESSAGE_AT);
+						if(index == -1) index = SUBSTRING_MESSAGE_AT;
+						youMsg = youMsg.substring(0, index);
 					}
-					Spannable span = new SpannableString(youMsg + endString);
-					span.setSpan(new UnderlineSpan(), youMsg.length(), youMsg.length() + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+					Spannable span = new SpannableString(youMsg + " " + endString);
+					span.setSpan(new UnderlineSpan(), youMsg.length() + 1, youMsg.length() + 1 + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 					holder.youMsgContent.setText(span);
 					holder.youViewForReadMore.setVisibility(View.VISIBLE);
 					holder.youViewForReadMore.setOnClickListener(new View.OnClickListener() {

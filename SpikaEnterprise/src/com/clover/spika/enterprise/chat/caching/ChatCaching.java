@@ -72,7 +72,7 @@ public class ChatCaching {
 						spiceManager.execute(deleteEntry, null);
 					}
 
-					Utils.onFailedUniversal(message, activity, result.getCode());
+					Utils.onFailedUniversal(message, activity, result.getCode(), false);
 				}
 			}
 		});

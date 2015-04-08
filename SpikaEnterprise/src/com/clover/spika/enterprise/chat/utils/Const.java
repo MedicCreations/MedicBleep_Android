@@ -280,24 +280,28 @@ public class Const {
 	public static final int API_SUCCESS = 2000;
 
 	// Error constants
-	public static final int E_INVALID_TOKEN = 1000;
-	public static final int E_EXPIRED_TOKEN = 1001;
-	public static final int E_NOT_CHAT_MEMBER = 1005;
-	public static final int E_CHAT_INACTIVE = 1006;
-	public static final int E_CHAT_DELETED = 1007;
-	public static final int E_PAGE_NOT_FOUND = 1008;
-	public static final int E_NOT_GROUP_ADMIN = 1009;
-	public static final int E_EMAIL_MISSING = 1010;
-	public static final int E_TEMP_PASSWORD_NOT_VALID = 1011;
-	public static final int E_LOGIN_WITH_TEMP_PASS = 1012;
-	public static final int E_USERNAME_NOT_EXIST = 1013;
-	public static final int E_SOMETHING_WENT_WRONG = 1111;
-	public static final int E_FAILED = 999;
-	public static final int E_DIR_NOT_WRITABLE = 1002;
-	public static final int E_INVALID_LOGIN = 1003;
-	public static final int E_NO_CHILD_MSGS = 1004;
-	public static final int E_INVALID_TEMP_PASSWORD = 1014;
-	public static final int E_PASSWORD_EXIST = 1015;
+	public static final int E_FAILED 						= 999;
+	public static final int E_INVALID_TOKEN 				= 1000;
+	public static final int E_EXPIRED_TOKEN 				= 1001;
+	public static final int E_DIR_NOT_WRITABLE 				= 1002;
+	public static final int E_INVALID_LOGIN 				= 1003;
+	public static final int E_NO_CHILD_MSGS 				= 1004;
+	public static final int E_NOT_CHAT_MEMBER 				= 1005;
+	public static final int E_CHAT_INACTIVE 				= 1006;
+	public static final int E_CHAT_DELETED 					= 1007;
+	public static final int E_PAGE_NOT_FOUND 				= 1008;
+	public static final int E_NOT_GROUP_ADMIN 				= 1009;
+	public static final int E_EMAIL_MISSING 				= 1010;
+	public static final int E_TEMP_PASSWORD_NOT_VALID 		= 1011;
+	public static final int E_LOGIN_WITH_TEMP_PASS 			= 1012;
+	public static final int E_USERNAME_NOT_EXIST 			= 1013;
+	public static final int E_INVALID_TEMP_PASSWORD			= 1014;
+	public static final int E_PASSWORD_EXIST 				= 1015;
+	public static final int E_ROOM_LIMIT_EXCEEDED	 		= 1016;
+	public static final int E_FILE_LIMIT_EXCEEDED 			= 1017;
+	public static final int E_ORGANIZATION_SUSPENDED 		= 1018;
+	public static final int E_ORGANIZATION_DELETED 			= 1019;
+	public static final int E_SOMETHING_WENT_WRONG 			= 1111;
 
 	// extras
 	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";

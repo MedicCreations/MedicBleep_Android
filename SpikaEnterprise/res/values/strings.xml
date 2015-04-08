@@ -360,5 +360,9 @@
     <string name="resend">Resend</string>
     <string name="resend_message">Resend Message</string>
     <string name="no_internet_connection_">No Internet connection!</string>
+    <string name="e_organization_deleted">This account is disabled. Please ask user support about detail.</string>
+    <string name="e_organization_suspended">This account is currently suspended. Please ask user support about detail.</string>
+    <string name="e_room_limit_exceeded">Your organization has exceeded room limit and cannot create new rooms any more.</string>
+    <string name="e_file_limit_exceeded">Your organization has exceeded file upload. Please contact yout administrator for more details.</string>
     
 </resources>

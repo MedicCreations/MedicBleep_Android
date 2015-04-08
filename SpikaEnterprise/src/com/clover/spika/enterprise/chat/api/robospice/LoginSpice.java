@@ -1,10 +1,12 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
 import android.content.Context;
+
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -80,6 +82,8 @@ public class LoginSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responsBody = resBody.string();
+			
+			Logger.custom("i", "LOG", responsBody);
 
 			ObjectMapper mapper = new ObjectMapper();
 

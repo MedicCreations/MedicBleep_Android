@@ -436,6 +436,10 @@ public class Helper {
 		errors.put(Const.E_NO_CHILD_MSGS, cntx.getString(R.string.no_child_messages_));
 		errors.put(Const.E_INVALID_TEMP_PASSWORD, cntx.getString(R.string.invalid_temp_password_));
 		errors.put(Const.E_PASSWORD_EXIST, cntx.getString(R.string.password_already_in_use_));
+		errors.put(Const.E_ORGANIZATION_SUSPENDED, cntx.getString(R.string.e_organization_suspended));
+		errors.put(Const.E_ORGANIZATION_DELETED, cntx.getString(R.string.e_organization_deleted));
+		errors.put(Const.E_ROOM_LIMIT_EXCEEDED, cntx.getString(R.string.e_room_limit_exceeded));
+		errors.put(Const.E_FILE_LIMIT_EXCEEDED, cntx.getString(R.string.e_file_limit_exceeded));
 
 		for (int i = 0; i < errors.size(); i++) {
 			if (code == errors.keyAt(i)) {

@@ -64,7 +64,7 @@ public class ChatMembersCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false);
 				}
 			}
 		});

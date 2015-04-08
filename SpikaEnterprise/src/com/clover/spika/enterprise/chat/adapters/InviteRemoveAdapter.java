@@ -133,9 +133,13 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).getModel() instanceof User) {
-				if (((User) data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				String firstName = ((User) data.get(i).getModel()).getFirstName();
+				String lastName = ((User) data.get(i).getModel()).getLastName();
+				if (firstName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				} else if (((User) data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				} else if (lastName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+					continue;
+				} else if ((firstName + " " + lastName).toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
 				} else {
 					data.remove(i);

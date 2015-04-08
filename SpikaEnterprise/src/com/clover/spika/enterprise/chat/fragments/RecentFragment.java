@@ -209,7 +209,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 								message = result.getMessage();
 							}
 
-							Utils.onFailedUniversal(message, getActivity());
+							Utils.onFailedUniversal(message, getActivity(), result.getCode(), false);
 						}
 					}
 				});

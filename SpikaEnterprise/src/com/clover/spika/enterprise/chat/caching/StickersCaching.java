@@ -57,7 +57,7 @@ public class StickersCaching {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, activity);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false);
 				}
 			}
 		});
