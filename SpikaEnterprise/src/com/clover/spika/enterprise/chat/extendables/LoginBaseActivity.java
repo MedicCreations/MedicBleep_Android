@@ -151,7 +151,7 @@ public abstract class LoginBaseActivity extends Activity {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, LoginBaseActivity.this, result.getCode(), false);
+					Utils.onFailedUniversal(message, LoginBaseActivity.this, result.getCode(), true);
 				}
 			}
 		});
