@@ -142,6 +142,11 @@ public class InviteRemoveAdapter extends BaseAdapter {
 					i--;
 				}
 			} else if (data.get(i).getModel() instanceof Chat) {
+				if(((Chat) data.get(i).getModel()).chat_name == null) {
+					data.remove(i);
+					i--;
+					continue;
+				}
 				if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
 				} else {

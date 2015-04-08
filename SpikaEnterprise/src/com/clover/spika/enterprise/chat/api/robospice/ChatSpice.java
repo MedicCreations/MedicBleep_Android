@@ -507,7 +507,7 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			Chat result = mapper.readValue(responseBody, Chat.class);

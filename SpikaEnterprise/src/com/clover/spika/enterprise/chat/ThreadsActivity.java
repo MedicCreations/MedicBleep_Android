@@ -112,6 +112,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			@SuppressWarnings({ "unchecked" })
 			@Override
 			public void onRequestSuccess(List result) {
+				for(Object item : result){
+					((Message)item).setIsCodeTextStyle();
+				}
 				if(result.size() < 1) return;
 				activeData.clear();
 				activeData.addAll(result);

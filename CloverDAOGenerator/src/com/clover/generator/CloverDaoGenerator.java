@@ -103,6 +103,7 @@ public class CloverDaoGenerator {
 		message.addIntProperty("parent_id");
 		message.addBooleanProperty("isMe");
 		message.addBooleanProperty("isFailed");
+		message.addStringProperty("attributes");
 		
 		Property chatIdProperty = message.addLongProperty("chatIdProperty").getProperty();
 

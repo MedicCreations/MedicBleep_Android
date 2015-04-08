@@ -24,6 +24,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -521,21 +522,41 @@ public class ThreadsAdapter extends BaseAdapter {
 			node.getMessage().setTimeWidth(timeWidth);
 		}
 
-		if (textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
+		if (node.getMessage().getIsCodeTextStyle() || textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
 			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
 		} else {
 			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
 		}
-
+		
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
 			holder.textViewUser.setTextColor(Color.WHITE);
-			holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+			if(node.getMessage().getIsCodeTextStyle()){
+				holder.textViewMessage.setBackgroundColor(mContext.getResources().getColor(R.color.code_preview_black));
+				holder.textViewMessage.setTextColor(Color.WHITE);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
+			}else{
+				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
+			}
 			holder.threadTime.setTextColor(Color.WHITE);
 		} else {
 			holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
 			holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
-			holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+			if(node.getMessage().getIsCodeTextStyle()){
+				holder.textViewMessage.setBackgroundColor(mContext.getResources().getColor(R.color.code_preview_black));
+				holder.textViewMessage.setTextColor(Color.WHITE);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
+			}else{
+				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
+			}
 			holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
 		}
 	}

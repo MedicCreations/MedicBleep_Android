@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
@@ -244,10 +243,10 @@ public class ChatCaching {
 				}
 
 				if (userDao.queryBuilder()
-						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.organization.id)).count() > 0) {
+						.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.id)).count() > 0) {
 
 					com.clover.spika.enterprise.chat.models.greendao.User finalUserModel = userDao.queryBuilder()
-							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.organization.id))
+							.where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.eq(networkData.user.id))
 							.unique();
 					finalUserModel = DaoUtils.convertUserModelToUserDao(finalUserModel, networkData.user);
 
@@ -268,11 +267,11 @@ public class ChatCaching {
 				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
 						Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image,
 						mess.text, mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list,
-						mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, (long) networkData.chat.getId());
+						mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, (long) networkData.chat.getId());
 
 				messageDao.insertOrReplace(finalMessageModel);
 			}
-
+			
 			if (chatDao.queryBuilder().where(Properties.Id.eq(networkData.chat.getId())).count() > 0) {
 
 				com.clover.spika.enterprise.chat.models.greendao.Chat usedChatModel = chatDao.queryBuilder()
@@ -316,10 +315,10 @@ public class ChatCaching {
 			} else {
 
 				com.clover.spika.enterprise.chat.models.greendao.Chat finalChatModel = new com.clover.spika.enterprise.chat.models.greendao.Chat(
-						Long.valueOf(networkData.getId()), networkData.chat_name, networkData.seen_by, networkData.total_count,
-						networkData.image_thumb, networkData.image, networkData.admin_id, networkData.is_active, networkData.type,
-						networkData.is_private, networkData.password, networkData.unread, networkData.is_member, networkData.modified, true,
-						finalCategoryModelId, finalUserModelId, 0L);
+						Long.valueOf(networkData.chat.getId()), networkData.chat.chat_name, networkData.chat.seen_by, networkData.total_count,
+						networkData.chat.image_thumb, networkData.chat.image, networkData.chat.admin_id, networkData.chat.is_active, networkData.chat.type,
+						networkData.chat.is_private, networkData.chat.password, networkData.chat.unread, networkData.chat.is_member, 
+						networkData.chat.modified, true, finalCategoryModelId, finalUserModelId, 0L);
 				chatDao.insert(finalChatModel);
 			}
 		}

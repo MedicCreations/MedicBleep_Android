@@ -28,8 +28,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 	FrameLayout fragmentHolder;
 	
 	private int activeFragment = RECENT_FRAGMENT;
-
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 

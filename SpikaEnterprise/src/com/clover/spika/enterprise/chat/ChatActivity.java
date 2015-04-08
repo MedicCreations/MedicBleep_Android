@@ -159,28 +159,30 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		SpikaEnterpriseApp.setVideoPath(null);
 		SpikaEnterpriseApp.deleteSamsungPathImage();
 
-		EntryUtilsCaching.GetEntry getEntry = new EntryUtilsCaching.GetEntry(this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
-		offlineSpiceManager.execute(getEntry, new CustomSpiceListener<GlobalModel>() {
+		if(chatId != null){
+			EntryUtilsCaching.GetEntry getEntry = new EntryUtilsCaching.GetEntry(this, Integer.valueOf(chatId), GlobalModel.Type.CHAT);
+			offlineSpiceManager.execute(getEntry, new CustomSpiceListener<GlobalModel>() {
 
-			@Override
-			public void onRequestSuccess(GlobalModel res) {
-				super.onRequestSuccess(res);
+				@Override
+				public void onRequestSuccess(GlobalModel res) {
+					super.onRequestSuccess(res);
 
-				if (res.chat != null) {
-					if (!TextUtils.isEmpty(res.chat.admin_id)) {
-						isAdmin = Helper.getUserId(ChatActivity.this).equals(res.chat.admin_id) ? true : false;
-					} else {
-						isAdmin = false;
+					if (res.chat != null) {
+						if (!TextUtils.isEmpty(res.chat.admin_id)) {
+							isAdmin = Helper.getUserId(ChatActivity.this).equals(res.chat.admin_id) ? true : false;
+						} else {
+							isAdmin = false;
+						}
+
+						if (!isAdmin) {
+							chatType = Const.C_ROOM;
+						}
+
+						setSettingsItems(chatType);
 					}
-
-					if (!isAdmin) {
-						chatType = Const.C_ROOM;
-					}
-
-					setSettingsItems(chatType);
 				}
-			}
-		});
+			});
+		}
 
 		if (isResume) {
 			if (adapter.getCount() > 0) {
@@ -637,7 +639,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess, tempMess);
 
@@ -669,7 +671,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess);
 
@@ -788,7 +790,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, Long.valueOf(mess.getChat_id()));
 
 		getDaoSession().getMessageDao().update(messDao);
 	}
@@ -896,6 +898,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			return;
 		} else {
 			Log.d("LOG", "not same");
+		}
+		
+		for(Message item : chat.messages){
+			item.setIsCodeTextStyle();
 		}
 
 		activeChat.clear();

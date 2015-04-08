@@ -118,6 +118,7 @@ public class DaoUtils {
 		finalMessage.parent_id = message.getParent_id();
 		finalMessage.isMe = message.getIsMe();
 		finalMessage.isFailed = message.getIsFailed();
+		finalMessage.attributes = message.getAttributes();
 
 		return finalMessage;
 	}
@@ -306,7 +307,7 @@ public class DaoUtils {
 			messageDao = new com.clover.spika.enterprise.chat.models.greendao.Message(Long.valueOf(message.id), Long.valueOf(message.chat_id),
 					Long.valueOf(message.user_id), message.firstname, message.lastname, message.image, message.text, message.file_id,
 					message.thumb_id, message.longitude, message.latitude, message.created, message.modified, message.child_list,
-					message.image_thumb, message.type, message.root_id, message.parent_id, message.isMe, message.isFailed, (long) chatId);
+					message.image_thumb, message.type, message.root_id, message.parent_id, message.isMe, message.isFailed, message.attributes, (long) chatId);
 		}
 
 		return messageDao;

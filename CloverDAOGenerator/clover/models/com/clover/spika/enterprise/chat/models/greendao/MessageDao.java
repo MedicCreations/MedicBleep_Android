@@ -48,7 +48,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
         public final static Property Parent_id = new Property(17, Integer.class, "parent_id", false, "PARENT_ID");
         public final static Property IsMe = new Property(18, Boolean.class, "isMe", false, "IS_ME");
         public final static Property IsFailed = new Property(19, Boolean.class, "isFailed", false, "IS_FAILED");
-        public final static Property ChatIdProperty = new Property(20, Long.class, "chatIdProperty", false, "CHAT_ID_PROPERTY");
+        public final static Property Attributes = new Property(20, String.class, "attributes", false, "ATTRIBUTES");
+        public final static Property ChatIdProperty = new Property(21, Long.class, "chatIdProperty", false, "CHAT_ID_PROPERTY");
     };
 
     private DaoSession daoSession;
@@ -88,7 +89,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
                 "'PARENT_ID' INTEGER," + // 17: parent_id
                 "'IS_ME' INTEGER," + // 18: isMe
                 "'IS_FAILED' INTEGER," + // 19: isFailed
-                "'CHAT_ID_PROPERTY' INTEGER);"); // 20: chatIdProperty
+                "'ATTRIBUTES' TEXT," + // 20: attributes
+                "'CHAT_ID_PROPERTY' INTEGER);"); // 21: chatIdProperty
     }
 
     /** Drops the underlying database table. */
@@ -198,9 +200,14 @@ public class MessageDao extends AbstractDao<Message, Long> {
             stmt.bindLong(20, isFailed ? 1l: 0l);
         }
  
+        String attributes = entity.getAttributes();
+        if (attributes != null) {
+            stmt.bindString(21, attributes);
+        }
+ 
         Long chatIdProperty = entity.getChatIdProperty();
         if (chatIdProperty != null) {
-            stmt.bindLong(21, chatIdProperty);
+            stmt.bindLong(22, chatIdProperty);
         }
     }
 
@@ -240,7 +247,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
             cursor.isNull(offset + 17) ? null : cursor.getInt(offset + 17), // parent_id
             cursor.isNull(offset + 18) ? null : cursor.getShort(offset + 18) != 0, // isMe
             cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0, // isFailed
-            cursor.isNull(offset + 20) ? null : cursor.getLong(offset + 20) // chatIdProperty
+            cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // attributes
+            cursor.isNull(offset + 21) ? null : cursor.getLong(offset + 21) // chatIdProperty
         );
         return entity;
     }
@@ -268,7 +276,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
         entity.setParent_id(cursor.isNull(offset + 17) ? null : cursor.getInt(offset + 17));
         entity.setIsMe(cursor.isNull(offset + 18) ? null : cursor.getShort(offset + 18) != 0);
         entity.setIsFailed(cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0);
-        entity.setChatIdProperty(cursor.isNull(offset + 20) ? null : cursor.getLong(offset + 20));
+        entity.setAttributes(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
+        entity.setChatIdProperty(cursor.isNull(offset + 21) ? null : cursor.getLong(offset + 21));
      }
     
     /** @inheritdoc */

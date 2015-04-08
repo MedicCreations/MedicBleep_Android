@@ -3,11 +3,13 @@ package com.clover.spika.enterprise.chat.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Parcelable {
@@ -32,9 +34,12 @@ public class Message implements Parcelable {
 	public int parent_id;
 	public String child_list;
 	public String image_thumb;
+	public String attributes;
 
 	private int textWidth = -1;
 	private int timeWidth = -1;
+	private boolean isUserExpandContent = false;
+	private boolean isTextCodeStyle = false;
 
 	public Message() {
 	}
@@ -210,6 +215,75 @@ public class Message implements Parcelable {
 	public void setTimeWidth(int timeWidth) {
 		this.timeWidth = timeWidth;
 	}
+	
+	public String getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(String attributes) {
+		this.attributes = attributes;
+	}
+	
+	public void setIsCodeTextStyle(){
+		if(TextUtils.isEmpty(attributes)){
+			isTextCodeStyle = false;
+			return;
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			Attributes result = mapper.readValue(attributes, Attributes.class);
+			if(result.getTextType().equals("code")){
+				isTextCodeStyle = true;
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		isTextCodeStyle = false;
+	}
+	
+	public boolean getIsCodeTextStyle(){
+		return isTextCodeStyle;
+	}
+	
+	public boolean isUserExpandContent() {
+		return isUserExpandContent;
+	}
+
+	public void setUserExpandContent(boolean isUserExpandContent) {
+		this.isUserExpandContent = isUserExpandContent;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+		result = prime * result + ((chat_id == null) ? 0 : chat_id.hashCode());
+		result = prime * result + ((child_list == null) ? 0 : child_list.hashCode());
+		result = prime * result + ((created == null) ? 0 : created.hashCode());
+		result = prime * result + ((file_id == null) ? 0 : file_id.hashCode());
+		result = prime * result + ((firstname == null) ? 0 : firstname.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((image == null) ? 0 : image.hashCode());
+		result = prime * result + ((image_thumb == null) ? 0 : image_thumb.hashCode());
+		result = prime * result + (isFailed ? 1231 : 1237);
+		result = prime * result + (isMe ? 1231 : 1237);
+		result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
+		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
+		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
+		result = prime * result + ((modified == null) ? 0 : modified.hashCode());
+		result = prime * result + parent_id;
+		result = prime * result + root_id;
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		result = prime * result + textWidth;
+		result = prime * result + ((thumb_id == null) ? 0 : thumb_id.hashCode());
+		result = prime * result + timeWidth;
+		result = prime * result + type;
+		result = prime * result + ((user_id == null) ? 0 : user_id.hashCode());
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -229,36 +303,14 @@ public class Message implements Parcelable {
 		return true;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = (isMe ? 1 : 0);
-		result = 31 * result + (isFailed ? 1 : 0);
-		result = 31 * result + (id != null ? id.hashCode() : 0);
-		result = 31 * result + (chat_id != null ? chat_id.hashCode() : 0);
-		result = 31 * result + (user_id != null ? user_id.hashCode() : 0);
-		result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
-		result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
-		result = 31 * result + (image != null ? image.hashCode() : 0);
-		result = 31 * result + (text != null ? text.hashCode() : 0);
-		result = 31 * result + (file_id != null ? file_id.hashCode() : 0);
-		result = 31 * result + (thumb_id != null ? thumb_id.hashCode() : 0);
-		result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
-		result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
-		result = 31 * result + type;
-		result = 31 * result + (created != null ? created.hashCode() : 0);
-		result = 31 * result + (modified != null ? modified.hashCode() : 0);
-		result = 31 * result + root_id;
-		result = 31 * result + parent_id;
-		result = 31 * result + (child_list != null ? child_list.hashCode() : 0);
-		return result;
-	}
+	
 
 	@Override
 	public String toString() {
-		return "Message{" + "isMe=" + isMe + ", isFailed=" + isFailed + ", id='" + id + '\'' + ", chat_id='" + chat_id + '\'' + ", user_id='" + user_id + '\'' + ", firstname='"
-				+ firstname + '\'' + ", lastname='" + lastname + '\'' + ", image='" + image + '\'' + ", text='" + text + '\'' + ", file_id='" + file_id + '\'' + ", thumb_id='"
-				+ thumb_id + '\'' + ", longitude='" + longitude + '\'' + ", latitude='" + latitude + '\'' + ", type=" + type + ", created='" + created + '\'' + ", modified='"
-				+ modified + '\'' + ", rootId=" + root_id + ", parentId=" + parent_id + ", childListText='" + child_list + '\'' + '}';
+		return "Message [isMe=" + isMe + ", isFailed=" + isFailed + ", id=" + id + ", chat_id=" + chat_id + ", user_id=" + user_id + ", firstname=" + firstname + ", lastname=" + lastname + ", image="
+				+ image + ", text=" + text + ", file_id=" + file_id + ", thumb_id=" + thumb_id + ", longitude=" + longitude + ", latitude=" + latitude + ", type=" + type + ", created=" + created
+				+ ", modified=" + modified + ", root_id=" + root_id + ", parent_id=" + parent_id + ", child_list=" + child_list + ", image_thumb=" + image_thumb + ", attributes=" + attributes
+				+ ", textWidth=" + textWidth + ", timeWidth=" + timeWidth + "]";
 	}
 
 	public static Message decryptContent(Context ctx, Message msg) {
@@ -327,6 +379,7 @@ public class Message implements Parcelable {
 		dest.writeInt(this.root_id);
 		dest.writeInt(this.parent_id);
 		dest.writeString(this.child_list);
+		dest.writeString(this.attributes);
 	}
 
 	private Message(Parcel in) {
@@ -349,6 +402,7 @@ public class Message implements Parcelable {
 		this.root_id = in.readInt();
 		this.root_id = in.readInt();
 		this.child_list = in.readString();
+		this.attributes = in.readString();
 	}
 
 	public static final Creator<Message> CREATOR = new Creator<Message>() {
@@ -360,4 +414,5 @@ public class Message implements Parcelable {
 			return new Message[size];
 		}
 	};
+	
 }

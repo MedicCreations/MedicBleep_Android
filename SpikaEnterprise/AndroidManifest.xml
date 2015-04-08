@@ -173,7 +173,7 @@
             android:name="com.clover.spika.enterprise.chat.CreateRoomActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity"
             android:screenOrientation="portrait"
