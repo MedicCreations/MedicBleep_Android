@@ -37,8 +37,12 @@ import java.util.HashMap;
 public class FileManageApi {
 
 	private AppProgressDialogWithBar progressBar;
+	
+	public void uploadFile(final String path, final Context ctx, boolean showProgressBar, final ApiCallback<UploadFileModel> listener){
+		uploadFile(true, path, ctx, showProgressBar, listener);
+	}
 
-	public void uploadFile(final String path, final Context ctx, boolean showProgressBar, final ApiCallback<UploadFileModel> listener) {
+	public void uploadFile(final boolean toEncrypt, final String path, final Context ctx, boolean showProgressBar, final ApiCallback<UploadFileModel> listener) {
 		new BaseAsyncTask<Void, Void, UploadFileModel>(ctx, showProgressBar) {
 
 			protected void onPreExecute() {
@@ -56,7 +60,12 @@ public class FileManageApi {
 			protected UploadFileModel doInBackground(Void... params) {
 
 				// start: encrypt
-				String finalPath = Utils.handleFileEncryption(path, context);
+				String finalPath = "";
+				if(toEncrypt){
+					finalPath = Utils.handleFileEncryption(path, context);
+				}else{
+					finalPath = path;
+				}
 
 				if (finalPath == null) {
 					return null;
@@ -133,8 +142,13 @@ public class FileManageApi {
 
 		}.execute();
 	}
-
+	
 	public void downloadFileToFile(final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener,
+			final ProgressBarListeners pbListener){
+		downloadFileToFile(true, destFile, fileId, showProgress, ctx, listener, pbListener);
+	}
+
+	public void downloadFileToFile(final boolean isCrypted, final File destFile, final String fileId, final boolean showProgress, final Context ctx, final ApiCallback<String> listener,
 			final ProgressBarListeners pbListener) {
 		new BaseAsyncTask<Void, Void, String>(ctx, showProgress) {
 
@@ -196,7 +210,13 @@ public class FileManageApi {
 					is.close();
 					os.close();
 
-					String finalFilePath = Utils.handleFileDecryptionToPath(file.getAbsolutePath(), destFile.getAbsolutePath(), context);
+					String finalFilePath = "";
+					
+					if(isCrypted){
+						finalFilePath = Utils.handleFileDecryptionToPath(file.getAbsolutePath(), destFile.getAbsolutePath(), context);
+					}else{
+						finalFilePath = file.getAbsolutePath();
+					}
 
 					return finalFilePath;
 				} catch (Exception e) {

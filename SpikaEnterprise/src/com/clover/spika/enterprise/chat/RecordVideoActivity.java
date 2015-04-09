@@ -171,7 +171,7 @@ public class RecordVideoActivity extends BaseActivity {
 	}
 
 	private void uploadVideoAsync(String path) {
-		new FileManageApi().uploadFile(path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
+		new FileManageApi().uploadFile(false, path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
