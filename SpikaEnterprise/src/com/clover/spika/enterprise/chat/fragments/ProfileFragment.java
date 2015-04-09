@@ -200,7 +200,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
 					PasscodeUtility.getInstance().setPasscode(getActivity(), data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
-					PasscodeUtility.getInstance().setPasscodeEnabled(getActivity(), true);
 				}
 			} else {
 				PasscodeUtility.getInstance().setSessionValid(false);
@@ -208,7 +207,6 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 			}
 		} else if (Const.REQUEST_REMOVE_PASSCODE == requestCode) {
 			if (resultCode == Activity.RESULT_OK) {
-				PasscodeUtility.getInstance().setPasscodeEnabled(getActivity(), false);
 				PasscodeUtility.getInstance().setPasscode(getActivity(), "");
 				PasscodeUtility.getInstance().setSessionValid(true);
 			} else {

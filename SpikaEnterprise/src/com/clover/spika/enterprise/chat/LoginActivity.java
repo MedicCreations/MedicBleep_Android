@@ -20,6 +20,7 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 
 public class LoginActivity extends LoginBaseActivity {
@@ -55,8 +56,8 @@ public class LoginActivity extends LoginBaseActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (!isChecked) {
-					SpikaEnterpriseApp.getSharedPreferences().removePreference(Const.USERNAME);
-					SpikaEnterpriseApp.getSharedPreferences().removePreference(Const.PASSWORD);
+					Helper.setUsername(null);
+					Helper.setPassword(null);
 				}
 
 				SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, isChecked);
@@ -70,9 +71,8 @@ public class LoginActivity extends LoginBaseActivity {
 		super.onResume();
 		hideKeyboard(username);
 
-		username.setText(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USERNAME));
-		password.setText(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD));
-
+		username.setText(Helper.getUsername());
+		password.setText(Helper.getPassword());
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 			try {
 				
-				if(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USERNAME).equals(username.getText().toString())){
+				if(Helper.getUsername().equals(username.getText().toString())){
 					//no need to recreated empty database
 				}else{
 					//recreate empty database
@@ -122,8 +122,8 @@ public class LoginActivity extends LoginBaseActivity {
 				executePreLoginApi(username.getText().toString(), password.getText().toString(), extras, true);
 
 				if (rememberMeCheckBox.isChecked()) {
-					SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.USERNAME, username.getText().toString());
-					SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, password.getText().toString());
+					Helper.setUsername(username.getText().toString());
+					Helper.setPassword(password.getText().toString());
 					SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, true);
 				}
 			} catch (NoSuchAlgorithmException e) {
