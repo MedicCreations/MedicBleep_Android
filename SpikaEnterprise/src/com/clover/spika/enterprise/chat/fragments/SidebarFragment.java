@@ -121,7 +121,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 				informationFragment = new InformationFragment();
 			}
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.about)); 
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information)); 
 			switchFragment(informationFragment);
 
 			break;
