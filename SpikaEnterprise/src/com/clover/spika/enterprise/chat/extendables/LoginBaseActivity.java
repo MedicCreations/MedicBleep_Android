@@ -26,6 +26,7 @@ import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -206,6 +207,9 @@ public abstract class LoginBaseActivity extends Activity {
 					});
 					
 					if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+						if (LoginBaseActivity.this instanceof LoginActivity) {
+							PasscodeUtility.getInstance().setSessionValid(true);
+						}
 						startActivity(intent);
 						overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 						finish();
