@@ -323,7 +323,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		handleProgress(true);
 
-		UserSpice.InviteUsers inviteUser = new UserSpice.InviteUsers(chatId, users.toString(), this);
+		UserSpice.InviteUsers inviteUser = new UserSpice.InviteUsers(chatId, users.toString());
 		spiceManager.execute(inviteUser, new CustomSpiceListener<Chat>() {
 
 			@Override

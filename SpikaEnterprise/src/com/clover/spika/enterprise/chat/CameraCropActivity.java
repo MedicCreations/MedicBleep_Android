@@ -565,8 +565,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 						if (getIntent().getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 							updateChatPicture(fileId, result.getResultData().getFileId());
 						} else {
-							Helper.setRoomFileId(getApplicationContext(), fileId);
-							Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+							Helper.setRoomFileId(fileId);
+							Helper.setRoomThumbId(result.getResultData().getFileId());
 							finish();
 						}
 					} else if (getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
@@ -596,7 +596,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -626,7 +626,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 		handleProgress(true);
 
-		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId, this);
+		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId);
 		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override
@@ -642,7 +642,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
-					Helper.setUserImage(getApplicationContext(), fileId);
+					Helper.setUserImage(fileId);
 					finish();
 				} else {
 					Utils.onFailedUniversal(Helper.errorDescriptions(CameraCropActivity.this, result.getCode()), CameraCropActivity.this);
@@ -657,7 +657,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		String chatName = getIntent().getStringExtra(Const.CHAT_NAME);
 
 		handleProgress(true);
-		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName, this);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_EDIT, fileId, thumbId, chatName);
 		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
@@ -671,7 +671,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
-					Helper.setRoomThumbId(getApplicationContext(), fileId);
+					Helper.setRoomThumbId(fileId);
 					finish();
 				} else {
 					AppDialog dialog = new AppDialog(CameraCropActivity.this, false);

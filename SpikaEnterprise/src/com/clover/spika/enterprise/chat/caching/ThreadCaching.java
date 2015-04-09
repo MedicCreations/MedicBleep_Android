@@ -29,7 +29,7 @@ public class ThreadCaching {
 
 		List<Message> resultArray = getDBData(activity, Long.valueOf(messageId));
 
-		ChatSpice.GetThreads getThread = new ChatSpice.GetThreads(messageId, activity);
+		ChatSpice.GetThreads getThread = new ChatSpice.GetThreads(messageId);
 		
 		spiceManager.execute(getThread, new CustomSpiceListener<Chat>() {
 

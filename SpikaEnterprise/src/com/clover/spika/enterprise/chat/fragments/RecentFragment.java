@@ -181,7 +181,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 				mCurrentIndex = 0;
 				getLobby(mCurrentIndex, false);
 			} else {
-				LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(mCurrentIndex, Const.ALL_TOGETHER_TYPE, getActivity());
+				LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(mCurrentIndex, Const.ALL_TOGETHER_TYPE);
 				spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>() {
 
 					@Override

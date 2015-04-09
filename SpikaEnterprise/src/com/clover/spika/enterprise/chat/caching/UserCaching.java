@@ -34,7 +34,7 @@ public class UserCaching {
 
 		UserWrapper result = getDBData(activity, userId, new ArrayList<UserDetail>());
 
-		UserSpice.GetProfile getProfile = new UserSpice.GetProfile(userId, getDetailValues, activity);
+		UserSpice.GetProfile getProfile = new UserSpice.GetProfile(userId, getDetailValues);
 		spiceManager.execute(getProfile, new CustomSpiceListener<UserWrapper>() {
 
 			@Override

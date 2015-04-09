@@ -1,6 +1,5 @@
 package com.clover.spika.enterprise.chat.api;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 
 public class LocalPushApi {
 
-	public void getPush(final Context ctx, final ApiCallback<LocalPush> listener) {
+	public void getPush(final ApiCallback<LocalPush> listener) {
 		new AsyncTask<Void, Void, LocalPush>() {
 
 			@Override
@@ -23,7 +22,7 @@ public class LocalPushApi {
 
 				try {
 
-					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences(ctx)
+					String responseBody = NetworkManagement.httpGetRequest(Const.F_USER_PUSH, new HashMap<String, String>(), SpikaEnterpriseApp.getSharedPreferences()
 							.getToken());
 					return new ObjectMapper().readValue(responseBody, LocalPush.class);
 

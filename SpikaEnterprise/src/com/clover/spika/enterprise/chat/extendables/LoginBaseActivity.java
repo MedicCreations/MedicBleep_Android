@@ -26,6 +26,7 @@ import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -84,7 +85,7 @@ public abstract class LoginBaseActivity extends Activity {
 		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword, this);
+		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword);
 		spiceManager.execute(preLoginWithCredentials, new CustomSpiceListener<PreLogin>() {
 
 			@Override
@@ -163,7 +164,7 @@ public abstract class LoginBaseActivity extends Activity {
 		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id, this);
+		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id);
 		spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
 			@Override
@@ -178,7 +179,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
+					Helper.setUserProperties(result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
 
 					int googlePlayServiceResult = GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this);
 					
@@ -206,6 +207,9 @@ public abstract class LoginBaseActivity extends Activity {
 					});
 					
 					if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+						if (LoginBaseActivity.this instanceof LoginActivity) {
+							PasscodeUtility.getInstance().setSessionValid(true);
+						}
 						startActivity(intent);
 						overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 						finish();

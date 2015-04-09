@@ -88,7 +88,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		}
 
 		handleProgress(true);
-		ChatSpice.LeaveChatAdmin leaveChatAdmin = new ChatSpice.LeaveChatAdmin(chatId, ids, groupIds, roomIds, getActivity());
+		ChatSpice.LeaveChatAdmin leaveChatAdmin = new ChatSpice.LeaveChatAdmin(chatId, ids, groupIds, roomIds);
 		spiceManager.execute(leaveChatAdmin, new CustomSpiceListener<Chat>() {
 
 			@Override

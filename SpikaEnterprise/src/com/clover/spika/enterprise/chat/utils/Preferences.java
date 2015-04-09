@@ -72,10 +72,6 @@ public class Preferences {
 		SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
 		sharedEditor.remove(key);
 		sharedEditor.apply();
-
-		SharedPreferences.Editor passcodeEditor = sharedPreferences.edit();
-		passcodeEditor.remove(key);
-		passcodeEditor.apply();
 	}
 
 	public void setPasscodeEnabled(boolean enabled) {

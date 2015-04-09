@@ -927,7 +927,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 	private boolean isMe(String userId) {
 
-		if (Helper.getUserId(ctx).equals(userId)) {
+		if (Helper.getUserId().equals(userId)) {
 			return true;
 		}
 

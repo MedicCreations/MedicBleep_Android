@@ -34,7 +34,7 @@ public class LobbyCaching {
 
 		List<Chat> resultArray = getDBData(activity);
 
-		LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE, activity);
+		LobbySpice.GetLobbyByType getLobbyByType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE);
 		spiceManager.execute(getLobbyByType, new CustomSpiceListener<LobbyModel>() {
 
 			@Override

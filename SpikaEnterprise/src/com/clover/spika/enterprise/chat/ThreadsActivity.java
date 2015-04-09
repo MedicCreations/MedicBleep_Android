@@ -150,7 +150,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		tempMess.created = String.valueOf((int)(System.currentTimeMillis() / 1000));
 		tempMess.parent_id = Integer.valueOf(mMessageId);
 		tempMess.root_id = Integer.valueOf(mRootId);
-		tempMess.user_id = Helper.getUserId(this);
+		tempMess.user_id = Helper.getUserId();
 		try {
 			tempMess.id = String.valueOf(Long.valueOf(activeData.get(activeData.size() -2).id) + 10);
 		} catch (Exception e) {
@@ -181,7 +181,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			}
 		}
 		
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_DEFAULT, chatId, text, null, null, null, null, mRootId, mMessageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -259,7 +259,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 
 	private void sendFile(String fileName, String fileId) {
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null, mRootId, mMessageId, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null, mRootId, mMessageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -279,7 +279,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	private void sendEmoji(String text) {
 		
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_GIF, chatId, text, null, null, null, null, mRootId, mMessageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override

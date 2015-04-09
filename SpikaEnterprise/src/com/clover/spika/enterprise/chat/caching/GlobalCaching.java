@@ -38,7 +38,7 @@ public class GlobalCaching {
 			String categoryId, final int type, final String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
 			final OnGlobalSearchNetworkResult onNetworkListener) {
 
-		final String myId = Helper.getUserId(activity);
+		final String myId = Helper.getUserId();
 
 		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), searchTerm);
 		
@@ -46,7 +46,7 @@ public class GlobalCaching {
 			return resultArray;
 		}
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm, activity);
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, categoryId, type, searchTerm);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override
@@ -87,11 +87,11 @@ public class GlobalCaching {
 			final int type, final boolean isToClear, final OnGlobalMemberDBChanged onDBChangeListener,
 			final OnGlobalMemberNetworkResult onNetworkListener) {
 
-		final String myId = Helper.getUserId(activity);
+		final String myId = Helper.getUserId();
 
 		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), null);
 
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type, activity);
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, groupId, type);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override

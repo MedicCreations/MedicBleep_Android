@@ -56,7 +56,7 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 
 		handleProgress(true);
 
-		UserSpice.ForgotPassword updateUserImage = new UserSpice.ForgotPassword(username, this);
+		UserSpice.ForgotPassword updateUserImage = new UserSpice.ForgotPassword(username);
 		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override

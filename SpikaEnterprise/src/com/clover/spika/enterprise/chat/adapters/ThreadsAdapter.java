@@ -120,7 +120,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		this.mMessageList.clear();
 		this.mMessageList.addAll(collection);
 
-		String thisUserId = Helper.getUserId(mContext);
+		String thisUserId = Helper.getUserId();
 		for (TreeNode node : mMessageList) {
 			Message.decryptContent(mContext, node.getMessage());
 			node.getMessage().setMe(node.getMessage().getUser_id().equals(thisUserId));
@@ -133,7 +133,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		this.mMessageList.clear();
 		this.mMessageList.addAll(collection);
 
-		String thisUserId = Helper.getUserId(mContext);
+		String thisUserId = Helper.getUserId();
 		for (TreeNode node : mMessageList) {
 			node.getMessage().setMe(node.getMessage().getUser_id().equals(thisUserId));
 		}

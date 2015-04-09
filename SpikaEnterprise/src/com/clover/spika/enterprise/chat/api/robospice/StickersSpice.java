@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
-import android.content.Context;
-
 import com.clover.spika.enterprise.chat.models.StickersHolder;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -15,19 +13,15 @@ public class StickersSpice {
 	
 	public static class GetEmoji extends CustomSpiceRequest<StickersHolder> {
 
-		private Context ctx;
-
-		public GetEmoji(Context context) {
+		public GetEmoji() {
 			super(StickersHolder.class);
-
-			this.ctx = context;
 		}
 
 		@Override
 		public StickersHolder loadDataFromNetwork() throws Exception {
 			
 			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getGetHeaders(ctx))
+				.headers(getGetHeaders())
 				.url(Const.BASE_URL + Const.F_STICKERS_URL)
 				.get();
 

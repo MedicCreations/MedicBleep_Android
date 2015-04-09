@@ -289,7 +289,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 				holder.isSelected.setChecked(false);
 			}
 			
-			if(withoutMe && item.getId() == Integer.valueOf(Helper.getUserId(mContext))){
+			if(withoutMe && item.getId() == Integer.valueOf(Helper.getUserId())){
 				holder.isSelected.setVisibility(View.INVISIBLE);
 			}else{
 				holder.isSelected.setVisibility(View.VISIBLE);

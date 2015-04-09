@@ -49,7 +49,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 			mUserId = getIntent().getStringExtra(Const.USER_ID);
 			isMyProfile = false;
 		} else {
-			mUserId = Helper.getUserId(this);
+			mUserId = Helper.getUserId();
 		}
 
 		ImageButton btnBack = (ImageButton) findViewById(R.id.goBack);
@@ -173,7 +173,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 
 				handleProgress(true);
 
-				UserSpice.UpdateUserDetails updateUSerDetails = new UserSpice.UpdateUserDetails(adapter.getList(), this);
+				UserSpice.UpdateUserDetails updateUSerDetails = new UserSpice.UpdateUserDetails(adapter.getList());
 				spiceManager.execute(updateUSerDetails, new CustomSpiceListener<BaseModel>() {
 
 					@Override

@@ -85,7 +85,7 @@ public class SpikaEnterpriseApp extends Application {
 		SpikaEnterpriseApp.mAppContext = mAppContext;
 	}
 
-	public static Preferences getSharedPreferences(Context ctx) {
+	public static Preferences getSharedPreferences() {
 
 		if (mAppPreferences == null) {
 			return new Preferences(getAppContext());

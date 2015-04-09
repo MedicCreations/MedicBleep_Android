@@ -53,7 +53,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 		this.stickersList.addAll(stickersList);
 		
 		for(Stickers item : this.stickersList){
-			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences(c)));
+			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences()));
 		}
 		
 		Collections.sort(this.stickersList, new Comparator<Stickers>() {
@@ -114,7 +114,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 		this.stickersList.addAll(stickersList);
 		
 		for(Stickers item : this.stickersList){
-			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences(c)));
+			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences()));
 		}
 		
 		Collections.sort(this.stickersList, new Comparator<Stickers>() {

@@ -20,7 +20,7 @@ public class SplashActivity extends LoginBaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
-		if (SpikaEnterpriseApp.getSharedPreferences(this).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
+		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			pause(0, false);
 		} else {
 			pause(750, true);
@@ -76,8 +76,8 @@ public class SplashActivity extends LoginBaseActivity {
 
 		try {
 			
-			executePreLoginApi(SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.USERNAME),
-					SpikaEnterpriseApp.getSharedPreferences(this).getCustomString(Const.PASSWORD), extras, false);
+			executePreLoginApi(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USERNAME),
+					SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD), extras, false);
 			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

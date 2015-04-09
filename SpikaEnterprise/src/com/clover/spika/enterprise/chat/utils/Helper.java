@@ -126,11 +126,11 @@ public class Helper {
 
 			int currentVersion = packageInfo.versionCode;
 
-			if (SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomInt(Const.CURRENT_APP_VERSION) == -1) {
-				SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
+			if (SpikaEnterpriseApp.getSharedPreferences().getCustomInt(Const.CURRENT_APP_VERSION) == -1) {
+				SpikaEnterpriseApp.getSharedPreferences().setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
 
 				return false;
-			} else if (SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomInt(Const.CURRENT_APP_VERSION) < currentVersion) {
+			} else if (SpikaEnterpriseApp.getSharedPreferences().getCustomInt(Const.CURRENT_APP_VERSION) < currentVersion) {
 				return true;
 			}
 		} catch (NameNotFoundException e) {
@@ -167,7 +167,7 @@ public class Helper {
 		try {
 			PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0);
 			int currentVersion = packageInfo.versionCode;
-			SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
+			SpikaEnterpriseApp.getSharedPreferences().setCustomInt(Const.CURRENT_APP_VERSION, currentVersion);
 		} catch (NameNotFoundException e) {
 			Logger.i("Could not get package name for app version checkup.");
 			e.printStackTrace();
@@ -235,8 +235,8 @@ public class Helper {
 	/**
 	 * Set user settings
 	 */
-	public static void setUserProperties(Context ctx, String userId, String userImageName, String userThumbImage, String firstName, String lastName, String token) {
-		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+	public static void setUserProperties(String userId, String userImageName, String userThumbImage, String firstName, String lastName, String token) {
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences();
 		pref.setCustomString(Const.USER_ID, userId);
 		pref.setCustomString(Const.USER_IMAGE_NAME, userImageName);
 		pref.setCustomString(Const.USER_THUMB_IMAGE_NAME, userThumbImage);
@@ -245,49 +245,49 @@ public class Helper {
 		pref.setUserTokenId(token);
 	}
 
-	public static void setUserImage(Context ctx, String image) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.USER_IMAGE_NAME, image);
+	public static void setUserImage(String image) {
+		SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.USER_IMAGE_NAME, image);
 	}
 
-	public static String getUserFirstName(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.FIRSTNAME);
+	public static String getUserFirstName() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.FIRSTNAME);
 	}
 
-	public static String getUserLastName(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.LASTNAME);
+	public static String getUserLastName() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.LASTNAME);
 	}
 
-	public static String getUserImage(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_IMAGE_NAME);
+	public static String getUserImage() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USER_IMAGE_NAME);
 	}
 
-	public static String getUserThumbImage(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_THUMB_IMAGE_NAME);
+	public static String getUserThumbImage() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USER_THUMB_IMAGE_NAME);
 	}
 
-	public static String getUserId(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.USER_ID);
+	public static String getUserId() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USER_ID);
 	}
 
-	public static void setRoomFileId(Context ctx, String fileId) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_FILE_ID, fileId);
+	public static void setRoomFileId(String fileId) {
+		SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.ROOM_FILE_ID, fileId);
 	}
 
-	public static String getRoomFileId(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_FILE_ID);
+	public static String getRoomFileId() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.ROOM_FILE_ID);
 	}
 
-	public static void setRoomThumbId(Context ctx, String thumbId) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.ROOM_THUMB_ID, thumbId);
+	public static void setRoomThumbId(String thumbId) {
+		SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.ROOM_THUMB_ID, thumbId);
 	}
 
-	public static String getRoomThumbId(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.ROOM_THUMB_ID);
+	public static String getRoomThumbId() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.ROOM_THUMB_ID);
 	}
 
-	public static User getUser(Context ctx) {
+	public static User getUser() {
 		try {
-			return new User(Integer.parseInt(getUserId(ctx)), getUserFirstName(ctx), getUserLastName(ctx), String.valueOf(Const.USERS_TYPE), getUserImage(ctx), getUserThumbImage(ctx), false, null, false,
+			return new User(Integer.parseInt(getUserId()), getUserFirstName(), getUserLastName(), String.valueOf(Const.USERS_TYPE), getUserImage(), getUserThumbImage(), false, null, false,
 					null);
 		} catch (Exception e) {
 			return new User(-1, "", "", "-1", "", "", false, null, false, null);
@@ -544,16 +544,16 @@ public class Helper {
 	}
 
 	public static void logout(Context ctx) {
-		SpikaEnterpriseApp.getSharedPreferences(ctx).clear();
+		SpikaEnterpriseApp.getSharedPreferences().clear();
 		Intent logoutIntent = new Intent(ctx, LoginActivity.class);
-		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+		logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		SpikaEnterpriseApp.stopSocket();
 		ctx.startActivity(logoutIntent);
 		((Activity) ctx).finish();
 	}
 
 	public static void saveMap(Context ctx, Map<String, String> inputMap) {
-		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences();
 		if (pref != null) {
 			JSONObject jsonObject = new JSONObject(inputMap);
 			String jsonString = jsonObject.toString();
@@ -565,7 +565,7 @@ public class Helper {
 	public static Map<String, String> loadMap(Context ctx) {
 
 		Map<String, String> outputMap = new HashMap<String, String>();
-		Preferences pref = SpikaEnterpriseApp.getSharedPreferences(ctx);
+		Preferences pref = SpikaEnterpriseApp.getSharedPreferences();
 		String userId = pref.getCustomString(Const.USER_ID);
 		try {
 			if (pref != null) {

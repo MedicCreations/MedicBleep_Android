@@ -95,7 +95,7 @@ public class ChangePasswordActivity extends BaseActivity {
 		
 		handleProgress(true);
 
-		UserSpice.UpdateUserPassword updateUserImage = new UserSpice.UpdateUserPassword(isUpdate, tempPassword, password, this);
+		UserSpice.UpdateUserPassword updateUserImage = new UserSpice.UpdateUserPassword(isUpdate, tempPassword, password);
 		spiceManager.execute(updateUserImage, new CustomSpiceListener<Login>() {
 
 			@Override

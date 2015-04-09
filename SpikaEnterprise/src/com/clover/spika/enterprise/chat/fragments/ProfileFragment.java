@@ -110,8 +110,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 	public void onClosed() {
 		if (getActivity() instanceof MainActivity) {
 
-			if (!Helper.getUserImage(getActivity()).equals(imageId)) {
-				imageId = Helper.getUserImage(getActivity());
+			if (!Helper.getUserImage().equals(imageId)) {
+				imageId = Helper.getUserImage();
 			}
 
 			mLoadingLayout.setVisibility(View.VISIBLE);
