@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.clover.spika.enterprise.chat.cryptor.JNCryptor;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 
 import android.content.Context;
@@ -80,11 +79,11 @@ public class Preferences {
 	}
 
 	public void setPasscode(String passcode) {
-		setEncryptedString(Const.PREFERENCES_STORED_PASSCODE, passcode);
+		setEncryptedString(Const.PREFERENCES_STORED_PASSCODE, passcode, passcodePreferences);
 	}
 
 	public String getPasscode() {
-		return getEncryptedString(Const.PREFERENCES_STORED_PASSCODE);
+		return getEncryptedString(Const.PREFERENCES_STORED_PASSCODE, passcodePreferences);
 	}
 
 	public void clear() {
@@ -94,7 +93,11 @@ public class Preferences {
 	}
 
 	public String getEncryptedString(String key) {
-		String encrypted = sharedPreferences.getString(md5(key), "");
+		return getEncryptedString(key, sharedPreferences); 
+	}
+	
+	public String getEncryptedString(String key, SharedPreferences preferences) {
+		String encrypted = preferences.getString(md5(key), "");
 		String decrypted;
 		try {
 			decrypted = JNAesCrypto.decryptJN(encrypted);
@@ -102,15 +105,19 @@ public class Preferences {
 			e.printStackTrace();
 			decrypted = "";
 		}
-		return decrypted; 
+		return decrypted;
 	}
 
 	public void setEncryptedString(String key, String value) {
+		setEncryptedString(key, value, sharedPreferences);
+	}
+	
+	public void setEncryptedString(String key, String value, SharedPreferences preferences) {
 		if ((value == null) || (value.length() == 0)) {
-			removeEncryptedPreference(key);
+			removeEncryptedPreference(key, preferences);
 			return;
 		}
-		SharedPreferences.Editor editor = sharedPreferences.edit();
+		SharedPreferences.Editor editor = preferences.edit();
 		String encrypted;
 		try {
 			encrypted = JNAesCrypto.encryptJN(value);
@@ -123,7 +130,11 @@ public class Preferences {
 	}
 	
 	public void removeEncryptedPreference(String key) {
-		SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
+		removeEncryptedPreference(key, sharedPreferences);
+	}
+	
+	public void removeEncryptedPreference(String key, SharedPreferences preferences) {
+		SharedPreferences.Editor sharedEditor = preferences.edit();
 		sharedEditor.remove(md5(key));
 		sharedEditor.apply();
 	}
