@@ -94,6 +94,8 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 					sendEmoji(selectedStickers.getUrl());
 				}
 			});
+			
+			findViewById(R.id.settingsBtn).setVisibility(View.INVISIBLE);
 		}
 	}
 

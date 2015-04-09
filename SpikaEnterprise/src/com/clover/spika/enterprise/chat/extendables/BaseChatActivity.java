@@ -860,6 +860,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 				}
 
 			} else if (id == R.id.btnVideo || id == R.id.chooseVideo) {
+				forceClose();
 				AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 				dialog.choseCamGallery(chatId, getRootId(), getMessageId());
 				hideSettings();

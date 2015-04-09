@@ -188,7 +188,7 @@ public class RecordVideoActivity extends BaseActivity {
 					dialog.setFailed("");
 				}
 			}
-		});
+		}); 
 	}
 
 	private void gotoGalleryOrCamera(int chooseWhereToGo) {
@@ -216,7 +216,7 @@ public class RecordVideoActivity extends BaseActivity {
 
 					// ----> don't know why, but on older devices don't work
 					// with EXTRA_OUTPUT
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+					if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
 						cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedVideo);
 					}
 

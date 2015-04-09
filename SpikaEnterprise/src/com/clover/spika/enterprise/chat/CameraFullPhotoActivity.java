@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -255,7 +256,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				e.printStackTrace();
 			}
 		}
-
+		
 		// File f = new File(mFilePath);
 		// try {
 		// Bitmap tempBitmap = BitmapFactory.decodeStream(new
@@ -289,7 +290,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 					} else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
 						angle = 270;
 					}
-
+					
 					BitmapFactory.Options optionsMeta = new BitmapFactory.Options();
 					optionsMeta.inJustDecodeBounds = true;
 					BitmapFactory.decodeFile(f.getAbsolutePath(), optionsMeta);
@@ -355,7 +356,9 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 					canvas.drawBitmap(tempBitmap, middleX - tempBitmap.getWidth() / 2, middleY - tempBitmap.getHeight() / 2, null);
 
 					mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), mat, true);
-
+					
+					saveBitmapToFile(mBitmap, mFilePath);
+					
 					return null;
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -489,7 +492,6 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 	}
 
 	private void fileUploadAsync(String filePath, final String thumbPath) {
-
 		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
@@ -606,6 +608,21 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		super.onDestroy();
 		if (mFilePath != null && !mIsSamsung) {
 			new File(mFilePath).delete();
+		}
+	}
+	
+	public static void logByteOfImageInMFilePath(String path){
+		logByteOfImageInMFilePath("Default", path);
+	}
+	
+	public static void logByteOfImageInMFilePath(String logAdd, String path){
+		try {
+			File file = new File(path);
+			long length = file.length();
+			Log.w("LOG", logAdd + "========================");
+			Log.e("LOG", "SIZE IN BYTES: " + length);
+			Log.w("LOG", "========================");
+		} catch (Exception e) {
 		}
 	}
 
