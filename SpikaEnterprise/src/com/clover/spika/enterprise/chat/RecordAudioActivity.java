@@ -472,7 +472,7 @@ public class RecordAudioActivity extends BaseActivity {
 
 		handleProgress(true);
 		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), mFileName, fileId, null, null, null,
-				rootId, messageId, this);
+				rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override

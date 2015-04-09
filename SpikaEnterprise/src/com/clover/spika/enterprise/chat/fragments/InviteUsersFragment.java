@@ -371,7 +371,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 
 		handleProgress(true);
 		ChatSpice.AddUsersToRoom addUsersToRoom = new ChatSpice.AddUsersToRoom(users_to_add.toString(), group_to_add.toString(), rooms_to_add.toString(),
-				groups_to_add_all.toString(), rooms_to_add_all.toString(), chatId, getActivity());
+				groups_to_add_all.toString(), rooms_to_add_all.toString(), chatId);
 		spiceManager.execute(addUsersToRoom, new CustomSpiceListener<Chat>() {
 
 			@Override

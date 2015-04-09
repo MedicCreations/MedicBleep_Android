@@ -23,11 +23,11 @@ public class UserApi {
 			protected BaseModel doInBackground(Void... params) {
 
 				HashMap<String, String> postParams = new HashMap<String, String>();
-				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(context).getCustomString(Const.PUSH_TOKEN_LOCAL));
+				postParams.put(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PUSH_TOKEN_LOCAL));
 
 				try {
 
-					String responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences(ctx).getToken());
+					String responseBody = NetworkManagement.httpPostRequest(Const.F_UPDATE_PUSH_TOKEN, postParams, SpikaEnterpriseApp.getSharedPreferences().getToken());
 					ObjectMapper mapper = new ObjectMapper();
 
 					BaseModel result = mapper.readValue(responseBody, BaseModel.class);

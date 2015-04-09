@@ -1,7 +1,5 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
-import android.content.Context;
-
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.PreLogin;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
@@ -17,15 +15,13 @@ import com.squareup.okhttp.ResponseBody;
 public class LoginSpice {
 
 	public static class PreLoginWithCredentials extends CustomSpiceRequest<PreLogin> {
-
-		private Context ctx;
+		
 		private String username;
 		private String password;
 
-		public PreLoginWithCredentials(String username, String password, Context context) {
+		public PreLoginWithCredentials(String username, String password) {
 			super(PreLogin.class);
 
-			this.ctx = context;
 			this.username = username;
 			this.password = password;
 		}
@@ -39,7 +35,7 @@ public class LoginSpice {
 				.build();
 
 			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
+				.headers(getPostHeaders())
 				.url(Const.BASE_URL + Const.F_PRELOGIN)
 				.post(formBody);
 
@@ -55,15 +51,13 @@ public class LoginSpice {
 
 	public static class LoginWithCredentials extends CustomSpiceRequest<Login> {
 
-		private Context ctx;
 		private String username;
 		private String password;
 		private String organizationId;
 
-		public LoginWithCredentials(String username, String password, String organizationId, Context context) {
+		public LoginWithCredentials(String username, String password, String organizationId) {
 			super(Login.class);
 
-			this.ctx = context;
 			this.username = username;
 			this.password = password;
 			this.organizationId = organizationId;
@@ -74,7 +68,7 @@ public class LoginSpice {
 
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).add(Const.ORGANIZATION_ID, organizationId).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -90,14 +84,12 @@ public class LoginSpice {
 
 	public static class LoginWithCredentialsWithGet extends CustomSpiceRequest<Login> {
 
-		private Context ctx;
 		private String username;
 		private String password;
 
-		public LoginWithCredentialsWithGet(String username, String password, Context context) {
+		public LoginWithCredentialsWithGet(String username, String password) {
 			super(Login.class);
 
-			this.ctx = context;
 			this.username = username;
 			this.password = password;
 		}
@@ -107,7 +99,7 @@ public class LoginSpice {
 
 			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).add(Const.PASSWORD, password).build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_LOGIN).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

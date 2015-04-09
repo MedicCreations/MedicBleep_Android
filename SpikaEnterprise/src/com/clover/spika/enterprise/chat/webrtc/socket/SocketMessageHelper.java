@@ -73,7 +73,7 @@ public class SocketMessageHelper {
 		return json;
 	}
 	
-	public static String callMessage(String sessionId, String type, int id, Context c) {
+	public static String callMessage(String sessionId, String type, int id) {
 //		try {
 //			User userModel = Helper.getUser(this);
 //			String action = "message";
@@ -106,7 +106,7 @@ public class SocketMessageHelper {
 //			return "";
 //		}
 		
-		User userModel = Helper.getUser(c);
+		User userModel = Helper.getUser();
 		String action = "message";
 		String json = "{" 
 						+ "\"args\":{" 

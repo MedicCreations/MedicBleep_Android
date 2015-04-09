@@ -30,7 +30,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -239,21 +238,21 @@ public class NetworkManagement {
 		return response.body();
 	}
 
-	public static Headers getPostHeadersWithContext(Context ctx) {
-		return postHeaders(null, ctx);
+	public static Headers getPostHeaders() {
+		return postHeaders(null);
 	}
 
 	public static Headers getPostHeadersWithToken(String token) {
-		return postHeaders(token, null);
+		return postHeaders(token);
 	}
 
-	private static Headers postHeaders(String token, Context ctx) {
+	private static Headers postHeaders(String token) {
 
 		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
 				.add("User-Agent", Const.HTTP_USER_AGENT);
 
 		if (TextUtils.isEmpty(token)) {
-			token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+			token = SpikaEnterpriseApp.getSharedPreferences().getToken();
 		}
 
 		if (!TextUtils.isEmpty(token)) {
@@ -263,21 +262,21 @@ public class NetworkManagement {
 		return headersBuilder.build();
 	}
 
-	public static Headers getGetHeadersWithContext(Context ctx) {
-		return getHeaders(null, ctx);
+	public static Headers getGetHeaders() {
+		return getHeaders(null);
 	}
 
 	public static Headers getGetHeadersWithToken(String token) {
-		return getHeaders(token, null);
+		return getHeaders(token);
 	}
 
-	private static Headers getHeaders(String token, Context ctx) {
+	private static Headers getHeaders(String token) {
 
 		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
 				.add("User-Agent", Const.HTTP_USER_AGENT);
 
 		if (TextUtils.isEmpty(token)) {
-			token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+			token = SpikaEnterpriseApp.getSharedPreferences().getToken();
 		}
 
 		if (!TextUtils.isEmpty(token)) {

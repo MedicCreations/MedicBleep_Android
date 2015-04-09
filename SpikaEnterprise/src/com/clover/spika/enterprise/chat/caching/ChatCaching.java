@@ -34,8 +34,7 @@ public class ChatCaching {
 
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
 
-		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount,
-				activity);
+		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount);
 		spiceManager.execute(getMessage, new CustomSpiceListener<Chat>() {
 
 			@Override

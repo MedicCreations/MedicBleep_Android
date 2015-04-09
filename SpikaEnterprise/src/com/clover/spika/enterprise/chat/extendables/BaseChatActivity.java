@@ -705,7 +705,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 
 //				handleProgress(true);
 
-				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(message.getId(), BaseChatActivity.this);
+				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(message.getId());
 				spiceManager.execute(deleteMessage, new CustomSpiceListener<BaseModel>() {
 
 					@Override

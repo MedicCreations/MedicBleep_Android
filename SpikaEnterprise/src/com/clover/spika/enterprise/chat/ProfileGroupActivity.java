@@ -288,7 +288,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		requestParams.put(Const.CATEGORY_ID, categoryId);
 
 		handleProgress(true);
-		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams, this);
+		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams);
 		spiceManager.execute(updateChatAll, new CustomSpiceListener<Chat>() {
 
 			@Override

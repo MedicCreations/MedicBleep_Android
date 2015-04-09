@@ -184,7 +184,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 			params.put(Const.ADMIN_ID, String.valueOf(user.getId()));
 
 			((BaseActivity) getOwnerActivity()).handleProgress(true);
-			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params, getOwnerActivity());
+			ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(params);
 			((BaseActivity) getOwnerActivity()).spiceManager.execute(updateChatAll, new CustomSpiceListener<Chat>() {
 
 				@Override
@@ -211,7 +211,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 						boolean isAdmin = false;
 
 						if (String.valueOf(user.getId()).equals(
-								SpikaEnterpriseApp.getSharedPreferences(getOwnerActivity()).getCustomString(Const.USER_ID))) {
+								SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USER_ID))) {
 							isAdmin = true;
 						}
 

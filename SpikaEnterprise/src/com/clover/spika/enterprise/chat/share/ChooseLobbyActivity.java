@@ -205,7 +205,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 
 		handleProgress(true);
 
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, String.valueOf(chat.getId()), text, fileId, thumbId, longitude, latitude, null, null, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, String.valueOf(chat.getId()), text, fileId, thumbId, longitude, latitude, null, null);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override

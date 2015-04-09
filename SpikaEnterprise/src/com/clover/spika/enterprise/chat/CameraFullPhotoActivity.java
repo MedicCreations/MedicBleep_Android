@@ -522,8 +522,8 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 						finish();
 					} else if (getIntent().getBooleanExtra(Const.ROOM_INTENT, false)) {
 						// get fileid and thumbid for create room
-						Helper.setRoomFileId(getApplicationContext(), fileId);
-						Helper.setRoomThumbId(getApplicationContext(), result.getResultData().getFileId());
+						Helper.setRoomFileId(fileId);
+						Helper.setRoomThumbId(result.getResultData().getFileId());
 
 						finish();
 					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
@@ -548,7 +548,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -578,7 +578,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 
 		handleProgress(true);
 
-		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId, this);
+		UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage(fileId, thumbId);
 		spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
 
 			@Override
@@ -594,7 +594,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
-					Helper.setUserImage(getApplicationContext(), fileId);
+					Helper.setUserImage(fileId);
 					finish();
 				} else {
 					Utils.onFailedUniversal(Helper.errorDescriptions(CameraFullPhotoActivity.this, result.getCode()), CameraFullPhotoActivity.this);

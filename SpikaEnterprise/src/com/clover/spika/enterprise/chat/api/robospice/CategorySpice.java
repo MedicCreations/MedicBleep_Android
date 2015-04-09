@@ -15,19 +15,15 @@ public class CategorySpice {
 	
 	public static class GetCategory extends CustomSpiceRequest<CategoryList> {
 
-		private Context ctx;
-
 		public GetCategory(Context context) {
 			super(CategoryList.class);
-
-			this.ctx = context;
 		}
 
 		@Override
 		public CategoryList loadDataFromNetwork() throws Exception {
 			
 			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getGetHeaders(ctx))
+				.headers(getGetHeaders())
 				.url(Const.BASE_URL + Const.F_GET_CATEGORIES)
 				.get();
 

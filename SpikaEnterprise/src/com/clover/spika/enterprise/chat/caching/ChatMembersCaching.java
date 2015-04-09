@@ -44,7 +44,7 @@ public class ChatMembersCaching {
 
 		List<GlobalModel> resultArray = getDBData(activity, chatId);
 
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, chatId, null, Type.ALL, activity);
+		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(-1, chatId, null, Type.ALL);
 		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
 
 			@Override

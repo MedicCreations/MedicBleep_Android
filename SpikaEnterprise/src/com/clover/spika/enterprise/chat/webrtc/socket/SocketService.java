@@ -143,7 +143,7 @@ public class SocketService extends Service {
 				}
 				sessionId = sessionId.substring(0, sessionId.indexOf(":"));
 				Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
-				user = Helper.getUser(SocketService.this);
+				user = Helper.getUser();
 				
 				work(sessionId);
 			}
@@ -173,7 +173,7 @@ public class SocketService extends Service {
 						}
 						sessionId = sessionId.substring(0, sessionId.indexOf(":"));
 						Logger.custom("d", "LOG", "Socket SessionId: " + sessionId);
-						user = Helper.getUser(SocketService.this);
+						user = Helper.getUser();
 						
 						if (user.getId() == -1) {
 							SocketService.this.stopSelf();
@@ -524,7 +524,7 @@ public class SocketService extends Service {
 	}
 
 	public void joinMyRoom() {
-		User user = Helper.getUser(this);
+		User user = Helper.getUser();
 		mConn.sendTextMessage(joinRoomMessage(String.valueOf(user.getId()), String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(),
 				user.getLastName(), "join", id));
 		Logger.custom("d", "LOG", "JOIN MY ROOM");
@@ -532,7 +532,7 @@ public class SocketService extends Service {
 	}
 
 	public void joinOtherUserRoom(String userId) {
-		User user = Helper.getUser(this);
+		User user = Helper.getUser();
 		mConn.sendTextMessage(joinRoomMessage(userId, String.valueOf(user.getId()), user.getFirstName(), user.getImage(), user.getImageThumb(), user.getLastName(), "join", id));
 		action = Const.ACTION_JOIN_OTHER_ROOM;
 		Logger.custom("d", "LOG", "JOIN OTHER ROOM");
@@ -556,7 +556,7 @@ public class SocketService extends Service {
 	}
 
 	public String callMessage(String sessionId, String type, int id) {
-		String json = SocketMessageHelper.callMessage(sessionId, type, id, this);
+		String json = SocketMessageHelper.callMessage(sessionId, type, id);
 		return new SocketParser(SocketParser.TYPE_EVENT, String.valueOf(id), "", json).toString();
 	}
 

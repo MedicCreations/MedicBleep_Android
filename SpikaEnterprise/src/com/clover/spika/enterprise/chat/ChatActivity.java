@@ -169,7 +169,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 					if (res.chat != null) {
 						if (!TextUtils.isEmpty(res.chat.admin_id)) {
-							isAdmin = Helper.getUserId(ChatActivity.this).equals(res.chat.admin_id) ? true : false;
+							isAdmin = Helper.getUserId().equals(res.chat.admin_id) ? true : false;
 						} else {
 							isAdmin = false;
 						}
@@ -544,7 +544,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			handleProgress(true);
 			ChatSpice.StartChat startChat = new ChatSpice.StartChat(isGroup, mUserId, intent.getExtras().getString(Const.FIRSTNAME), intent
-					.getExtras().getString(Const.LASTNAME), this);
+					.getExtras().getString(Const.LASTNAME));
 			spiceManager.execute(startChat, new CustomSpiceListener<Chat>() {
 
 				@Override
@@ -602,7 +602,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		chatImageThumb = chat.image_thumb;
 
 		if (!TextUtils.isEmpty(chat.admin_id)) {
-			isAdmin = Helper.getUserId(this).equals(chat.admin_id) ? true : false;
+			isAdmin = Helper.getUserId().equals(chat.admin_id) ? true : false;
 		} else {
 			isAdmin = false;
 		}
@@ -734,7 +734,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		etMessage.setText("");
 
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null, this);
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, chatId, text, fileId, thumbId, longitude, latitude, null, null);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -967,7 +967,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void leaveChat() {
 
 		handleProgress(true);
-		ChatSpice.LeaveChat leaveChat = new ChatSpice.LeaveChat(chatId, this);
+		ChatSpice.LeaveChat leaveChat = new ChatSpice.LeaveChat(chatId);
 		spiceManager.execute(leaveChat, new CustomSpiceListener<Chat>() {
 
 			@Override
@@ -1021,7 +1021,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void deactivateChat() {
 
 		handleProgress(true);
-		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, null, null, null, ChatActivity.this);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DEACTIVATE, null, null, null);
 		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override
@@ -1055,7 +1055,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			public void onPositiveButtonClick(View v, Dialog d) {
 
 				handleProgress(true);
-				ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DELETE, null, null, null, ChatActivity.this);
+				ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_DELETE, null, null, null);
 				spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 					@Override
@@ -1103,7 +1103,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void activateChat() {
 
 		handleProgress(true);
-		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, null, null, null, this);
+		ChatSpice.UpdateChat updateChat = new ChatSpice.UpdateChat(chatId, Const.UPDATE_CHAT_ACTIVATE, null, null, null);
 		spiceManager.execute(updateChat, new CustomSpiceListener<BaseModel>() {
 
 			@Override

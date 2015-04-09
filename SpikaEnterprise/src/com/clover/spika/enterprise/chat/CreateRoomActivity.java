@@ -182,7 +182,7 @@ public class CreateRoomActivity extends BaseActivity {
 
 		handleProgress(true);
 		ChatSpice.CreateRoom createRoom = new ChatSpice.CreateRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId,
-				roomIsPrivate, roomPassword, this);
+				roomIsPrivate, roomPassword);
 		spiceManager.execute(createRoom, new CustomSpiceListener<Chat>() {
 
 			@Override
@@ -199,8 +199,8 @@ public class CreateRoomActivity extends BaseActivity {
 
 					ChatActivity.startWithChatId(CreateRoomActivity.this, result.chat, result.user);
 
-					Helper.setRoomFileId(CreateRoomActivity.this, "");
-					Helper.setRoomThumbId(CreateRoomActivity.this, "");
+					Helper.setRoomFileId("");
+					Helper.setRoomThumbId("");
 
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);

@@ -52,7 +52,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		imageLoaderSpice = ImageLoaderSpice.getInstance(getActivity());
 		imageLoaderSpice.setSpiceManager(spiceManager);
-		image = Helper.getUserImage(getActivity());
+		image = Helper.getUserImage();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		setUserImage();
 
 		userName = (TextView) view.findViewById(R.id.userName);
-		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
+		userName.setText(Helper.getUserFirstName() + "\n" + Helper.getUserLastName());
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(this);
@@ -89,8 +89,8 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!image.equals(Helper.getUserImage(getActivity()))) {
-			image = Helper.getUserImage(getActivity());
+		if (!image.equals(Helper.getUserImage())) {
+			image = Helper.getUserImage();
 			setUserImage();
 		}
 	}
@@ -129,7 +129,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		case R.id.profile:
 
 			if (profileFragment == null) {
-				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()), Helper.getUserFirstName(getActivity()), Helper.getUserLastName(getActivity()));
+				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(), Helper.getUserFirstName(), Helper.getUserLastName());
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
@@ -140,7 +140,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		case R.id.logout:
 			
 			handleProgress(true);
-			UserSpice.Logout logout = new UserSpice.Logout(getActivity());
+			UserSpice.Logout logout = new UserSpice.Logout();
 			spiceManager.execute(logout, new CustomSpiceListener<BaseModel>(){
 				
 				@Override

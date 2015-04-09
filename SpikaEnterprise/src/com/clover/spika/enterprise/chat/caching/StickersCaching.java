@@ -27,7 +27,7 @@ public class StickersCaching {
 
 		StickersHolder resultArray = getDBData(activity);
 
-		StickersSpice.GetEmoji getEmoji = new StickersSpice.GetEmoji(activity);
+		StickersSpice.GetEmoji getEmoji = new StickersSpice.GetEmoji();
 		spiceManager.execute(getEmoji, new CustomSpiceListener<StickersHolder>() {
 
 			@Override

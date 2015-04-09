@@ -96,7 +96,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		loadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
-		Helper.setRoomThumbId(getActivity(), imageId);
+		Helper.setRoomThumbId(imageId);
 
 		getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE, new OnImageDisplayFinishListener() {
 
@@ -288,16 +288,16 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Helper.setRoomThumbId(getActivity(), "");
+		Helper.setRoomThumbId("");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		
-		if ((Helper.getRoomThumbId(getActivity()) != imageId) && (!Helper.getRoomThumbId(getActivity()).isEmpty())) {
+		if ((Helper.getRoomThumbId() != imageId) && (!Helper.getRoomThumbId().isEmpty())) {
 			loadingLayout.setVisibility(View.VISIBLE);
-			imageId = Helper.getRoomThumbId(getActivity());
+			imageId = Helper.getRoomThumbId();
 			getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override
@@ -305,7 +305,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 					loadingLayout.setVisibility(View.GONE);
 				}
 			});
-			((ProfileGroupActivity) getActivity()).setChangeImage(Helper.getRoomThumbId(getActivity()), Helper.getRoomThumbId(getActivity()));
+			((ProfileGroupActivity) getActivity()).setChangeImage(Helper.getRoomThumbId(), Helper.getRoomThumbId());
 		}
 		SpikaEnterpriseApp.deleteSamsungPathImage();
 	}

@@ -33,8 +33,6 @@ public class GifLoaderSpice {
 
 	private static GifLoaderSpice instance;
 
-	private Context ctx;
-
 	private FileCache fileCache;
 	private GifCache gifCache;
 	private Map<WebView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<WebView, String>());
@@ -54,7 +52,6 @@ public class GifLoaderSpice {
 
 	private GifLoaderSpice(Context ctx) {
 
-		this.ctx = ctx;
 		fileCache = new FileCache(ctx);
 		gifCache = new GifCache();
 	}
@@ -164,7 +161,7 @@ public class GifLoaderSpice {
 			}
 
 			// Get from web
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(url).get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders()).url(url).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

@@ -293,8 +293,8 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 		super.onClosed();
 		if (getActivity() instanceof CreateRoomActivity) {
 
-			room_file_id = Helper.getRoomFileId(getActivity());
-			room_thumb_id = Helper.getRoomThumbId(getActivity());
+			room_file_id = Helper.getRoomFileId();
+			room_thumb_id = Helper.getRoomThumbId();
 
 			if (room_file_id != "") {
 				getImageLoader().displayImage(imgRoom, room_thumb_id, ImageLoaderSpice.DEFAULT_GROUP_IMAGE);
@@ -762,7 +762,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 
 	@Override
 	public void onDestroy() {
-		Helper.setRoomThumbId(getActivity(), "");
+		Helper.setRoomThumbId("");
 		super.onDestroy();
 	}
 

@@ -67,7 +67,7 @@ public class FileManageApi {
 				postParams.put(Const.FILE, finalPath);
 
 				try {
-					String responseBody = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(context), postParams, new ProgressBarListeners() {
+					String responseBody = NetworkManagement.httpPostFileRequest(SpikaEnterpriseApp.getSharedPreferences(), postParams, new ProgressBarListeners() {
 
 						@Override
 						public void onSetMax(long total) {
@@ -150,7 +150,7 @@ public class FileManageApi {
 				getParams.put(Const.FILE_ID, fileId);
 
 				try {
-					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context).getToken(), Const.F_USER_GET_FILE, getParams);
+					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences().getToken(), Const.F_USER_GET_FILE, getParams);
 					InputStream is = response.byteStream();
 
 					File file;
@@ -269,7 +269,7 @@ public class FileManageApi {
 
 				try {
 
-					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences(context).getToken(), Const.F_USER_GET_FILE, getParams);
+					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences().getToken(), Const.F_USER_GET_FILE, getParams);
 					InputStream is = response.byteStream();
 
 					if (JNAesCrypto.isEncryptionEnabled) {
