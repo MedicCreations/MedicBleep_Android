@@ -265,6 +265,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 				
 				holder.meViewImage.setImageDrawable(null);
+				holder.meViewImage.setTag(msg.isEncrypted());
 				imageLoaderSpice.displayImage(holder.meViewImage, msg.thumb_id, ImageLoaderSpice.NO_IMAGE);
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
@@ -318,6 +319,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, VideoActivity.class);
 						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						intent.putExtra(Const.IS_ENCRYPTED, msg.isEncrypted());
 						ctx.startActivity(intent);
 					}
 				});
@@ -359,7 +361,7 @@ public class MessagesAdapter extends BaseAdapter {
 						if (msg.isFailed()) {
 							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
 						} else {
-							new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+							new FileManageApi().startFileDownload(msg.isEncrypted(), msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
 						}
 					}
 				});
@@ -475,6 +477,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
 				holder.youViewImage.setImageDrawable(null);
+				holder.youViewImage.setTag(msg.isEncrypted());
 				imageLoaderSpice.displayImage(holder.youViewImage, msg.getThumb_id(), ImageLoaderSpice.NO_IMAGE);
 
 				holder.youViewImage.setVisibility(View.VISIBLE);
@@ -526,6 +529,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, VideoActivity.class);
 						intent.putExtra(Const.FILE_ID, msg.getFile_id());
+						intent.putExtra(Const.IS_ENCRYPTED, msg.isEncrypted());
 						ctx.startActivity(intent);
 					}
 				});
@@ -565,7 +569,7 @@ public class MessagesAdapter extends BaseAdapter {
 						if (msg.isFailed()) {
 							new AppDialog(ctx, false).setFailed(ctx.getResources().getString(R.string.e_error_not_decrypted));
 						} else {
-							new FileManageApi().startFileDownload(msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
+							new FileManageApi().startFileDownload(msg.isEncrypted(), msg.getText(), msg.getFile_id(), Integer.valueOf(msg.getId()), ctx);
 						}
 					}
 				});
@@ -689,7 +693,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), 0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 		});
 
@@ -697,7 +701,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 
 			@Override
@@ -728,7 +732,7 @@ public class MessagesAdapter extends BaseAdapter {
 		});
 	}
 
-	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
+	private void preformOnSoundClick(final boolean toCrypt, final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
 		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
 		if (sound.exists()) {
 			if (currentMediaPlayer == null) {
@@ -771,7 +775,7 @@ public class MessagesAdapter extends BaseAdapter {
 			isDownloadingSound = true;
 			totalOfDownload = -1;
 
-			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+			preformDownload(toCrypt, holder, playPause, seekControl, chronoControl, sound, fileId);
 		}
 	}
 
@@ -853,7 +857,7 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 	}
 
-	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
+	private void preformDownload(boolean toCrypt, RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
 		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
 		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
 		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
@@ -863,7 +867,7 @@ public class MessagesAdapter extends BaseAdapter {
 		playPause.setVisibility(View.INVISIBLE);
 		seekControl.setVisibility(View.INVISIBLE);
 		chronoControl.setVisibility(View.INVISIBLE);
-		new FileManageApi().downloadFileToFile(sound, fileId, false, ctx, new ApiCallback<String>() {
+		new FileManageApi().downloadFileToFile(toCrypt, sound, fileId, false, ctx, new ApiCallback<String>() {
 
 			@Override
 			public void onApiResponse(Result<String> result) {

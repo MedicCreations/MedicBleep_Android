@@ -36,6 +36,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -290,18 +291,10 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 
 	protected void onPhotoTaken(String path) {
 
-		if (mIsSamsung) {
-			String fileName = Uri.parse(path).getLastPathSegment();
-			mFilePath = path;
-			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
-		} else {
-			String fileName = Uri.parse(path).getLastPathSegment();
-			mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
-			mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
-		}
-
-		String[] items = mFilePath.split("/");
-		mFileName = items[items.length - 1];
+		String fileName = Uri.parse(path).getLastPathSegment();
+		mFilePath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName;
+		mFileThumbPath = CameraCropActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		mFileName = fileName;
 
 		if (!path.equals(mFilePath)) {
 			try {
@@ -392,6 +385,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 					canvas.drawBitmap(tempBitmap, middleX - tempBitmap.getWidth() / 2, middleY - tempBitmap.getHeight() / 2, null);
 
 					mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), mat, true);
+					
+					saveBitmapToFile(mBitmap, mFilePath);
 
 					return null;
 				} catch (Exception ex) {
@@ -479,30 +474,51 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		int id = view.getId();
 		if (id == R.id.btnSend) {
 			btnSend.setClickable(false);
+			
+			checkForEncryption();
 
-			if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
-				AppDialog compressionConfirmationDialog = new AppDialog(this, false);
-				compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
-				compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
-
-					@Override
-					public void onPositiveButtonClick(View v, Dialog d) {
-						prepareFileForUpload(compressFileBeforePrepare(cropImageView.getCroppedImage()));
-					}
-				});
-				compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
-
-					@Override
-					public void onNegativeButtonClick(View v, Dialog d) {
-						prepareFileForUpload(cropImageView.getCroppedImage());
-					}
-				});
-			} else {
-				prepareFileForUpload(cropImageView.getCroppedImage());
-			}
 		} else if (id == R.id.btnCancel) {
 			finish();
 		}
+	}
+	
+	private void checkForEncryption(){
+		if (!getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+			
+			afterCheck(true);
+			
+		} else{
+			Utils.checkForEncryption(this, null, new OnCheckEncryptionListener() {
+				
+				@Override
+				public void onCheckFinish(String path, final boolean toCrypt) {
+					afterCheck(toCrypt);
+				}
+			});
+		}
+	}
+
+	private void afterCheck(final boolean toCrypt) {
+		if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+			AppDialog compressionConfirmationDialog = new AppDialog(CameraCropActivity.this, false);
+			compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
+			compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+
+				@Override
+				public void onPositiveButtonClick(View v, Dialog d) {
+					prepareFileForUpload(compressFileBeforePrepare(cropImageView.getCroppedImage()), toCrypt);
+				}
+			});
+			compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+
+				@Override
+				public void onNegativeButtonClick(View v, Dialog d) {
+					prepareFileForUpload(cropImageView.getCroppedImage(), toCrypt);
+				}
+			});
+		} else {
+			prepareFileForUpload(cropImageView.getCroppedImage(), toCrypt);
+		}		
 	}
 
 	private Bitmap compressFileBeforePrepare(Bitmap bmp) {
@@ -519,29 +535,29 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		return Bitmap.createScaledBitmap(bmp, dstWidth, dstHeight, false);
 	}
 
-	private void prepareFileForUpload(Bitmap bmp) {
+	private void prepareFileForUpload(Bitmap bmp, boolean toCrypt) {
 
 		ByteArrayOutputStream bs = new ByteArrayOutputStream();
 		bmp.compress(Bitmap.CompressFormat.JPEG, 100, bs);
 
 		if (saveBitmapToFile(bmp, mFilePath)) {
 			createThumb(mFileThumbPath, bmp);
-			fileUploadAsync(mFilePath, mFileThumbPath);
+			fileUploadAsync(mFilePath, mFileThumbPath, toCrypt);
 		} else {
 			AppDialog dialog = new AppDialog(this, true);
 			dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
 		}
 	}
 
-	private void fileUploadAsync(String filePath, final String thumbPath) {
+	private void fileUploadAsync(String filePath, final String thumbPath, final boolean toCrypt) {
 
-		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+		new FileManageApi().uploadFile(toCrypt, filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 
 				if (result.isSuccess()) {
-					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
+					thumbUploadAsync(thumbPath, result.getResultData().getFileId(), toCrypt);
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
@@ -553,8 +569,8 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		});
 	}
 
-	private void thumbUploadAsync(final String thumbPath, final String fileId) {
-		new FileManageApi().uploadFile(thumbPath, this, true, new ApiCallback<UploadFileModel>() {
+	private void thumbUploadAsync(final String thumbPath, final String fileId, final boolean toCrypt) {
+		new FileManageApi().uploadFile(toCrypt, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
@@ -571,7 +587,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 						}
 					} else if (getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
 						// send message
-						sendMessage(fileId, result.getResultData().getFileId());
+						sendMessage(fileId, result.getResultData().getFileId(), toCrypt);
 					} else if (getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// update user
 						updateUser(fileId, result.getResultData().getFileId());
@@ -590,13 +606,19 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		});
 	}
 
-	private void sendMessage(final String fileId, final String thumbId) {
+	private void sendMessage(final String fileId, final String thumbId, boolean toCrypt) {
 
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId);
+		
+		String attributes = null;
+		if(!toCrypt){
+			attributes = "{\"encrypted\":\"0\"}";
+		}
+		
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(attributes, Const.MSG_TYPE_PHOTO, chatId, mFileName, fileId, thumbId, null, null, rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override

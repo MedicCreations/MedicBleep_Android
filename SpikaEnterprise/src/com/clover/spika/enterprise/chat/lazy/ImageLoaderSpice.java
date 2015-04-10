@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -168,6 +169,10 @@ public class ImageLoaderSpice {
 		public Bitmap loadDataFromNetwork() throws Exception {
 			
 			Logger.i("Downloading image: " + fileId);
+			if(imageView.getTag() != null) {
+				Logger.custom("w", "LOG", "ID: " + fileId);
+				Logger.custom("i", "LOG", "Is image encrypted: " + imageView.getTag().toString());
+			}
 
 			// Check if image already downloaded
 			if (isImageViewReused(imageView, fileId)) {
@@ -201,7 +206,11 @@ public class ImageLoaderSpice {
 
 			} else {
 				try {
-					JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
+					if(imageView.getTag() != null && !(Boolean)imageView.getTag()){
+						Helper.copyStream(resBody.byteStream(), new FileOutputStream(file));
+					}else{
+						JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
+					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

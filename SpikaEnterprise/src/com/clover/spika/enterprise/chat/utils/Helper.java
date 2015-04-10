@@ -622,11 +622,17 @@ public class Helper {
 		column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
 		column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 		cursor.moveToLast();
-		while (cursor.moveToPrevious()) {
+		do{
+			if(cursor.getCount() == 0) {
+				break;
+			}
+			
 			absolutePathOfImage = cursor.getString(column_index_data);
 
 			listOfAllImages.add(absolutePathOfImage);
 		}
+		while (cursor.moveToPrevious());
+		
 		return listOfAllImages;
 	}
 

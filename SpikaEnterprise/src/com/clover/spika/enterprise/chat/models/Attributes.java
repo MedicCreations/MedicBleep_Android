@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Attributes implements Parcelable {
 	private String textType;
+	private String encrypted;
 
 	public Attributes() {
 	}
@@ -19,9 +20,18 @@ class Attributes implements Parcelable {
 	public void setTextType(String textType) {
 		this.textType = textType;
 	}
+	
+	public String getEncrypted() {
+		return encrypted;
+	}
+
+	public void setEncrypted(String encrypted) {
+		this.encrypted = encrypted;
+	}
 
 	protected Attributes(Parcel in) {
 		textType = in.readString();
+		encrypted = in.readString();
 	}
 
 	@Override
@@ -32,6 +42,7 @@ class Attributes implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(textType);
+		dest.writeString(encrypted);
 	}
 
 	public static final Parcelable.Creator<Attributes> CREATOR = new Parcelable.Creator<Attributes>() {

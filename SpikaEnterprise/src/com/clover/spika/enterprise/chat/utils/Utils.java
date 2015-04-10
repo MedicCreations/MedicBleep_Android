@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -60,11 +61,13 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.octo.android.robospice.exception.NoNetworkException;
@@ -465,7 +468,7 @@ public class Utils {
 		onFailedUniversal(message, ctx, code, finishActivity, null, null);
 	}
 	
-	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity, SpiceException ex, OnInternetErrorListener listener) {
+	public static void onFailedUniversal(String message, final Context ctx, final int code, final boolean finishActivity, SpiceException ex, OnInternetErrorListener listener) {
 
 		if(ex != null && ex instanceof NoNetworkException){
 			if(listener != null){
@@ -492,7 +495,7 @@ public class Utils {
 
 					Intent intent = new Intent(ctx, LoginActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					if (finishActivity) {
+					if (finishActivity || code == Const.E_INVALID_TOKEN || code == Const.E_EXPIRED_TOKEN) {
 						ctx.startActivity(intent);
 					}
 				}
@@ -694,6 +697,32 @@ public class Utils {
 		}
 		return bmpUri;
 	}
+	
+	/**
+	 * Checks for encryption
+	 * 
+	 * @return
+	 */
+	
+	public static void checkForEncryption(Context con, final String mFilePath2, final OnCheckEncryptionListener lisetner) {
+		AppDialog dialog = new AppDialog(con, false);
+		dialog.setYesNo("Do you want to encrypt file?", "YES", "NO");
+		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+			
+			@Override
+			public void onPositiveButtonClick(View v, Dialog d) {
+				lisetner.onCheckFinish(mFilePath2, true);
+			}
+		});
+		dialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+			
+			@Override
+			public void onNegativeButtonClick(View v, Dialog d) {
+				lisetner.onCheckFinish(mFilePath2, false);
+			}
+		});
+	}
+	
 
 	/**
 	 * Checks whether this app has mobile or wireless internet connection

@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
@@ -30,6 +30,7 @@ import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -92,18 +93,11 @@ public class RecordAudioActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				new FileManageApi().uploadFile(mFilePath, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
-
-					@Override
-					public void onApiResponse(Result<UploadFileModel> result) {
-						if (result.isSuccess()) {
-							sendMsg(result.getResultData().getFileId());
-						} else {
-							AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
-							dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
-						}
-					}
-				});
+				try {
+					checkForEncryption(mFilePath);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -465,13 +459,52 @@ public class RecordAudioActivity extends BaseActivity {
 		mRecordingTimer = null;
 		super.onDestroy();
 	}
+	
+	private void checkForEncryption(final String mFilePath2) throws FileNotFoundException {
+		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+			
+			@Override
+			public void onCheckFinish(String path, boolean toCrypt) {
+				try {
+					uploadAudio(mFilePath2, toCrypt);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	private void uploadAudio(String filePath, final boolean toCrypt) throws FileNotFoundException {
+		uploadAudioAsync(filePath, toCrypt);
+	}
+	
+	private void uploadAudioAsync(String path, final boolean toCypt) {
+		new FileManageApi().uploadFile(toCypt, mFilePath, RecordAudioActivity.this, true, new ApiCallback<UploadFileModel>() {
 
-	private void sendMsg(String fileId) {
+			@Override
+			public void onApiResponse(Result<UploadFileModel> result) {
+				if (result.isSuccess()) {
+					sendMsg(result.getResultData().getFileId(), toCypt);
+				} else {
+					AppDialog dialog = new AppDialog(RecordAudioActivity.this, false);
+					dialog.setFailed(getResources().getString(R.string.e_error_uploading_file));
+				}
+			}
+		});
+	}
+
+	private void sendMsg(String fileId, boolean toCrypt) {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), mFileName, fileId, null, null, null,
+		
+		String attributes = null;
+		if(!toCrypt){
+			attributes = "{\"encrypted\":\"0\"}";
+		}
+		
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(attributes, Const.MSG_TYPE_VOICE, getIntent().getExtras().getString(Const.CHAT_ID), mFileName, fileId, null, null, null,
 				rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 

@@ -29,6 +29,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -86,7 +87,7 @@ public class RecordVideoActivity extends BaseActivity {
 				try {
 					String[] items = mFilePath.split("/");
 					mFileName = items[items.length - 1];
-					uploadVideo(mFilePath);
+					checkForEncryption(mFilePath);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -127,12 +128,18 @@ public class RecordVideoActivity extends BaseActivity {
 
 	}
 
-	private void sendMsg(String fileId) {
+	private void sendMsg(String fileId, final boolean toCrypt) {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId);
+		
+		String attributes = null;
+		if(!toCrypt){
+			attributes = "{\"encrypted\":\"0\"}";
+		}
+		
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(attributes, Const.MSG_TYPE_VIDEO, chatId, mFileName, fileId, null, null, null, rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -156,22 +163,36 @@ public class RecordVideoActivity extends BaseActivity {
 			}
 		});
 	}
+	
+	private void checkForEncryption(final String mFilePath2) throws FileNotFoundException {
+		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+			
+			@Override
+			public void onCheckFinish(String path, boolean toCrypt) {
+				try {
+					uploadVideo(path, toCrypt);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-	private void uploadVideo(String filePath) throws FileNotFoundException {
+	private void uploadVideo(String filePath, final boolean toCrypt) throws FileNotFoundException {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-			uploadVideoAsync(filePath);
+			uploadVideoAsync(filePath, toCrypt);
 		} else {
 			new BaseChatActivity.BuildTempFileAsync(this, getVideoName(Uri.parse(filePath)), new BaseChatActivity.OnTempFileCreatedListener() {
 				@Override
 				public void onTempFileCreated(String path, String name) {
-					uploadVideoAsync(path);
+					uploadVideoAsync(path, toCrypt);
 				}
 			}).execute(getContentResolver().openInputStream(Uri.parse(filePath)));
 		}
 	}
 
-	private void uploadVideoAsync(String path) {
-		new FileManageApi().uploadFile(path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
+	private void uploadVideoAsync(String path, final boolean toCypt) {
+		new FileManageApi().uploadFile(toCypt, path, RecordVideoActivity.this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
@@ -181,7 +202,7 @@ public class RecordVideoActivity extends BaseActivity {
 						ChooseLobbyActivity.start(RecordVideoActivity.this, result.getResultData().getFileId());
 						finish();
 					} else {
-						sendMsg(result.getResultData().getFileId());
+						sendMsg(result.getResultData().getFileId(), toCypt);
 					}
 				} else {
 					AppDialog dialog = new AppDialog(RecordVideoActivity.this, true);

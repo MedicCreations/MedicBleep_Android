@@ -585,6 +585,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		holder.textViewUser.setText(node.getMessage().getName());
 		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
+		holder.imageViewPhoto.setTag(node.getMessage().isEncrypted());
 		imageLoaderSpice.displayImage(holder.imageViewPhoto, node.getMessage().getThumb_id(), 0);
 		holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
 
@@ -827,7 +828,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void onClick(View v) {
 			Message message = (Message) v.getTag(R.id.tag_file_id);
 			if (message != null) {
-				new FileManageApi().startFileDownload(message.getText(), message.getFile_id(), Integer.valueOf(message.getId()), mContext);
+				new FileManageApi().startFileDownload(message.isEncrypted(), message.getText(), message.getFile_id(), Integer.valueOf(message.getId()), mContext);
 			}
 		}
 	};
@@ -892,7 +893,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), 0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 		});
 
@@ -900,7 +901,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 
 			@Override
@@ -931,7 +932,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		});
 	}
 
-	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
+	private void preformOnSoundClick(boolean isEncrypted, final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
 		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
 		if (sound.exists()) {
 			if (currentMediaPlayer == null) {
@@ -974,7 +975,7 @@ public class ThreadsAdapter extends BaseAdapter {
 			isDownloadingSound = true;
 			totalOfDownload = -1;
 
-			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+			preformDownload(isEncrypted, holder, playPause, seekControl, chronoControl, sound, fileId);
 		}
 	}
 
@@ -1056,7 +1057,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		}
 	}
 
-	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
+	private void preformDownload(boolean isEncrypted, RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
 		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
 		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
 		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
@@ -1066,7 +1067,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		playPause.setVisibility(View.INVISIBLE);
 		seekControl.setVisibility(View.INVISIBLE);
 		chronoControl.setVisibility(View.INVISIBLE);
-		new FileManageApi().downloadFileToFile(sound, fileId, false, mContext, new ApiCallback<String>() {
+		new FileManageApi().downloadFileToFile(isEncrypted, sound, fileId, false, mContext, new ApiCallback<String>() {
 
 			@Override
 			public void onApiResponse(Result<String> result) {

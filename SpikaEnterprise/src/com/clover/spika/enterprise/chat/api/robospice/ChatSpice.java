@@ -360,6 +360,7 @@ public class ChatSpice {
 		private String latitude;
 		private String rootId;
 		private String parentId;
+		private String attributes = null;
 
 		public SendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId,
 				String parentId) {
@@ -374,6 +375,22 @@ public class ChatSpice {
 			this.latitude = latitude;
 			this.rootId = rootId;
 			this.parentId = parentId;
+		}
+		
+		public SendMessage(String attributes, int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId,
+				String parentId) {
+			super(SendMessageResponse.class);
+
+			this.type = type;
+			this.chatId = chatId;
+			this.text = text;
+			this.fileId = fileId;
+			this.thumbId = thumbId;
+			this.longitude = longitude;
+			this.latitude = latitude;
+			this.rootId = rootId;
+			this.parentId = parentId;
+			this.attributes = attributes;
 		}
 
 		@Override
@@ -413,12 +430,16 @@ public class ChatSpice {
 			if (!TextUtils.isEmpty(parentId)) {
 				formBuilder.add(Const.PARENT_ID, parentId);
 			}
-
+			
+			if (!TextUtils.isEmpty(attributes)) {
+				formBuilder.add(Const.ATTRIBUTES, attributes);
+			}
+			
 			RequestBody formBody = formBuilder.build();
-
+			
 			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_SEND_MESSAGE)
 					.post(formBody);
-
+			
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();

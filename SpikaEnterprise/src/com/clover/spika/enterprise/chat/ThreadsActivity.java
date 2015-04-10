@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.ThreadCacheSpice;
 import com.clover.spika.enterprise.chat.caching.utils.DaoUtils;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseChatActivity;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
@@ -96,6 +97,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			});
 			
 			findViewById(R.id.settingsBtn).setVisibility(View.INVISIBLE);
+			setMenuByChatType(true);
 		}
 	}
 
@@ -257,9 +259,15 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 		}
 	}
 
-	private void sendFile(String fileName, String fileId) {
+	private void sendFile(boolean toCrypt, String fileName, String fileId) {
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null, mRootId, mMessageId);
+		
+		String attributes = null;
+		if(!toCrypt){
+			attributes = "{\"encrypted\":\"0\"}";
+		}
+		
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(attributes, Const.MSG_TYPE_FILE, chatId, fileName, fileId, null, null, null, mRootId, mMessageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
@@ -324,22 +332,41 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 	@Override
 	protected void onFileSelected(int result, final String fileName, String filePath) {
 		if (result == RESULT_OK) {
-			new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
-				@Override
-				public void onApiResponse(Result<UploadFileModel> result) {
-					if (result.isSuccess()) {
-						sendFile(fileName, result.getResultData().getFileId());
+			checkForEncryption(filePath, fileName);
+		} else if (result == RESULT_CANCELED) {
+		} else {
+			AppDialog dialog = new AppDialog(this, false);
+			dialog.setFailed(getResources().getString(R.string.e_while_encrypting));
+		}
+	}
+	
+	private void checkForEncryption(final String mFilePath2, final String fileName) {
+		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+			
+			@Override
+			public void onCheckFinish(String path, boolean toCrypt) {
+				uploadFile(mFilePath2, fileName, toCrypt);
+			}
+		});
+	}
+	
+	private void uploadFile(final String filePath, final String fileName, final boolean toCrypt){
+		new FileManageApi().uploadFile(toCrypt, filePath, this, true, new ApiCallback<UploadFileModel>() {
+
+			@Override
+			public void onApiResponse(Result<UploadFileModel> result) {
+				if (result.isSuccess()) {
+					sendFile(toCrypt, fileName, result.getResultData().getFileId());
+				} else {
+					AppDialog dialog = new AppDialog(ThreadsActivity.this, false);
+					if (result.hasResultData()) {
+						dialog.setFailed(result.getResultData().getMessage());
 					} else {
-						AppDialog dialog = new AppDialog(ThreadsActivity.this, false);
-						if (result.hasResultData()) {
-							dialog.setFailed(result.getResultData().getMessage());
-						} else {
-							dialog.setFailed("");
-						}
+						dialog.setFailed(Helper.errorDescriptions(getApplicationContext(), result.getResultData().getCode()));
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
 	@Override

@@ -254,6 +254,23 @@ public class Message implements Parcelable {
 	public void setUserExpandContent(boolean isUserExpandContent) {
 		this.isUserExpandContent = isUserExpandContent;
 	}
+	
+	public boolean isEncrypted(){
+		if(TextUtils.isEmpty(attributes)){
+			return true;
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			Attributes result = mapper.readValue(attributes, Attributes.class);
+			if(result.getEncrypted().equals("0")){
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 
 	@Override
 	public int hashCode() {
@@ -299,10 +316,13 @@ public class Message implements Parcelable {
 			return false;
 		if (modified != null ? !modified.equals(message.modified) : message.modified != null)
 			return false;
+		if (type != message.type)
+			return false;
 		
 		return true;
 	}
 
+	
 	
 
 	@Override

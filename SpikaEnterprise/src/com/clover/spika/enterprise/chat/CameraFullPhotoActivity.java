@@ -37,6 +37,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
+import com.clover.spika.enterprise.chat.listeners.OnCheckEncryptionListener;
 import com.clover.spika.enterprise.chat.models.Result;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
@@ -231,24 +232,17 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 				break;
 			}
 		} else {
-
 			// if there is no image, just finish the activity
 			finish();
 		}
 	}
 
 	protected void onPhotoTaken(String path) {
-
-		if (mIsSamsung) {
-			String fileName = Uri.parse(path).getLastPathSegment();
-			mFilePath = path;
-			mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
-		} else {
-			String fileName = Uri.parse(path).getLastPathSegment();
-			mFilePath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName;
-			mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
-		}
-
+		
+		String fileName = Uri.parse(path).getLastPathSegment();
+		mFilePath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName;
+		mFileThumbPath = CameraFullPhotoActivity.this.getExternalCacheDir() + "/" + fileName + "_thumb";
+		
 		if (!path.equals(mFilePath)) {
 			try {
 				Helper.copyStream(new FileInputStream(new File(path)), new FileOutputStream(new File(mFilePath)));
@@ -257,16 +251,6 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 			}
 		}
 		
-		// File f = new File(mFilePath);
-		// try {
-		// Bitmap tempBitmap = BitmapFactory.decodeStream(new
-		// FileInputStream(f));
-		// mBitmap = tempBitmap;
-		// mImageView.setImageBitmap(mBitmap);
-		// } catch (FileNotFoundException e) {
-		// e.printStackTrace();
-		// }
-
 		new BaseAsyncTask<String, Void, byte[]>(this, false) {
 
 			@Override
@@ -433,31 +417,52 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		int id = view.getId();
 		if (id == R.id.btnSend) {
 			btnSend.setClickable(false);
+			
+			checkForEncryption();
 
-			if (mCompressImages) {
-				AppDialog compressionConfirmationDialog = new AppDialog(this, false);
-				compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
-				compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
-
-					@Override
-					public void onPositiveButtonClick(View v, Dialog d) {
-						compressFileBeforePrepare();
-						prepareFileForUpload();
-					}
-				});
-				compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
-
-					@Override
-					public void onNegativeButtonClick(View v, Dialog d) {
-						prepareFileForUpload();
-					}
-				});
-			} else {
-				resizeTo1280();
-				prepareFileForUpload();
-			}
 		} else if (id == R.id.btnCancel) {
 			finish();
+		}
+	}
+	
+	private void checkForEncryption(){
+		if (!getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+			
+			afterCheck(true);
+			
+		} else{
+			Utils.checkForEncryption(this, null, new OnCheckEncryptionListener() {
+				
+				@Override
+				public void onCheckFinish(String path, final boolean toCrypt) {
+					afterCheck(toCrypt);
+				}
+			});
+		}
+	}
+	
+	private void afterCheck(final boolean toCrypt){
+		if (mCompressImages && getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+			AppDialog compressionConfirmationDialog = new AppDialog(CameraFullPhotoActivity.this, false);
+			compressionConfirmationDialog.setYesNo(getString(R.string.compression_confirmation_question), getString(R.string.yes), getString(R.string.no));
+			compressionConfirmationDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+
+				@Override
+				public void onPositiveButtonClick(View v, Dialog d) {
+					compressFileBeforePrepare();
+					prepareFileForUpload(toCrypt);
+				}
+			});
+			compressionConfirmationDialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+
+				@Override
+				public void onNegativeButtonClick(View v, Dialog d) {
+					prepareFileForUpload(toCrypt);
+				}
+			});
+		} else {
+			resizeTo1280();
+			prepareFileForUpload(toCrypt);
 		}
 	}
 
@@ -478,26 +483,26 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		mBitmap = Utils.scaleBitmapTo1280(mFilePath, 1280);
 	}
 
-	void prepareFileForUpload() {
+	void prepareFileForUpload(boolean toCrypt) {
 		Bitmap resizedBitmap = mBitmap;
 		ByteArrayOutputStream bs = new ByteArrayOutputStream();
 		resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bs);
 		if (saveBitmapToFile(resizedBitmap, mFilePath)) {
 			createThumb(mFileThumbPath, resizedBitmap);
-			fileUploadAsync(mFilePath, mFileThumbPath);
+			fileUploadAsync(mFilePath, mFileThumbPath, toCrypt);
 		} else {
 			AppDialog dialog = new AppDialog(this, true);
 			dialog.setFailed(getResources().getString(R.string.e_failed_while_sending));
 		}
 	}
 
-	private void fileUploadAsync(String filePath, final String thumbPath) {
-		new FileManageApi().uploadFile(filePath, this, true, new ApiCallback<UploadFileModel>() {
+	private void fileUploadAsync(String filePath, final String thumbPath, final boolean toCrypt) {
+		new FileManageApi().uploadFile(toCrypt, filePath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
 				if (result.isSuccess()) {
-					thumbUploadAsync(thumbPath, result.getResultData().getFileId());
+					thumbUploadAsync(thumbPath, result.getResultData().getFileId(), toCrypt);
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraFullPhotoActivity.this, true);
@@ -509,8 +514,8 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		});
 	}
 
-	private void thumbUploadAsync(final String thumbPath, final String fileId) {
-		new FileManageApi().uploadFile(thumbPath, this, true, new ApiCallback<UploadFileModel>() {
+	private void thumbUploadAsync(final String thumbPath, final String fileId, final boolean toCrypt) {
+		new FileManageApi().uploadFile(toCrypt, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
@@ -528,7 +533,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 						finish();
 					} else if (!getIntent().getBooleanExtra(Const.PROFILE_INTENT, false)) {
 						// send message
-						sendMessage(fileId, result.getResultData().getFileId());
+						sendMessage(fileId, result.getResultData().getFileId(), toCrypt);
 					} else {
 						// update user
 						updateUser(fileId, result.getResultData().getFileId());
@@ -543,12 +548,18 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 		});
 	}
 
-	private void sendMessage(final String fileId, final String thumbId) {
+	private void sendMessage(final String fileId, final String thumbId, final boolean toCrypt) {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
 		handleProgress(true);
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId);
+		
+		String attributes = null;
+		if(!toCrypt){
+			attributes = "{\"encrypted\":\"0\"}";
+		}
+		
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(attributes, Const.MSG_TYPE_PHOTO, chatId, null, fileId, thumbId, null, null, rootId, messageId);
 		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override

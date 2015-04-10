@@ -183,6 +183,7 @@ public class Const {
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
 
+	public static final String ATTRIBUTES = "attributes";
 	public static final String IMAGE = "image";
 	public static final String IMAGE_THUMB = "image_thumb";
 	public static final String USER_ID = "user_id";
@@ -392,5 +393,7 @@ public class Const {
 		public static final String CALL_UNMUTE = "unmute";
 		public static final String CALL_MUTE_REMOTE_VIDEO = "muteRemoteVideo";
 	}
+	
+	public static final String IS_ENCRYPTED = "isEncrypted";
 
 }

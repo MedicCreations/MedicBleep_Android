@@ -361,16 +361,12 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		iconToBeChanged.setImageResource(drawableResourceId);
 	}
 
-	protected void setMenuByChatType() {
+	protected void setMenuByChatType(boolean isThread) {
 		if (!isMenuSetted) {
 			isMenuSetted = true;
-			if (chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
-																									// call
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
-																									// divider
-																									// above
-																									// call
+			if (isThread || chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove call
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove divider above call
 				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 344);
 				drawerNewHeight = Helper.dpToPx(this, 344);
 				rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1).setBackgroundResource(R.drawable.trans_to_gray_with_bottom_corners);
@@ -506,7 +502,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 									if (path.equals("camera")) {
 										openCamera();
 									} else {
-										openPathCropActivity(path);
+										openPathActivity(path);
 									}
 								}
 							});
@@ -937,7 +933,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		startActivity(intent);
 	}
 
-	void openPathCropActivity(String path) {
+	void openPathActivity(String path) {
 		Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 		intent.putExtra(Const.INTENT_TYPE, Const.PATH_INTENT);
 		intent.putExtra(Const.FROM_WAll, true);

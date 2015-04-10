@@ -1,5 +1,15 @@
 package com.clover.spika.enterprise.chat.api;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,6 +18,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -24,15 +35,6 @@ import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.ResponseBody;
-
-import org.json.JSONException;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
 
 public class FileManageApi {
 
@@ -194,12 +196,14 @@ public class FileManageApi {
 							public void onFinish() {
 								progressBar.dismiss();
 
-								((Activity) context).runOnUiThread(new Runnable() {
-									public void run() {
-										progressBar = new AppProgressDialogWithBar(ctx);
-										progressBar.showDecrypting();
-									}
-								});
+								if(isCrypted){
+									((Activity) context).runOnUiThread(new Runnable() {
+										public void run() {
+											progressBar = new AppProgressDialogWithBar(ctx);
+											progressBar.showDecrypting();
+										}
+									});
+								}
 							}
 						});
 
@@ -215,9 +219,10 @@ public class FileManageApi {
 					if(isCrypted){
 						finalFilePath = Utils.handleFileDecryptionToPath(file.getAbsolutePath(), destFile.getAbsolutePath(), context);
 					}else{
-						finalFilePath = file.getAbsolutePath();
+						Helper.copyStream(new FileInputStream(file), new FileOutputStream(destFile));
+						finalFilePath = destFile.getAbsolutePath();
 					}
-
+					
 					return finalFilePath;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -250,7 +255,7 @@ public class FileManageApi {
 		}.execute();
 	}
 
-	public void startFileDownload(final String fileName, final String fileId, final int id, Context ctx) {
+	public void startFileDownload(final boolean isEncrypted, final String fileName, final String fileId, final int id, Context ctx) {
 		new BaseAsyncTask<Void, Void, Void>(ctx, false) {
 
 			private NotificationManager mNotifyManager;
@@ -273,13 +278,16 @@ public class FileManageApi {
 				mBuilder.setProgress(0, 0, true);
 				mNotifyManager.notify(id, mBuilder.build());
 
-				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY, Const.APP_FILED_DOWNLOADS);
+				Log.d("LOG", "FILENAME: " + fileName);
+				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS);
+				Log.w("LOG", "FILE-1: " + downloadedFile.getAbsolutePath());
 
 				if (!downloadedFile.exists()) {
 					downloadedFile.mkdir();
 				}
 
-				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory() + "/" + Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS, fileName);
+				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS + "/" + fileName);
+				Log.e("LOG", "FILE: " + downloadedFile.getAbsolutePath());
 			};
 
 			protected Void doInBackground(Void... paramss) {
@@ -292,9 +300,11 @@ public class FileManageApi {
 					ResponseBody response = NetworkManagement.httpGetGetFile(SpikaEnterpriseApp.getSharedPreferences().getToken(), Const.F_USER_GET_FILE, getParams);
 					InputStream is = response.byteStream();
 
-					if (JNAesCrypto.isEncryptionEnabled) {
+					if (JNAesCrypto.isEncryptionEnabled && isEncrypted) {
+						Log.i("LOG", "FILE2: " + downloadedFile.getAbsolutePath());
 						JNAesCrypto.decryptIs(is, downloadedFile, context);
 					} else {
+						Log.i("LOG", "FILE2: " + downloadedFile.getAbsolutePath());
 						OutputStream os = new FileOutputStream(downloadedFile.getAbsolutePath());
 						Helper.copyStream(is, os);
 						os.close();
