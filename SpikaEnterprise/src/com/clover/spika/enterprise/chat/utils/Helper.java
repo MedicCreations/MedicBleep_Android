@@ -636,4 +636,21 @@ public class Helper {
 		return listOfAllImages;
 	}
 
+	//***** Username & Password ******
+	
+	public static String getUsername () {
+		return SpikaEnterpriseApp.getSharedPreferences().getEncryptedString(Const.USERNAME);
+	}
+	
+	public static void setUsername (String username) {
+		SpikaEnterpriseApp.getSharedPreferences().setEncryptedString(Const.USERNAME, username);
+	}
+	
+	public static String getPassword () {
+		return SpikaEnterpriseApp.getSharedPreferences().getEncryptedString(Const.PASSWORD);
+	}
+	
+	public static void setPassword (String password) {
+		SpikaEnterpriseApp.getSharedPreferences().setEncryptedString(Const.PASSWORD, password);
+	}
 }

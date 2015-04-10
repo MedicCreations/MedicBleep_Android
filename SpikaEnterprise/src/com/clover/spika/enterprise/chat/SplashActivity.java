@@ -7,6 +7,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -76,8 +77,7 @@ public class SplashActivity extends LoginBaseActivity {
 
 		try {
 			
-			executePreLoginApi(SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.USERNAME),
-					SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PASSWORD), extras, false);
+			executePreLoginApi(Helper.getUsername(), Helper.getPassword(), extras, false);
 			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

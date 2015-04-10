@@ -105,6 +105,7 @@
     <string name="spika_big">SPIKA ENTERPRISE</string>
     <string name="spika_enterprise">Enterprise Messaging</string>
     <string name="username">Username</string>
+    <string name="username_or_email">Username or Email</string>
     <string name="new_password">Enter a new password</string>
     <string name="change_password_title">Change password</string>
     <string name="re_type_password">Re-type a new password</string>

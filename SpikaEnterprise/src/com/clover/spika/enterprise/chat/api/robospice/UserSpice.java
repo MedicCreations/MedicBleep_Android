@@ -18,6 +18,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
@@ -276,9 +277,9 @@ public class UserSpice {
 
 					SpikaEnterpriseApp.getSharedPreferences().setUserTokenId(login.getToken());
 					if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
-						SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, newPassword);
+						Helper.setPassword(newPassword);
 					} else {
-						SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PASSWORD, "");
+						Helper.setPassword(null);
 					}
 				}
 			}

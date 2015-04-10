@@ -42,7 +42,6 @@ public class Const {
 	public static final String PUSH_TOKEN_LOCAL = "PushTokenLocal";
 	public static final int ADMIN_REQUEST = 900;
 
-	public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
 	public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
 
 	// Timestamp
