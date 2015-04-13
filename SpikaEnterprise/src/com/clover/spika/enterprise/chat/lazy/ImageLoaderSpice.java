@@ -18,7 +18,6 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -187,16 +186,16 @@ public class ImageLoaderSpice {
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
-			ResponseBody resBody = res.body();
+			final ResponseBody resBody = res.body();
 
-			File file = fileCache.getFile(fileId);
+			final File file = fileCache.getFile(fileId);
 
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 
 			Bitmap bitmap = null;
-
+			
 			if (fileId.startsWith("http")) {
 
 				FileOutputStream fos = new FileOutputStream(file);
@@ -205,14 +204,13 @@ public class ImageLoaderSpice {
 				fos.close();
 
 			} else {
-				try {
-					if(imageView.getTag() != null && !(Boolean)imageView.getTag()){
-						Helper.copyStream(resBody.byteStream(), new FileOutputStream(file));
-					}else{
-						JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
+				if(imageView.getTag() != null && !(Boolean)imageView.getTag()){
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(resBody.bytes());
+					fos.flush();
+					fos.close();
+				}else{
+					JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
 				}
 			}
 

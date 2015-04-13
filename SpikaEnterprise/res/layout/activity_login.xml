@@ -50,7 +50,7 @@
                 android:layout_alignTop="@+id/usernameImg"
                 android:layout_toRightOf="@+id/usernameImg"
                 android:background="@null"
-                android:hint="@string/username_or_email"
+                android:hint="@string/username"
                 android:maxLines="1"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"

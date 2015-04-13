@@ -233,7 +233,10 @@ public class Message implements Parcelable {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			Attributes result = mapper.readValue(attributes, Attributes.class);
-			if(result.getTextType().equals("code")){
+			if(result.getTextType() == null){
+				isTextCodeStyle = false;
+				return;
+			}else if(result.getTextType().equals("code")){
 				isTextCodeStyle = true;
 				return;
 			}

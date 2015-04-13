@@ -263,7 +263,7 @@ public class ThreadsAdapter extends BaseAdapter {
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
-		}
+		}	
 
 		TreeNode node = mMessageList.get(position);
 
@@ -585,9 +585,9 @@ public class ThreadsAdapter extends BaseAdapter {
 		holder.textViewUser.setText(node.getMessage().getName());
 		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
-		holder.imageViewPhoto.setTag(node.getMessage().isEncrypted());
 		imageLoaderSpice.displayImage(holder.imageViewPhoto, node.getMessage().getThumb_id(), 0);
 		holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+//		holder.imageViewPhoto.setTag(R.id.tag_is_encrypted, node.getMessage().isEncrypted());
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -780,8 +780,10 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void onClick(View v) {
 			if (v.getTag(R.id.tag_file_id) != null) {
 				String fileId = (String) v.getTag(R.id.tag_file_id);
+				boolean isEncrypted = (boolean) v.getTag(R.id.tag_is_encrypted);
 				Intent photoIntent = new Intent(mContext, PhotoActivity.class);
 				photoIntent.putExtra(Const.IMAGE, fileId);
+				photoIntent.putExtra(Const.IS_ENCRYPTED, isEncrypted);
 				mContext.startActivity(photoIntent);
 			}
 		}

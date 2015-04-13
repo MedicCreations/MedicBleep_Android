@@ -9,6 +9,7 @@ import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 public class Preferences {
 
@@ -99,6 +100,9 @@ public class Preferences {
 	public String getEncryptedString(String key, SharedPreferences preferences) {
 		String encrypted = preferences.getString(md5(key), "");
 		String decrypted;
+		if(TextUtils.isEmpty(encrypted)) {
+			return "";
+		}
 		try {
 			decrypted = JNAesCrypto.decryptJN(encrypted);
 		} catch (Exception e) {

@@ -570,7 +570,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	}
 
 	private void thumbUploadAsync(final String thumbPath, final String fileId, final boolean toCrypt) {
-		new FileManageApi().uploadFile(toCrypt, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
+		new FileManageApi().uploadFile(true, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {

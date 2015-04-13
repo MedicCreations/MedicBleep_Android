@@ -166,7 +166,9 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youViewForReadMore.setOnClickListener(null);
 
 		holder.meViewImage.setVisibility(View.GONE);
+		holder.meViewImage.setTag(null);
 		holder.youViewImage.setVisibility(View.GONE);
+		holder.youViewImage.setTag(null);
 
 		holder.meListenSound.setVisibility(View.GONE);
 		holder.youListenSound.setVisibility(View.GONE);
@@ -265,7 +267,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 				
 				holder.meViewImage.setImageDrawable(null);
-				holder.meViewImage.setTag(msg.isEncrypted());
+//				holder.meViewImage.setTag(msg.isEncrypted());
 				imageLoaderSpice.displayImage(holder.meViewImage, msg.thumb_id, ImageLoaderSpice.NO_IMAGE);
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
@@ -275,6 +277,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getFile_id());
+						intent.putExtra(Const.IS_ENCRYPTED, msg.isEncrypted());
 						ctx.startActivity(intent);
 						if (ctx instanceof ChatActivity)
 							((ChatActivity) ctx).setIsResume(false);
@@ -477,7 +480,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 
 				holder.youViewImage.setImageDrawable(null);
-				holder.youViewImage.setTag(msg.isEncrypted());
+//				holder.youViewImage.setTag(msg.isEncrypted());
 				imageLoaderSpice.displayImage(holder.youViewImage, msg.getThumb_id(), ImageLoaderSpice.NO_IMAGE);
 
 				holder.youViewImage.setVisibility(View.VISIBLE);
@@ -487,6 +490,7 @@ public class MessagesAdapter extends BaseAdapter {
 					public void onClick(View v) {
 						Intent intent = new Intent(ctx, PhotoActivity.class);
 						intent.putExtra(Const.IMAGE, msg.getFile_id());
+						intent.putExtra(Const.IS_ENCRYPTED, msg.isEncrypted());
 						ctx.startActivity(intent);
 						if (ctx instanceof ChatActivity)
 							((ChatActivity) ctx).setIsResume(false);

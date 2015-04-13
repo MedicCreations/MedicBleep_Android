@@ -92,6 +92,8 @@ public class PhotoActivity extends BaseActivity {
 				});
 			} else {
 				mImageView.setVisibility(View.GONE);
+				boolean isEncrypted = intent.getExtras().getBoolean(Const.IS_ENCRYPTED, true);
+				mImageView.setTag(isEncrypted);
 				getImageLoader().displayImage(mImageView, imageUrl, ImageLoaderSpice.NO_IMAGE, new OnImageDisplayFinishListener() {
 
 					@Override

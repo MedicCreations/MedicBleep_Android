@@ -8,7 +8,6 @@ import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.WebView;
 
 import com.clover.spika.enterprise.chat.R;
