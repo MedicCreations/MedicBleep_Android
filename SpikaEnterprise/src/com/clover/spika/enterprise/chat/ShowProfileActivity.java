@@ -112,11 +112,14 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 	}
 
 	protected void setData(UserWrapper user) {
+		listViewDetail.setAdapter(null);
 		adapter.setNewData(user.getUserDetailList(), user.getUser().getDetails(), true);
 
 		listViewDetail.removeHeaderView(header);
 		header = fillHeader(getLayoutInflater(), user);
 		listViewDetail.addHeaderView(header);
+		
+		listViewDetail.setAdapter(adapter);
 	}
 
 	private void setEditModeData() {
