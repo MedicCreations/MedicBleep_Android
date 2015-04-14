@@ -14,8 +14,8 @@ import android.widget.ImageView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.octo.android.robospice.SpiceManager;
@@ -32,6 +32,10 @@ public class GroupsAdapter extends BaseAdapter {
 		this.data.addAll(users);
 
 		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
+		imageLoaderSpice.setSpiceManager(manager);
+	}
+	
+	public void setSpiceManager(SpiceManager manager) {
 		imageLoaderSpice.setSpiceManager(manager);
 	}
 
@@ -66,13 +70,13 @@ public class GroupsAdapter extends BaseAdapter {
 		}
 		this.notifyDataSetChanged();
 	}
-	
-	public void manageData(int categoryId, String manageWith, List<GlobalModel> allData){
+
+	public void manageData(int categoryId, String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
 			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())
-					&& ((Chat) data.get(i).getModel()).category.id == categoryId) {
+					&& Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId) {
 				continue;
 			} else {
 				data.remove(i);
@@ -81,16 +85,16 @@ public class GroupsAdapter extends BaseAdapter {
 		}
 		this.notifyDataSetChanged();
 	}
-	
-	public void manageData(int categoryId, List<GlobalModel> allData){
+
+	public void manageData(int categoryId, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
-		if(categoryId < 1){
+		if (categoryId < 1) {
 			this.notifyDataSetChanged();
 			return;
 		}
 		for (int i = 0; i < data.size(); i++) {
-			if (((Chat) data.get(i).getModel()).category.id == categoryId) {
+			if (Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId) {
 				continue;
 			} else {
 				data.remove(i);

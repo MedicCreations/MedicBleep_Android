@@ -44,6 +44,8 @@ public class VideoActivity extends BaseActivity {
 	private Runnable mRunnForProgressBar;
 
 	private long mDurationOfVideo = 0;
+	
+	private boolean isEncrypted = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,12 +53,13 @@ public class VideoActivity extends BaseActivity {
 		setContentView(R.layout.activity_record_video);
 		
 		String fileId = getIntent().getExtras().getString(Const.FILE_ID);
+		isEncrypted = getIntent().getExtras().getBoolean(Const.IS_ENCRYPTED, true);
 		File videFile = new File(Utils.getFilesFolder() + "/" + fileId);
 
 		if(videFile.exists()){
 			sFileName = videFile.getAbsolutePath();
 		}else{
-			new FileManageApi().downloadFileToFile(videFile, fileId, true, this, new ApiCallback<String>() {
+			new FileManageApi().downloadFileToFile(isEncrypted, videFile, fileId, true, this, new ApiCallback<String>() {
 
 				@Override
 				public void onApiResponse(Result<String> result) {

@@ -2,6 +2,7 @@
 <resources>
     <!-- file upload -->
     <item name="tag_file_id" type="id" />
+    <item name="tag_is_encrypted" type="id" />
     <!-- locations -->
     <item name="tag_latitude" type="id" />
     <item name="tag_longitude" type="id" />

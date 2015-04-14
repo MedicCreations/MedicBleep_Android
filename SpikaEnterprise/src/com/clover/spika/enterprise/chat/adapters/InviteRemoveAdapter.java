@@ -25,6 +25,7 @@ import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
 import com.clover.spika.enterprise.chat.models.Group;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoCheckBox;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
@@ -56,6 +57,8 @@ public class InviteRemoveAdapter extends BaseAdapter {
 	private OnChangeListener<GlobalModel> changedListener;
 	private boolean showCheckBox = true;
 	private boolean disableNameClick = false;
+	
+	private boolean withoutMe = false;
 
 	public InviteRemoveAdapter(SpiceManager manager, Context context, List<GlobalModel> users, OnChangeListener<GlobalModel> listener, CustomFragment fragment) {
 		this.mContext = context;
@@ -83,6 +86,10 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		data.addAll(list);
 		handleHelperArrays();
 		notifyDataSetChanged();
+	}
+	
+	public void setWitoutMe(boolean withoutMe){
+		this.withoutMe = withoutMe;
 	}
 
 	private void handleHelperArrays() {
@@ -126,15 +133,24 @@ public class InviteRemoveAdapter extends BaseAdapter {
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
 			if (data.get(i).getModel() instanceof User) {
-				if (((User) data.get(i).getModel()).getFirstName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				String firstName = ((User) data.get(i).getModel()).getFirstName();
+				String lastName = ((User) data.get(i).getModel()).getLastName();
+				if (firstName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
-				} else if (((User) data.get(i).getModel()).getLastName().toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+				} else if (lastName.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
+					continue;
+				} else if ((firstName + " " + lastName).toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
 				} else {
 					data.remove(i);
 					i--;
 				}
 			} else if (data.get(i).getModel() instanceof Chat) {
+				if(((Chat) data.get(i).getModel()).chat_name == null) {
+					data.remove(i);
+					i--;
+					continue;
+				}
 				if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 					continue;
 				} else {
@@ -271,6 +287,12 @@ public class InviteRemoveAdapter extends BaseAdapter {
 				holder.isSelected.setChecked(true);
 			} else {
 				holder.isSelected.setChecked(false);
+			}
+			
+			if(withoutMe && item.getId() == Integer.valueOf(Helper.getUserId())){
+				holder.isSelected.setVisibility(View.INVISIBLE);
+			}else{
+				holder.isSelected.setVisibility(View.VISIBLE);
 			}
 
 			if (!item.isMember()) {

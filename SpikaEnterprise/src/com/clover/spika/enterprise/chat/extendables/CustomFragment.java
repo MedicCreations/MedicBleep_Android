@@ -5,15 +5,19 @@ import android.support.v4.app.Fragment;
 
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
+import com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService;
 import com.octo.android.robospice.SpiceManager;
 
 public class CustomFragment extends Fragment {
 
-	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	protected SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
+	protected SpiceManager offlineSpiceManager = new CustomSpiceManager(SpiceOfflineService.class);
 	private ImageLoaderSpice imageLoaderSpice;
 
 	public ImageLoaderSpice getImageLoader() {
+		imageLoaderSpice.setSpiceManager(spiceManager);
 		return imageLoaderSpice;
 	}
 
@@ -29,12 +33,16 @@ public class CustomFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		spiceManager.start(getActivity());
+		offlineSpiceManager.start(getActivity());
 	}
 
 	@Override
 	public void onStop() {
 		if (spiceManager.isStarted()) {
 			spiceManager.shouldStop();
+		}
+		if (offlineSpiceManager.isStarted()) {
+			offlineSpiceManager.shouldStop();
 		}
 		super.onStop();
 	}

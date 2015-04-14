@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
     
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
@@ -51,7 +52,7 @@
         android:theme="@style/Theme.Custom" >
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="6587000" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8" />
@@ -101,6 +102,9 @@
             android:exported="false" />
         <service
             android:name="com.clover.spika.enterprise.chat.services.robospice.OkHttpService"
+            android:exported="false" />
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService"
             android:exported="false" />
         <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
 
@@ -160,7 +164,8 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.ManageUsersActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.InvitePeopleActivity"
             android:launchMode="singleTop"
@@ -173,7 +178,7 @@
             android:name="com.clover.spika.enterprise.chat.CreateRoomActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name="com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity"
             android:screenOrientation="portrait"

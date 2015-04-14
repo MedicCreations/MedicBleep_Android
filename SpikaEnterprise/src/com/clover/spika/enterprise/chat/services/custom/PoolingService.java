@@ -80,7 +80,7 @@ public class PoolingService extends Service {
 			serviceTime = 30000;
 		}
 
-		api.getPush(this, listener);
+		api.getPush(listener);
 	}
 
 	@Override

@@ -14,18 +14,19 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.CategoryAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.CategorySpice;
+import com.clover.spika.enterprise.chat.caching.CategoryCaching.OnCategoryDBChanged;
+import com.clover.spika.enterprise.chat.caching.CategoryCaching.OnCategoryNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.CategoryCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.CategoryList;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
+public class ChooseCategoryDialog extends Dialog implements OnItemClickListener, OnCategoryDBChanged, OnCategoryNetworkResult{
 
 	public ChooseCategoryDialog(final Context context, UseType useType, int activeCategory) {
 		super(context, R.style.Theme_Dialog);
@@ -49,6 +50,8 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 	private OnActionClick listener;
 	
 	private int activeCategory;
+	
+	private List<Category> listCategory = new ArrayList<Category>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +87,6 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 				else dismiss();
 			}
 		});
-
-		
 	}
 	
 	public void setListener (OnActionClick lis){
@@ -96,9 +97,9 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 		List<Category> allData = new ArrayList<Category>();
 
 		if (UseType.CHOOSE_CATEGORY.equals(mUseType)) {
-			allData.add(new Category(0, getOwnerActivity().getResources().getString(R.string.none)));
+			allData.add(new Category("0", getOwnerActivity().getResources().getString(R.string.none)));
 		} else {
-			allData.add(new Category(0, getOwnerActivity().getResources().getString(R.string.all)));
+			allData.add(new Category("0", getOwnerActivity().getResources().getString(R.string.all)));
 		}
 
 		allData.addAll(data);
@@ -113,16 +114,15 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 		} else {
 			noItems.setVisibility(View.GONE);
 		}
-
 	}
 
 	public void getCategory() {
-		CategorySpice.GetCategory getCategory = new CategorySpice.GetCategory(getOwnerActivity());
-		((BaseActivity)getOwnerActivity()).spiceManager.execute(getCategory, new CustomSpiceListener<CategoryList>() {
-
+		CategoryCacheSpice.GetData categoryCacheSpice = new CategoryCacheSpice.GetData(getOwnerActivity(), ((BaseActivity)getOwnerActivity()).spiceManager, this, this);
+		((BaseActivity)getOwnerActivity()).spiceManager.execute(categoryCacheSpice, new CustomSpiceListener<CategoryList>(){
+			
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
+			public void onRequestFailure(SpiceException ex) {
+				super.onRequestFailure(ex);
 				findViewById(R.id.progressLoading).setVisibility(View.GONE);
 				Utils.onFailedUniversal(null, getOwnerActivity());
 			}
@@ -130,21 +130,12 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 			@Override
 			public void onRequestSuccess(CategoryList result) {
 				super.onRequestSuccess(result);
-				findViewById(R.id.progressLoading).setVisibility(View.GONE);
-
-				if (result.getCode() == Const.API_SUCCESS) {
+				
+				listCategory.addAll(result.categories);
+				
+				if(result.categories.size() > 0){
+					findViewById(R.id.progressLoading).setVisibility(View.GONE);
 					setData(result.categories);
-				} else {
-
-					String message = "";
-
-					if (result != null && result.getMessage() != null) {
-						message = result.getMessage();
-					} else {
-						message = getOwnerActivity().getString(R.string.e_something_went_wrong);
-					}
-
-					Utils.onFailedUniversal(message, getOwnerActivity());
 				}
 			}
 		});
@@ -160,7 +151,6 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 			Category category = adapter.getItem(position);
 			
 			if(listener != null) listener.onCategorySelect(String.valueOf(category.id), category.name, this);
-
 		}
 	}
 	
@@ -170,5 +160,15 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener{
 		public void onCategorySelect(String categoryId, String categoryName, Dialog d);
 	}
 
+	@Override
+	public void onCategoryNetworkResult() {}
 
+	@Override
+	public void onCategoryDBChanged(CategoryList categoryList) {
+		if(!categoryList.categories.equals(listCategory)){
+			findViewById(R.id.progressLoading).setVisibility(View.GONE);
+			setData(categoryList.categories);
+		}
+	}
+	
 }

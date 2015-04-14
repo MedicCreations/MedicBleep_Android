@@ -9,7 +9,7 @@ public class GlobalResponse {
 
 	public int code;
 	public int page;
-	public int totalCount;
+	public int total_count;
 	public List<GlobalModel> search_result;
 
 	public GlobalResponse() {
@@ -32,11 +32,11 @@ public class GlobalResponse {
 	}
 
 	public int getTotalCount() {
-		return totalCount;
+		return total_count;
 	}
 
 	public void setTotalCount(int totalCount) {
-		this.totalCount = totalCount;
+		this.total_count = totalCount;
 	}
 
 	public List<GlobalModel> getModelsList() {

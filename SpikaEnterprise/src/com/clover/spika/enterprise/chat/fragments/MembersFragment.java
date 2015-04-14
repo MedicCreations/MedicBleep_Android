@@ -81,17 +81,23 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 	}
 
 	public void setMembers(List<GlobalModel> members) {
-		int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
 
-		mUserAdapter.addData(members);
+		try {
+			
+			int currentCount = getListView().getRefreshableView().getAdapter().getCount() - 2 + members.size();
 
-		getListView().setAdapter(mUserAdapter);
-		getListView().setOnRefreshListener(refreshListener2);
+			mUserAdapter.setData(members);
 
-		if (currentCount >= mTotalCount) {
-			getListView().setMode(PullToRefreshBase.Mode.DISABLED);
-		} else if (currentCount < mTotalCount) {
-			getListView().setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+			getListView().setAdapter(mUserAdapter);
+			getListView().setOnRefreshListener(refreshListener2);
+
+			if (currentCount >= mTotalCount) {
+				getListView().setMode(PullToRefreshBase.Mode.DISABLED);
+			} else if (currentCount < mTotalCount) {
+				getListView().setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+			}
+
+		} catch (Exception ex) {
 		}
 	}
 
@@ -132,12 +138,13 @@ public class MembersFragment extends CustomFragment implements OnItemClickListen
 
 		if (position != -1 && position != mUserAdapter.getCount()) {
 			GlobalModel user = mUserAdapter.getItem(position);
-			
-			User userUser = null;
-			if(user.type == GlobalModel.Type.USER) userUser = (User) user.getModel();
 
-			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false, ((User) user.getModel()).getFirstName(),
-					((User) user.getModel()).getLastName(), userUser);
+			User userUser = null;
+			if (user.type == GlobalModel.Type.USER)
+				userUser = (User) user.getModel();
+
+			ChatActivity.startWithUserId(getActivity(), String.valueOf(((User) user.getModel()).getId()), false,
+					((User) user.getModel()).getFirstName(), ((User) user.getModel()).getLastName(), userUser);
 		}
 	}
 

@@ -22,15 +22,14 @@ import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
+import com.clover.spika.enterprise.chat.caching.robospice.ChatMembersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
-import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.fragments.MembersFragment;
 import com.clover.spika.enterprise.chat.fragments.ProfileGroupFragment;
+import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
-import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
@@ -38,11 +37,14 @@ import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks {
+public class ProfileGroupActivity extends BaseActivity implements OnPageChangeListener, OnClickListener, MembersFragment.Callbacks,
+		OnChatMembersDBChanged {
 
 	ViewPager viewPager;
 	ToggleButton profileTab;
 	ToggleButton membersTab;
+
+	RobotoRegularTextView tvSaveRoom;
 
 	String chatId;
 	ProfileFragmentPagerAdapter profileFragmentPagerAdapter;
@@ -55,7 +57,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 	private String categoryName = null;
 	private String categoryId = null;
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, String categoryId, String categoryName, String chatPassword) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, String categoryId,
+			String categoryName, String chatPassword) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -71,8 +74,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		context.startActivity(intent);
 	}
 
-	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate, String chatPassword,
-			String categoryId, String categoryName) {
+	public static void openProfile(Context context, String fileId, String chatName, String chatId, boolean isAdmin, boolean fromChat, int isPrivate,
+			String chatPassword, String categoryId, String categoryName) {
 
 		Intent intent = new Intent(context, ProfileGroupActivity.class);
 
@@ -103,7 +106,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		});
 
-		RobotoRegularTextView tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
+		tvSaveRoom = (RobotoRegularTextView) findViewById(R.id.saveRoomProfile);
 		isAdmin = getIntent().getBooleanExtra(Const.IS_ADMIN, false);
 		if (isAdmin) {
 			tvSaveRoom.setVisibility(View.VISIBLE);
@@ -230,35 +233,18 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void getMembers(int page, final boolean toUpdateInviteMember) {
-		
-		handleProgress(true);
 
-		GlobalSpice.GlobalMembers globalMembers = new GlobalSpice.GlobalMembers(page, chatId, null, Type.ALL, this);
-		spiceManager.execute(globalMembers, new CustomSpiceListener<GlobalResponse>() {
+		ChatMembersCacheSpice.GetChatMembers chatMembers = new ChatMembersCacheSpice.GetChatMembers(this, spiceManager, chatId, this);
+		spiceManager.execute(chatMembers, new CustomSpiceListener<List>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, ProfileGroupActivity.this);
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-					
-					profileFragmentPagerAdapter.setMemberTotalCount(result.getTotalCount());
-					profileFragmentPagerAdapter.setMembers(result.getModelsList());
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, ProfileGroupActivity.this);
-				}
+				profileFragmentPagerAdapter.setMembers(result);
 			}
 		});
 	}
@@ -292,19 +278,18 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 				String hashPassword = Utils.getHexString(newPassword);
 				requestParams.put(Const.PASSWORD, hashPassword);
 				Helper.storeChatPassword(ProfileGroupActivity.this, hashPassword, chatId);
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		requestParams.put(Const.CHAT_ID, chatId);
 		requestParams.put(Const.IS_PRIVATE, switchPrivate.isChecked() ? "1" : "0");
+		requestParams.put(Const.CATEGORY_ID, categoryId);
 
 		handleProgress(true);
-		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams, this);
-		spiceManager.execute(updateChatAll, new CustomSpiceListener<BaseModel>() {
+		ChatSpice.UpdateChatAll updateChatAll = new ChatSpice.UpdateChatAll(requestParams);
+		spiceManager.execute(updateChatAll, new CustomSpiceListener<Chat>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -313,7 +298,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 
 			@Override
-			public void onRequestSuccess(BaseModel result) {
+			public void onRequestSuccess(Chat result) {
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
@@ -333,6 +318,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 						}
 					}
 
+					intent.putExtra(Const.IS_UPDATE_ADMIN, true);
+					intent.putExtra(Const.IS_UPDATE_CATEGORY, true);
+					intent.putExtra(Const.CATEGORY_ID, categoryId);
+					intent.putExtra(Const.CATEGORY_NAME, categoryName);
+
 					LocalBroadcastManager.getInstance(ProfileGroupActivity.this).sendBroadcast(intent);
 
 					finish();
@@ -343,8 +333,8 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			}
 		});
 	}
-	
-	public void changeCategory(String categoryId, String categoryName){
+
+	public void changeCategory(String categoryId, String categoryName) {
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
 
@@ -358,10 +348,15 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
-	
-	public void changeAdmin(boolean isAdmin){
-		this.isAdmin = isAdmin; 
-		
+
+	public void changeAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+		if (!isAdmin) {
+			tvSaveRoom.setVisibility(View.GONE);
+		}
+
+		getMembers(-1, false);
+
 		Intent intent = getIntent();
 		intent.setAction(Const.IS_ADMIN);
 		intent.putExtra(Const.IS_UPDATE_ADMIN, true);
@@ -370,6 +365,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 		profileFragmentPagerAdapter.setAdminData(intent);
 
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+	}
+
+	@Override
+	public void onChatMembersDBChanged(List<GlobalModel> usableData) {
+		profileFragmentPagerAdapter.setMembers(usableData);
 	}
 
 }

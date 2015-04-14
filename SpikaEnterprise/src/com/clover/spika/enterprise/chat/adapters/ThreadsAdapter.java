@@ -24,6 +24,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -69,8 +70,10 @@ public class ThreadsAdapter extends BaseAdapter {
 	private static final int VIEW_TYPE_FILE = 5;
 	private static final int VIEW_TYPE_DELETED = 6;
 	private static final int VIEW_TYPE_GIF = 7;
+	private static final int VIEW_TYPE_TEMP_MSG= 8;
+	private static final int VIEW_TYPE_TEMP_MSG_ERROR= 9;
 
-	private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_GIF + 1;
+	private static final int TOTAL_VIEW_TYPES = VIEW_TYPE_TEMP_MSG_ERROR + 1;
 
 	private static final int INDENTATION_PADDING = 50;
 
@@ -117,9 +120,21 @@ public class ThreadsAdapter extends BaseAdapter {
 		this.mMessageList.clear();
 		this.mMessageList.addAll(collection);
 
-		String thisUserId = Helper.getUserId(mContext);
+		String thisUserId = Helper.getUserId();
 		for (TreeNode node : mMessageList) {
 			Message.decryptContent(mContext, node.getMessage());
+			node.getMessage().setMe(node.getMessage().getUser_id().equals(thisUserId));
+		}
+
+		notifyDataSetChanged();
+	}
+	
+	public void updateContentNoDecrypt(List<TreeNode> collection) {
+		this.mMessageList.clear();
+		this.mMessageList.addAll(collection);
+
+		String thisUserId = Helper.getUserId();
+		for (TreeNode node : mMessageList) {
 			node.getMessage().setMe(node.getMessage().getUser_id().equals(thisUserId));
 		}
 
@@ -163,6 +178,12 @@ public class ThreadsAdapter extends BaseAdapter {
 
 		case Const.MSG_TYPE_FILE:
 			return VIEW_TYPE_FILE;
+			
+		case Const.MSG_TYPE_TEMP_MESS:
+			return VIEW_TYPE_TEMP_MSG;
+			
+		case Const.MSG_TYPE_TEMP_MESS_ERROR:
+			return VIEW_TYPE_TEMP_MSG_ERROR;
 
 		case Const.MSG_TYPE_DEFAULT:
 		default:
@@ -225,8 +246,13 @@ public class ThreadsAdapter extends BaseAdapter {
 			case VIEW_TYPE_FILE:
 				convertView = inflateMedia(holder, parent, type);
 				break;
-
+				
+			case VIEW_TYPE_TEMP_MSG_ERROR:
+				convertView = inflateErrorMessage(holder, parent);
+				break;
+				
 			case VIEW_TYPE_MESSAGE:
+			case VIEW_TYPE_TEMP_MSG:
 			default:
 				convertView = inflateMessage(holder, parent);
 				break;
@@ -237,7 +263,7 @@ public class ThreadsAdapter extends BaseAdapter {
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
-		}
+		}	
 
 		TreeNode node = mMessageList.get(position);
 
@@ -267,6 +293,14 @@ public class ThreadsAdapter extends BaseAdapter {
 
 		case VIEW_TYPE_FILE:
 			populateFile(holder, node, position);
+			break;
+			
+		case VIEW_TYPE_TEMP_MSG:
+			populateTempMessage(holder, node, position);
+			break;
+			
+		case VIEW_TYPE_TEMP_MSG_ERROR:
+			populateTempMessageError(holder, node, position);
 			break;
 
 		case VIEW_TYPE_MESSAGE:
@@ -298,6 +332,16 @@ public class ThreadsAdapter extends BaseAdapter {
 				}
 			});
 		}
+
+		return convertView;
+	}
+	
+	private View inflateErrorMessage(final ViewHolder holder, final ViewGroup parent) {
+		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_error_message, parent, false);
+
+		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
+		holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
+		holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 
 		return convertView;
 	}
@@ -392,9 +436,9 @@ public class ThreadsAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private void populateMessage(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
+	private void populateTempMessage(ViewHolder holder, TreeNode node, int position) {
+		holder.textViewUser.setVisibility(View.INVISIBLE);
+		holder.imageViewUser.setVisibility(View.INVISIBLE);
 		holder.textViewMessage.setText(node.getMessage().getText());
 		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
 
@@ -418,18 +462,123 @@ public class ThreadsAdapter extends BaseAdapter {
 			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
 		}
 
+		holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+		holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+		
+		holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+		holder.relativeLayoutHolder.setAlpha(0.6f);
+	}
+	
+	private void populateTempMessageError(ViewHolder holder, TreeNode node, int position) {
+		holder.textViewUser.setVisibility(View.INVISIBLE);
+		holder.textViewMessage.setText(node.getMessage().getText());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+
+		int textWidth = node.getMessage().getTextWidth();
+
+		if (textWidth == -1) {
+			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+
+		int timeWidth = node.getMessage().getTimeWidth();
+
+		if (timeWidth == -1) {
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+
+		if (textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
+		} else {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
+		}
+
+		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.red));
+		holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
+		
+		holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
+		holder.relativeLayoutHolder.setAlpha(0.6f);
+	}
+	
+	private void populateMessage(ViewHolder holder, TreeNode node, int position) {
+		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
+		holder.textViewUser.setText(node.getMessage().getName());
+		holder.textViewMessage.setText(node.getMessage().getText());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+
+		int textWidth = node.getMessage().getTextWidth();
+
+		if (textWidth == -1) {
+			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
+			node.getMessage().setTextWidth(textWidth);
+		}
+
+		int timeWidth = node.getMessage().getTimeWidth();
+
+		if (timeWidth == -1) {
+			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
+			node.getMessage().setTimeWidth(timeWidth);
+		}
+
+		if (node.getMessage().getIsCodeTextStyle() || textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
+		} else {
+			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
+		}
+		
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
 			holder.textViewUser.setTextColor(Color.WHITE);
-			holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+			if(node.getMessage().getIsCodeTextStyle()){
+				holder.textViewMessage.setBackgroundColor(mContext.getResources().getColor(R.color.code_preview_black));
+				holder.textViewMessage.setTextColor(Color.WHITE);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
+			}else{
+				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
+			}
 			holder.threadTime.setTextColor(Color.WHITE);
 		} else {
 			holder.relativeLayoutHolder.setBackgroundColor(Color.TRANSPARENT);
 			holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
-			holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+			if(node.getMessage().getIsCodeTextStyle()){
+				holder.textViewMessage.setBackgroundColor(mContext.getResources().getColor(R.color.code_preview_black));
+				holder.textViewMessage.setTextColor(Color.WHITE);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
+			}else{
+				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
+			}
 			holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
 		}
 	}
+	
+//	public void addTempMessage(String text, String mRootId, String parrentId) {
+//		TreeNode treeNode = mMessageList.get;
+//		Message tempMess = new Message();
+//		tempMess.setText(text);
+//		tempMess.type = Const.MSG_TYPE_TEMP_MESS;
+//		tempMess.isMe = true;
+//		tempMess.created = String.valueOf((int)(System.currentTimeMillis() / 1000));
+//		tempMess.parent_id = Integer.valueOf(parrentId);
+//		tempMess.root_id = Integer.valueOf(mRootId);
+//		try {
+//			tempMess.id = String.valueOf(Long.valueOf(treeNode.asList().get(treeNode.asList().size() -1).getMessage().id) + 10);
+//		} catch (Exception e) {
+//			tempMess.id = "10";
+//		}
+//		treeNode.add(tempMess);
+//		mMessageList.add(treeNode);
+//		updateContent(mMessageList);
+//	}
 
 	private void populatePhoto(ViewHolder holder, TreeNode node, int position) {
 		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
@@ -438,6 +587,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 		imageLoaderSpice.displayImage(holder.imageViewPhoto, node.getMessage().getThumb_id(), 0);
 		holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
+//		holder.imageViewPhoto.setTag(R.id.tag_is_encrypted, node.getMessage().isEncrypted());
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -630,8 +780,10 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void onClick(View v) {
 			if (v.getTag(R.id.tag_file_id) != null) {
 				String fileId = (String) v.getTag(R.id.tag_file_id);
+				boolean isEncrypted = (boolean) v.getTag(R.id.tag_is_encrypted);
 				Intent photoIntent = new Intent(mContext, PhotoActivity.class);
 				photoIntent.putExtra(Const.IMAGE, fileId);
+				photoIntent.putExtra(Const.IS_ENCRYPTED, isEncrypted);
 				mContext.startActivity(photoIntent);
 			}
 		}
@@ -678,7 +830,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void onClick(View v) {
 			Message message = (Message) v.getTag(R.id.tag_file_id);
 			if (message != null) {
-				new FileManageApi().startFileDownload(message.getText(), message.getFile_id(), Integer.valueOf(message.getId()), mContext);
+				new FileManageApi().startFileDownload(message.isEncrypted(), message.getText(), message.getFile_id(), Integer.valueOf(message.getId()), mContext);
 			}
 		}
 	};
@@ -743,7 +895,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				preformOnSoundClick(0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), 0, chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 		});
 
@@ -751,7 +903,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				preformOnSoundClick(seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
+				preformOnSoundClick(msg.isEncrypted(), seekBar.getProgress(), chronoControl, playPause, seekControl, msg.getFile_id(), holder);
 			}
 
 			@Override
@@ -782,7 +934,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		});
 	}
 
-	private void preformOnSoundClick(final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
+	private void preformOnSoundClick(boolean isEncrypted, final int startOffset, final Chronometer chronoControl, final Button playPause, final SeekBar seekControl, String fileId, RelativeLayout holder) {
 		File sound = new File(Utils.getFilesFolder() + "/" + fileId);
 		if (sound.exists()) {
 			if (currentMediaPlayer == null) {
@@ -825,7 +977,7 @@ public class ThreadsAdapter extends BaseAdapter {
 			isDownloadingSound = true;
 			totalOfDownload = -1;
 
-			preformDownload(holder, playPause, seekControl, chronoControl, sound, fileId);
+			preformDownload(isEncrypted, holder, playPause, seekControl, chronoControl, sound, fileId);
 		}
 	}
 
@@ -907,7 +1059,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		}
 	}
 
-	private void preformDownload(RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
+	private void preformDownload(boolean isEncrypted, RelativeLayout holder, final Button playPause, final SeekBar seekControl, final Chronometer chronoControl, final File sound, final String fileId) {
 		final ProgressBar pbLoading = (ProgressBar) holder.getChildAt(Const.SoundControl.DOWNLOAD_PROGRESS);
 		final ProgressBar pbLoadingBar = (ProgressBar) holder.getChildAt(Const.SoundControl.PROGREEBAR);
 		final TextView percentTv = (TextView) holder.getChildAt(Const.SoundControl.PERCENT_TV);
@@ -917,7 +1069,7 @@ public class ThreadsAdapter extends BaseAdapter {
 		playPause.setVisibility(View.INVISIBLE);
 		seekControl.setVisibility(View.INVISIBLE);
 		chronoControl.setVisibility(View.INVISIBLE);
-		new FileManageApi().downloadFileToFile(sound, fileId, false, mContext, new ApiCallback<String>() {
+		new FileManageApi().downloadFileToFile(isEncrypted, sound, fileId, false, mContext, new ApiCallback<String>() {
 
 			@Override
 			public void onApiResponse(Result<String> result) {
@@ -962,4 +1114,5 @@ public class ThreadsAdapter extends BaseAdapter {
 			}
 		});
 	}
+
 }

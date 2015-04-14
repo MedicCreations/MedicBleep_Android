@@ -9,7 +9,6 @@ import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +53,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 		this.stickersList.addAll(stickersList);
 		
 		for(Stickers item : this.stickersList){
-			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences(c)));
+			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences()));
 		}
 		
 		Collections.sort(this.stickersList, new Comparator<Stickers>() {
@@ -115,7 +114,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 		this.stickersList.addAll(stickersList);
 		
 		for(Stickers item : this.stickersList){
-			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences(c)));
+			item.setUsedTimes(EmojiCounterHelper.getEmojiCounter(String.valueOf(item.getId()), SpikaEnterpriseApp.getSharedPreferences()));
 		}
 		
 		Collections.sort(this.stickersList, new Comparator<Stickers>() {
@@ -130,7 +129,7 @@ public class EmojiRelativeLayout extends RelativeLayout {
 
 				return 0;
 			}
-			
+			 
 		});
 		
 		StickersHolder holder = new StickersHolder();

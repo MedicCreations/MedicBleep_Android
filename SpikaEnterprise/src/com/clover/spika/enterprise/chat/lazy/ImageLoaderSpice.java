@@ -75,6 +75,7 @@ public class ImageLoaderSpice {
 					onFinishListener.onFinish();
 				}
 			}
+			
 			return;
 		}
 
@@ -167,6 +168,10 @@ public class ImageLoaderSpice {
 		public Bitmap loadDataFromNetwork() throws Exception {
 			
 			Logger.i("Downloading image: " + fileId);
+			if(imageView.getTag() != null) {
+				Logger.custom("w", "LOG", "ID: " + fileId);
+				Logger.custom("i", "LOG", "Is image encrypted: " + imageView.getTag().toString());
+			}
 
 			// Check if image already downloaded
 			if (isImageViewReused(imageView, fileId)) {
@@ -176,21 +181,21 @@ public class ImageLoaderSpice {
 			// Get from web
 			String url = Const.BASE_URL + Const.F_USER_GET_FILE + "?" + Const.FILE_ID + "=" + fileId;
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders(ctx)).url(url).get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders()).url(url).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
-			ResponseBody resBody = res.body();
+			final ResponseBody resBody = res.body();
 
-			File file = fileCache.getFile(fileId);
+			final File file = fileCache.getFile(fileId);
 
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 
 			Bitmap bitmap = null;
-
+			
 			if (fileId.startsWith("http")) {
 
 				FileOutputStream fos = new FileOutputStream(file);
@@ -199,10 +204,13 @@ public class ImageLoaderSpice {
 				fos.close();
 
 			} else {
-				try {
+				if(imageView.getTag() != null && !(Boolean)imageView.getTag()){
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(resBody.bytes());
+					fos.flush();
+					fos.close();
+				}else{
 					JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
 			}
 

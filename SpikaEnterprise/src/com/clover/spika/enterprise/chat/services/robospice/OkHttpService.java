@@ -10,9 +10,14 @@ public class OkHttpService extends OkHttpSpiceService {
 
 	@Override
 	public CacheManager createCacheManager(Application application) throws CacheCreationException {
-
+		
 		CacheManager cacheManager = new CacheManager();
 		return cacheManager;
+	}
+	
+	@Override
+	public int getThreadCount() {
+		return 3;
 	}
 
 }

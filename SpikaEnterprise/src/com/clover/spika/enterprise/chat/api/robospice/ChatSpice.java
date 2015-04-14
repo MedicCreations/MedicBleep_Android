@@ -3,13 +3,11 @@ package com.clover.spika.enterprise.chat.api.robospice;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -25,7 +23,6 @@ public class ChatSpice {
 
 	public static class AddUsersToRoom extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
 		private String userToAdd;
 		private String groupIds;
 		private String roomIds;
@@ -33,11 +30,10 @@ public class ChatSpice {
 		private String roomsAll;
 		private String chatId;
 
-		public AddUsersToRoom(final String userToAdd, final String groupIds, final String roomIds, final String groupsAll, final String roomsAll, final String chatId,
-				Context context) {
+		public AddUsersToRoom(final String userToAdd, final String groupIds, final String roomIds, final String groupsAll, final String roomsAll,
+				final String chatId) {
 			super(Chat.class);
 
-			this.ctx = context;
 			this.userToAdd = userToAdd;
 			this.groupIds = groupIds;
 			this.roomIds = roomIds;
@@ -49,13 +45,12 @@ public class ChatSpice {
 		@Override
 		public Chat loadDataFromNetwork() throws Exception {
 
-			RequestBody formBody = new FormEncodingBuilder().add(Const.USERS_TO_ADD, userToAdd).add(Const.CHAT_ID, chatId).add(Const.GROUP_IDS, groupIds)
-					.add(Const.GROUP_ALL_IDS, groupsAll).add(Const.ROOM_IDS, roomIds).add(Const.ROOM_ALL_IDS, roomsAll).build();
+			RequestBody formBody = new FormEncodingBuilder().add(Const.USERS_TO_ADD, userToAdd).add(Const.CHAT_ID, chatId)
+					.add(Const.GROUP_IDS, groupIds).add(Const.GROUP_ALL_IDS, groupsAll).add(Const.ROOM_IDS, roomIds)
+					.add(Const.ROOM_ALL_IDS, roomsAll).build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_INVITE_USERS)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_INVITE_USERS)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -69,19 +64,17 @@ public class ChatSpice {
 		}
 	}
 
-	public static class UpdateChatAll extends CustomSpiceRequest<BaseModel> {
+	public static class UpdateChatAll extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
 		private HashMap<String, String> requestParams;
 
-		public UpdateChatAll(HashMap<String, String> requestParams, Context ctx) {
-			super(BaseModel.class);
-			this.ctx = ctx;
+		public UpdateChatAll(HashMap<String, String> requestParams) {
+			super(Chat.class);
 			this.requestParams = requestParams;
 		}
 
 		@Override
-		public BaseModel loadDataFromNetwork() throws Exception {
+		public Chat loadDataFromNetwork() throws Exception {
 
 			FormEncodingBuilder formBuilder = new FormEncodingBuilder();
 
@@ -91,17 +84,15 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_UPDATE_CHAT)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_CHAT)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, Chat.class);
@@ -110,16 +101,14 @@ public class ChatSpice {
 
 	public static class UpdateChat extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
 		private String chatId;
 		private int type;
 		private String image;
 		private String imageThumb;
 		private String name;
 
-		public UpdateChat(String chatId, int type, String image, String image_thumb, String name, Context ctx) {
+		public UpdateChat(String chatId, int type, String image, String image_thumb, String name) {
 			super(BaseModel.class);
-			this.ctx = ctx;
 			this.chatId = chatId;
 			this.type = type;
 			this.image = image;
@@ -155,10 +144,8 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_UPDATE_CHAT)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_CHAT)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -174,8 +161,6 @@ public class ChatSpice {
 
 	public static class CreateRoom extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-
 		private String name;
 		private String image;
 		private String imageThumb;
@@ -186,10 +171,9 @@ public class ChatSpice {
 		private String isPrivate;
 		private String password;
 
-		public CreateRoom(String name, String image, String image_thumb, String users_to_add, String group_to_add, String room_to_add, String categoryId, String is_private,
-				String password, Context context) {
+		public CreateRoom(String name, String image, String image_thumb, String users_to_add, String group_to_add, String room_to_add,
+				String categoryId, String is_private, String password) {
 			super(Chat.class);
-			this.ctx = context;
 			this.name = name;
 			this.image = image;
 			this.imageThumb = image_thumb;
@@ -218,10 +202,8 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_CREATE_ROOM)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_CREATE_ROOM)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -237,13 +219,10 @@ public class ChatSpice {
 
 	public static class DeleteMessage extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-
 		private String messageId;
 
-		public DeleteMessage(String messageId, Context context) {
+		public DeleteMessage(String messageId) {
 			super(BaseModel.class);
-			this.ctx = context;
 			this.messageId = messageId;
 		}
 
@@ -255,10 +234,8 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_DELETE_MESSAGE)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_DELETE_MESSAGE)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -274,23 +251,18 @@ public class ChatSpice {
 
 	public static class GetThreads extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-
 		private String messageId;
 
-		public GetThreads(String messageId, Context context) {
+		public GetThreads(String messageId) {
 			super(Chat.class);
-			this.ctx = context;
 			this.messageId = messageId;
 		}
 
 		@Override
 		public Chat loadDataFromNetwork() throws Exception {
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getGetHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_GET_THREADS + "?" + Const.ROOT_ID + "=" + messageId)
-				.get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders())
+					.url(Const.BASE_URL + Const.F_GET_THREADS + "?" + Const.ROOT_ID + "=" + messageId).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -306,16 +278,13 @@ public class ChatSpice {
 
 	public static class LeaveChatAdmin extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-
 		private String chatId;
 		private String userIds;
 		private String groupIds;
 		private String roomIds;
 
-		public LeaveChatAdmin(String chatId, String userIds, String groupIds, String roomIds, Context context) {
+		public LeaveChatAdmin(String chatId, String userIds, String groupIds, String roomIds) {
 			super(Chat.class);
-			this.ctx = context;
 			this.chatId = chatId;
 			this.userIds = userIds;
 			this.groupIds = groupIds;
@@ -333,7 +302,8 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LEAVE_CHAT_ADMIN).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_LEAVE_CHAT_ADMIN)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -349,13 +319,10 @@ public class ChatSpice {
 
 	public static class LeaveChat extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-
 		private String chatId;
 
-		public LeaveChat(String chatId, Context context) {
+		public LeaveChat(String chatId) {
 			super(Chat.class);
-			this.ctx = context;
 			this.chatId = chatId;
 		}
 
@@ -367,7 +334,8 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_LEAVE_CHAT).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_LEAVE_CHAT)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -381,9 +349,7 @@ public class ChatSpice {
 		}
 	}
 
-	public static class SendMessage extends CustomSpiceRequest<Integer> {
-
-		private Context ctx;
+	public static class SendMessage extends CustomSpiceRequest<SendMessageResponse> {
 
 		private int type;
 		private String chatId;
@@ -394,11 +360,12 @@ public class ChatSpice {
 		private String latitude;
 		private String rootId;
 		private String parentId;
+		private String attributes = null;
 
-		public SendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId, String parentId, Context context) {
-			super(Integer.class);
+		public SendMessage(int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId,
+				String parentId) {
+			super(SendMessageResponse.class);
 
-			this.ctx = context;
 			this.type = type;
 			this.chatId = chatId;
 			this.text = text;
@@ -409,9 +376,25 @@ public class ChatSpice {
 			this.rootId = rootId;
 			this.parentId = parentId;
 		}
+		
+		public SendMessage(String attributes, int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude, String rootId,
+				String parentId) {
+			super(SendMessageResponse.class);
+
+			this.type = type;
+			this.chatId = chatId;
+			this.text = text;
+			this.fileId = fileId;
+			this.thumbId = thumbId;
+			this.longitude = longitude;
+			this.latitude = latitude;
+			this.rootId = rootId;
+			this.parentId = parentId;
+			this.attributes = attributes;
+		}
 
 		@Override
-		public Integer loadDataFromNetwork() throws Exception {
+		public SendMessageResponse loadDataFromNetwork() throws Exception {
 
 			FormEncodingBuilder formBuilder = new FormEncodingBuilder();
 
@@ -447,31 +430,30 @@ public class ChatSpice {
 			if (!TextUtils.isEmpty(parentId)) {
 				formBuilder.add(Const.PARENT_ID, parentId);
 			}
-
+			
+			if (!TextUtils.isEmpty(attributes)) {
+				formBuilder.add(Const.ATTRIBUTES, attributes);
+			}
+			
 			RequestBody formBody = formBuilder.build();
-
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + Const.F_SEND_MESSAGE).post(formBody);
-
+			
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_SEND_MESSAGE)
+					.post(formBody);
+			
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-			
-			try {
-				JSONObject jsonObject = new JSONObject(responseBody);
-				return jsonObject.getInt(Const.CODE);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 
-			return Const.E_FAILED;
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(responseBody, SendMessageResponse.class);
+
 		}
 	}
 
 	public static class GetMessages extends CustomSpiceRequest<Chat> {
-
-		private Context ctx;
 
 		private boolean isClear;
 		private boolean isPagging;
@@ -482,9 +464,9 @@ public class ChatSpice {
 		private String msgId;
 		private int adapterCount;
 
-		public GetMessages(boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh, String chatId, String msgId, int adapterCount, Context context) {
+		public GetMessages(boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh, String chatId, String msgId,
+				int adapterCount) {
 			super(Chat.class);
-			this.ctx = context;
 
 			this.isClear = isClear;
 			this.isPagging = isPagging;
@@ -510,8 +492,8 @@ public class ChatSpice {
 					url = url + "&" + Const.FIRST_MSG_ID + "=" + msgId;
 				}
 			}
-			
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(url).get();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(url).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -528,28 +510,26 @@ public class ChatSpice {
 				result.isNewMsg = isNewMessage;
 				result.isRefresh = isRefresh;
 				result.isClear = isClear;
-				result.isSend  = isSend;
+				result.isSend = isSend;
 				result.isPagging = isPagging;
 
 				return result;
 			} else {
-				return null;
+				return result;
 			}
 		}
 	}
 
 	public static class StartChat extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-
 		private boolean isGroup;
 		private String userId;
 		private String firstName;
 		private String lastName;
 
-		public StartChat(boolean isGroup, String userId, String firstname, String lastname, Context context) {
+		public StartChat(boolean isGroup, String userId, String firstname, String lastname) {
 			super(Chat.class);
-			this.ctx = context;
+			
 			this.isGroup = isGroup;
 			this.userId = userId;
 			this.firstName = firstname;
@@ -576,7 +556,7 @@ public class ChatSpice {
 
 			RequestBody formBody = formBuilder.build();
 
-			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders(ctx)).url(Const.BASE_URL + url).post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + url).post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 

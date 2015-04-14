@@ -3,7 +3,6 @@ package com.clover.spika.enterprise.chat.api.robospice;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.models.ConfirmUsersList;
@@ -17,19 +16,17 @@ import com.squareup.okhttp.ResponseBody;
 
 public class RoomsSpice {
 
-	public static class GetDistinctUserOK extends CustomSpiceRequest<ConfirmUsersList> {
+	public static class GetDistinctUser extends CustomSpiceRequest<ConfirmUsersList> {
 
-		private Context ctx;
 		private String userIds;
 		private String groupIds;
 		private String roomIds;
 		private String groupAllIds;
 		private String roomAllIds;
 
-		public GetDistinctUserOK(String userIds, String groupIds, String roomIds, String groupAllIds, String roomAllIds, Context context) {
+		public GetDistinctUser(String userIds, String groupIds, String roomIds, String groupAllIds, String roomAllIds) {
 			super(ConfirmUsersList.class);
 
-			this.ctx = context;
 			this.userIds = userIds;
 			this.groupIds = groupIds;
 			this.roomIds = roomIds;
@@ -109,7 +106,7 @@ public class RoomsSpice {
 			
 
 			Request request = new Request.Builder()
-				.headers(getPostHeaders(ctx))
+				.headers(getPostHeaders())
 				.url(Const.BASE_URL + Const.F_GET_DISTINC_USER + (TextUtils.isEmpty(urlParams) ? "" : "?" + urlParams))
 				.get().build();
 

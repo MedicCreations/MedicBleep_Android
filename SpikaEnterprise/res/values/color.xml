@@ -47,5 +47,7 @@
     <color name="blue_in_people_row">#43A7DA</color>
     <color name="green_in_people_row">#5Ad68D</color>
     <color name="red_in_people_row">#EB232F</color>
+    
+    <color name="code_preview_black">#232323</color>
 
 </resources>

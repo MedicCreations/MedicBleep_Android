@@ -23,22 +23,20 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.ProfileOtherActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.adapters.PeopleAdapter;
-import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
+import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
-import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.utils.Const;
-import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
+public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
 
 	private TextView noItems;
 
@@ -51,6 +49,8 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 
 	private EditText etSearch;
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
+	
+	private boolean isDataFromNet = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +62,10 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		if (adapter != null) {
+			adapter.setSpiceManager(spiceManager);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -107,9 +111,27 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
+		@SuppressWarnings("rawtypes")
 		@Override
-		public void afterTextChanged(Editable s) {
-			adapter.manageData(s.toString(), allData);
+		public void afterTextChanged(final Editable s) {
+			if(isDataFromNet){
+				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 
+						0, null, null, Type.USER, null, true, true, PeopleFragment.this, PeopleFragment.this);
+				offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public void onRequestSuccess(List result) {
+						super.onRequestSuccess(result);
+						allData.clear();
+						allData.addAll(result);
+						adapter.manageData(s.toString(), allData);
+					}
+				});
+				isDataFromNet = false;
+			}else {
+				adapter.manageData(s.toString(), allData);
+			}
 		}
 	};
 
@@ -148,15 +170,16 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 	private void setData(List<GlobalModel> data, boolean toClearPrevious) {
 		// -2 is because of header and footer view
 		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
-			adapter.setData(data);
-		else
-			adapter.addData(data);
-		if (toClearPrevious)
+		if (toClearPrevious) {
+			currentCount = data.size();
+		}
+
+		adapter.setData(data);
+
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -176,38 +199,25 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		allData.addAll(adapter.getData());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void getUsers(int page, String search, final boolean toClear) {
+		
+		if(!TextUtils.isEmpty(search)){
+			isDataFromNet = true;
+		}
 
-		handleProgress(true);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
+		offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
-		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, Type.USER, search, getActivity());
-		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
-
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
-			}
-
-			@Override
-			public void onRequestSuccess(GlobalResponse result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.getTotalCount();
-					setData(result.getModelsList(), toClear);
-
-				} else {
-					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, getActivity());
-				}
+				setData(result, toClear);
 			}
 		});
 	}
-
+	
 	@Override
 	public void onSearch(String data) {
 		mCurrentIndex = 0;
@@ -235,7 +245,16 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			} else {
 				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName(), user);
 			}
-
 		}
+	}
+
+	@Override
+	public void onGlobalSearchNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
+	}
+
+	@Override
+	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
+		setData(usableData, isClear);
 	}
 }

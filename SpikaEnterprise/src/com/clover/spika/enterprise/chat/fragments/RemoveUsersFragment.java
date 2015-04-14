@@ -33,6 +33,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		if (getListView() != null) {
 			mUserAdapter = new InviteRemoveAdapter(spiceManager, getActivity(), new ArrayList<GlobalModel>(), null, null);
 			mUserAdapter.disableNameClick(true);
+			mUserAdapter.setWitoutMe(true);
 			getListView().setAdapter(mUserAdapter);
 		}
 
@@ -87,7 +88,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 		}
 
 		handleProgress(true);
-		ChatSpice.LeaveChatAdmin leaveChatAdmin = new ChatSpice.LeaveChatAdmin(chatId, ids, groupIds, roomIds, getActivity());
+		ChatSpice.LeaveChatAdmin leaveChatAdmin = new ChatSpice.LeaveChatAdmin(chatId, ids, groupIds, roomIds);
 		spiceManager.execute(leaveChatAdmin, new CustomSpiceListener<Chat>() {
 
 			@Override

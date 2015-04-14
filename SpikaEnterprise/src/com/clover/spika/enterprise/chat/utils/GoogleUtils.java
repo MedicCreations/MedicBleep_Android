@@ -75,7 +75,7 @@ public class GoogleUtils {
 	 */
 	public void storeRegistrationId(Context ctx, String regId) {
 		Helper.updateAppVersion(ctx);
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
+		SpikaEnterpriseApp.getSharedPreferences().setCustomString(Const.PUSH_TOKEN_LOCAL, regId);
 		
 		
 		new UserApi().updateUserToken(ctx, new ApiCallback<BaseModel>() {
@@ -123,7 +123,7 @@ public class GoogleUtils {
 	 */
 	public String getRegistrationId(Context ctx) {
 
-		String registrationId = SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL);
+		String registrationId = SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PUSH_TOKEN_LOCAL);
 
 		if (registrationId == null || registrationId.isEmpty()) {
 			Logger.i("GCM registration ID not found");

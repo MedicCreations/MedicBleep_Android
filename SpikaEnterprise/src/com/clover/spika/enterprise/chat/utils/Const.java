@@ -13,14 +13,14 @@ import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.User;
 
 public class Const {
-
+	
 	// Version constants
 	public static final String BASE_URL = "https://www.spikaent.com/dev/server/v1";
 	public static final String GCM_SENDER_ID = "772714193583";
 	public static final String HTTP_USER_AGENT = "SpikaEnterprise Android v1.0";
 	public static final String S_PASSWORD = "jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB";
 	public static final int S_ITERATIONS = 3;
-	
+
 	// Socket and WebRtc Constants
 	public static final String WS_URL = "wss://www.spikaent.com";
 	public static final String WS_PORT = "32443";
@@ -44,7 +44,6 @@ public class Const {
 	public static final String PUSH_TOKEN_LOCAL = "PushTokenLocal";
 	public static final int ADMIN_REQUEST = 900;
 
-	public static final String PREFERENCES_IS_PASSCODE_ENABLED = "preferences_is_passcode_enabled";
 	public static final String PREFERENCES_STORED_PASSCODE = "preferences_stored_passcode";
 
 	// Timestamp
@@ -185,6 +184,7 @@ public class Const {
 	public static final String PAGE = "page";
 	public static final String SEARCH = "search";
 
+	public static final String ATTRIBUTES = "attributes";
 	public static final String IMAGE = "image";
 	public static final String IMAGE_THUMB = "image_thumb";
 	public static final String USER_ID = "user_id";
@@ -214,6 +214,8 @@ public class Const {
 	public static final int MSG_TYPE_FILE = 6;
 	public static final int MSG_TYPE_DELETED = 7;
 	public static final int MSG_TYPE_GIF = 9;
+	public static final int MSG_TYPE_TEMP_MESS = 999;
+	public static final int MSG_TYPE_TEMP_MESS_ERROR = 9999;
 
 	public static final String PUSH_TYPE = "PushType";
 	public static final int PUSH_TYPE_MSG = 1;
@@ -280,24 +282,28 @@ public class Const {
 	public static final int API_SUCCESS = 2000;
 
 	// Error constants
-	public static final int E_INVALID_TOKEN = 1000;
-	public static final int E_EXPIRED_TOKEN = 1001;
-	public static final int E_NOT_CHAT_MEMBER = 1005;
-	public static final int E_CHAT_INACTIVE = 1006;
-	public static final int E_CHAT_DELETED = 1007;
-	public static final int E_PAGE_NOT_FOUND = 1008;
-	public static final int E_NOT_GROUP_ADMIN = 1009;
-	public static final int E_EMAIL_MISSING = 1010;
-	public static final int E_TEMP_PASSWORD_NOT_VALID = 1011;
-	public static final int E_LOGIN_WITH_TEMP_PASS = 1012;
-	public static final int E_USERNAME_NOT_EXIST = 1013;
-	public static final int E_SOMETHING_WENT_WRONG = 1111;
-	public static final int E_FAILED = 999;
-	public static final int E_DIR_NOT_WRITABLE = 1002;
-	public static final int E_INVALID_LOGIN = 1003;
-	public static final int E_NO_CHILD_MSGS = 1004;
-	public static final int E_INVALID_TEMP_PASSWORD = 1014;
-	public static final int E_PASSWORD_EXIST = 1015;
+	public static final int E_FAILED 						= 999;
+	public static final int E_INVALID_TOKEN 				= 1000;
+	public static final int E_EXPIRED_TOKEN 				= 1001;
+	public static final int E_DIR_NOT_WRITABLE 				= 1002;
+	public static final int E_INVALID_LOGIN 				= 1003;
+	public static final int E_NO_CHILD_MSGS 				= 1004;
+	public static final int E_NOT_CHAT_MEMBER 				= 1005;
+	public static final int E_CHAT_INACTIVE 				= 1006;
+	public static final int E_CHAT_DELETED 					= 1007;
+	public static final int E_PAGE_NOT_FOUND 				= 1008;
+	public static final int E_NOT_GROUP_ADMIN 				= 1009;
+	public static final int E_EMAIL_MISSING 				= 1010;
+	public static final int E_TEMP_PASSWORD_NOT_VALID 		= 1011;
+	public static final int E_LOGIN_WITH_TEMP_PASS 			= 1012;
+	public static final int E_USERNAME_NOT_EXIST 			= 1013;
+	public static final int E_INVALID_TEMP_PASSWORD			= 1014;
+	public static final int E_PASSWORD_EXIST 				= 1015;
+	public static final int E_ROOM_LIMIT_EXCEEDED	 		= 1016;
+	public static final int E_FILE_LIMIT_EXCEEDED 			= 1017;
+	public static final int E_ORGANIZATION_SUSPENDED 		= 1018;
+	public static final int E_ORGANIZATION_DELETED 			= 1019;
+	public static final int E_SOMETHING_WENT_WRONG 			= 1111;
 
 	// extras
 	public static final String EXTRA_ROOT_ID = "com.clover.spika.enterprise.root_id";
@@ -323,7 +329,7 @@ public class Const {
 	public static final String POSITION = "position";
 	public static final String STICEKRS_HOLDER = "stickersHolder";
 	public static final String ACTION_REFRESH_ROOMS = "actionRefreshRoom";
-	
+
 	public static final String SOCKET_ACTION = "socketCheckAvailableAction";
 	public static final String CALL_ACTION = "callAction";
 	public static final String SESSION_ID = "SessionId";
@@ -363,6 +369,10 @@ public class Const {
 	public static final String IS_APLICATION_OPEN = "IsAppOpened";
 	public static final String IS_CALL_ACTIVE = "IsCAllACtive";
 	public static final String ACTIVE_CLASS = "ClassActive";
+	public static final String INTERNET_CONNECTION_CHANGE_ACTION = "internetConnectionChangeAction";
+	public static final String INTERNET_STATE = "internetState";
+	public static final int HAS_INTERNET = 1;
+	public static final int HAS_NOT_INTERNET = -1;
 
 	public static final class SoundControl {
 		public static final int PLAY_BUTTON = 0;
@@ -386,5 +396,5 @@ public class Const {
 	}
 	
 	public static final int PASSCODE_TIMEOUT_TIME = 300000;
-
+	public static final String IS_ENCRYPTED = "isEncrypted";
 }

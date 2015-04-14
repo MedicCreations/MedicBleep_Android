@@ -102,9 +102,10 @@
     <string name="e_username_not_exist">This username does not exist</string>
 
     <!-- Enterprise strings -->
-    <string name="spika_big">SPIKA</string>
+    <string name="spika_big">SPIKA ENTERPRISE</string>
     <string name="spika_enterprise">Enterprise Messaging</string>
     <string name="username">Username</string>
+    <string name="username_or_email">Username or Email</string>
     <string name="new_password">Enter a new password</string>
     <string name="change_password_title">Change password</string>
     <string name="re_type_password">Re-type a new password</string>
@@ -360,5 +361,14 @@
     <string name="touch_to_return_to_call">Touch to return to call</string>
     <string name="other_call_is_in_progress">Other call is in progress</string>
     <string name="choose_take_video">Choose/Take video</string>
+    <string name="please_update_your_google_play_service_for_receiving_push_notification_">Please update Your Google Play Service for receiving push notification.</string>
+    <string name="please_install_google_play_service_for_receiving_push_notification_">Please install Google Play Service for receiving push notification.</string>
+    <string name="resend">Resend</string>
+    <string name="resend_message">Resend Message</string>
+    <string name="no_internet_connection_">No Internet connection!</string>
+    <string name="e_organization_deleted">Selected organization has been disabled. Please contact user support for more details.</string>
+    <string name="e_organization_suspended">Selected organization has been currently suspended. Please contact user support for more details.</string>
+    <string name="e_room_limit_exceeded">Your organization has exceeded room limit and cannot create new rooms any more.</string>
+    <string name="e_file_limit_exceeded">Your organization has exceeded file upload. Please contact yout administrator for more details.</string>
     
 </resources>

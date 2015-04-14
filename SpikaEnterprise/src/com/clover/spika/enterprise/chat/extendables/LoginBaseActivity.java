@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,7 +16,9 @@ import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.SMSVerificationActivity;
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.models.Login;
 import com.clover.spika.enterprise.chat.models.Organization;
@@ -27,6 +30,8 @@ import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
@@ -84,7 +89,7 @@ public abstract class LoginBaseActivity extends Activity {
 		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword, this);
+		LoginSpice.PreLoginWithCredentials preLoginWithCredentials = new LoginSpice.PreLoginWithCredentials(user, hashPassword);
 		spiceManager.execute(preLoginWithCredentials, new CustomSpiceListener<PreLogin>() {
 
 			@Override
@@ -151,7 +156,7 @@ public abstract class LoginBaseActivity extends Activity {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, LoginBaseActivity.this);
+					Utils.onFailedUniversal(message, LoginBaseActivity.this, result.getCode(), true);
 				}
 			}
 		});
@@ -163,7 +168,7 @@ public abstract class LoginBaseActivity extends Activity {
 		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
 
-		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id, this);
+		LoginSpice.LoginWithCredentials loginWithCredentials = new LoginSpice.LoginWithCredentials(user, hashPassword, organization_id);
 		spiceManager.execute(loginWithCredentials, new CustomSpiceListener<Login>() {
 
 			@Override
@@ -177,11 +182,10 @@ public abstract class LoginBaseActivity extends Activity {
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
-
-					Helper.setUserProperties(getApplicationContext(), result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
-
+                    
+                    Helper.setUserProperties(result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
 					checkPasscodeSet(extras);
-
+                    
 				} else {
 
 					String message = "";
@@ -207,7 +211,7 @@ public abstract class LoginBaseActivity extends Activity {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, LoginBaseActivity.this);
+					Utils.onFailedUniversal(message, LoginBaseActivity.this, result.getCode(), false);
 				}
 			}
 		});
@@ -239,10 +243,8 @@ public abstract class LoginBaseActivity extends Activity {
 			if (resultCode == Activity.RESULT_OK) {
 				PasscodeUtility.getInstance().setSessionValid(true);
 
-				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {
-										
+				if (data != null && data.hasExtra(NewPasscodeActivity.EXTRA_PASSCODE)) {										
 					PasscodeUtility.getInstance().setPasscode(this, data.getStringExtra(NewPasscodeActivity.EXTRA_PASSCODE));
-					PasscodeUtility.getInstance().setPasscodeEnabled(this, true);
 				}
 			} else {
 				PasscodeUtility.getInstance().setSessionValid(false);
@@ -252,17 +254,55 @@ public abstract class LoginBaseActivity extends Activity {
 	}
 	
 	void continueToMainActivity (final Bundle extras) {
-		new GoogleUtils().getPushToken(LoginBaseActivity.this);
-
-		final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
-
-		if (extras != null) {
-			intent.putExtras(extras);
-		}
-		
-		SpikaEnterpriseApp.startSocket();
-		
-		startActivity(intent);
-		finish();
+//		new GoogleUtils().getPushToken(LoginBaseActivity.this);
+//
+//		final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
+//
+//		if (extras != null) {
+//			intent.putExtras(extras);
+//		}
+//		
+//		SpikaEnterpriseApp.startSocket();
+//		
+//		startActivity(intent);
+//		finish();
+        
+        int googlePlayServiceResult = GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this);
+        
+        if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+            new GoogleUtils().getPushToken(LoginBaseActivity.this);
+        }
+        
+        final Intent intent = new Intent(LoginBaseActivity.this, MainActivity.class);
+        
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
+        
+        SpikaEnterpriseApp.startSocket();
+        
+        AppDialog dialog = new AppDialog(LoginBaseActivity.this, false);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                finish();
+            }
+        });
+        
+        if(googlePlayServiceResult == ConnectionResult.SUCCESS){
+            if (LoginBaseActivity.this instanceof LoginActivity) {
+                PasscodeUtility.getInstance().setSessionValid(true);
+            }
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            finish();
+        }else if(GooglePlayServicesUtil.isGooglePlayServicesAvailable(LoginBaseActivity.this) == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED){
+            dialog.setInfo(getString(R.string.please_update_your_google_play_service_for_receiving_push_notification_));
+        }else{
+            dialog.setInfo(getString(R.string.please_install_google_play_service_for_receiving_push_notification_));
+        }
 	}
 }

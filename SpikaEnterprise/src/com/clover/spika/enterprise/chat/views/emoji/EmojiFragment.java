@@ -84,7 +84,7 @@ public class EmojiFragment extends CustomFragment {
 				
 				@Override
 				public void onClick(View v) {
-					EmojiCounterHelper.increaseEmojiCounter(String.valueOf(object.getId()), SpikaEnterpriseApp.getSharedPreferences(getActivity()));
+					EmojiCounterHelper.increaseEmojiCounter(String.valueOf(object.getId()), SpikaEnterpriseApp.getSharedPreferences());
 					if(mListener != null) mListener.onEmojiSelect(object);
 				}
 			});

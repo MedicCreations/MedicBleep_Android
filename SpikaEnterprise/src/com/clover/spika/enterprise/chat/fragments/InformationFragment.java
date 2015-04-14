@@ -55,7 +55,7 @@ public class InformationFragment extends CustomFragment {
 		
 		handleProgress(true);
 		
-		UserSpice.GetInformation getInformation = new UserSpice.GetInformation(getActivity());
+		UserSpice.GetInformation getInformation = new UserSpice.GetInformation();
 		spiceManager.execute(getInformation, new CustomSpiceListener<Information>(){
 			
 			@Override

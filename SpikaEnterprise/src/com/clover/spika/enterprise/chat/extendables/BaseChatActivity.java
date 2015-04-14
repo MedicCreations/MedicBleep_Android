@@ -59,25 +59,28 @@ import com.clover.spika.enterprise.chat.RecordAudioActivity;
 import com.clover.spika.enterprise.chat.adapters.SettingsAdapter;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.EmojiSpice;
+import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersDBChanged;
+import com.clover.spika.enterprise.chat.caching.StickersCaching.OnStickersNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.StickersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
-import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
 import com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
-import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.clover.spika.enterprise.chat.views.menu.FrameLayoutForMenuPager;
 import com.clover.spika.enterprise.chat.views.menu.SelectImageListener;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public abstract class BaseChatActivity extends BaseActivity {
+public abstract class BaseChatActivity extends BaseActivity implements OnStickersDBChanged, OnStickersNetworkResult{
 
 	protected static final int PICK_FILE_RESULT_CODE = 987;
 
@@ -358,16 +361,12 @@ public abstract class BaseChatActivity extends BaseActivity {
 		iconToBeChanged.setImageResource(drawableResourceId);
 	}
 
-	protected void setMenuByChatType() {
+	protected void setMenuByChatType(boolean isThread) {
 		if (!isMenuSetted) {
 			isMenuSetted = true;
-			if (chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
-																									// call
-				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove
-																									// divider
-																									// above
-																									// call
+			if (isThread || chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove call
+				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove divider above call
 				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 344);
 				drawerNewHeight = Helper.dpToPx(this, 344);
 				rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1).setBackgroundResource(R.drawable.trans_to_gray_with_bottom_corners);
@@ -503,7 +502,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 									if (path.equals("camera")) {
 										openCamera();
 									} else {
-										openPathCropActivity(path);
+										openPathActivity(path);
 									}
 								}
 							});
@@ -548,41 +547,22 @@ public abstract class BaseChatActivity extends BaseActivity {
 		if (isMenuInAnimation)
 			return;
 		if (stickersList.size() == 0) {
-
-			EmojiSpice.GetEmoji getEmoji = new EmojiSpice.GetEmoji(this);
-			spiceManager.execute(getEmoji, new CustomSpiceListener<StickersHolder>() {
-
+			
+			StickersCacheSpice.GetData stickersCacheSpice = new StickersCacheSpice.GetData(this, spiceManager, this, this);
+			spiceManager.execute(stickersCacheSpice, new CustomSpiceListener<StickersHolder>(){
+				
 				@Override
-				public void onRequestFailure(SpiceException arg0) {
-					super.onRequestFailure(arg0);
-					handleProgress(false);
+				public void onRequestFailure(SpiceException ex) {
+					super.onRequestFailure(ex);
 					Utils.onFailedUniversal(null, BaseChatActivity.this);
 				}
 
 				@Override
 				public void onRequestSuccess(StickersHolder result) {
 					super.onRequestSuccess(result);
-					handleProgress(false);
-
-					if (result.getCode() == Const.API_SUCCESS) {
-
-						stickersList.addAll(result.stickers);
-						EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
-						layout.setStickersList(result.stickers, BaseChatActivity.this, mEmojiListener);
-
-					} else {
-
-						String message = "";
-
-						if (result != null && result.getMessage() != null) {
-							message = result.getMessage();
-						} else {
-							message = getString(R.string.e_something_went_wrong);
-						}
-
-						Utils.onFailedUniversal(message, BaseChatActivity.this);
-					}
+					setEmojiLayout(result);
 				}
+				
 			});
 		} else {
 			EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
@@ -712,32 +692,32 @@ public abstract class BaseChatActivity extends BaseActivity {
 		}
 	}
 
-	protected void deleteMessage(final String messageId) {
+	protected void deleteMessage(final Message message) {
 		AppDialog deleteDialog = new AppDialog(this, false);
 		deleteDialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
 
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
 
-				handleProgress(true);
+//				handleProgress(true);
 
-				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(messageId, BaseChatActivity.this);
+				ChatSpice.DeleteMessage deleteMessage = new ChatSpice.DeleteMessage(message.getId());
 				spiceManager.execute(deleteMessage, new CustomSpiceListener<BaseModel>() {
 
 					@Override
 					public void onRequestFailure(SpiceException arg0) {
 						super.onRequestFailure(arg0);
-						handleProgress(false);
+//						handleProgress(false);
 						Utils.onFailedUniversal(null, BaseChatActivity.this);
 					}
 
 					@Override
 					public void onRequestSuccess(BaseModel result) {
 						super.onRequestSuccess(result);
-						handleProgress(false);
+//						handleProgress(false);
 
 						if (result.getCode() == Const.API_SUCCESS) {
-							onMessageDeleted();
+							onMessageDeleted(message);
 						} else {
 							AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 							dialog.setFailed(result.getCode());
@@ -876,6 +856,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 				}
 
 			} else if (id == R.id.btnVideo || id == R.id.chooseVideo) {
+				forceClose();
 				AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
 				dialog.choseCamGallery(chatId, getRootId(), getMessageId());
 				hideSettings();
@@ -952,7 +933,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 		startActivity(intent);
 	}
 
-	void openPathCropActivity(String path) {
+	void openPathActivity(String path) {
 		Intent intent = new Intent(BaseChatActivity.this, CameraFullPhotoActivity.class);
 		intent.putExtra(Const.INTENT_TYPE, Const.PATH_INTENT);
 		intent.putExtra(Const.FROM_WAll, true);
@@ -978,9 +959,6 @@ public abstract class BaseChatActivity extends BaseActivity {
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			if (parent.getAdapter() != null) {
 
-				// SettingsItem item = (SettingsItem)
-				// parent.getAdapter().getItem(position);
-
 				if (position == SETTINGS_POSITION_FIRST) {
 					if (chatType == Const.C_PRIVATE) {
 						ProfileOtherActivity.openOtherProfile(BaseChatActivity.this, getUserId(), chatImage, chatName, currentUser);
@@ -1002,7 +980,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 						// deactivate chat
 						deactivateChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_INACTIVE) {
-						// deactivate chat
+						// activate chat
 						activateChat();
 					}
 				} else if (position == SETTINGS_POSITION_FOURTH) {
@@ -1050,7 +1028,7 @@ public abstract class BaseChatActivity extends BaseActivity {
 	 */
 	protected abstract void onChatPushUpdated();
 
-	protected abstract void onMessageDeleted();
+	protected abstract void onMessageDeleted(Message message);
 
 	/**
 	 * Called as a callback method after user has selected a file.
@@ -1128,4 +1106,28 @@ public abstract class BaseChatActivity extends BaseActivity {
 			}
 		}
 	}
+	
+	protected void setEmojiLayout(StickersHolder usableData) {
+		if(stickersList.equals(usableData.stickers)) return;
+		EmojiRelativeLayout layout = (EmojiRelativeLayout) rlDrawerEmoji.getChildAt(0);
+		if(stickersList.size() == 0){
+			stickersList.addAll(usableData.stickers);
+			layout.setStickersList(usableData.stickers, BaseChatActivity.this, mEmojiListener);
+		}else{
+			stickersList.clear();
+			stickersList.addAll(usableData.stickers);
+			layout.refreshStickersList(usableData.stickers, BaseChatActivity.this, mEmojiListener);
+			layout.resetDotsIfNeed();
+		}
+		
+	}
+	
+	@Override
+	public void onStickersDBChanged(StickersHolder usableData) {
+		setEmojiLayout(usableData);
+	}
+
+	@Override
+	public void onStickersNetworkResult() {}
+	
 }

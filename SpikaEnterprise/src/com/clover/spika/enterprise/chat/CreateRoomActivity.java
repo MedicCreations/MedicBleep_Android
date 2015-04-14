@@ -111,12 +111,14 @@ public class CreateRoomActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
+				closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth,
+						speedSearchAnimation);
 			}
 		});
 	}
 
-	public void setConfirmScreen(String users_to_add, String group_to_add, String room_to_add, String groupAll, String roomAll, String is_private, String password) {
+	public void setConfirmScreen(String users_to_add, String group_to_add, String room_to_add, String groupAll, String roomAll, String is_private,
+			String password) {
 
 		createRoomBtn.setVisibility(View.VISIBLE);
 		nextStepRoomBtn.setVisibility(View.INVISIBLE);
@@ -179,7 +181,8 @@ public class CreateRoomActivity extends BaseActivity {
 	public void createRoomFinaly(String userIds, String groupIds, String roomIds) {
 
 		handleProgress(true);
-		ChatSpice.CreateRoom createRoom = new ChatSpice.CreateRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId, roomIsPrivate, roomPassword, this);
+		ChatSpice.CreateRoom createRoom = new ChatSpice.CreateRoom(roomName, room_file_id, room_thumb_id, userIds, groupIds, roomIds, categoryId,
+				roomIsPrivate, roomPassword);
 		spiceManager.execute(createRoom, new CustomSpiceListener<Chat>() {
 
 			@Override
@@ -194,13 +197,11 @@ public class CreateRoomActivity extends BaseActivity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					String chat_id = String.valueOf(result.chat.getId());
+					ChatActivity.startWithChatId(CreateRoomActivity.this, result.chat, result.user);
 
-					ChatActivity.startWithChatId(CreateRoomActivity.this, chat_id, result.chat.password, result.user);
+					Helper.setRoomFileId("");
+					Helper.setRoomThumbId("");
 
-					Helper.setRoomFileId(CreateRoomActivity.this, "");
-					Helper.setRoomThumbId(CreateRoomActivity.this, "");
-					
 					Intent inBroadcast = new Intent();
 					inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
 					LocalBroadcastManager.getInstance(CreateRoomActivity.this).sendBroadcast(inBroadcast);
@@ -257,7 +258,8 @@ public class CreateRoomActivity extends BaseActivity {
 		@Override
 		public void onClick(View v) {
 			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
+				openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth,
+						speedSearchAnimation);
 			} else {
 				if (mSearchListener != null) {
 					String data = searchEt.getText().toString();
@@ -319,7 +321,8 @@ public class CreateRoomActivity extends BaseActivity {
 		}
 
 		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation);
+			closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth,
+					speedSearchAnimation);
 			return;
 		}
 

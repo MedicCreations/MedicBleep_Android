@@ -18,10 +18,8 @@ import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
-import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
-import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class SidebarFragment extends CustomFragment implements OnClickListener {
@@ -40,7 +38,6 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 	HomeFragment lobbyFragment;
 	InformationFragment informationFragment;
 	
-	protected SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
 	private ImageLoaderSpice imageLoaderSpice;
 
 	public ImageLoaderSpice getImageLoader() {
@@ -55,21 +52,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		imageLoaderSpice = ImageLoaderSpice.getInstance(getActivity());
 		imageLoaderSpice.setSpiceManager(spiceManager);
-		image = Helper.getUserImage(getActivity());
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		spiceManager.start(getActivity());
-	}
-
-	@Override
-	public void onStop() {
-		if (spiceManager.isStarted()) {
-			spiceManager.shouldStop();
-		}
-		super.onStop();
+		image = Helper.getUserImage();
 	}
 
 	@Override
@@ -86,7 +69,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		setUserImage();
 
 		userName = (TextView) view.findViewById(R.id.userName);
-		userName.setText(Helper.getUserFirstName(getActivity()) + "\n" + Helper.getUserLastName(getActivity()));
+		userName.setText(Helper.getUserFirstName() + "\n" + Helper.getUserLastName());
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(this);
@@ -106,8 +89,8 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!image.equals(Helper.getUserImage(getActivity()))) {
-			image = Helper.getUserImage(getActivity());
+		if (!image.equals(Helper.getUserImage())) {
+			image = Helper.getUserImage();
 			setUserImage();
 		}
 	}
@@ -138,7 +121,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 				informationFragment = new InformationFragment();
 			}
 
-			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.about)); 
+			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.information)); 
 			switchFragment(informationFragment);
 
 			break;
@@ -146,7 +129,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		case R.id.profile:
 
 			if (profileFragment == null) {
-				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(getActivity()), Helper.getUserFirstName(getActivity()), Helper.getUserLastName(getActivity()));
+				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(), Helper.getUserFirstName(), Helper.getUserLastName());
 			}
 
 			((MainActivity) getActivity()).setScreenTitle(getActivity().getResources().getString(R.string.profile));
@@ -157,7 +140,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		case R.id.logout:
 			
 			handleProgress(true);
-			UserSpice.Logout logout = new UserSpice.Logout(getActivity());
+			UserSpice.Logout logout = new UserSpice.Logout();
 			spiceManager.execute(logout, new CustomSpiceListener<BaseModel>(){
 				
 				@Override

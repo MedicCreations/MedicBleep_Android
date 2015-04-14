@@ -202,7 +202,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 		}
 
 		for (int i = 0; i < data.size(); i++) {
-			if (String.valueOf(((User) data.get(i).getModel()).getId()).equals(Helper.getUserId(getActivity()))) {
+			if (String.valueOf(((User) data.get(i).getModel()).getId()).equals(Helper.getUserId())) {
 				data.remove(i);
 			}
 		}
@@ -228,10 +228,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 	public void getUsers() {
 
 		handleProgress(true);
-		RoomsSpice.GetDistinctUserOK get = new RoomsSpice.GetDistinctUserOK(userIds, groupIds, roomIds, groupAllIds, roomAllIds, getActivity());
-		// RoomsSpice.GetDistinctUser getDistinctUser = new
-		// RoomsSpice.GetDistinctUser(userIds, groupIds, roomIds, groupAllIds,
-		// roomAllIds, getActivity());
+		RoomsSpice.GetDistinctUser get = new RoomsSpice.GetDistinctUser(userIds, groupIds, roomIds, groupAllIds, roomAllIds);
 		spiceManager.execute(get, new CustomSpiceListener<ConfirmUsersList>() {
 
 			@Override
@@ -283,7 +280,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			return;
 		}
 
-		String myUserId = Helper.getUserId(getActivity());
+		String myUserId = Helper.getUserId();
 		users_to_add.append(myUserId + ",");
 
 		for (int i = 0; i < usersId.size(); i++) {

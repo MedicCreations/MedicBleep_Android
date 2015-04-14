@@ -40,24 +40,8 @@ public class PasscodeUtility {
 	 * @return true if passcode has been enabled
 	 */
 	public boolean isPasscodeEnabled(Context ctx) {
-		return SpikaEnterpriseApp.getSharedPreferences(ctx).isPasscodeEnabled();
-	}
-
-	/**
-	 * Sets the boolean value which is checked for passcode availability
-	 * 
-	 * @param context
-	 *            context of the activity (or application context)
-	 * @param isPasscodeEnabled
-	 *            sets the internal variable which is later checked for passcode
-	 *            availability
-	 */
-	public void setPasscodeEnabled(Context ctx, boolean isPasscodeEnabled) {
-		if (Looper.myLooper() != Looper.getMainLooper()) {
-			throw new IllegalAccessError("You can only set new values on main thread!");
-		}
-
-		SpikaEnterpriseApp.getSharedPreferences(ctx).setPasscodeEnabled(isPasscodeEnabled);
+		String passcode = SpikaEnterpriseApp.getSharedPreferences().getPasscode();
+		return ((passcode != null) && (passcode.length() == 4));
 	}
 
 	/**
@@ -88,7 +72,7 @@ public class PasscodeUtility {
 
 	public boolean validate(Context ctx, String requestedPasscode) {
 		
-		this.passcode = SpikaEnterpriseApp.getSharedPreferences(ctx).getPasscode();
+		this.passcode = SpikaEnterpriseApp.getSharedPreferences().getPasscode();
 
 		// if, by any chance, passcode length is wrong, react as if entered
 		// passcode is false and thus not validated
@@ -100,12 +84,12 @@ public class PasscodeUtility {
 
 	public void setPasscode(Context ctx, String requestedPasscode) {
 		if (TextUtils.isEmpty(requestedPasscode)) {
-			SpikaEnterpriseApp.getSharedPreferences(ctx).removePreference(Const.PREFERENCES_STORED_PASSCODE);
+			SpikaEnterpriseApp.getSharedPreferences().setPasscode(null);
 			return;
 		}
 
 		if (requestedPasscode.length() == 4) {
-			SpikaEnterpriseApp.getSharedPreferences(ctx).setPasscode(requestedPasscode);
+			SpikaEnterpriseApp.getSharedPreferences().setPasscode(requestedPasscode);
 		}
 	}
 

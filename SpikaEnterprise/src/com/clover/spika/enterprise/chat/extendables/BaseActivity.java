@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -53,8 +54,13 @@ import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.models.LocalPush;
 import com.clover.spika.enterprise.chat.models.User;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
+import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
+import com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
@@ -67,6 +73,11 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.octo.android.robospice.SpiceManager;
 
 public class BaseActivity extends SlidingFragmentActivity {
+
+	/* GreenDAO cache */
+	private SQLiteDatabase db;
+	private DaoMaster daoMaster;
+	private DaoSession daoSession;
 
 	/* Handling push notifications display */
 	List<LocalPush> qPush = new ArrayList<LocalPush>();
@@ -85,10 +96,20 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	private String activeClass = MainActivity.class.getName();
 
-	public SpiceManager spiceManager = new SpiceManager(OkHttpService.class);
+	protected TextView viewForReturnToCall = null;
+	protected TextView viewForNoInternetConnection = null;
+
+	private User tempActiveUser = null;
+	private boolean isAllreadyDissmis = false;
+
+	public SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
+	public SpiceManager offlineSpiceManager = new CustomSpiceManager(SpiceOfflineService.class);
 	private ImageLoaderSpice imageLoaderSpice;
 	
 	private boolean isPasscodeEnabled = false;
+
+	private IntentFilter intentFilterSocket;
+	private IntentFilter intentFilterInternetChangeState = new IntentFilter(Const.INTERNET_CONNECTION_CHANGE_ACTION);
 
 	public ImageLoaderSpice getImageLoader() {
 		return imageLoaderSpice;
@@ -98,6 +119,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onStart() {
 		super.onStart();
 		spiceManager.start(this);
+		offlineSpiceManager.start(this);
 
 		if (getResources().getBoolean(R.bool.enable_web_rtc)) {
 			Intent intent = new Intent(this, SocketService.class);
@@ -112,15 +134,15 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onStop() {
+
 		if (mBound) {
 			unbindService(mConnection);
 			mBound = false;
 		}
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(rec);
 		spiceManager.shouldStop();
-		
-		stopTimeout();
-		
+		offlineSpiceManager.shouldStop();
 		super.onStop();
 	}
 
@@ -158,6 +180,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		/* GreenDAO */
+		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
+		db = helper.getWritableDatabase();
+		daoMaster = new DaoMaster(db);
+		daoSession = daoMaster.newSession();
+
 		imageLoaderSpice = ImageLoaderSpice.getInstance(this);
 		imageLoaderSpice.setSpiceManager(spiceManager);
 
@@ -191,6 +219,25 @@ public class BaseActivity extends SlidingFragmentActivity {
 		getSlidingMenu().setTouchModeBehind(SlidingMenu.TOUCHMODE_NONE);
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 
+		LocalBroadcastManager.getInstance(this).registerReceiver(internetChageStateRec, intentFilterInternetChangeState);
+	}
+
+	// ***********DEBUG DROP TABLE MESSAGES
+	protected void dropAllMessages() {
+		daoSession.getMessageDao().deleteAll();
+	}
+	//***********************
+	
+	// ***********DEBUG DROP DATABASE
+	public void dropDatabase() {
+		DaoMaster.dropAllTables(db, true);
+		DaoMaster.createAllTables(db, true);
+	}
+
+	// ***********************
+
+	public DaoSession getDaoSession() {
+		return daoSession;
 	}
 
 	protected void setActiveClass(String actClass) {
@@ -221,6 +268,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onDestroy() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(internetChageStateRec);
 		super.onDestroy();
 	}
 
@@ -228,9 +276,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		PasscodeUtility.getInstance().setSessionValid(true);
-		
+
 		updateTextViewAction("Call ended");
-		if(requestCode == Const.CALL_ACTIVITY_REQUEST){
+		if (requestCode == Const.CALL_ACTIVITY_REQUEST) {
 			new Handler().postDelayed(new Runnable() {
 
 				@Override
@@ -314,14 +362,15 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 					@Override
 					public void onClick(View v) {
-						ChatActivity.startWithChatId(context, chatId, password, null);
+						ChatActivity.startWithChatIdNoModel(context, chatId, password);
 					}
 				});
 
 				TextView text = (TextView) view.findViewById(R.id.msgPop);
 				text.setText(msg);
 
-				final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+				final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+						RelativeLayout.LayoutParams.WRAP_CONTENT);
 				params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
 
 				contentRoot.addView(view, params);
@@ -432,20 +481,23 @@ public class BaseActivity extends SlidingFragmentActivity {
 	/**
 	 * Disable search bar
 	 */
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, TextView title, int width, int animSpeed) {
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, final ImageButton closeSearch, TextView title, int width,
+			int animSpeed) {
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, null);
 	}
 
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, ImageButton invite) {
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width,
+			int animSpeed, ImageButton invite) {
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, invite, null);
 	}
 
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, LinearLayout layout) {
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width,
+			int animSpeed, LinearLayout layout) {
 		disableSearch(search, searchEt, sidebar, closeSearch, title, width, animSpeed, null, layout);
 	}
 
-	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width, int animSpeed, ImageButton invite,
-			LinearLayout layout) {
+	public void disableSearch(ImageButton search, EditText searchEt, ImageButton sidebar, ImageButton closeSearch, TextView title, int width,
+			int animSpeed, ImageButton invite, LinearLayout layout) {
 
 		if (isOpenSearch) {
 			closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, layout);
@@ -455,23 +507,23 @@ public class BaseActivity extends SlidingFragmentActivity {
 		searchEt.setVisibility(View.GONE);
 	}
 
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
-			int animSpeed) {
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			TextView title, int width, int animSpeed) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
 	}
 
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
-			int animSpeed, LinearLayout layout) {
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			TextView title, int width, int animSpeed, LinearLayout layout) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
 	}
 
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
-			TextView title, int width, int animSpeed) {
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			final ImageButton invite, TextView title, int width, int animSpeed) {
 		openSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
 	}
 
-	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
-			TextView title, int width, int animSpeed, final LinearLayout layout) {
+	protected void openSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			final ImageButton invite, TextView title, int width, int animSpeed, final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
 		if (invite != null)
@@ -500,23 +552,23 @@ public class BaseActivity extends SlidingFragmentActivity {
 		AnimUtils.translationX(title, 0, -width, animSpeed, null);
 	}
 
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
-			int animSpeed) {
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			TextView title, int width, int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, null);
 	}
 
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, TextView title, int width,
-			int animSpeed, final LinearLayout layout) {
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			TextView title, int width, int animSpeed, final LinearLayout layout) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, null, title, width, animSpeed, layout);
 	}
 
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
-			TextView title, int width, int animSpeed) {
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			final ImageButton invite, TextView title, int width, int animSpeed) {
 		closeSearchAnimation(search, sidebar, closeSearch, searchEt, invite, title, width, animSpeed, null);
 	}
 
-	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt, final ImageButton invite,
-			TextView title, int width, int animSpeed, final LinearLayout layout) {
+	protected void closeSearchAnimation(final ImageButton search, final ImageButton sidebar, final ImageButton closeSearch, final EditText searchEt,
+			final ImageButton invite, TextView title, int width, int animSpeed, final LinearLayout layout) {
 		search.setClickable(false);
 		sidebar.setClickable(false);
 		if (invite != null)
@@ -574,7 +626,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	};
 
-	IntentFilter intentFilterSocket;
 	BroadcastReceiver rec = new BroadcastReceiver() {
 
 		@Override
@@ -632,19 +683,19 @@ public class BaseActivity extends SlidingFragmentActivity {
 					dialog.setOnDismissListener(dissmisListener);
 				}
 			} else if (typeOfReceiver == Const.CALL_USER) {
-				
+
 				Logger.custom("d", "LOG", "CALLING");
-				
+
 			} else if (typeOfReceiver == Const.CALL_RECEIVE) {
 				String sessionId = intent.getStringExtra(Const.SESSION_ID);
 				User user = (User) intent.getSerializableExtra(Const.USER);
 				Logger.custom("d", "LOG", "RINGING");
-				
+
 				mService.callRinging(sessionId);
 				showCallingPopup(user, sessionId, true, false);
-				
+
 			} else if (typeOfReceiver == Const.CALL_ANSWER) {
-				
+
 				Logger.custom("d", "LOG", "ANSWER");
 				mService.leaveMyRoom();
 
@@ -723,7 +774,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	protected void callEnded() {
-		if(viewForReturnToCall != null){
+		if (viewForReturnToCall != null) {
 			Intent intent = new Intent(BaseActivity.this, CallActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			intent.putExtra(Const.IS_CALL_ACTIVE, true);
@@ -751,6 +802,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private Runnable callTimeoutRunnable;
 	private MediaPlayer mPlayer = null;
 
+	@SuppressLint("InflateParams")
 	protected void showCallingPopup(final User user, final String sessionId, final boolean receive, boolean isVideo) {
 		tempActiveUser = user;
 		this.isVideo = isVideo;
@@ -906,8 +958,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 			popupCall.setVisibility(View.VISIBLE);
 	}
 
-	protected TextView viewForReturnToCall = null;
-
 	protected void setViewWhenCallIsInBackground(final int idFoBaseView, int idOfActionLayout, boolean isMainActivity) {
 		hidePopupCall();
 
@@ -922,7 +972,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		viewForReturnToCall.getLayoutParams().width = android.widget.RelativeLayout.LayoutParams.MATCH_PARENT;
 		viewForReturnToCall.setId(1);
 
-		((android.widget.RelativeLayout.LayoutParams) findViewById(idOfActionLayout).getLayoutParams()).addRule(RelativeLayout.BELOW, viewForReturnToCall.getId());
+		((android.widget.RelativeLayout.LayoutParams) findViewById(idOfActionLayout).getLayoutParams()).addRule(RelativeLayout.BELOW,
+				viewForReturnToCall.getId());
 
 		viewForReturnToCall.setOnClickListener(new OnClickListener() {
 
@@ -940,8 +991,42 @@ public class BaseActivity extends SlidingFragmentActivity {
 		});
 	}
 
-	private User tempActiveUser = null;
-	private boolean isAllreadyDissmis = false;
+	protected void setViewNoInternetConnection(final int idFoBaseView, int idOfActionLayout) {
+		if (viewForNoInternetConnection != null) {
+			return;
+		}
+		viewForNoInternetConnection = new TextView(this);
+		viewForNoInternetConnection.setBackgroundColor(getResources().getColor(R.color.red));
+		viewForNoInternetConnection.setText(getString(R.string.no_internet_connection_));
+		viewForNoInternetConnection.setTextColor(Color.WHITE);
+		viewForNoInternetConnection.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+		viewForNoInternetConnection.setGravity(Gravity.CENTER);
+		((ViewGroup) findViewById(idFoBaseView)).addView(viewForNoInternetConnection);
+		viewForNoInternetConnection.getLayoutParams().height = (int) getResources().getDimension(R.dimen.menu_height);
+		viewForNoInternetConnection.getLayoutParams().width = android.widget.RelativeLayout.LayoutParams.MATCH_PARENT;
+		viewForNoInternetConnection.setId(2);
+
+		((android.widget.RelativeLayout.LayoutParams) findViewById(idOfActionLayout).getLayoutParams()).addRule(RelativeLayout.BELOW,
+				viewForNoInternetConnection.getId());
+	}
+
+	protected void removeViewNoInternetConnection() {
+		((ViewGroup) viewForNoInternetConnection.getParent()).removeView(viewForNoInternetConnection);
+		viewForNoInternetConnection = null;
+	}
+
+	protected BroadcastReceiver internetChageStateRec = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getIntExtra(Const.INTERNET_STATE, Const.HAS_NOT_INTERNET) == Const.HAS_INTERNET) {
+				if (viewForNoInternetConnection != null) {
+					((ViewGroup) viewForNoInternetConnection.getParent()).removeView(viewForNoInternetConnection);
+					viewForNoInternetConnection = null;
+				}
+			}
+		}
+	};
 
 	private void dissmisCallingPopup() {
 		if (popupCall == null)

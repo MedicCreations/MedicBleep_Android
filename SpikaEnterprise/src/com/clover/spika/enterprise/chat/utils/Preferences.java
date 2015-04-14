@@ -1,8 +1,15 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import com.clover.spika.enterprise.chat.security.JNAesCrypto;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 public class Preferences {
 
@@ -20,9 +27,7 @@ public class Preferences {
 
 	public void setCustomString(String key, String value) {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
-
 		editor.putString(key, value);
-
 		editor.apply();
 	}
 
@@ -72,30 +77,14 @@ public class Preferences {
 		SharedPreferences.Editor sharedEditor = sharedPreferences.edit();
 		sharedEditor.remove(key);
 		sharedEditor.apply();
-
-		SharedPreferences.Editor passcodeEditor = sharedPreferences.edit();
-		passcodeEditor.remove(key);
-		passcodeEditor.apply();
-	}
-
-	public void setPasscodeEnabled(boolean enabled) {
-		SharedPreferences.Editor editor = passcodePreferences.edit();
-		editor.putBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, enabled);
-		editor.apply();
-	}
-
-	public boolean isPasscodeEnabled() {
-		return passcodePreferences.getBoolean(Const.PREFERENCES_IS_PASSCODE_ENABLED, false);
 	}
 
 	public void setPasscode(String passcode) {
-		SharedPreferences.Editor editor = passcodePreferences.edit();
-		editor.putString(Const.PREFERENCES_STORED_PASSCODE, passcode);
-		editor.apply();
+		setEncryptedString(Const.PREFERENCES_STORED_PASSCODE, passcode, passcodePreferences);
 	}
 
 	public String getPasscode() {
-		return passcodePreferences.getString(Const.PREFERENCES_STORED_PASSCODE, "");
+		return getEncryptedString(Const.PREFERENCES_STORED_PASSCODE, passcodePreferences);
 	}
 
 	public void clear() {
@@ -104,4 +93,67 @@ public class Preferences {
 		editor.apply();
 	}
 
+	public String getEncryptedString(String key) {
+		return getEncryptedString(key, sharedPreferences); 
+	}
+	
+	public String getEncryptedString(String key, SharedPreferences preferences) {
+		String encrypted = preferences.getString(md5(key), "");
+		String decrypted;
+		if(TextUtils.isEmpty(encrypted)) {
+			return "";
+		}
+		try {
+			decrypted = JNAesCrypto.decryptJN(encrypted);
+		} catch (Exception e) {
+			e.printStackTrace();
+			decrypted = "";
+		}
+		return decrypted;
+	}
+
+	public void setEncryptedString(String key, String value) {
+		setEncryptedString(key, value, sharedPreferences);
+	}
+	
+	public void setEncryptedString(String key, String value, SharedPreferences preferences) {
+		if ((value == null) || (value.length() == 0)) {
+			removeEncryptedPreference(key, preferences);
+			return;
+		}
+		SharedPreferences.Editor editor = preferences.edit();
+		String encrypted;
+		try {
+			encrypted = JNAesCrypto.encryptJN(value);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		editor.putString(md5(key), encrypted);
+		editor.apply();
+	}
+	
+	public void removeEncryptedPreference(String key) {
+		removeEncryptedPreference(key, sharedPreferences);
+	}
+	
+	public void removeEncryptedPreference(String key, SharedPreferences preferences) {
+		SharedPreferences.Editor sharedEditor = preferences.edit();
+		sharedEditor.remove(md5(key));
+		sharedEditor.apply();
+	}
+	
+	public static String md5(String s) {
+	    MessageDigest digest;
+	    try {
+	        digest = MessageDigest.getInstance("MD5");
+	        digest.update(s.getBytes(),0,s.length());
+	        String hash = new BigInteger(1, digest.digest()).toString(16);
+	        return hash;
+	    } 
+	    catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	    }
+	    return "";
+	}
 }

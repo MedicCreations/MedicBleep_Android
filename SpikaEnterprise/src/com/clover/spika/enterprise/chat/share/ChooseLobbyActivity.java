@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -19,13 +18,15 @@ import com.clover.spika.enterprise.chat.adapters.RecentAdapter;
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
 import com.clover.spika.enterprise.chat.api.robospice.ChatSpice;
-import com.clover.spika.enterprise.chat.api.robospice.LobbySpice;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyDBChanged;
+import com.clover.spika.enterprise.chat.caching.LobbyCaching.OnLobbyNetworkResult;
+import com.clover.spika.enterprise.chat.caching.robospice.LobbyCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Result;
+import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.models.UploadFileModel;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
@@ -35,7 +36,7 @@ import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshBase;
 import com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class ChooseLobbyActivity extends BaseActivity implements OnItemClickListener {
+public class ChooseLobbyActivity extends BaseActivity implements OnItemClickListener, OnLobbyDBChanged, OnLobbyNetworkResult {
 
 	private PullToRefreshListView mainListView;
 	private RecentAdapter adapter;
@@ -97,21 +98,26 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 		if (mainListView == null) {
 			return;
 		}
-		
+
 		for (Chat item : data) {
 			item.last_message = Message.decryptContent(this, item.last_message);
 		}
-		
-		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
-		if (toClearPrevious)
-			currentCount = data.size();
 
-		if (toClearPrevious)
+		int currentCount = mainListView.getRefreshableView().getAdapter().getCount() - 2 + data.size();
+
+		if (toClearPrevious) {
+			currentCount = data.size();
+		}
+
+		if (toClearPrevious) {
 			adapter.setData(data);
-		else
+		} else {
 			adapter.addData(data);
-		if (toClearPrevious)
+		}
+
+		if (toClearPrevious) {
 			mainListView.getRefreshableView().setSelection(0);
+		}
 
 		mainListView.onRefreshComplete();
 
@@ -133,40 +139,17 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	}
 
 	public void getLobby(int page, final boolean toClear) {
-		
-		handleProgress(true);
-		
-		LobbySpice.GetLobbyByType getLobbyType = new LobbySpice.GetLobbyByType(page, Const.ALL_TOGETHER_TYPE, this);
-		spiceManager.execute(getLobbyType, new CustomSpiceListener<LobbyModel>(){
-			
+
+		LobbyCacheSpice.GetData recentFragmentGetData = new LobbyCacheSpice.GetData(this, spiceManager, page, toClear, this, this);
+		spiceManager.execute(recentFragmentGetData, new CustomSpiceListener<List>() {
+
+			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
-				handleProgress(false);
-				Utils.onFailedUniversal(null, ChooseLobbyActivity.this);
-			}
-			
-			@Override
-			public void onRequestSuccess(LobbyModel result) {
+			public void onRequestSuccess(List result) {
 				super.onRequestSuccess(result);
-				handleProgress(false);
-				
-				String message = getResources().getString(R.string.e_something_went_wrong);
-
-				if (result.getCode() == Const.API_SUCCESS) {
-
-					mTotalCount = result.all_chats.total_count;
-					setData(result.all_chats.chats, toClear);
-
-				} else {
-
-					if(result != null && !TextUtils.isEmpty(result.getMessage())){
-						message = result.getMessage();
-					}
-
-					Utils.onFailedUniversal(message, ChooseLobbyActivity.this);
-				}
+				setData(result, toClear);
 			}
+
 		});
 	}
 
@@ -187,6 +170,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 	}
 
 	public void uploadFile(Uri file, final Chat chat) {
+
 		if (file.toString().contains("file://")) {
 			try {
 				String path = file.toString().substring(7);
@@ -215,15 +199,14 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
 			dialog.setFailed(getString(R.string.e_something_went_wrong));
 		}
-
 	}
 
 	public void sendMessage(int type, final Chat chat, String text, String fileId, String thumbId, String longitude, String latitude) {
 
 		handleProgress(true);
 
-		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, String.valueOf(chat.getId()), text, fileId, thumbId, longitude, latitude, null, null, this);
-		spiceManager.execute(sendMessage, new CustomSpiceListener<Integer>() {
+		ChatSpice.SendMessage sendMessage = new ChatSpice.SendMessage(type, String.valueOf(chat.getId()), text, fileId, thumbId, longitude, latitude, null, null);
+		spiceManager.execute(sendMessage, new CustomSpiceListener<SendMessageResponse>() {
 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
@@ -232,17 +215,27 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			}
 
 			@Override
-			public void onRequestSuccess(Integer result) {
+			public void onRequestSuccess(SendMessageResponse result) {
 				handleProgress(false);
 
-				if (result == Const.API_SUCCESS) {
-					ChatActivity.startWithChatId(ChooseLobbyActivity.this, String.valueOf(chat.getId()), chat.password, chat.user);
+				if (result.getCode() == Const.API_SUCCESS) {
+					ChatActivity.startWithChatId(ChooseLobbyActivity.this, chat, chat.user);
 				} else {
 					AppDialog dialog = new AppDialog(ChooseLobbyActivity.this, false);
-					dialog.setFailed(result);
+					dialog.setFailed(result.getCode());
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onRecentDBChanged(List<Chat> usableData, boolean isClear) {
+		setData(usableData, isClear);
+	}
+
+	@Override
+	public void onRecentNetworkResult(int totalCount) {
+		mTotalCount = totalCount;
 	}
 
 }

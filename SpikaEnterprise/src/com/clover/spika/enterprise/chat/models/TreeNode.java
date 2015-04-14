@@ -1,12 +1,12 @@
 package com.clover.spika.enterprise.chat.models;
 
-import com.clover.spika.enterprise.chat.utils.MessageIdComparator;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
+
+import com.clover.spika.enterprise.chat.utils.MessageIdComparator;
 
 public class TreeNode {
 

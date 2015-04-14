@@ -116,11 +116,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:autoLink="all"
+                        android:visibility="gone"
                         android:gravity="left"
                         android:linksClickable="true"
                         android:textColor="@android:color/white"
                         android:textColorLink="@color/light_light_gray"
                         android:textSize="20sp" />
+                    
+                    <View
+                        android:id="@+id/meViewForReadMoreClick"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20sp"
+                        android:layout_alignBottom="@id/meMsgContent"
+                        android:layout_alignLeft="@id/meMsgContent"
+                        android:layout_alignRight="@id/meMsgContent" />
+
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -314,6 +324,16 @@
                             android:linksClickable="true"
                             android:textColor="@android:color/black"
                             android:textSize="20sp" />
+                        
+                        <View android:id="@+id/youViewForReadMoreClick"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20sp"
+                            android:visibility="gone"
+                            android:layout_alignBottom="@id/youMsgContent"
+                            android:layout_alignLeft="@id/youMsgContent"
+                            android:layout_alignStart="@id/youMsgContent"
+                            android:layout_alignEnd="@id/youMsgContent"
+                            android:layout_alignRight="@id/youMsgContent"/>
                     </RelativeLayout>
 
                     <RelativeLayout

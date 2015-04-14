@@ -8,8 +8,6 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.content.Context;
-
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -20,6 +18,7 @@ import com.clover.spika.enterprise.chat.models.UserWrapper;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
@@ -30,35 +29,26 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
 public class UserSpice {
-	
+
 	public static class UpdateUserImage extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-		
 		private String image;
 		private String thumb;
 
-		public UpdateUserImage(String image, String thumb, Context context) {
+		public UpdateUserImage(String image, String thumb) {
 			super(BaseModel.class);
 
-			this.ctx = context;
-			
 			this.image = image;
 			this.thumb = thumb;
 		}
 
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
-			
-			RequestBody formBody = new FormEncodingBuilder()
-			.add(Const.IMAGE, image)
-			.add(Const.IMAGE_THUMB, thumb)
-			.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_UPDATE_USER)
-				.post(formBody);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.IMAGE, image).add(Const.IMAGE_THUMB, thumb).build();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_USER)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -71,28 +61,21 @@ public class UserSpice {
 			return mapper.readValue(responseBody, BaseModel.class);
 		}
 	}
-	
+
 	public static class UpdateUserToken extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-		
-		public UpdateUserToken(Context context) {
+		public UpdateUserToken() {
 			super(BaseModel.class);
-
-			this.ctx = context;
 		}
 
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
-			
-			RequestBody formBody = new FormEncodingBuilder()
-			.add(Const.PUSH_TOKEN, SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomString(Const.PUSH_TOKEN_LOCAL))
-			.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_UPDATE_PUSH_TOKEN)
-				.post(formBody);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.PUSH_TOKEN,
+					SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.PUSH_TOKEN_LOCAL)).build();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_PUSH_TOKEN)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -105,28 +88,20 @@ public class UserSpice {
 			return mapper.readValue(responseBody, BaseModel.class);
 		}
 	}
-	
+
 	public static class Logout extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-		
-		public Logout(Context context) {
+		public Logout() {
 			super(BaseModel.class);
-
-			this.ctx = context;
 		}
 
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
-			
-			RequestBody formBody = new FormEncodingBuilder()
-			.add(Const.PUSH_TOKEN, "")
-			.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_LOGOUT_API)
-				.post(formBody);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.PUSH_TOKEN, "").build();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_LOGOUT_API)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -139,38 +114,33 @@ public class UserSpice {
 			return mapper.readValue(responseBody, BaseModel.class);
 		}
 	}
-	
+
 	public static class GetProfile extends CustomSpiceRequest<UserWrapper> {
 
-		private Context ctx;
-		
 		private String userId;
 		private boolean getDetailValues;
-		
-		public GetProfile(String userId, boolean getDetailValues, Context context) {
+
+		public GetProfile(String userId, boolean getDetailValues) {
 			super(UserWrapper.class);
 
-			this.ctx = context;
 			this.userId = userId;
 			this.getDetailValues = getDetailValues;
 		}
 
 		@Override
 		public UserWrapper loadDataFromNetwork() throws Exception {
-			
+
 			HashMap<String, String> getParams = new HashMap<String, String>();
 			getParams.put(Const.USER_ID, userId);
 
 			if (getDetailValues) {
 				getParams.put(Const.GET_DETAIL_VALUES, "1");
 			}
-			
+
 			GetUrl getParameters = new GetUrl(getParams);
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_USER_PROFILE + getParameters.toString())
-				.get();
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders())
+					.url(Const.BASE_URL + Const.F_USER_PROFILE + getParameters.toString()).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -183,24 +153,17 @@ public class UserSpice {
 			return mapper.readValue(responseBody, UserWrapper.class);
 		}
 	}
-	
+
 	public static class GetInformation extends CustomSpiceRequest<Information> {
 
-		private Context ctx;
-		
-		public GetInformation(Context context) {
+		public GetInformation() {
 			super(Information.class);
-
-			this.ctx = context;
 		}
 
 		@Override
 		public Information loadDataFromNetwork() throws Exception {
-			
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_USER_INFORMATION)
-				.get();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_USER_INFORMATION).get();
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -213,28 +176,24 @@ public class UserSpice {
 			return mapper.readValue(responseBody, Information.class);
 		}
 	}
-	
+
 	public static class UpdateUserDetails extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-		
 		private List<UserDetail> userDetails;
-		
-		public UpdateUserDetails(List<UserDetail> userDetails, Context context) {
+
+		public UpdateUserDetails(List<UserDetail> userDetails) {
 			super(BaseModel.class);
 
-			this.ctx = context;
-			
 			this.userDetails = userDetails;
 		}
 
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
-			
+
 			JSONArray detailsArray = new JSONArray();
 
 			for (UserDetail detail : userDetails) {
-				
+
 				if (detail.getValue() != null) {
 					JSONObject object = new JSONObject();
 					object.put(detail.getKey(), detail.getValue());
@@ -243,14 +202,10 @@ public class UserSpice {
 				}
 			}
 
-			RequestBody formBody = new FormEncodingBuilder()
-				.add(Const.DETAILS, detailsArray.toString())
-				.build();
+			RequestBody formBody = new FormEncodingBuilder().add(Const.DETAILS, detailsArray.toString()).build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_UPDATE_USER)
-				.post(formBody);
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_USER)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -263,20 +218,16 @@ public class UserSpice {
 			return mapper.readValue(responseBody, BaseModel.class);
 		}
 	}
-	
+
 	public static class UpdateUserPassword extends CustomSpiceRequest<Login> {
 
-		private Context ctx;
-		
 		private String newPassword;
 		private String tempPassword;
 		boolean isUpdate;
-		
-		public UpdateUserPassword(boolean isUpdate, String tempPassword, String newPassword, Context context) {
+
+		public UpdateUserPassword(boolean isUpdate, String tempPassword, String newPassword) {
 			super(Login.class);
 
-			this.ctx = context;
-			
 			this.newPassword = newPassword;
 			this.tempPassword = tempPassword;
 			this.isUpdate = isUpdate;
@@ -284,36 +235,33 @@ public class UserSpice {
 
 		@Override
 		public Login loadDataFromNetwork() throws Exception {
-			
+
 			FormEncodingBuilder formBodyBuilder = new FormEncodingBuilder();
-			
+
 			try {
-				
+
 				String hashPassword = Utils.getHexString(newPassword);
 				formBodyBuilder.add(Const.NEW_PASSWORD, hashPassword);
-				
+
 			} catch (NoSuchAlgorithmException | UnsupportedEncodingException e1) {
 				e1.printStackTrace();
 			}
-			
-			Request.Builder requestBuilder = new Request.Builder()
-			.headers(getPostHeaders(ctx));
-			
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders());
+
 			if (isUpdate) {
-				
-				requestBuilder.url(Const.BASE_URL + Const.F_UPDATE_USER_PASSWORD)
-				.post(formBodyBuilder.build());
-				
+
+				requestBuilder.url(Const.BASE_URL + Const.F_UPDATE_USER_PASSWORD).post(formBodyBuilder.build());
+
 			} else {
 
 				String hashTempPassword = Utils.getHexString(tempPassword);
-				
+
 				formBodyBuilder.add(Const.TEMP_PASSWORD, hashTempPassword);
-				
-				requestBuilder.url(Const.BASE_URL + Const.F_CHANGE_USER_PASSWORD)
-				.post(formBodyBuilder.build());
+
+				requestBuilder.url(Const.BASE_URL + Const.F_CHANGE_USER_PASSWORD).post(formBodyBuilder.build());
 			}
-			
+
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
@@ -323,51 +271,42 @@ public class UserSpice {
 			ObjectMapper mapper = new ObjectMapper();
 
 			Login login = mapper.readValue(responseBody, Login.class);
-			
+
 			if (login != null) {
 				if (login.getCode() == Const.API_SUCCESS) {
 
-					SpikaEnterpriseApp.getSharedPreferences(ctx).setUserTokenId(login.getToken());
-					if (SpikaEnterpriseApp.getSharedPreferences(ctx).getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
-						SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PASSWORD, newPassword);
+					SpikaEnterpriseApp.getSharedPreferences().setUserTokenId(login.getToken());
+					if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
+						Helper.setPassword(newPassword);
 					} else {
-						SpikaEnterpriseApp.getSharedPreferences(ctx).setCustomString(Const.PASSWORD, "");
+						Helper.setPassword(null);
 					}
 				}
 			}
-			
+
 			return login;
 		}
 	}
-	
+
 	public static class InviteUsers extends CustomSpiceRequest<Chat> {
 
-		private Context ctx;
-		
 		private String chatId;
 		private String users;
-		
-		public InviteUsers(String chatId, String users, Context context) {
+
+		public InviteUsers(String chatId, String users) {
 			super(Chat.class);
 
-			this.ctx = context;
-			
 			this.chatId = chatId;
 			this.users = users;
 		}
 
 		@Override
 		public Chat loadDataFromNetwork() throws Exception {
-			
-			RequestBody formBody = new FormEncodingBuilder()
-				.add(Const.CHAT_ID, chatId)
-				.add(Const.USERS_TO_ADD, users)
-				.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_INVITE_USERS)
-				.post(formBody);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.CHAT_ID, chatId).add(Const.USERS_TO_ADD, users).build();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_INVITE_USERS)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -380,32 +319,24 @@ public class UserSpice {
 			return mapper.readValue(responseBody, Chat.class);
 		}
 	}
-	
+
 	public static class ForgotPassword extends CustomSpiceRequest<BaseModel> {
 
-		private Context ctx;
-		
 		private String username;
-		
-		public ForgotPassword(String username, Context context) {
+
+		public ForgotPassword(String username) {
 			super(BaseModel.class);
 
-			this.ctx = context;
-			
 			this.username = username;
 		}
 
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
-			
-			RequestBody formBody = new FormEncodingBuilder()
-				.add(Const.USERNAME, username)
-				.build();
 
-			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getPostHeaders(ctx))
-				.url(Const.BASE_URL + Const.F_FORGOT_PASSWORD)
-				.post(formBody);
+			RequestBody formBody = new FormEncodingBuilder().add(Const.USERNAME, username).build();
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_FORGOT_PASSWORD)
+					.post(formBody);
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
@@ -418,5 +349,5 @@ public class UserSpice {
 			return mapper.readValue(responseBody, BaseModel.class);
 		}
 	}
-	
+
 }

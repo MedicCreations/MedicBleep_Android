@@ -9,7 +9,7 @@ import com.octo.android.robospice.request.okhttp.OkHttpSpiceRequest;
 import com.squareup.okhttp.Headers;
 
 public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
-
+	
 	public CustomSpiceRequest(Class<T> clazz) {
 		super(clazz);
 	}
@@ -40,12 +40,12 @@ public abstract class CustomSpiceRequest<T> extends OkHttpSpiceRequest<T> {
 		return null;
 	}
 
-	public Headers getPostHeaders(Context ctx) {
-		return NetworkManagement.getPostHeadersWithContext(ctx);
+	public Headers getPostHeaders() {
+		return NetworkManagement.getPostHeaders();
 	}
 
-	public Headers getGetHeaders(Context ctx) {
-		return NetworkManagement.getGetHeadersWithContext(ctx);
+	public Headers getGetHeaders() {
+		return NetworkManagement.getGetHeaders();
 	}
 
 }

@@ -2,8 +2,6 @@ package com.clover.spika.enterprise.chat.api.robospice;
 
 import java.util.HashMap;
 
-import android.content.Context;
-
 import com.clover.spika.enterprise.chat.models.LobbyModel;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
@@ -17,16 +15,12 @@ import com.squareup.okhttp.ResponseBody;
 public class LobbySpice {
 	
 	public static class GetLobbyByType extends CustomSpiceRequest<LobbyModel> {
-
-		private Context ctx;
 		
 		private int page;
 		private int type;
 
-		public GetLobbyByType(int page, int type, Context context) {
+		public GetLobbyByType(int page, int type) {
 			super(LobbyModel.class);
-
-			this.ctx = context;
 			
 			this.page = page;
 			this.type = type;
@@ -42,7 +36,7 @@ public class LobbySpice {
 			GetUrl urlParams = new GetUrl(getParams);
 
 			Request.Builder requestBuilder = new Request.Builder()
-				.headers(getGetHeaders(ctx))
+				.headers(getGetHeaders())
 				.url(Const.BASE_URL + Const.F_USER_GET_LOBBY + urlParams.toString())
 				.get();
 
@@ -51,7 +45,7 @@ public class LobbySpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
-
+			
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, LobbyModel.class);

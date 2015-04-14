@@ -30,7 +30,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -96,7 +95,7 @@ public class NetworkManagement {
 
 		return getString(entity.getContent());
 	}
-	
+
 	private static String getString(InputStream is) throws IOException {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
@@ -111,47 +110,45 @@ public class NetworkManagement {
 
 		return builder.toString();
 	}
-	
+
 	/**
-	
-	* HttpClient mini singleton
-	
-	*/
-	
+	 * 
+	 * HttpClient mini singleton
+	 */
+
 	public static class HttpSingleton {
-	
+
 		private static HttpClient sInstance = null;
 		private static long sTimestamp = 0L;
 		private static long sHour = 3600L;
-		
-		
+
 		public static HttpClient getInstance() {
-		
+
 			long current = System.currentTimeMillis() / 1000L;
-			
+
 			if (sInstance == null || (current > (sTimestamp + sHour))) {
-			
+
 				sTimestamp = System.currentTimeMillis() / 1000L;
-				
+
 				HttpParams params = new BasicHttpParams();
 				params.setParameter(CoreProtocolPNames.USER_AGENT, Const.HTTP_USER_AGENT);
 				params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-				
+
 				SchemeRegistry schemeRegistry = new SchemeRegistry();
 				schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-				
-				final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+
+				SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
 				schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
-				
+
 				ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-				
+
 				sInstance = new DefaultHttpClient(cm, params);
 			}
-		
+
 			return sInstance;
 		}
 	}
-	
+
 	// start: App requests
 	public static String httpPostRequest(HashMap<String, String> postParams, String token) throws IOException, JSONException {
 		return httpPostRequest("", postParams, token);
@@ -172,46 +169,47 @@ public class NetworkManagement {
 	public static String httpGetRequest(String apiUrl, HashMap<String, String> getParams, String token) throws IOException {
 		return getOkRequest(Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl), getParams, true, token).string();
 	}
-	
+
 	public static JSONObject httpGetCustomUrlRequest(String apiUrl, HashMap<String, String> getParams) throws IOException {
 		return Helper.jObjectRawFromString(getOkRequest(apiUrl, getParams, false, null).string());
 	}
-	
+
 	public static String httpGetRequestWithRawResponse(String url) throws IOException {
 		return getOkRequest(url, null, false, null).string();
 	}
-	
+
 	public static ResponseBody httpGetGetFile(String token, String apiUrl, HashMap<String, String> getParams) throws IOException {
-		
+
 		String gifString = null;
-		
-		if(getParams.get("file_id") != null && getParams.get("file_id").startsWith("http")){
+
+		if (getParams.get("file_id") != null && getParams.get("file_id").startsWith("http")) {
 			gifString = getParams.get("file_id");
 			getParams = null;
 		}
 
 		String url = Const.BASE_URL + (TextUtils.isEmpty(apiUrl) ? "" : apiUrl);
-		
-		if (!TextUtils.isEmpty(gifString)){
+
+		if (!TextUtils.isEmpty(gifString)) {
 			url = gifString;
 		}
 
 		return getOkRequest(url, getParams, true, token);
 	}
+
 	// end: App requests
 
 	// start: request handling
 	private static ResponseBody getOkRequest(String url, HashMap<String, String> getParams, boolean addHeaders, String token) throws IOException {
-		
+
 		GetUrl urlParams = new GetUrl(getParams);
 		String finalUrl = url + urlParams.toString();
 
 		Request.Builder requestBuilder = new Request.Builder().url(finalUrl);
-		
-		if(addHeaders){
+
+		if (addHeaders) {
 			requestBuilder.headers(getGetHeadersWithToken(token));
 		}
-		
+
 		Request request = requestBuilder.build();
 		Response response = OkHttpClientSingleton.getInstance().newCall(request).execute();
 
@@ -227,77 +225,71 @@ public class NetworkManagement {
 				formBodyBuilder.add(entry.getKey(), entry.getValue());
 			}
 		}
-		
+
 		Request.Builder requestBuilder = new Request.Builder().url(url).post(formBodyBuilder.build());
-		
-		if(addHeaders){
+
+		if (addHeaders) {
 			requestBuilder.headers(getPostHeadersWithToken(token));
 		}
-		
+
 		Request request = requestBuilder.build();
 		Response response = OkHttpClientSingleton.getInstance().newCall(request).execute();
 
 		return response.body();
 	}
-	
-	public static Headers getPostHeadersWithContext(Context ctx){
-		return postHeaders(null, ctx);
-	}
-	
-	public static Headers getPostHeadersWithToken(String token){
-		return postHeaders(token, null);
-	}
-	
-	private static Headers postHeaders(String token, Context ctx) {
 
-		Headers.Builder headersBuilder = new Headers.Builder()
-		.add("Encoding", "UTF-8")
-		.add(Const.APP_VERSION, Helper.getAppVersion())
-		.add(Const.PLATFORM, "android")
-		.add("User-Agent", Const.HTTP_USER_AGENT);
+	public static Headers getPostHeaders() {
+		return postHeaders(null);
+	}
 
-		if(TextUtils.isEmpty(token)){
-		 token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+	public static Headers getPostHeadersWithToken(String token) {
+		return postHeaders(token);
+	}
+
+	private static Headers postHeaders(String token) {
+
+		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
+				.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		if (TextUtils.isEmpty(token)) {
+			token = SpikaEnterpriseApp.getSharedPreferences().getToken();
 		}
-		
+
 		if (!TextUtils.isEmpty(token)) {
 			headersBuilder.add(Const.TOKEN_BIG_T, token);
 		}
 
 		return headersBuilder.build();
 	}
-	
-	public static Headers getGetHeadersWithContext(Context ctx){
-		return getHeaders(null, ctx);
-	}
-	
-	public static Headers getGetHeadersWithToken(String token){
-		return getHeaders(token, null);
+
+	public static Headers getGetHeaders() {
+		return getHeaders(null);
 	}
 
-	private static Headers getHeaders(String token, Context ctx) {
-		
-		Headers.Builder headersBuilder = new Headers.Builder()
-		.add("Encoding", "UTF-8")
-		.add(Const.APP_VERSION, Helper.getAppVersion())
-		.add(Const.PLATFORM, "android")
-		.add("User-Agent", Const.HTTP_USER_AGENT);
+	public static Headers getGetHeadersWithToken(String token) {
+		return getHeaders(token);
+	}
 
-		if(TextUtils.isEmpty(token)){
-			 token = SpikaEnterpriseApp.getSharedPreferences(ctx).getToken();
+	private static Headers getHeaders(String token) {
+
+		Headers.Builder headersBuilder = new Headers.Builder().add("Encoding", "UTF-8").add(Const.APP_VERSION, Helper.getAppVersion()).add(Const.PLATFORM, "android")
+				.add("User-Agent", Const.HTTP_USER_AGENT);
+
+		if (TextUtils.isEmpty(token)) {
+			token = SpikaEnterpriseApp.getSharedPreferences().getToken();
 		}
-		
+
 		if (!TextUtils.isEmpty(token)) {
 			headersBuilder.add(Const.TOKEN_BIG_T, token);
 		}
-		
+
 		return headersBuilder.build();
 	}
-	
+
 	private static class OkHttpClientSingleton {
-		
+
 		private static OkHttpClient client;
-		
+
 		private static long sTimestamp = 0L;
 		private static long sDay = 86400L;
 
@@ -308,13 +300,23 @@ public class NetworkManagement {
 			if (client == null || (current > (sTimestamp + sDay))) {
 
 				sTimestamp = System.currentTimeMillis() / 1000L;
-				
+
 				client = new OkHttpClient();
+
+				// TODO this needs to be set to OkHttpClient
+				// SchemeRegistry schemeRegistry = new SchemeRegistry();
+				// schemeRegistry.register(new Scheme("http",
+				// PlainSocketFactory.getSocketFactory(), 80));
+				//
+				// SSLSocketFactory sslSocketFactory =
+				// SSLSocketFactory.getSocketFactory();
+				// schemeRegistry.register(new Scheme("https", sslSocketFactory,
+				// 443));
 			}
 
 			return client;
 		}
 	}
 	// end: Request handling
-	
+
 }

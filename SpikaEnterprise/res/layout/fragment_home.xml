@@ -19,6 +19,7 @@
         android:baselineAligned="true"
         android:orientation="horizontal"
         android:paddingTop="5dp"
+        android:splitMotionEvents="false"
         android:weightSum="3" >
 
         <RelativeLayout
