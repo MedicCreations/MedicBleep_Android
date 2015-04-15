@@ -1,10 +1,16 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,6 +18,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 
+import com.google.ads.AdRequest;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 /**
@@ -214,4 +221,18 @@ public class GPSTracker extends Service implements LocationListener {
 		public void onLocationChange(Location loc);
 	}
 
+	public String getCountryCode () {
+		String countryCode = "";
+		List<Address> addresses = null;
+		Geocoder geoCoder = new Geocoder(mContext);
+		try {
+			addresses = geoCoder.getFromLocation(latitude, longitude, 1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (addresses != null && addresses.size() > 0) {
+			countryCode = addresses.get(0).getCountryCode();
+		}
+		return countryCode;
+	}
 }

@@ -6,16 +6,15 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+//import com.google.i18n.phonenumbers.NumberParseException;
+//import com.google.i18n.phonenumbers.PhoneNumberUtil;
+//import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+//import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -139,32 +138,34 @@ public class SMSVerificationActivity extends Activity {
 	boolean checkPhoneNumber () {
 		boolean result = false;
 		
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-		PhoneNumber phoneNumber;
-
-		String defaultLocale = Locale.getDefault().getCountry();
-
-		String phoneNumberToCheck = editText.getText().toString();
-
-		if (phoneNumberToCheck.startsWith("00")) {
-			phoneNumberToCheck = phoneNumberToCheck.replaceFirst("00", "+");
-		}
+//		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+//		PhoneNumber phoneNumber;
+//
+//		String defaultLocale = Locale.getDefault().getCountry();
+//
+//		String phoneNumberToCheck = editText.getText().toString();
+//
+//		if (phoneNumberToCheck.startsWith("00")) {
+//			phoneNumberToCheck = phoneNumberToCheck.replaceFirst("00", "+");
+//		}
+//		
+//		try {
+//			phoneNumber = phoneUtil.parse(phoneNumberToCheck, defaultLocale);
+//			if (phoneUtil.isValidNumber(phoneNumber)) {
+//				editText.setText(phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL));
+//				editText.setBackgroundColor(Color.GREEN);
+//				result = true;
+//			} else {
+//				editText.setBackgroundColor(Color.RED);
+//				result = false;
+//			}
+//		} catch (NumberParseException e) {
+//			e.printStackTrace();
+//			editText.setBackgroundColor(Color.RED);
+//			result = false;
+//		} 
+//		return result;
 		
-		try {
-			phoneNumber = phoneUtil.parse(phoneNumberToCheck, defaultLocale);
-			if (phoneUtil.isValidNumber(phoneNumber)) {
-				editText.setText(phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL));
-				editText.setBackgroundColor(Color.GREEN);
-				result = true;
-			} else {
-				editText.setBackgroundColor(Color.RED);
-				result = false;
-			}
-		} catch (NumberParseException e) {
-			e.printStackTrace();
-			editText.setBackgroundColor(Color.RED);
-			result = false;
-		} 
-		return result;
+		return true;
 	}
 }
