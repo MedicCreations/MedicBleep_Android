@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SpikaEnterpriseAndroidStudio.iml" filepath="$PROJECT_DIR$/SpikaEnterpriseAndroidStudio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SpikaEnterpriseMedicBleep.iml" filepath="$PROJECT_DIR$/SpikaEnterpriseMedicBleep.iml" />
       <module fileurl="file://$PROJECT_DIR$/emoji_lib/emoji_lib.iml" filepath="$PROJECT_DIR$/emoji_lib/emoji_lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/slidingMenulib/slidingMenulib.iml" filepath="$PROJECT_DIR$/slidingMenulib/slidingMenulib.iml" />
       <module fileurl="file://$PROJECT_DIR$/spikaEclipse/spikaEclipse.iml" filepath="$PROJECT_DIR$/spikaEclipse/spikaEclipse.iml" />
