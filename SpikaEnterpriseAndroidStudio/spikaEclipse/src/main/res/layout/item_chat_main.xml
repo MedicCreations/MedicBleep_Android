@@ -1,0 +1,513 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/loading_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark_gray"
+        android:gravity="center"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
+
+        <ProgressBar
+            android:id="@+id/loadingPaging"
+            android:layout_width="35dp"
+            android:layout_height="35dp" />
+
+        <TextView
+            android:id="@+id/loadingPagingText"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/loadingPaging"
+            android:gravity="center_vertical"
+            android:text="@string/loading_older_messages"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/dateSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/sectionDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/text_time_gray"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="25.05:1990" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/messagesWholeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" >
+
+        <!-- start: Me message layout -->
+
+        <LinearLayout
+            android:id="@+id/meWholeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="10dp"
+                android:gravity="bottom"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/me_image_view_threads_indicator"
+                    android:layout_width="20dp"
+                    android:layout_height="17dp"
+                    android:layout_gravity="right|top"
+                    android:layout_alignRight="@+id/timeMe"
+                    android:layout_marginBottom="10dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/right_thread_arrow" />
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/timeMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:textColor="@color/text_time_gray"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/defaultMsgLayoutMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/shape_my_chat_bubble"
+                android:minHeight="20dp"
+                android:minWidth="20dp"
+                android:orientation="vertical"
+                android:padding="10dp" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <github.ankushsachdeva.emojicon.EmojiconTextView
+                        android:id="@+id/meMsgContent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:autoLink="all"
+                        android:visibility="gone"
+                        android:gravity="left"
+                        android:linksClickable="true"
+                        android:textColor="@android:color/white"
+                        android:textColorLink="@color/light_light_gray"
+                        android:textSize="20sp" />
+                    
+                    <View
+                        android:id="@+id/meViewForReadMoreClick"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20sp"
+                        android:layout_alignBottom="@id/meMsgContent"
+                        android:layout_alignLeft="@id/meMsgContent"
+                        android:layout_alignRight="@id/meMsgContent" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/meRlSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/mePlayPause"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/play_button" />
+
+                    <ProgressBar
+                        android:id="@+id/mePbSound"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:visibility="invisible" />
+
+                    <Chronometer
+                        android:id="@+id/meChronoPlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/mePlayPause"
+                        android:text="00:00"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/meDownloadPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/mePlayPause"
+                        android:text="0%"
+                        android:textColor="@android:color/white"
+                        android:visibility="invisible" />
+
+                    <SeekBar
+                        android:id="@+id/meSeekBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/meChronoPlay"
+                        android:thumb="@drawable/shape_thumb" />
+
+                    <ProgressBar
+                        android:id="@+id/meDownloadProgressHor"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@id/meDownloadPercent"
+                        android:visibility="invisible" />
+                </RelativeLayout>
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/meWatchVideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/icon_video"
+                    android:gravity="right|center_vertical"
+                    android:text="@string/video_tap_to_play"
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp" />
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/meViewLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/icon_location"
+                    android:gravity="right|center_vertical"
+                    android:text="@string/location_tap_to_view"
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp" />
+
+                <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                    android:id="@+id/meViewImage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="right"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop" />
+
+                <FrameLayout
+                    android:id="@+id/meFlForWebView"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp" >
+                    
+                    <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                        android:id="@+id/meWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="none"/>
+
+                    <!-- <ProgressBar
+                        android:id="@+id/mePbGif"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center" />
+
+                    <ImageView
+                        android:id="@+id/meGifView"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="right"
+                        android:contentDescription="@null"
+                        android:scaleType="fitCenter" /> -->
+                </FrameLayout>
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/meDownloadFile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/icon_file"
+                    android:gravity="right|center_vertical"
+                    android:text=""
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- end: Me message layout -->
+
+
+        <!-- start: You message layout -->
+
+        <RelativeLayout
+            android:id="@+id/youWholeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/youPersonName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/temp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/devil_gray"
+                android:textSize="14sp" />
+
+            <com.clover.spika.enterprise.chat.views.RoundImageView
+                android:id="@+id/youProfileImage"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_below="@id/youPersonName"
+                android:layout_marginLeft="10dp"
+                android:contentDescription="@null"
+                android:src="@drawable/default_user_image" />
+
+            <LinearLayout
+                android:id="@+id/temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/youPersonName"
+                android:layout_toRightOf="@id/youProfileImage"
+                android:gravity="left"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:id="@+id/defaultMsgLayoutYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="0"
+                    android:background="@drawable/shape_you_chat_bubble"
+                    android:minHeight="20dp"
+                    android:minWidth="20dp"
+                    android:orientation="vertical"
+                    android:padding="10dp" >
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+
+                        <github.ankushsachdeva.emojicon.EmojiconTextView
+                            android:id="@+id/youMsgContent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:autoLink="all"
+                            android:gravity="left"
+                            android:linksClickable="true"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp" />
+                        
+                        <View android:id="@+id/youViewForReadMoreClick"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20sp"
+                            android:visibility="gone"
+                            android:layout_alignBottom="@id/youMsgContent"
+                            android:layout_alignLeft="@id/youMsgContent"
+                            android:layout_alignStart="@id/youMsgContent"
+                            android:layout_alignEnd="@id/youMsgContent"
+                            android:layout_alignRight="@id/youMsgContent"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/youRlSound"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left" >
+
+                        <Button
+                            android:id="@+id/youPlayPause"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/play_button" />
+
+                        <ProgressBar
+                            android:id="@+id/YouPbSound"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:visibility="invisible" />
+
+                        <Chronometer
+                            android:id="@+id/youChronoPlay"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youPlayPause"
+                            android:text="00:00"
+                            android:textColor="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/youDownloadPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youPlayPause"
+                            android:text="0%"
+                            android:textColor="@android:color/white"
+                            android:visibility="invisible" />
+
+                        <SeekBar
+                            android:id="@+id/youSeekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youChronoPlay"
+                            android:max="100"
+                            android:thumb="@drawable/shape_thumb" />
+
+                        <ProgressBar
+                            android:id="@+id/youDownloadProgressHor"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_toRightOf="@id/youDownloadPercent"
+                            android:visibility="invisible" />
+                    </RelativeLayout>
+
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        android:id="@+id/youWatchVideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="5dp"
+                        android:drawableRight="@drawable/icon_video"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/video_tap_to_play"
+                        android:textColor="@android:color/black"
+                        android:textSize="17sp" />
+
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        android:id="@+id/youViewLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="5dp"
+                        android:drawableRight="@drawable/icon_location"
+                        android:gravity="left|center_vertical"
+                        android:text="@string/location_tap_to_view"
+                        android:textColor="@android:color/black"
+                        android:textSize="17sp" />
+
+                    <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                        android:id="@+id/youViewImage"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="left"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop" />
+
+                    <FrameLayout
+                        android:id="@+id/youFlForWebView"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp" >
+                        
+                        <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
+                            android:id="@+id/youWebView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="none"/>
+
+                        <!-- <ProgressBar
+                            android:id="@+id/youPbGif"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center" />
+
+                        <ImageView
+                            android:id="@+id/youGifView"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_gravity="left"
+                            android:contentDescription="@null"
+                            android:scaleType="fitCenter" /> -->
+                    </FrameLayout>
+
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        android:id="@+id/youDownloadFile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="5dp"
+                        android:drawableRight="@drawable/icon_file"
+                        android:gravity="left|center_vertical"
+                        android:text=""
+                        android:textColor="@android:color/black"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginRight="10dp"
+                    android:gravity="left|bottom"
+                    android:minHeight="50dp"
+                    android:orientation="vertical" >
+
+                    <ImageView
+                        android:id="@+id/you_image_view_threads_indicator"
+                        android:layout_width="20dp"
+                        android:layout_height="17dp"
+                        android:layout_gravity="left|top"
+                        android:layout_alignLeft="@+id/timeYou"
+                        android:layout_marginBottom="10dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/left_thread_arrow" />
+
+                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                        android:id="@+id/timeYou"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:textColor="@color/text_time_gray"
+                        android:textSize="15sp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- end: You message layout -->
+
+    </RelativeLayout>
+
+    <!-- seen by layout -->
+
+    <TextView
+        android:id="@+id/tvSeenBy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/devil_gray"
+        android:textSize="13sp"
+        android:visibility="visible" />
+
+</LinearLayout>

@@ -1,0 +1,110 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent" >
+
+    <RelativeLayout
+        android:id="@+id/clickLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp" >
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/recentImage"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="1dp"
+            android:contentDescription="@null"
+            android:src="@drawable/default_user_image" />
+
+        <TextView
+            android:id="@+id/unreadText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/recentImage"
+            android:layout_alignTop="@id/recentImage"
+            android:layout_marginRight="-8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/notification_icon"
+            android:gravity="center"
+            android:minHeight="25dp"
+            android:minWidth="25dp"
+            android:text="!"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/textContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/recentImage"
+            android:layout_alignTop="@id/recentImage"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/recentImage"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/nameAndTimeStampOfLastMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp" >
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/recentName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="10dp"
+                    android:textColor="@color/black"
+                    android:layout_toLeftOf="@+id/lastMessageTime"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    android:id="@+id/lastMessageTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/text_dark_gray"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <github.ankushsachdeva.emojicon.EmojiconTextView
+                android:id="@+id/lastMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingLeft="5dp"
+                android:paddingRight="20dp"
+                android:textColor="@color/text_dark_gray"
+                android:textSize="15sp"/>
+        </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignLeft="@id/textContent"
+            android:layout_below="@id/textContent"
+            android:layout_marginTop="5dp"
+            android:background="@color/light_light_gray" />
+    </RelativeLayout>
+
+</RelativeLayout>

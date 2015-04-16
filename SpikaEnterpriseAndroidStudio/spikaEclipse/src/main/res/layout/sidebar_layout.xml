@@ -1,0 +1,176 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/userInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:padding="10dp" >
+
+        <RelativeLayout
+            android:id="@+id/userImageLayout"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:src="@drawable/white_circle" />
+
+            <com.clover.spika.enterprise.chat.views.RoundImageView
+                android:id="@+id/userImage"
+                android:layout_width="match_parent"
+                android:src="@drawable/default_user_image"
+                android:layout_height="match_parent"
+                android:contentDescription="@null" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/userImageLayout"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/hi"
+                android:textStyle="italic"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/john_doe"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/lobby"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_home"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/messenger"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+            
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_profile"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/profile"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/icon_info"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/information"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/selector_transp_blue"
+                android:clickable="true"
+                android:drawableLeft="@drawable/log_out"
+                android:drawablePadding="10dp"
+                android:gravity="left"
+                android:onClick="klik"
+                android:padding="10dp"
+                android:text="@string/logout"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+    </ScrollView>
+	
+    <RelativeLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:layout_weight="1"
+        android:padding="5dp"
+        >
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"/>
+        
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
+            android:id="@+id/app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_below="@+id/app_name"
+            android:text="@string/version"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"/>
+        
+    </RelativeLayout>
+    
+</LinearLayout>

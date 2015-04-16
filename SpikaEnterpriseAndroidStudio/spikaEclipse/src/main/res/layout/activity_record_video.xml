@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue" >
+
+    <RelativeLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:layout_alignParentTop="true" >
+
+        <ImageButton
+            android:id="@+id/goBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/btn_back" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/sendVideo"
+            android:layout_toRightOf="@+id/goBack"
+            android:gravity="center"
+            android:text="@string/video"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/sendVideo"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:src="@android:drawable/ic_menu_send" />
+        
+        <ImageButton
+            android:id="@+id/shareVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/button_share"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/topLayout"
+        android:background="#66000000" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topLayout"
+        android:layout_marginBottom="80dp"
+        android:padding="20dp" >
+
+        <RelativeLayout
+            android:id="@+id/wrraper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" >
+
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/soundControler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/gray_trans"
+            android:padding="5dp" >
+
+            <ImageView
+                android:id="@+id/ivPlayPause"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:contentDescription="@null"
+                android:src="@drawable/play_btn_selector" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_toRightOf="@+id/ivPlayPause"
+                android:progress="0" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

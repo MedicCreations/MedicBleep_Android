@@ -1,0 +1,108 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wholeScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/shadow_gradient" />
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/profileImage"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circle_with_white_border"
+            tools:src="@drawable/white_circle" />
+
+        <FrameLayout
+            android:id="@+id/loadingLayout"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape_rounded_trans_black" >
+
+            <ProgressBar
+                android:id="@+id/loadingPB"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/addPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/profileImage"
+            android:layout_alignTop="@id/profileImage"
+            android:layout_marginRight="-25dp"
+            android:background="@drawable/add_photo"
+            android:contentDescription="@null" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/profileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileImage"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="45sp"
+            tools:text="John Doe" />
+
+        <FrameLayout
+            android:id="@+id/frameLayoutPasscode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileName" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+                android:id="@+id/labelEnablePasscode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center"
+                android:layout_margin="20dp"
+                android:gravity="center"
+                android:text="@string/enable_passcode_label"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+            <Switch
+                android:id="@+id/switchPasscode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center"
+                android:layout_margin="20dp"
+                android:checked="true"
+                android:textColor="@android:color/white"
+                android:textOff="Off"
+                android:textOn="On"
+                android:thumb="@drawable/spikaenterpriseswitch_switch_inner_holo_light"
+                android:track="@drawable/spikaenterpriseswitch_switch_track_holo_light" />
+        </FrameLayout>
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+            android:id="@+id/updatePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/frameLayoutPasscode"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/selector_color_transp"
+            android:padding="10dp"
+            android:text="@string/update_password"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+</ScrollView>

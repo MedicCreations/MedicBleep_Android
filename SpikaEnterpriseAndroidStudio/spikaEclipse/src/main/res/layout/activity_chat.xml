@@ -1,0 +1,460 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rootView" >
+
+    <SurfaceView
+        android:id="@+id/preventFromFlicking"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <RelativeLayout
+        android:id="@+id/actionBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="@color/default_blue" >
+
+        <ImageButton
+            android:id="@+id/goBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="10dp"
+            android:src="@drawable/btn_back" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/settingsBtn"
+            android:layout_toRightOf="@+id/goBack"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/settingsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/selector_settings_button" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/blackedTopMenu"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:background="#99000000"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/actionBarLayout"
+        android:background="@color/default_blue_light" >
+
+        <ListView
+            android:id="@+id/main_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/chatLayout"
+            android:animationCache="false"
+            android:background="@color/transparent"
+            android:cacheColorHint="#00000000"
+            android:divider="@color/transparent"
+            android:dividerHeight="0dp"
+            android:fadingEdge="none"
+            android:listSelector="@color/transparent"
+            android:scrollbars="none"
+            android:scrollingCache="false"
+            android:smoothScrollbar="true" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/noItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/no_messages"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/chatLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/chat_menu_gray"
+            android:minHeight="@dimen/menu_height"
+            android:padding="5dp" >
+
+            <ImageButton
+                android:id="@+id/footerMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/plus_icon" />
+            
+            <ImageButton
+                android:id="@+id/footerSmileyStatic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/footerMore"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/smiley_static" />
+
+            <github.ankushsachdeva.emojicon.EmojiconEditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/footerSmiley"
+                android:layout_toRightOf="@+id/footerSmileyStatic"
+                android:background="@drawable/chat_mask"
+                android:imeOptions="actionSend"
+                android:inputType="textCapSentences"
+                android:maxLines="3"
+                android:padding="5dp"
+                android:scrollbars="vertical"
+                android:singleLine="false" />
+            
+            <ImageButton
+                android:id="@+id/footerSmiley"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/smiley_icon" />
+            
+            <ImageButton
+                android:id="@+id/footerSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:visibility="gone"
+                android:src="@drawable/send_button" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/blackedOther"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#99000000"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/rlNewDrawer"
+            android:layout_width="match_parent"
+            android:layout_height="395dp"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:background="@drawable/shape_rounded_white_without_border"
+            android:visibility="gone" >
+
+            <FrameLayout
+                android:id="@+id/layoutForImagesPager"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_margin="5dp" >
+
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/choosePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/layoutForImagesPager"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/choose_photo"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/firstLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/choosePhoto"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseVideo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/firstLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/choose_take_video"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/secondLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseVideo"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseFile"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/secondLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/choose_file"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/thirdLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseFile"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseLocation"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/thirdLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/location"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/fourthLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseLocation"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/chooseVoice"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/fourthLine"
+                android:background="@drawable/trans_to_gray"
+                android:gravity="center"
+                android:text="@string/voice"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/fifthLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/chooseVoice"
+                android:background="@color/light_light_gray" />
+
+            <TextView
+                android:id="@+id/voiceCall"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/fifthLine"
+                android:background="@drawable/trans_to_gray_with_bottom_corners"
+                android:gravity="center"
+                android:text="@string/call"
+                android:textColor="@color/default_blue"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlDrawer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/chat_menu_gray"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal"
+                    android:weightSum="3" >
+
+                    <Button
+                        android:id="@+id/btnPhoto"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/camera_more_icon_selector"
+                        android:paddingTop="20dp"
+                        android:text="@string/camera"
+                        android:textColor="@android:color/black" />
+
+                    <Button
+                        android:id="@+id/btnGallery"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/albums_more_icon_selector"
+                        android:paddingTop="20dp"
+                        android:text="@string/gallery"
+                        android:textColor="@android:color/black" />
+
+                    <Button
+                        android:id="@+id/btnVideo"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/video_more_icon_selector"
+                        android:paddingTop="20dp"
+                        android:text="@string/video"
+                        android:textColor="@android:color/black" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal"
+                    android:weightSum="3" >
+
+                    <Button
+                        android:id="@+id/bntFile"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/selector_send_file"
+                        android:paddingTop="20dp"
+                        android:text="@string/file_download"
+                        android:textColor="@android:color/black" />
+
+                    <Button
+                        android:id="@+id/btnLocation"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/location_more_icon_selector"
+                        android:paddingTop="20dp"
+                        android:text="@string/location"
+                        android:textColor="@android:color/black" />
+
+                    <Button
+                        android:id="@+id/btnRecord"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/more_square_bg"
+                        android:drawableTop="@drawable/mic_voice_icon_selector"
+                        android:paddingTop="20dp"
+                        android:text="@string/record"
+                        android:textColor="@android:color/black" />
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlDrawerEmoji"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@android:color/white"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone" >
+
+            <com.clover.spika.enterprise.chat.views.emoji.EmojiRelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shadow_gradient" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/settings_list_view"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/actionBarLayout"
+        android:animationCache="false"
+        android:background="@color/chat_settings_gray"
+        android:cacheColorHint="@color/chat_settings_gray"
+        android:divider="@color/chat_settings_separator"
+        android:dividerHeight="0.5dp"
+        android:fadingEdge="none"
+        android:listSelector="@color/gray_in_adapter"
+        android:scrollbars="vertical"
+        android:scrollingCache="false"
+        android:smoothScrollbar="true"
+        android:visibility="invisible" />
+
+</RelativeLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayout_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue" >
+
+    <RelativeLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:layout_alignParentTop="true" >
+
+        <ImageButton
+            android:id="@+id/goBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/btn_back" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/sendVideo"
+            android:layout_toRightOf="@+id/goBack"
+            android:gravity="center"
+            android:text="@string/photo"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/sendVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/btn_back"
+            android:visibility="invisible" />
+        
+        <ImageButton
+            android:id="@+id/sharePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/button_share"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/imageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topLayout"
+        android:background="@color/default_blue_light"
+        android:layout_centerInParent="true" >
+
+        <com.clover.spika.enterprise.chat.views.TouchImageView
+            android:id="@+id/mImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/default_blue_light" />
+        
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+        
+    </RelativeLayout>
+
+</RelativeLayout>

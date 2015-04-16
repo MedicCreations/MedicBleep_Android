@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:paddingBottom="10dp"
+        android:layout_toLeftOf="@+id/switchLayout"
+        android:orientation="vertical" >
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/editDetailLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textColor="@color/devil_gray"
+            android:textSize="16sp" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/editDetailValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:hint="@string/tap_to_edit"
+            android:textColor="@color/black_selector_no_enable"
+            android:textColorHint="@color/light_light_gray"
+            android:textSize="16sp" />
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:id="@+id/switchLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp" >
+
+        <Switch
+            android:id="@+id/switchDetailPublic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp" />
+
+        <View
+            android:id="@+id/switchSwitcher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/switchDetailPublic"
+            android:layout_alignTop="@+id/switchDetailPublic"
+            android:layout_alignLeft="@+id/switchDetailPublic"
+            android:layout_alignRight="@+id/switchDetailPublic" />
+    </RelativeLayout>
+    
+</RelativeLayout>

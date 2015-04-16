@@ -1,0 +1,53 @@
+<resources>
+
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="black_shadow_transparent">#55000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="text_blue">#52bbe2</color>
+    <color name="green">#71d654</color>
+    <color name="red">#d75555</color>
+    <color name="red_solid">#ff0000</color>
+    <color name="green_solid">#00FF00</color>
+    <color name="divider_gray">#d8e1e7</color>
+    <color name="text_gray">#c0c0c0</color>
+    <color name="text_dark_gray">#949494</color>
+    <color name="button_gray">#c0c0c0</color>
+    <color name="white_trans">#b3b7c8d2</color>
+    <color name="white_trans2">#d9e0e5</color>
+    <color name="blue_button">#75bcda</color>
+    <color name="hint_color">#d9e2e7</color>
+    <color name="list_highlight">#99ffffff</color>
+    <color name="message_bg">#d8e0e6</color>
+    <color name="baloon_blue">#9fcadb</color>
+    <color name="person_blue">#379cc8</color>
+    <color name="time_gray">#b5c2cb</color>
+    <color name="blocked_shadow">#0D000000</color>
+    <color name="notification_shadow">#8074B1E2</color>
+    <color name="chat_menu_gray">#dde1e4</color>
+    <color name="cloud_color">#9ecadc</color>
+    <color name="text_gray_image">#7e7e7e</color>
+    <color name="devil_gray">#666666</color>
+    <color name="light_light_gray">#eeeeee</color>
+    <color name="dark_gray">#555555</color>
+    <color name="gray_trans">#99999999</color>
+
+    <!-- Enterprise style -->
+    <color name="default_blue">#43A5DA</color>
+    <color name="default_blue_light">#74B1E2</color>
+    <color name="default_blue_light_trans">#803E92D7</color>
+    <color name="default_green">#57D171</color>
+    <color name="default_green_light">#61E680</color>
+    <color name="trans">#00000000</color>
+    <color name="text_time_gray">#616161</color>
+    <color name="gray_in_adapter">#EFEFEF</color>
+    <color name="chat_settings_gray">#F4F4F4</color>
+    <color name="chat_settings_separator">#D7D7D7</color>
+    
+    <color name="blue_in_people_row">#43A7DA</color>
+    <color name="green_in_people_row">#5Ad68D</color>
+    <color name="red_in_people_row">#EB232F</color>
+    
+    <color name="code_preview_black">#232323</color>
+
+</resources>

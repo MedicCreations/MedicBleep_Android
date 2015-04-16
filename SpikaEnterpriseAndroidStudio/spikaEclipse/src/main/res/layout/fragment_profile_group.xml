@@ -1,0 +1,199 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_blue" >
+
+    <RelativeLayout
+        android:id="@+id/wholeScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <com.clover.spika.enterprise.chat.views.RoundImageView
+            android:id="@+id/profileImage"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circle_with_white_border"
+            tools:src="@drawable/@drawable/default_user_image" />
+
+        <FrameLayout
+            android:id="@+id/loadingLayout"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape_rounded_trans_black" >
+
+            <ProgressBar
+                android:id="@+id/loadingPB"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/addPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/profileImage"
+            android:layout_alignTop="@id/profileImage"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/add_photo"
+            android:contentDescription="@null" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/profileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileImage"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="45sp"
+            tools:text="John Doe" />
+
+        <LinearLayout
+            android:id="@+id/layoutPrivate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileName"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/tvPrivate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:text="@string/private_room"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <Switch
+                android:id="@+id/switch_private_room"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutPrivate"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/tvPasswordLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:text="@string/password"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/tvPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_transp_blue"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:singleLine="true"
+                android:text="@string/password"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutSetAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutPassword"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/tvSetANewAdmin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:text="@string/set_a_new_admin"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/tvSetAdmin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_transp_blue"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:singleLine="true"
+                android:text="@string/set"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutChangeCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutSetAdmin"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                android:id="@+id/tvChangeCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:text="@string/change_category"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+                android:id="@+id/tvChangeCat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_transp_blue"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:singleLine="true"
+                android:text="@string/change"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

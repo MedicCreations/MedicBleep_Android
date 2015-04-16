@@ -1,0 +1,3 @@
+include ':slidingMenulib'
+include ':emoji_lib'
+include ':spikaEclipse'

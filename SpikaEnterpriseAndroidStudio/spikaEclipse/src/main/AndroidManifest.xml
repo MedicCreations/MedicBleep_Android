@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.clover.spika.enterprise.chat"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- Keeps the processor from sleeping when a message is received. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- App receives GCM messages. -->
+
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission
+        android:name="com.clover.spika.enterprise.chat.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.clover.spika.enterprise.chat.permission.C2D_MESSAGE" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <application
+        android:name="com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/Theme.Custom" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyATEhCZG3oXNhH-0C9gLPHxUvAdWQPagt8" />
+
+        <activity
+            android:name="com.clover.spika.enterprise.chat.SplashActivity"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.LoginActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ChatActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <receiver
+            android:name="com.clover.spika.enterprise.chat.services.gcm.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="com.clover.spika.enterprise.chat" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.gcm.GcmIntentService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.robospice.OkHttpService"
+            android:exported="false" />
+        <service
+            android:name="com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService"
+            android:exported="false" />
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
+        
+        <service android:name="com.clover.spika.enterprise.chat.webrtc.socket.SocketService" />
+        
+        <service android:name="com.clover.spika.enterprise.chat.services.custom.PoolingService" />
+        
+        <activity
+            android:name="com.clover.spika.enterprise.chat.LocationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.RecordVideoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.VideoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.RecordAudioActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CameraCropActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CameraFullPhotoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.PhotoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.PasscodeActivity"
+            android:label="Passcode"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.NewPasscodeActivity"
+            android:label="NewPasscodeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.SMSVerificationActivity"
+            android:label="SMSVerificationActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ProfileOtherActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ProfileGroupActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ManageUsersActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.InvitePeopleActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ThreadsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CreateRoomActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.DeselectUsersInGroupActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.CameraActivityForSamsung"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.EditProfileActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ForgotPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ChangePasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ChooseOrganizationActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.clover.spika.enterprise.chat.DeselectUsersInRoomActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareImageActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareVideoActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ShareFileActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.clover.spika.enterprise.chat.share.ChooseLobbyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.ShowProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.clover.spika.enterprise.chat.webrtc.CallActivity"
+            android:screenOrientation="portrait" />
+        
+        <!-- Change connectivity receiver -->
+        <receiver android:name="com.clover.spika.enterprise.chat.webrtc.socket.ConnectToInternetReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

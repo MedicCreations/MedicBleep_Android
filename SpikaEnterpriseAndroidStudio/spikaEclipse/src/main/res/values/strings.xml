@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Spika Enterprise</string>
+    <string name="good">Good</string>
+    <string name="default_good">(0)</string>
+    <string name="report_interjection">!</string>
+    <string name="processing">Processing</string>
+    <string name="dot">.</string>
+    <string name="send_picture">Send Picture</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="send_video">Send Video</string>
+    <string name="upload_picture_top_text">Upload a picture</string>
+    <string name="use">Use</string>
+    <string name="select_profile">Select profile</string>
+    <string name="no_profiles">No profiles</string>
+    <string name="no_items_text">Create a new profile</string>
+    <string name="no_items_1">No items</string>
+    <string name="no_items_2">Create a new group</string>
+    <string name="settings">Settings</string>
+    <string name="members">Members</string>
+    <string name="save">Save</string>
+    <string name="notifications">Notifications</string>
+    <string name="settings_notifications">Settings notification</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_vibrate">Vibrate</string>
+    <string name="confirm">Confirm</string>
+    <string name="go_to_gallery">Go to gallery</string>
+    <string name="talk_members">Members</string>
+    <string name="leave_talk">Leve talk</string>
+    <string name="change_bg">Change background</string>
+    <string name="create_big">CREATE</string>
+    <string name="send_big">SEND</string>
+    <string name="cancel_big">CANCEL</string>
+    <string name="ok">OK</string>
+    <string name="succeed">Success</string>
+    <string name="failed">Failed</string>
+    <string name="take_photo">TAKE PHOTO</string>
+    <string name="take_video">TAKE VIDEO</string>
+    <string name="dont_show_info">Do not show info.</string>
+    <string name="delete_group">You are about to delete selected group.</string>
+    <string name="delete_message_confirmation">Are you sure you want to delete this message?</string>
+    <string name="select_members">Select members</string>
+    <string name="create_group">Create group</string>
+    <string name="group_name">Group name</string>
+    <string name="add_members">Add members</string>
+    <string name="kick_members">Kick members</string>
+    <string name="clear_group">Clear group</string>
+    <string name="photo">Photo</string>
+    <string name="submit_changes">SUBMIT</string>
+    <string name="go_back">Go back</string>
+    <string name="no_item_in">There are no item in the list.</string>
+    <string name="ask_delete">Do you want to delete this message?</string>
+    <string name="block_email_hint">Your e-mail.</string>
+    <string name="block_complaint">Your complaint.</string>
+    <string name="blocked_text_1">You Have Been Blocked</string>
+    <string name="blocked_text_2">Write an explanation in textfield below.</string>
+    <string name="send">Send</string>
+    <string name="create_room">Create room</string>
+    <string name="create">Create</string>
+    <string name="searchUsers">Search users and groups</string>
+    <string name="enterGroupName">Enter group name</string>
+    <string name="enableEditPhoto">Do you want to use full size or cropped image?</string>
+    <string name="compression_confirmation_question">Do you want to send compressed image?</string>
+    <string name="choiceFullSizeImage">Full size</string>
+    <string name="choiceCroppedImage">Cropped</string>
+
+    <!-- Error strings -->
+    <string name="e_no_network_connection">You have no internet connection.</string>
+    <string name="e_while_loading_image_from_gallery">Error while loading image from gallery.</string>
+    <string name="e_failed_openning_camera">Error while opening camera.</string>
+    <string name="e_no_camera_on_device">No camera on device.</string>
+    <string name="e_record_time_to_long">Record time is to long.</string>
+    <string name="e_something_went_wrong_while_taking_a_picture">Something went wrong while taking a picture.</string>
+    <string name="e_failed_while_sending">Failed while sending.</string>
+    <string name="e_error_downloading_file">Error while downloading a file.</string>
+    <string name="e_error_uploading_file">Error while uploading a file.</string>
+    <string name="e_something_went_wrong">Something went wrong.</string>
+    <string name="e_not_chat_member">Not chat member.</string>
+    <string name="e_invalid_token">Invalid token.</string>
+    <string name="e_expired_token">Token expired.</string>
+    <string name="no_network_connection">You do not have a connection to the internet.</string>
+    <string name="e_google_play_error">Google Play Services error.</string>
+    <string name="e_error_while_logout">Unable to logout, please try again.</string>
+    <string name="e_error_not_decrypted">Message has not been decrypted!</string>
+    <string name="e_while_encrypting">Error while encrypting.</string>
+    <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
+    <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
+    <string name="chat_has_been_deleted_">Chat has been deleted.</string>
+    <string name="page_has_not_been_found_">Page has not been found.</string>
+    <string name="you_are_not_a_group_admin_">You are not a group admin.</string>
+    <string name="temp_password_is_not_valid_">Temp password is not valid.</string>
+    <string name="login_with_temp_password_">Login with temp password.</string>
+    <string name="dir_not_writable_on_the_server_">Dir not writable on the server.</string>
+    <string name="invalid_login_">Invalid login.</string>
+    <string name="no_child_messages_">No child messages.</string>
+    <string name="invalid_temp_password_">Invalid temp password.</string>
+    <string name="password_already_in_use_">Password already in use.</string>
+
+    <!-- new errors -->
+    <string name="e_email_missing">Your email is missing</string>
+    <string name="e_username_not_exist">This username does not exist</string>
+
+    <!-- Enterprise strings -->
+    <string name="spika_big">SPIKA ENTERPRISE</string>
+    <string name="spika_enterprise">Enterprise Messaging</string>
+    <string name="username">Username</string>
+    <string name="username_or_email">Username or Email</string>
+    <string name="new_password">Enter a new password</string>
+    <string name="change_password_title">Change password</string>
+    <string name="re_type_password">Re-type a new password</string>
+    <string name="password">Password</string>
+    <string name="login_big">LOGIN</string>
+    <string name="confirm_big">CONFIRM</string>
+    <string name="hi">Hi!</string>
+    <string name="john_doe">Vasilije Dimitrijev</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="lobby">Lobby</string>
+    <string name="users">Users</string>
+    <string name="groups">Groups</string>
+    <string name="rooms">Rooms</string>
+    <string name="pick_category">Pick category</string>
+    <string name="title_lobby">Lobby</string>
+    <string name="invite">Invite</string>
+    <string name="camera">Camera</string>
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
+    <string name="location">Location</string>
+    <string name="record">Record</string>
+    <string name="gallery">Gallery</string>
+    <string name="invalid_token_message">INVALID TOKEN</string>
+    <string name="msg_from">You have received a message from</string>
+    <string name="no_items">No Items</string>
+    <string name="no_messages">No Messages</string>
+    <string name="file_download">File</string>
+    <string name="file_download_started">File download started&#8230;</string>
+    <string name="download_in_progress">Download in progress&#8230;</string>
+    <string name="download_complete">Download complete</string>
+    <string name="download_failed">Download failed&#8230;</string>
+    <string name="open">OPEN</string>
+    <string name="message_deleted">[deleted]</string>
+    <string name="flash_decrypting">Decrypting&#8230;</string>
+    <string name="remove">Remove</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="submit">Submit</string>
+    <string name="change_phone_number">Change Phone Number</string>
+    <string name="sms_sent_to">SMS with verification code sent to:\n</string>
+
+    <!-- PullToRefresh -->
+    <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
+    <string name="pull_to_refresh_release_label">Release to refresh…</string>
+    <string name="pull_to_refresh_refreshing_label">Loading…</string>
+    <string name="pull_to_refresh_from_bottom_pull_label">@string/pull_to_refresh_pull_label</string>
+    <string name="pull_to_refresh_from_bottom_release_label">@string/pull_to_refresh_release_label</string>
+    <string name="pull_to_refresh_from_bottom_refreshing_label">@string/pull_to_refresh_refreshing_label</string>
+    <string name="login_remember_me">Remember me</string>
+    <string name="enable_passcode_label">Enable passcode</string>
+    <string name="enter_a_passcode">Enter a passcode</string>
+    <string name="enter_your_passcode">Enter your passcode</string>
+    <string name="re_enter_your_passcode">Re-enter your passcode</string>
+
+    <string-array name="group_chat_settings_array">
+        <item>Show profile</item>
+    </string-array>
+    <string-array name="private_chat_settings_array">
+        <item>Show profile</item>
+        <item>Invite</item>
+    </string-array>
+    <string-array name="room_chat_settings_array">
+        <item>Show profile</item>
+        <item>Leave room</item>
+    </string-array>
+    <string-array name="room_chat_admin_active_settings_array">
+        <item>Show profile</item>
+        <item>Manage members</item>
+        <item>Deactivate</item>
+        <item>Delete</item>
+    </string-array>
+    <string-array name="room_chat_admin_inactive_settings_array">
+        <item>Show profile</item>
+        <item>Manage members</item>
+        <item>Activate</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string name="selected_users">"Selected: "</string>
+    <string name="you_didn_t_select_any_users">You didn\'t select any users</string>
+    <string name="all">All</string>
+
+    <string-array name="profile_detail_keys">
+        <item>mobile_number</item>
+        <item>phone_number</item>
+        <item>email</item>
+        <item>gender</item>
+        <item>home_address</item>
+        <item>job_address</item>
+        <item>dob</item>
+        <item>language1</item>
+        <item>language2</item>
+        <item>language3</item>
+        <item>fax</item>
+        <item>interests</item>
+        <item>web_site</item>
+    </string-array>
+    <!-- map values in correct order as keys above -->
+    <string-array name="profile_detail_values">
+        <item>Mobile Number</item>
+        <item>Phone Number</item>
+        <item>Email</item>
+        <item>Gender</item>
+        <item>Home address</item>
+        <item>Job address</item>
+        <item>Date of birth</item>
+        <item>First language</item>
+        <item>Second language</item>
+        <item>Third language</item>
+        <item>Fax</item>
+        <item>Interests</item>
+        <item>Web site</item>
+    </string-array>
+
+    <string name="select_category">Select category</string>
+    <string name="choose_category">Choose category</string>
+    <string name="none">None</string>
+    <string name="information">Information</string>
+    <string name="next">Next</string>
+
+    <!-- NEW STRINGS -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure_">Are you sure?</string>
+    <string name="edit">Edit</string>
+    <string name="private_room">Private Room</string>
+    <string name="password_repeat">Repeat password</string>
+    <string name="room_name_empty">Room name is empty</string>
+    <string name="password_error">Wrong password</string>
+    <string name="requires_password">This chat requires password</string>
+    <string name="old_password">Enter current password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="email_sent">You have got an email with temporary password, please login</string>
+    <string name="login_empty_username">Username should not be empty</string>
+    <string name="login_empty_password">Password should not be empty</string>
+    <string name="new_passwords_not_identical">Passwords are not identical.</string>
+    <string name="update_password">Update Password</string>
+    <string name="set_password">Set password</string>
+    <string name="set">Set</string>
+    <string name="set_a_new_admin">Set a new admin</string>
+    <string name="change_category">Change category</string>
+    <string name="category">Category</string>
+    <string name="change">Change</string>
+    <string name="admin">(admin)</string>
+    <string name="version">Version:</string>
+    <string name="group">group</string>
+    <string name="room">room</string>
+    <string name="choose_organization">Choose organization</string>
+    
+    <!-- NES STRING RELATED TO NEW DESIGN -->
+    <string name="recent">Recent</string>
+    <string name="people">People</string>
+    <string name="location_tap_to_view">Location: Tap to view</string>
+    <string name="video_tap_to_play">Video: Tap to play</string>
+    <string name="loading_older_messages">Loading older messages</string>
+    <string name="search_for_people">Search for people</string>
+    <string name="search_for_groups">Search for groups</string>
+    <string name="_plus_character">+</string>
+    <string name="preview_group">Preview Group</string>
+    <string name="tap_to_edit">Tap to edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="call">Call</string>
+    <string name="messenger">Messenger</string>
+    <string name="about">About</string>
+    <string name="deleted">Deleted</string>
+    <string name="file">File</string>
+    <string name="smiley">Smiley</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="choose_video">Choose Video</string>
+    <string name="voice">Voice</string>
+    <string name="choose_file">Choose File</string>
+    <string name="aplication_for_sending_mail_did_t_found">Application for sending mail did\'t found</string>
+    <string name="aplication_for_calling_mail_did_t_found">Application for callling mail did\'t found</string>
+    <string name="share_via">Share via</string>
+
+    <!-- PPP -->
+     <string name="settings_name" translatable="no">AppRTC Settings</string>
+    <string name="disconnect_call">Disconnect Call</string>
+    <string name="room_names">Room names:</string>
+    <string name="room_description">
+        Please enter a room name. Room names are shared with everyone, so think
+        of something unique and send it to a friend.
+    </string>
+    <string name="connect_text">Connect</string>
+    <string name="invalid_url_title">Invalid URL</string>
+    <string name="invalid_url_text">The URL or room name you entered resulted in an invalid URL: %1$s
+    </string>
+    <string name="channel_error_title">Connection error</string>
+    <string name="connecting_to">Connecting to: %1$s</string>
+    <string name="missing_url">FATAL ERROR: Missing URL to connect to.</string>
+    <string name="switch_camera">Switch front/back camera</string>
+    <string name="toggle_debug">Toggle debug view</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_room_description">Add new room to the list</string>
+    <string name="remove_room_description">Remove room from the list</string>
+    <string name="connect_description">Connect to the room</string>
+    <string name="connect_loopback_description">Loopback connection</string>
+
+    <!-- Settings strings. -->
+    <string name="pref_room_key">room_preference</string>
+    <string name="pref_room_list_key">room_list_preference</string>
+
+    <string name="pref_resolution_key">resolution_preference</string>
+    <string name="pref_resolution_title">Video resolution.</string>
+    <string name="pref_resolution_dlg">Enter AppRTC local video resolution.</string>
+    <string name="pref_resolution_default">Default</string>
+
+    <string name="pref_fps_key">fps_preference</string>
+    <string name="pref_fps_title">Camera fps.</string>
+    <string name="pref_fps_dlg">Enter local camera fps.</string>
+    <string name="pref_fps_default">Default</string>
+
+    <string name="pref_cpu_usage_detection_key">cpu_usage_detection</string>
+    <string name="pref_cpu_usage_detection_title">CPU overuse detection.</string>
+    <string name="pref_cpu_usage_detection_dlg">Adapt transmission to CPU status.</string>
+    <string name="pref_cpu_usage_detection_default" translatable="false">true</string>
+
+    <string name="pref_startbitrate_key">startbitrate_preference</string>
+    <string name="pref_startbitrate_title">Start bitrate setting.</string>
+    <string name="pref_startbitrate_dlg">Start bitrate setting.</string>
+    <string name="pref_startbitrate_default">Default</string>
+
+    <string name="pref_startbitratevalue_key">startbitratevalue_preference</string>
+    <string name="pref_startbitratevalue_title">Video encoder start bitrate.</string>
+    <string name="pref_startbitratevalue_dlg">Enter video encoder start bitrate in kbps.</string>
+    <string name="pref_startbitratevalue_default">1000</string>
+
+    <string name="pref_videocodec_key">videocodec_preference</string>
+    <string name="pref_videocodec_title">Default video codec.</string>
+    <string name="pref_videocodec_dlg">Select default video codec.</string>
+    <string name="pref_videocodec_default">VP8</string>
+
+    <string name="pref_hwcodec_key">hwcodec_preference</string>
+    <string name="pref_hwcodec_title">Video codec hardware acceleration.</string>
+    <string name="pref_hwcodec_dlg">Use hardware accelerated video codec (if available).</string>
+    <string name="pref_hwcodec_default">true</string>
+
+    <string name="pref_value_enabled">Enabled</string>
+    <string name="pref_value_disabled">Disabled</string>
+
+    <string name="pref_room_server_url_key">room_server_url_preference</string>
+    <string name="pref_room_server_url_title">Room server URL.</string>
+    <string name="pref_room_server_url_dlg">Enter a room server URL.</string>
+    <string name="pref_room_server_url_default" translatable="false">https://apprtc.appspot.com</string>
+
+    <string name="pref_displayhud_key">displayhud_preference</string>
+    <string name="pref_displayhud_title">Display call statistics.</string>
+    <string name="pref_displayhud_dlg">Display call statistics.</string>
+    <string name="pref_displayhud_default" translatable="false">false</string>
+    <string name="user_is_not_available_at_the_moment_do_you_want_to_leave_voice_message_">User is not available at the moment. Do you want to leave voice message?</string>
+    <string name="_didn_t_answer_on_your_call_do_you_want_to_leave_voice_message_">" didn't answer on your call. Do you want to leave voice message?"</string>
+    <string name="touch_to_return_to_call">Touch to return to call</string>
+    <string name="other_call_is_in_progress">Other call is in progress</string>
+    <string name="choose_take_video">Choose/Take video</string>
+    <string name="please_update_your_google_play_service_for_receiving_push_notification_">Please update Your Google Play Service for receiving push notification.</string>
+    <string name="please_install_google_play_service_for_receiving_push_notification_">Please install Google Play Service for receiving push notification.</string>
+    <string name="resend">Resend</string>
+    <string name="resend_message">Resend Message</string>
+    <string name="no_internet_connection_">No Internet connection!</string>
+    <string name="e_organization_deleted">Selected organization has been disabled. Please contact user support for more details.</string>
+    <string name="e_organization_suspended">Selected organization has been currently suspended. Please contact user support for more details.</string>
+    <string name="e_room_limit_exceeded">Your organization has exceeded room limit and cannot create new rooms any more.</string>
+    <string name="e_file_limit_exceeded">Your organization has exceeded file upload. Please contact yout administrator for more details.</string>
+    
+</resources>

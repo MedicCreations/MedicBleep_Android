@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/baseLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include layout="@layout/layout_search_actionbar" />
+    
+    <LinearLayout
+        android:id="@+id/layoutForTabs"
+        android:layout_width="match_parent"
+        android:layout_below="@id/actionBarLayout"
+        android:layout_height="50dp"
+        android:background="@color/default_blue"
+        android:orientation="horizontal" >
+
+        <ToggleButton
+            android:id="@+id/inviteTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_toggle_tab_gray"
+            android:textColor="@drawable/selector_tab_toggle"
+            android:textOff="@string/invite"
+            android:textOn="@string/invite" />
+
+        <ToggleButton
+            android:id="@+id/removeTab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_toggle_tab_gray"
+            android:textColor="@drawable/selector_tab_toggle"
+            android:textOff="@string/remove"
+            android:textOn="@string/remove" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPagerUserManagement"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_below="@id/layoutForTabs"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

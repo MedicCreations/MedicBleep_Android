@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/devil_gray" >
+
+    <RelativeLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_height"
+        android:layout_alignParentTop="true"
+        android:background="@color/default_blue" >
+
+        <ImageButton
+            android:id="@+id/goBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:padding="20dp"
+            android:src="@drawable/btn_back" />
+
+        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+            android:id="@+id/screenTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/audio"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/sendAudio"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_transp_blue"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            android:scaleType="centerInside"
+            android:src="@android:drawable/ic_menu_send" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/soundControler"
+        android:layout_below="@+id/topLayout" >
+
+        <ImageButton
+            android:id="@+id/startRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/selector_record_audio"
+            android:contentDescription="@null"/>
+
+        <ImageView
+            android:id="@+id/recCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:clickable="false"
+            android:contentDescription="@null"
+            android:src="@drawable/voice_recording_ring"
+            android:visibility="invisible" />
+
+        <Chronometer
+            android:id="@+id/recordTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/startRec"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/soundControler"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="40dp"
+        android:background="@color/light_light_gray"
+        android:layout_marginRight="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="70dp" >
+
+        <ImageButton
+            android:id="@+id/ivPlayPauseSound"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@null"
+            android:src="@drawable/play_btn_selector"
+            android:background="@null" />
+        
+        <Chronometer
+            android:id="@+id/firstChrono"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:visibility="visible"
+            android:layout_toRightOf="@id/ivPlayPauseSound"
+            android:layout_marginLeft="5dp" />
+
+        <SeekBar
+            android:id="@+id/seekBarSound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_centerVertical="true"
+            android:thumb="@drawable/shape_thumb"
+            android:layout_toRightOf="@+id/firstChrono"
+            android:layout_toLeftOf="@+id/secondChrono"
+            android:progress="0"/>
+        
+        <TextView
+            android:id="@+id/secondChrono"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:text="00:00"
+            android:visibility="visible"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp" />
+    </RelativeLayout>
+
+</RelativeLayout>
