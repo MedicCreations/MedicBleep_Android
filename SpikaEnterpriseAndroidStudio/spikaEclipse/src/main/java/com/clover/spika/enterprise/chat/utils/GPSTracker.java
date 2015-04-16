@@ -17,6 +17,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.google.ads.AdRequest;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
@@ -43,6 +44,7 @@ public class GPSTracker extends Service implements LocationListener {
 	Location location; // location
 	double latitude; // latitude
 	double longitude; // longitude
+    String countryCode;
 
 	// The minimum distance to change Updates in meters
 	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -81,6 +83,7 @@ public class GPSTracker extends Service implements LocationListener {
 						if (location != null) {
 							latitude = location.getLatitude();
 							longitude = location.getLongitude();
+                            updateCountryCode();
 						}
 					}
 				}
@@ -93,6 +96,7 @@ public class GPSTracker extends Service implements LocationListener {
 							if (location != null) {
 								latitude = location.getLatitude();
 								longitude = location.getLongitude();
+                                updateCountryCode();
 							}
 						}
 					}
@@ -191,6 +195,8 @@ public class GPSTracker extends Service implements LocationListener {
 			latitude = location.getLatitude();
 			longitude = location.getLongitude();
 
+            updateCountryCode();
+
 			if (mOnLocationChangedListener != null)
 				mOnLocationChangedListener.onLocationChanged(location);
 		}
@@ -221,8 +227,7 @@ public class GPSTracker extends Service implements LocationListener {
 		public void onLocationChange(Location loc);
 	}
 
-	public String getCountryCode () {
-		String countryCode = "";
+	public String updateCountryCode () {
 		List<Address> addresses = null;
 		Geocoder geoCoder = new Geocoder(mContext);
 		try {
@@ -233,6 +238,19 @@ public class GPSTracker extends Service implements LocationListener {
 		if (addresses != null && addresses.size() > 0) {
 			countryCode = addresses.get(0).getCountryCode();
 		}
+
+        Log.e("HELLO", "Country code: " + countryCode);
+
 		return countryCode;
 	}
+
+    public String getCountryCode () {
+        return countryCode;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("GPS","GPS DESTROYED");
+    }
 }

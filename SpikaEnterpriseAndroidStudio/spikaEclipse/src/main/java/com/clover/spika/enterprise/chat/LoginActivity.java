@@ -67,7 +67,7 @@ public class LoginActivity extends LoginBaseActivity {
 		});
 
 		GPSTracker gps = new GPSTracker(this);
-		Log.e("LOCATION", "code. " + gps.getCountryCode());
+		Log.e("LOCATION", "code: " + gps.getCountryCode());
 	}
 
 	@Override

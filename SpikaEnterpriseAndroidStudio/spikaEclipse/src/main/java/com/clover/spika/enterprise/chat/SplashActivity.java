@@ -24,7 +24,7 @@ public class SplashActivity extends LoginBaseActivity {
 		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			pause(0, false);
 		} else {
-			pause(750, true);
+            pause(750, true);
 		}
 	}
 
