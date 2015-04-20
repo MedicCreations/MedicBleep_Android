@@ -19,7 +19,6 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.google.ads.AdRequest;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 
 /**

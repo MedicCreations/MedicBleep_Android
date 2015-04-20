@@ -7,7 +7,6 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.support.multidex.MultiDexApplication;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
@@ -16,7 +15,7 @@ import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
 
-public class SpikaEnterpriseApp extends MultiDexApplication {
+public class SpikaEnterpriseApp extends Application {
 
 	private static Context mAppContext;
 	private static Preferences mAppPreferences;
