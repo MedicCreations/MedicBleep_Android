@@ -36,7 +36,9 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.listeners.ProgressBarListeners;
 import com.clover.spika.enterprise.chat.networking.CustomMultiPartEntity.ProgressListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.GPSTracker;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.LocationUtility;
 import com.clover.spika.enterprise.chat.utils.Preferences;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
@@ -259,6 +261,10 @@ public class NetworkManagement {
 			headersBuilder.add(Const.TOKEN_BIG_T, token);
 		}
 
+        if (!TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
+            headersBuilder.add(Const.COUNTRY_CODE, LocationUtility.getInstance().getCountryCode());
+        }
+
 		return headersBuilder.build();
 	}
 
@@ -282,6 +288,10 @@ public class NetworkManagement {
 		if (!TextUtils.isEmpty(token)) {
 			headersBuilder.add(Const.TOKEN_BIG_T, token);
 		}
+
+        if (!TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
+            headersBuilder.add(Const.COUNTRY_CODE, LocationUtility.getInstance().getCountryCode());
+        }
 
 		return headersBuilder.build();
 	}
