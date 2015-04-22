@@ -398,5 +398,5 @@ public class Const {
 	public static final int PASSCODE_TIMEOUT_TIME = 300000;
 	public static final String IS_ENCRYPTED = "isEncrypted";
 
-    public static final String COUNTRY_CODE = "country_code";
+    public static final String COUNTRY_CODE = "Country-Code";
 }
