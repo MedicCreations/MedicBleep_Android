@@ -1,10 +1,15 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -30,17 +35,25 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     private String countryCode;
 
     private static LocationUtility instance;
+
+    /**
+     * Call this in Application class to instantiate
+     * @param appContext
+     */
+    public static void createInstance (Context appContext) {
+        instance = new LocationUtility(appContext);
+    }
+
+    /**
+     * Call createInstance(applicationContext) in Application class before use
+     * @return instance
+     */
     public static LocationUtility getInstance() {
-        if (instance == null) {
-            instance = new LocationUtility();
-        }
         return instance;
     }
 
-    private LocationUtility () {
-    }
+    private LocationUtility (Context appContext) {
 
-    public void start (Context appContext) {
         locationRequest = LocationRequest.create();
 
         client = new GoogleApiClient.Builder(appContext)
@@ -48,8 +61,6 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
-        client.connect();
 
         if (Geocoder.isPresent()) {
             Log.e("Geocoder", "Present");
@@ -64,14 +75,21 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         else {
             Log.e("Geocoder", "Not Present");
         }
+
+        IntentFilter intentFilter = new IntentFilter(ApplicationStateManager.APPLICATION_PAUSED);
+        intentFilter.addAction(ApplicationStateManager.APPLICATION_RESUMED);
+        LocalBroadcastManager.getInstance(appContext).registerReceiver(new BroadcastReceiverImplementation(), intentFilter);
+    }
+
+    public void start () {
+        client.connect();
     }
 
     public void stop () {
         if (client.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
             client.disconnect();
         }
-
-        LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
     }
 
     public void getLastLocation () {
@@ -80,26 +98,32 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "LL: " + latitude + " " + longitude);
+            updateCountryCode();
         }
         else {
             Log.e("**** LOCATION ****", "NULL");
         }
     }
 
-    public String getCountryCode () {
+    private void updateCountryCode () {
         List<Address> addresses = null;
         try {
             addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.e("get adderess", addresses + "");
+            Log.e("adderess", addresses + "");
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (addresses != null && addresses.size() > 0) {
-            countryCode = addresses.get(0).getCountryCode();
+            String countryCode = addresses.get(0).getCountryCode();
+            if (!TextUtils.isEmpty(countryCode)) {
+                this.countryCode = countryCode;
+                Log.e("UPDATED", "Country code: " + countryCode);
+            }
         }
+    }
 
-        Log.e("HELLO", "Country code: " + countryCode);
-
+    public String getCountryCode () {
+        Log.e("GET", "Country code: " + countryCode);
         return countryCode;
     }
 
@@ -114,6 +138,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
+            updateCountryCode();
         }
     }
 
@@ -127,5 +152,16 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     @Override
     public void onConnectionSuspended(int i) {
         Log.e("**** LOCATION ****", "API SUSPENDED " + i);
+    }
+
+    private class BroadcastReceiverImplementation extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ApplicationStateManager.APPLICATION_PAUSED)) {
+                stop();
+            } else if (intent.getAction().equals(ApplicationStateManager.APPLICATION_RESUMED)) {
+                start();
+            }
+        }
     }
 }

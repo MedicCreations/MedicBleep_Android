@@ -2,17 +2,23 @@ package com.clover.spika.enterprise.chat.extendables;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.clover.spika.enterprise.chat.LocationActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.custom.PoolingService;
+import com.clover.spika.enterprise.chat.utils.ApplicationStateManager;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.LocationUtility;
 import com.clover.spika.enterprise.chat.utils.Preferences;
@@ -45,13 +51,14 @@ public class SpikaEnterpriseApp extends Application {
 
         if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
             Log.e("PlayServicesAvailable", "SUCCESS");
-            LocationUtility.getInstance().start(this);
+            LocationUtility.createInstance(this);
         }
         else {
             Log.e("PlayServicesAvailable", "FAIL");
         }
-	}
 
+        new ApplicationStateManager(this);
+	}
 	
 	public static void startSocket() {
 		if (!mAppContext.getResources().getBoolean(R.bool.enable_web_rtc))
