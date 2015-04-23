@@ -33,6 +33,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     private double latitude;
     private double longitude;
     private String countryCode;
+    private OnLocationChangeListener onLocationChangeListener;
 
     private static LocationUtility instance;
 
@@ -127,6 +128,10 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         return countryCode;
     }
 
+    public Location getLocation () {
+        return location;
+    }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e("**** LOCATION ****", "API CONNECTED FAIL");
@@ -139,6 +144,9 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
             updateCountryCode();
+            if (onLocationChangeListener != null) {
+                onLocationChangeListener.onLocationChange(location);
+            }
         }
     }
 
@@ -163,5 +171,17 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
                 start();
             }
         }
+    }
+
+    public void setOnLocationChangeListener (OnLocationChangeListener onLocationChangeListener) {
+        this.onLocationChangeListener = onLocationChangeListener;
+    }
+
+    public void removeOnLocationChangeListener () {
+        this.onLocationChangeListener = null;
+    }
+
+    public interface OnLocationChangeListener {
+        public void onLocationChange(Location location);
     }
 }

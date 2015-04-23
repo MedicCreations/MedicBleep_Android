@@ -19,6 +19,7 @@ import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
+import com.clover.spika.enterprise.chat.utils.LocationUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,7 +41,6 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 public class LocationActivity extends BaseActivity {
 
 	private GoogleMap mMap;
-	private GPSTracker mGpsTracker;
 
 	private Bitmap mMapPinBlue;
 	private Marker mapMarker;
@@ -78,8 +78,6 @@ public class LocationActivity extends BaseActivity {
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		mMapPinBlue = BitmapFactory.decodeResource(getResources(), R.drawable.location_more_icon_active);
 
-		mGpsTracker = new GPSTracker(this);
-
 		Bundle extras = getIntent().getExtras();
 
 		chatId = extras.getString(Const.CHAT_ID);
@@ -111,10 +109,8 @@ public class LocationActivity extends BaseActivity {
 				}
 			});
 
-			if (mGpsTracker.canGetLocation()) {
-
-				latitude = mGpsTracker.getLatitude();
-				longitude = mGpsTracker.getLongitude();
+				latitude = LocationUtility.getInstance().getLocation().getLatitude();
+				longitude = LocationUtility.getInstance().getLocation().getLongitude();
 
 				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
 
@@ -133,25 +129,31 @@ public class LocationActivity extends BaseActivity {
 						getAddress();
 					}
 				});
-
-				mGpsTracker.setOnLocationChangedListener(new OnLocationChangedListener() {
-
-					@Override
-					public void onLocationChanged(Location location) {
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-						mapMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-					}
-				});
-			} else {
-				mGpsTracker.showSettingsAlert();
-			}
 		}
 
 		getAddress();
 	}
 
-	private void sendMsg() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocationUtility.getInstance().setOnLocationChangeListener(new LocationUtility.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                mapMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocationUtility.getInstance().removeOnLocationChangeListener();
+    }
+
+    private void sendMsg() {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
@@ -204,13 +206,4 @@ public class LocationActivity extends BaseActivity {
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (mGpsTracker != null) {
-			mGpsTracker.stopUsingGPS();
-		}
-	}
-
 }
