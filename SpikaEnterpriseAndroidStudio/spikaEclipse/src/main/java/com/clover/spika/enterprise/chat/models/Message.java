@@ -35,6 +35,7 @@ public class Message implements Parcelable {
 	public String child_list;
 	public String image_thumb;
 	public String attributes;
+    public String country_code;
 
 	private int textWidth = -1;
 	private int timeWidth = -1;
@@ -376,66 +377,77 @@ public class Message implements Parcelable {
 		return msg;
 	}
 
-	@Override
-	public int describeContents() {
-		return hashCode();
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeByte(isMe ? (byte) 1 : (byte) 0);
-		dest.writeByte(isFailed ? (byte) 1 : (byte) 0);
-		dest.writeString(this.id);
-		dest.writeString(this.chat_id);
-		dest.writeString(this.user_id);
-		dest.writeString(this.firstname);
-		dest.writeString(this.lastname);
-		dest.writeString(this.image);
-		dest.writeString(this.text);
-		dest.writeString(this.file_id);
-		dest.writeString(this.thumb_id);
-		dest.writeString(this.longitude);
-		dest.writeString(this.latitude);
-		dest.writeInt(this.type);
-		dest.writeString(this.created);
-		dest.writeString(this.modified);
-		dest.writeInt(this.root_id);
-		dest.writeInt(this.parent_id);
-		dest.writeString(this.child_list);
-		dest.writeString(this.attributes);
-	}
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte(isMe ? (byte) 1 : (byte) 0);
+        dest.writeByte(isFailed ? (byte) 1 : (byte) 0);
+        dest.writeString(this.id);
+        dest.writeString(this.chat_id);
+        dest.writeString(this.user_id);
+        dest.writeString(this.firstname);
+        dest.writeString(this.lastname);
+        dest.writeString(this.image);
+        dest.writeString(this.text);
+        dest.writeString(this.file_id);
+        dest.writeString(this.thumb_id);
+        dest.writeString(this.longitude);
+        dest.writeString(this.latitude);
+        dest.writeInt(this.type);
+        dest.writeString(this.created);
+        dest.writeString(this.modified);
+        dest.writeInt(this.root_id);
+        dest.writeInt(this.parent_id);
+        dest.writeString(this.child_list);
+        dest.writeString(this.image_thumb);
+        dest.writeString(this.attributes);
+        dest.writeString(this.country_code);
+        dest.writeInt(this.textWidth);
+        dest.writeInt(this.timeWidth);
+        dest.writeByte(isUserExpandContent ? (byte) 1 : (byte) 0);
+        dest.writeByte(isTextCodeStyle ? (byte) 1 : (byte) 0);
+    }
 
-	private Message(Parcel in) {
-		this.isMe = in.readByte() != 0;
-		this.isFailed = in.readByte() != 0;
-		this.id = in.readString();
-		this.chat_id = in.readString();
-		this.user_id = in.readString();
-		this.firstname = in.readString();
-		this.lastname = in.readString();
-		this.image = in.readString();
-		this.text = in.readString();
-		this.file_id = in.readString();
-		this.thumb_id = in.readString();
-		this.longitude = in.readString();
-		this.latitude = in.readString();
-		this.type = in.readInt();
-		this.created = in.readString();
-		this.modified = in.readString();
-		this.root_id = in.readInt();
-		this.root_id = in.readInt();
-		this.child_list = in.readString();
-		this.attributes = in.readString();
-	}
+    private Message(Parcel in) {
+        this.isMe = in.readByte() != 0;
+        this.isFailed = in.readByte() != 0;
+        this.id = in.readString();
+        this.chat_id = in.readString();
+        this.user_id = in.readString();
+        this.firstname = in.readString();
+        this.lastname = in.readString();
+        this.image = in.readString();
+        this.text = in.readString();
+        this.file_id = in.readString();
+        this.thumb_id = in.readString();
+        this.longitude = in.readString();
+        this.latitude = in.readString();
+        this.type = in.readInt();
+        this.created = in.readString();
+        this.modified = in.readString();
+        this.root_id = in.readInt();
+        this.parent_id = in.readInt();
+        this.child_list = in.readString();
+        this.image_thumb = in.readString();
+        this.attributes = in.readString();
+        this.country_code = in.readString();
+        this.textWidth = in.readInt();
+        this.timeWidth = in.readInt();
+        this.isUserExpandContent = in.readByte() != 0;
+        this.isTextCodeStyle = in.readByte() != 0;
+    }
 
-	public static final Creator<Message> CREATOR = new Creator<Message>() {
-		public Message createFromParcel(Parcel source) {
-			return new Message(source);
-		}
+    public static final Creator<Message> CREATOR = new Creator<Message>() {
+        public Message createFromParcel(Parcel source) {
+            return new Message(source);
+        }
 
-		public Message[] newArray(int size) {
-			return new Message[size];
-		}
-	};
-	
+        public Message[] newArray(int size) {
+            return new Message[size];
+        }
+    };
 }

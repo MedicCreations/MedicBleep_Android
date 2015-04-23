@@ -33,6 +33,7 @@ public class Message {
     private Boolean isMe;
     private Boolean isFailed;
     private String attributes;
+    private String country_code;
     private Long chatIdProperty;
 
     /** Used to resolve relations */
@@ -55,7 +56,7 @@ public class Message {
         this.id = id;
     }
 
-    public Message(long id, Long chat_id, Long user_id, String firstname, String lastname, String image, String text, String file_id, String thumb_id, String longitude, String latitude, String created, String modified, String child_list, String image_thumb, Integer type, Integer root_id, Integer parent_id, Boolean isMe, Boolean isFailed, String attributes, Long chatIdProperty) {
+    public Message(long id, Long chat_id, Long user_id, String firstname, String lastname, String image, String text, String file_id, String thumb_id, String longitude, String latitude, String created, String modified, String child_list, String image_thumb, Integer type, Integer root_id, Integer parent_id, Boolean isMe, Boolean isFailed, String attributes, String country_code, Long chatIdProperty) {
         this.id = id;
         this.chat_id = chat_id;
         this.user_id = user_id;
@@ -77,6 +78,7 @@ public class Message {
         this.isMe = isMe;
         this.isFailed = isFailed;
         this.attributes = attributes;
+        this.country_code = country_code;
         this.chatIdProperty = chatIdProperty;
     }
 
@@ -252,6 +254,14 @@ public class Message {
 
     public void setAttributes(String attributes) {
         this.attributes = attributes;
+    }
+
+    public String getCountry_code() {
+        return country_code;
+    }
+
+    public void setCountry_code(String country_code) {
+        this.country_code = country_code;
     }
 
     public Long getChatIdProperty() {
