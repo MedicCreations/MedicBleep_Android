@@ -235,7 +235,7 @@ public class LobbyCaching {
 				}
 
 				Long finalMessageModelId = 0L;
-				if (chat.last_message != null) {
+				if (chat.last_message != null && chat.last_message.id != null) {
 
 					if (messageDao.queryBuilder().where(com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Id.eq(chat.last_message.id)).count() > 0) {
 

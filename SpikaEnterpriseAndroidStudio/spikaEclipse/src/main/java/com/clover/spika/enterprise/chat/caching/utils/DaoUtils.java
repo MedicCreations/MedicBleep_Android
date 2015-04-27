@@ -119,6 +119,7 @@ public class DaoUtils {
 		finalMessage.isMe = message.getIsMe();
 		finalMessage.isFailed = message.getIsFailed();
 		finalMessage.attributes = message.getAttributes();
+        finalMessage.country_code = message.getCountry_code();
 
 		return finalMessage;
 	}
@@ -295,6 +296,10 @@ public class DaoUtils {
 			if (message.parent_id != 0) {
 				messageDao.setParent_id(message.parent_id);
 			}
+
+            if (message.country_code != null) {
+                messageDao.setCountry_code(message.country_code);
+            }
 
 			messageDao.setIsMe(message.isMe);
 			messageDao.setIsFailed(message.isFailed);
