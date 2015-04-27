@@ -1,6 +1,7 @@
 package com.clover.spika.enterprise.chat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import android.app.Dialog;
@@ -49,6 +50,7 @@ import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.LocationUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.octo.android.robospice.exception.NoNetworkException;
@@ -916,6 +918,14 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			finish();
 		}
 
+        Iterator<Message> iterator = chat.messages.iterator();
+        while (iterator.hasNext()) {
+            Message message = iterator.next();
+            if (!TextUtils.isEmpty(message.country_code) && !message.country_code.equals(LocationUtility.getInstance().getCountryCode())) {
+                iterator.remove();
+            }
+        }
+
 		Log.d("LOG", "SIZE OLD: " + activeChat.size() + ", new size: " + chat.messages.size());
 		if (chat.messages.equals(activeChat) && chat.messages.size() != 0) {
 			Log.d("LOG", "same");
@@ -923,8 +933,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		} else {
 			Log.d("LOG", "not same");
 		}
-		
-		for(Message item : chat.messages){
+
+		for (Message item : chat.messages){
 			item.setIsCodeTextStyle();
 		}
 
