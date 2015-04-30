@@ -125,6 +125,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     public String getCountryCode () {
         Log.e("GET", "Country code: " + countryCode);
+//        return "US";
         return countryCode;
     }
 

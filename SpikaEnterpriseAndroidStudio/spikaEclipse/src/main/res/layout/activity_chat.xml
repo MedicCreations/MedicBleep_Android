@@ -68,21 +68,29 @@
         android:layout_below="@+id/actionBarLayout"
         android:background="@color/default_blue_light" >
 
-        <ListView
-            android:id="@+id/main_list_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeControll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/chatLayout"
-            android:animationCache="false"
-            android:background="@color/transparent"
-            android:cacheColorHint="#00000000"
-            android:divider="@color/transparent"
-            android:dividerHeight="0dp"
-            android:fadingEdge="none"
-            android:listSelector="@color/transparent"
-            android:scrollbars="none"
-            android:scrollingCache="false"
-            android:smoothScrollbar="true" />
+            android:layout_above="@+id/chatLayout">
+
+            <ListView
+                android:id="@+id/main_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animationCache="false"
+                android:background="@color/transparent"
+                android:cacheColorHint="#00000000"
+                android:divider="@color/transparent"
+                android:dividerHeight="0dp"
+                android:fadingEdge="none"
+                android:listSelector="@color/transparent"
+                android:scrollbars="none"
+                android:scrollingCache="false"
+                android:smoothScrollbar="true" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
             android:id="@+id/noItems"

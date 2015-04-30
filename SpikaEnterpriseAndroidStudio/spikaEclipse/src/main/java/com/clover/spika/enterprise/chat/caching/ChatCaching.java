@@ -103,6 +103,16 @@ public class ChatCaching {
 			if (chatBase == null)
 				return null;
 
+
+            ((BaseActivity) activity)
+                    .getDaoSession()
+                    .getMessageDao()
+                    .queryBuilder()
+                    .where(MessageDao.Properties.Created.lt((System.currentTimeMillis() / 1000L) - (24 * 60 * 60)))
+                    .buildDelete()
+                    .executeDeleteWithoutDetachingEntities();
+
+
 			long tempCount = ((BaseActivity) activity)
 					.getDaoSession()
 					.getMessageDao()

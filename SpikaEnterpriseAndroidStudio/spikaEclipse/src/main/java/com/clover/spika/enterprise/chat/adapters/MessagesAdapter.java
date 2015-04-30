@@ -606,13 +606,13 @@ public class MessagesAdapter extends BaseAdapter {
 		}
 
 		// Paging animation
-		if (position == (0) && !endOfSearch) {
-			holder.loading_bar.setVisibility(View.VISIBLE);
-
-			if (ctx instanceof ChatActivity) {
-				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
-			}
-		}
+//		if (position == (0) && !endOfSearch) {
+//			holder.loading_bar.setVisibility(View.VISIBLE);
+//
+//			if (ctx instanceof ChatActivity) {
+//				((ChatActivity) ctx).getMessages(false, false, true, false, false, false);
+//			}
+//		}
 
 		// Check if last message
 		if (position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)) {

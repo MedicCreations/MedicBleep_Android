@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Chat;
@@ -11,6 +12,7 @@ import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -503,6 +505,8 @@ public class ChatSpice {
 			
 			ObjectMapper mapper = new ObjectMapper();
 
+            Logger.i("get message: " + responseBody);
+
 			Chat result = mapper.readValue(responseBody, Chat.class);
 
 			if (result != null && result.getCode() == Const.API_SUCCESS) {
@@ -563,6 +567,8 @@ public class ChatSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+
+            Logger.i("start chat: " + responseBody);
 
 			ObjectMapper mapper = new ObjectMapper();
 

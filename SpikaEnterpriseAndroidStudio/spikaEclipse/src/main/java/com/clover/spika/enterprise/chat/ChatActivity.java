@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -69,11 +70,20 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	private boolean isResume = false;
 	private boolean isOnCreate = false;
 
+    private SwipeRefreshLayout swipeControll;
+
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
 		noItems = (TextView) findViewById(R.id.noItems);
+        swipeControll = (SwipeRefreshLayout) findViewById(R.id.swipeControll);
+        swipeControll.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getMessages(false, false, true, false, false, false);
+            }
+        });
 
 		adapter = new MessagesAdapter(spiceManager, this, new ArrayList<Message>());
 		chatListView.setAdapter(adapter);
@@ -857,6 +867,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				totalItems = 0;
 			}
 		} else {
+            swipeControll.setRefreshing(false);
 			return;
 		}
 
@@ -886,15 +897,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
-				super.onRequestFailure(arg0);
+                super.onRequestFailure(arg0);
+                swipeControll.setRefreshing(false);
 			}
 
 			@Override
 			public void onRequestSuccess(Chat result) {
 				super.onRequestSuccess(result);
-
+                swipeControll.setRefreshing(false);
 				adapter.setSpiceManager(spiceManager);
-
 				manageGetMessages(result, isNewMsg, isSend, isRefresh, isClear, isPagging);
 			}
 		});
@@ -972,6 +983,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		adapter.setSeenBy(chat.seen_by);
 
 		totalItems = Integer.valueOf(chat.total_count);
+        Log.d("LOG", "MANAGE, TOTAL COUNT: " + totalItems);
 		adapter.setTotalCount(totalItems);
 
 		if (!isRefresh) {
