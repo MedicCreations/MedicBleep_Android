@@ -12,11 +12,17 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.clover.spika.enterprise.chat.api.robospice.LocationSpice;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
+import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,14 +32,21 @@ import java.util.List;
  */
 public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    public static final String COUNTRY_CODE_FIRST_TIME_OBTAINED = "COUNTRY_CODE_FIRST_TIME_OBTAINED";
+    public static final String COUNTRY_CODE_UPDATED = "COUNTRY_CODE_UPDATED";
+    public static final String LOCATION_UPDATED = "LOCATION_UPDATED";
+
     private GoogleApiClient client;
     private LocationRequest locationRequest;
-    private Geocoder geocoder;
     private Location location;
     private double latitude;
     private double longitude;
     private String countryCode;
     private OnLocationChangeListener onLocationChangeListener;
+    private SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
+    private Context appContext;
+
+    private LocalBroadcastManager localBroadcastManager;
 
     private static LocationUtility instance;
 
@@ -55,6 +68,8 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     private LocationUtility (Context appContext) {
 
+        localBroadcastManager = LocalBroadcastManager.getInstance(appContext);
+
         locationRequest = LocationRequest.create();
 
         client = new GoogleApiClient.Builder(appContext)
@@ -63,19 +78,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        if (Geocoder.isPresent()) {
-            Log.e("Geocoder", "Present");
-            geocoder = new Geocoder(appContext);
-            if (geocoder == null) {
-                Log.e("Geocoder", "null");
-            }
-            else {
-                Log.e("Geocoder", "instantiated");
-            }
-        }
-        else {
-            Log.e("Geocoder", "Not Present");
-        }
+        this.appContext = appContext;
 
         IntentFilter intentFilter = new IntentFilter(ApplicationStateManager.APPLICATION_PAUSED);
         intentFilter.addAction(ApplicationStateManager.APPLICATION_RESUMED);
@@ -83,10 +86,12 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     }
 
     public void start () {
+        spiceManager.start(appContext);
         client.connect();
     }
 
     public void stop () {
+        spiceManager.shouldStop();
         if (client.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
             client.disconnect();
@@ -99,33 +104,19 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "LL: " + latitude + " " + longitude);
-            updateCountryCode();
+            updateCountryCodeAsync();
         }
         else {
             Log.e("**** LOCATION ****", "NULL");
         }
     }
 
-    private void updateCountryCode () {
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.e("adderess", addresses + "");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (addresses != null && addresses.size() > 0) {
-            String countryCode = addresses.get(0).getCountryCode();
-            if (!TextUtils.isEmpty(countryCode)) {
-                this.countryCode = countryCode;
-                Log.e("UPDATED", "Country code: " + countryCode);
-            }
-        }
-    }
-
     public String getCountryCode () {
-        Log.e("GET", "Country code: " + countryCode);
+//        Log.e("GET", "Country code: " + countryCode);
+//        return "HR";
 //        return "US";
+//        return "UK";
+//        return "JP";
         return countryCode;
     }
 
@@ -144,10 +135,11 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
-            updateCountryCode();
-            if (onLocationChangeListener != null) {
-                onLocationChangeListener.onLocationChange(location);
-            }
+            updateCountryCodeAsync();
+//            if (onLocationChangeListener != null) {
+//                onLocationChangeListener.onLocationChange(location);
+//            }
+            locationUpdated();
         }
     }
 
@@ -184,5 +176,48 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     public interface OnLocationChangeListener {
         public void onLocationChange(Location location);
+    }
+
+    private void updateCountryCodeAsync(){
+
+        LocationSpice.GetAddress getAddress = new LocationSpice.GetAddress(latitude, longitude, LocationSpice.RETURN_TYPE_COUNTRY_CODE, appContext);
+        spiceManager.execute(getAddress, new CustomSpiceListener<String>(){
+            @Override
+            public void onRequestFailure(SpiceException arg0) {
+                super.onRequestFailure(arg0);
+            }
+
+            @Override
+            public void onRequestSuccess(String countryCode) {
+                super.onRequestSuccess(countryCode);
+                if (TextUtils.isEmpty(LocationUtility.this.countryCode) && !TextUtils.isEmpty(countryCode)) {
+                    LocationUtility.this.countryCode = countryCode;
+                    firstCountryCodeUpdate();
+                }
+                else if (!TextUtils.isEmpty(countryCode) && !countryCode.equals(LocationUtility.this.countryCode)) {
+                    LocationUtility.this.countryCode = countryCode;
+                    countryCodeUpdate();
+                }
+            }
+        });
+    }
+
+    void locationUpdated () {
+        Log.wtf("******************", "LOCATION UPDATE");
+        Intent i = new Intent(LOCATION_UPDATED);
+        localBroadcastManager.sendBroadcast(i);
+    }
+
+    void firstCountryCodeUpdate () {
+        Log.wtf("******************", "COUNRY CODE FIRST: " + countryCode);
+        Intent i = new Intent(COUNTRY_CODE_FIRST_TIME_OBTAINED);
+        localBroadcastManager.sendBroadcast(i);
+        countryCodeUpdate();
+    }
+
+    void countryCodeUpdate () {
+        Log.wtf("******************", "COUNRY CODE: " + countryCode);
+        Intent i = new Intent(COUNTRY_CODE_UPDATED);
+        localBroadcastManager.sendBroadcast(i);
     }
 }

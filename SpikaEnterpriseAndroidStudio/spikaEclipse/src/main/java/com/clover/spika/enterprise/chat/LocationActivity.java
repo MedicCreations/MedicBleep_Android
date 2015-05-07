@@ -1,12 +1,22 @@
 package com.clover.spika.enterprise.chat;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,6 +26,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.utils.ApplicationStateManager;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GPSTracker;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
@@ -26,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.LocationSource.OnLocationChangedListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -53,6 +65,8 @@ public class LocationActivity extends BaseActivity {
 	private ImageButton goBack;
 	private TextView locationAddress;
 	private ImageButton sendLocation;
+
+	boolean isShare = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +97,8 @@ public class LocationActivity extends BaseActivity {
 		chatId = extras.getString(Const.CHAT_ID);
 
 		if (extras.containsKey(Const.LATITUDE)) {
+
+			isShare = false;
 
 			latitude = extras.getDouble(Const.LATITUDE);
 			longitude = extras.getDouble(Const.LONGITUDE);
@@ -134,26 +150,23 @@ public class LocationActivity extends BaseActivity {
 		getAddress();
 	}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        LocationUtility.getInstance().setOnLocationChangeListener(new LocationUtility.OnLocationChangeListener() {
-            @Override
-            public void onLocationChange(Location location) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                mapMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-            }
-        });
-    }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverImplementation);
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LocationUtility.getInstance().removeOnLocationChangeListener();
-    }
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (isShare) {
+			IntentFilter intentFilter = new IntentFilter(LocationUtility.LOCATION_UPDATED);
+			LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
+			updateLocation();
+		}
+	}
 
-    private void sendMsg() {
+	private void sendMsg() {
 		String rootId = getIntent().getStringExtra(Const.EXTRA_ROOT_ID);
 		String messageId = getIntent().getStringExtra(Const.EXTRA_MESSAGE_ID);
 
@@ -185,13 +198,13 @@ public class LocationActivity extends BaseActivity {
 	
 	private void getAddress(){
 		
-		LocationSpice.GetAddress getAddress = new LocationSpice.GetAddress(latitude, longitude, this);
-		spiceManager.execute(getAddress, new CustomSpiceListener<String>(){
-			
+		LocationSpice.GetAddress getAddress = new LocationSpice.GetAddress(latitude, longitude, LocationSpice.RETURN_TYPE_ADRESS, this);
+		spiceManager.execute(getAddress, new CustomSpiceListener<String>() {
+
 			@Override
 			public void onRequestSuccess(String address) {
 				super.onRequestSuccess(address);
-				
+
 				if (address != null) {
 					locationAddress.setText(address);
 				}
@@ -206,4 +219,26 @@ public class LocationActivity extends BaseActivity {
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(intent);
 	}
+
+	BroadcastReceiver broadcastReceiverImplementation = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(LocationUtility.LOCATION_UPDATED)) {
+				updateLocation();
+			}
+		}
+	};
+
+	void updateLocation () {
+		Location location = LocationUtility.getInstance().getLocation();
+
+		latitude = location.getLatitude();
+		longitude = location.getLongitude();
+		LatLng point = new LatLng(latitude, longitude);
+		mapMarker.setPosition(point);
+		mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+
+		getAddress();
+	}
+
 }
