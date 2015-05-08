@@ -261,9 +261,10 @@ public abstract class LoginBaseActivity extends Activity {
 	void checkPasscodeSet (final Bundle extras) {
 		if (!PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			tempExtras = extras;
-			Intent intent = new Intent(this, SMSVerificationActivity.class);
-			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
-			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
+//			Intent intent = new Intent(this, SMSVerificationActivity.class);
+//			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
+//			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
+			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
 		}
 		else {
 			if (this instanceof LoginActivity) {
@@ -352,12 +353,14 @@ public abstract class LoginBaseActivity extends Activity {
 			if (intent.getAction().equals(LocationUtility.COUNTRY_CODE_UPDATED)) {
 				if (!isLocationObtained) {
 					isLocationObtained = true;
-					try {
-						executePreLoginApi(userCache, passCache, extrasCache, showProgressCache);
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					} catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
+					if (userCache != null) {
+						try {
+							executePreLoginApi(userCache, passCache, extrasCache, showProgressCache);
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
