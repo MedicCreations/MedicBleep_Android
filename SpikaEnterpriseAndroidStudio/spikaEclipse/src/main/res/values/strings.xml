@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Spika Enterprise</string>
+    <string name="app_name">MedicBleep</string>
     <string name="good">Good</string>
     <string name="default_good">(0)</string>
     <string name="report_interjection">!</string>
