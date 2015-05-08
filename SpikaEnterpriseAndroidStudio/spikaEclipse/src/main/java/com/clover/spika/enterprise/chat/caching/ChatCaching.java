@@ -108,7 +108,7 @@ public class ChatCaching {
                     .getDaoSession()
                     .getMessageDao()
                     .queryBuilder()
-                    .where(MessageDao.Properties.Created.lt((System.currentTimeMillis() / 1000L) - (24 * 60 * 60)))
+                    .where(MessageDao.Properties.Created.lt((System.currentTimeMillis() / 1000L) - (72 * 60 * 60)))
                     .buildDelete()
                     .executeDeleteWithoutDetachingEntities();
 

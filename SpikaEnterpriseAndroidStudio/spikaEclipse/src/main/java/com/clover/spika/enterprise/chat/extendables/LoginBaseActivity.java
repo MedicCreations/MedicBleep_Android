@@ -6,9 +6,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
@@ -28,6 +33,7 @@ import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.GoogleUtils;
 import com.clover.spika.enterprise.chat.utils.Helper;
+import com.clover.spika.enterprise.chat.utils.LocationUtility;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
@@ -42,6 +48,8 @@ public abstract class LoginBaseActivity extends Activity {
 	private AppProgressAlertDialog progressBar;
 	
 	private Bundle tempExtras;
+
+	boolean isLocationObtained = false;
 
 	public void handleProgress(boolean showProgress) {
 
@@ -72,6 +80,25 @@ public abstract class LoginBaseActivity extends Activity {
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverImplementation);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
+			isLocationObtained = false;
+		}
+		else {
+			isLocationObtained = true;
+		}
+		IntentFilter intentFilter = new IntentFilter(LocationUtility.COUNTRY_CODE_UPDATED);
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
+	}
+
+	@Override
 	protected void onStart() {
 		super.onStart();
 		spiceManager.start(this);
@@ -83,8 +110,21 @@ public abstract class LoginBaseActivity extends Activity {
 		super.onStop();
 	}
 
+	String userCache;
+	String passCache;
+	Bundle extrasCache;
+	boolean showProgressCache;
+
 	protected void executePreLoginApi(final String user, final String pass, final Bundle extras, final boolean showProgress) throws UnsupportedEncodingException,
 			NoSuchAlgorithmException {
+
+		if (!isLocationObtained) {
+			userCache = user;
+			passCache = pass;
+			extrasCache = extras;
+			showProgressCache = showProgress;
+			return;
+		}
 
 		handleProgress(showProgress);
 		String hashPassword = Utils.getHexString(pass);
@@ -305,4 +345,23 @@ public abstract class LoginBaseActivity extends Activity {
             dialog.setInfo(getString(R.string.please_install_google_play_service_for_receiving_push_notification_));
         }
 	}
+
+	BroadcastReceiver broadcastReceiverImplementation = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(LocationUtility.COUNTRY_CODE_UPDATED)) {
+				if (!isLocationObtained) {
+					isLocationObtained = true;
+					try {
+						executePreLoginApi(userCache, passCache, extrasCache, showProgressCache);
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	};
+
 }

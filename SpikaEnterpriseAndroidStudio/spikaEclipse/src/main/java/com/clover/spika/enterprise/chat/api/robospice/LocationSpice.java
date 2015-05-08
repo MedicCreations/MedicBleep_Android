@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.networking.NetworkManagement;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
@@ -67,6 +68,7 @@ public class LocationSpice {
 							return finalAddress;
 						}
 						else {
+							Log.wtf("GEOCODER", "**************** WORKS ********************");
 							return address.getCountryCode();
 						}
 					}
@@ -77,6 +79,8 @@ public class LocationSpice {
 			}
 
 			try {
+				Log.wtf("GEOCODER", "**************** FALLBACK ********************");
+
 				String googleMapUrl = "http://maps.googleapis.com/maps/api/geocode/json";
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
