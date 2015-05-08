@@ -42,7 +42,6 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     private double latitude;
     private double longitude;
     private String countryCode;
-    private OnLocationChangeListener onLocationChangeListener;
     private SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
     private Context appContext;
 
@@ -132,13 +131,11 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
+            this.location = location;
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             Log.e("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
             updateCountryCodeAsync();
-//            if (onLocationChangeListener != null) {
-//                onLocationChangeListener.onLocationChange(location);
-//            }
             locationUpdated();
         }
     }
@@ -164,18 +161,6 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
                 start();
             }
         }
-    }
-
-    public void setOnLocationChangeListener (OnLocationChangeListener onLocationChangeListener) {
-        this.onLocationChangeListener = onLocationChangeListener;
-    }
-
-    public void removeOnLocationChangeListener () {
-        this.onLocationChangeListener = null;
-    }
-
-    public interface OnLocationChangeListener {
-        public void onLocationChange(Location location);
     }
 
     private void updateCountryCodeAsync(){
