@@ -619,20 +619,23 @@ public class Helper {
 
 		cursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
-		column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
-		column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-		cursor.moveToLast();
-		do{
-			if(cursor.getCount() == 0) {
-				break;
-			}
-			
-			absolutePathOfImage = cursor.getString(column_index_data);
+		try {
+			column_index_data = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
+			column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+			cursor.moveToLast();
+			do {
+				if (cursor.getCount() == 0) {
+					break;
+				}
 
-			listOfAllImages.add(absolutePathOfImage);
+				absolutePathOfImage = cursor.getString(column_index_data);
+
+				listOfAllImages.add(absolutePathOfImage);
+			}
+			while (cursor.moveToPrevious());
 		}
-		while (cursor.moveToPrevious());
-		
+		catch (Exception e) {
+		}
 		return listOfAllImages;
 	}
 
