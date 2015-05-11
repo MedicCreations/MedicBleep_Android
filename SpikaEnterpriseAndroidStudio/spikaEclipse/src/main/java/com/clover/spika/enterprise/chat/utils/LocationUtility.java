@@ -82,6 +82,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         IntentFilter intentFilter = new IntentFilter(ApplicationStateManager.APPLICATION_PAUSED);
         intentFilter.addAction(ApplicationStateManager.APPLICATION_RESUMED);
         LocalBroadcastManager.getInstance(appContext).registerReceiver(new BroadcastReceiverImplementation(), intentFilter);
+
     }
 
     public void start () {
@@ -123,10 +124,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         return location;
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("**** LOCATION ****", "API CONNECTED FAIL");
-    }
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -145,6 +143,11 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         Log.e("**** LOCATION ****", "API CONNECTED");
         getLastLocation();
         LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e("**** LOCATION ****", "API CONNECTED FAIL");
     }
 
     @Override
