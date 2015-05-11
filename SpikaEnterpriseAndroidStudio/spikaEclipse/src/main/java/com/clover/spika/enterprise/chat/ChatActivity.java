@@ -81,7 +81,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
         swipeControll.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getMessages(false, false, true, false, false, false);
+				boolean isClear = false, processing = false, isPagging = true, isNewMsg = false, isSend = false, isRefresh = false, isFirstTime = false;
+				getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
             }
         });
 
@@ -199,9 +200,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 		if (isResume) {
 			if (adapter.getCount() > 0) {
-				getMessages(false, false, false, true, false, true);
+				boolean isClear = false, processing = false, isPagging = false, isNewMsg = true, isSend = false, isRefresh = true, isFirstTime = false;
+				getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 			} else {
-				getMessages(true, true, true, false, false, true);
+				boolean isClear = true, processing = true, isPagging = true, isNewMsg = false, isSend = false, isRefresh = true, isFirstTime = false;
+				getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 			}
 		} else {
 			isResume = true;
@@ -307,8 +310,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	 * Used to start chat activity with chat id
 	 * 
 	 * @param context
-	 * @param chatId
-	 * @param password
 	 */
 	public static void startWithChatId(Context context, Chat chat, User user) {
 
@@ -397,7 +398,6 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	 * Start chat activity from update profile picture activity
 	 * 
 	 * @param context
-	 * @param intent
 	 * @param newImage
 	 * @param newThumbImage
 	 */
@@ -517,7 +517,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 				if (Helper.getStoredChatPassword(ChatActivity.this, chatId) != null
 						&& Helper.getStoredChatPassword(ChatActivity.this, chatId).equals(chatPassword)) {
-					getMessages(true, true, true, false, false, false);
+					boolean isClear = true, processing = true, isPagging = true, isNewMsg = false, isSend = false, isRefresh = false, isFirstTime = true;
+					getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 				} else {
 					AppDialog dialog = new AppDialog(this, true);
 					dialog.setPasswordInput(getString(R.string.requires_password), getString(R.string.ok), getString(R.string.cancel_big),
@@ -527,7 +528,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						@Override
 						public void onPositiveButtonClick(View v, Dialog d) {
 							Helper.storeChatPassword(ChatActivity.this, chatPassword, chatId);
-							getMessages(true, true, true, false, false, false);
+							boolean isClear = true, processing = true, isPagging = true, isNewMsg = false, isSend = false, isRefresh = false, isFirstTime = true;
+							getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 							d.dismiss();
 						}
 					});
@@ -548,7 +550,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				}
 
 			} else {
-				getMessages(true, true, true, false, false, false);
+				boolean isClear = true, processing = true, isPagging = true, isNewMsg = false, isSend = false, isRefresh = false, isFirstTime = true;
+				getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 			}
 		} else if (intent.getExtras().containsKey(Const.USER_ID)) {
 
@@ -816,7 +819,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	protected void onChatPushUpdated() {
-		getMessages(false, false, false, true, false, true);
+		boolean isClear = false, processing = false, isPagging = false, isNewMsg = true, isSend = false, isRefresh = true, isFirstTime = false;
+		getMessages(isClear, processing, isPagging, isNewMsg, isSend, isRefresh, isFirstTime);
 	}
 
 	@Override
@@ -857,7 +861,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	}
 
 	public void getMessages(final boolean isClear, final boolean processing, final boolean isPagging, final boolean isNewMsg, final boolean isSend,
-			final boolean isRefresh) {
+			final boolean isRefresh, final boolean isFirstTime) {
 
 		if (!isRunning) {
 			isRunning = true;
@@ -890,7 +894,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			}
 		}
 
-		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh,
+		ChatCacheSpice.GetData chatCacheSpice = new ChatCacheSpice.GetData(this, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, isFirstTime,
 				chatId, msgId, adapterCount, this, this);
 
 		offlineSpiceManager.execute(chatCacheSpice, new CustomSpiceListener<Chat>() {

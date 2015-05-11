@@ -29,12 +29,26 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 public class ChatCaching {
 
 	public static Chat getData(final Activity activity, final SpiceManager spiceManager, final boolean isClear, final boolean isPagging,
-			final boolean isNewMsg, final boolean isSend, final boolean isRefresh, final String chatId, String msgId, int adapterCount,
+			final boolean isNewMsg, final boolean isSend, final boolean isRefresh, boolean isFirstTime, final String chatId, String msgId, int adapterCount,
 			final OnChatDBChanged onDBChangeListener, final OnChatNetworkResult onNetworkListener) {
 
 		Chat resultArray = getDBData(activity, Long.valueOf(chatId));
 
-		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount);
+		if(TextUtils.isEmpty(msgId)){
+			if(resultArray != null && resultArray.messages != null && resultArray.messages.size() > 0) {
+				int offset = 1;
+				if(resultArray.messages.size() > 1){
+					//size - 2 because last message was loaded in recent activity
+					offset = 2;
+				}
+				msgId = resultArray.messages.get(resultArray.messages.size() - offset).getId();
+			} else {
+				//doesn't need to load all messages
+				isFirstTime = false;
+			}
+		}
+
+		ChatSpice.GetMessages getMessage = new ChatSpice.GetMessages(isClear, isPagging, isNewMsg, isSend, isRefresh, isFirstTime, chatId, msgId, adapterCount);
 		spiceManager.execute(getMessage, new CustomSpiceListener<Chat>() {
 
 			@Override

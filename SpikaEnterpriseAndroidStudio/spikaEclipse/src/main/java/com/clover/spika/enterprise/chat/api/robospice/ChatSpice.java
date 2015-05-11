@@ -462,11 +462,12 @@ public class ChatSpice {
 		private boolean isNewMessage;
 		private boolean isSend;
 		private boolean isRefresh;
+		private boolean isFirstTime;
 		private String chatId;
 		private String msgId;
 		private int adapterCount;
 
-		public GetMessages(boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh, String chatId, String msgId,
+		public GetMessages(boolean isClear, boolean isPagging, boolean isNewMsg, boolean isSend, boolean isRefresh, boolean isFirstTime, String chatId, String msgId,
 				int adapterCount) {
 			super(Chat.class);
 
@@ -475,6 +476,7 @@ public class ChatSpice {
 			this.isNewMessage = isNewMsg;
 			this.isSend = isSend;
 			this.isRefresh = isRefresh;
+			this.isFirstTime = isFirstTime;
 			this.chatId = chatId;
 			this.msgId = msgId;
 			this.adapterCount = adapterCount;
@@ -485,7 +487,9 @@ public class ChatSpice {
 
 			String url = Const.BASE_URL + Const.F_GET_MESSAGES + "?" + Const.CHAT_ID + "=" + chatId;
 
-			if (isPagging) {
+			if (isFirstTime){
+				url = url + "&" + Const.LAST_MSG_ID + "=" + msgId + "&" + Const.NEW + "=1";
+			} else if (isPagging) {
 				if (!isClear && adapterCount != -1 && adapterCount > 0) {
 					url = url + "&" + Const.LAST_MSG_ID + "=" + msgId;
 				}

@@ -399,4 +399,5 @@ public class Const {
 	public static final String IS_ENCRYPTED = "isEncrypted";
 
     public static final String COUNTRY_CODE = "Country-Code";
+	public static final String NEW = "new";
 }

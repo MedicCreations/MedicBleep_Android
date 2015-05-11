@@ -20,6 +20,7 @@ public class ChatCacheSpice {
 		private boolean isNewMsg;
 		private boolean isSend;
 		private boolean isRefresh;
+		private boolean isFirstTime;
 		private String chatId;
 		private String msgId;
 		private int adapterCount;
@@ -28,7 +29,7 @@ public class ChatCacheSpice {
 		
 		
 		public GetData(Activity activity, SpiceManager spiceManager, boolean isClear, boolean isPagging, boolean isNewMsg, 
-				boolean isSend, boolean isRefresh, String chatId, String msgId, int adapterCount, 
+				boolean isSend, boolean isRefresh, boolean isFirstTime, String chatId, String msgId, int adapterCount,
 				OnChatDBChanged onDBChangeListener, OnChatNetworkResult onNetworkListener) {
 			super(Chat.class);
 
@@ -39,6 +40,7 @@ public class ChatCacheSpice {
 			this.isNewMsg = isNewMsg;
 			this.isSend = isSend;
 			this.isRefresh = isRefresh;
+			this.isFirstTime = isFirstTime;
 			this.chatId = chatId;
 			this.msgId = msgId;
 			this.adapterCount = adapterCount;
@@ -49,7 +51,7 @@ public class ChatCacheSpice {
 		@Override
 		public Chat loadDataFromNetwork() throws Exception {
 
-			return ChatCaching.getData(activity, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, chatId, msgId, adapterCount, onDBChangeListener, onNetworkListener);
+			return ChatCaching.getData(activity, spiceManager, isClear, isPagging, isNewMsg, isSend, isRefresh, isFirstTime, chatId, msgId, adapterCount, onDBChangeListener, onNetworkListener);
 		}
 	}
 	
