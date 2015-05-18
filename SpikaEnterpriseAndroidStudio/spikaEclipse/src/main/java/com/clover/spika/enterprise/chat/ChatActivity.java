@@ -712,7 +712,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	
 	private void checkForEncryption(final String mFilePath2, final String fileName) {
 		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
-			
+
 			@Override
 			public void onCheckFinish(String path, boolean toCrypt) {
 				uploadFile(mFilePath2, fileName, toCrypt);
@@ -751,7 +751,13 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 	@Override
 	protected int getUserId() {
-		return Integer.valueOf(mUserId);
+		int userId;
+		try {
+			userId = Integer.valueOf(mUserId);
+		} catch (NumberFormatException e) {
+			userId = 0;
+		}
+		return userId;
 	}
 
 	public void sendMessage(final int type, String chatId, String text, String fileId, String thumbId, String longitude, String latitude) {	
@@ -988,6 +994,7 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			}
 		}
 		adapter.setSeenBy(chat.seen_by);
+
 
 		totalItems = Integer.valueOf(chat.total_count);
         Log.d("LOG", "MANAGE, TOTAL COUNT: " + totalItems);
