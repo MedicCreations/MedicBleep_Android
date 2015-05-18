@@ -1083,6 +1083,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	};
 	
 	private void startTimeout(){
+		timeoutForPasscodeHandler.removeCallbacks(timeoutForPasscodeRunnable);
 		if(!isPasscodeEnabled) return;
 		Logger.custom("i", "TIMEOUT", "START");
 		timeoutForPasscodeHandler.postDelayed(timeoutForPasscodeRunnable, Const.PASSCODE_TIMEOUT_TIME);
