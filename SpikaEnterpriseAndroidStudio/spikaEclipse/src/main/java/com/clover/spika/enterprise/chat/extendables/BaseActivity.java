@@ -128,8 +128,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 		intentFilterSocket = new IntentFilter(Const.SOCKET_ACTION);
 		LocalBroadcastManager.getInstance(this).registerReceiver(rec, intentFilterSocket);
-		
-		startTimeout();
 	}
 
 	@Override
@@ -257,6 +255,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		PasscodeUtility.getInstance().onResume();
 		if (PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			isPasscodeEnabled = true;
+			startTimeout();
 			if (!PasscodeUtility.getInstance().isSessionValid()) {
 				startActivityForResult(new Intent(this, PasscodeActivity.class), Const.PASSCODE_ENTRY_VALIDATION_REQUEST);
 			}
@@ -1069,7 +1068,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		startTimeout();
 	}
 	
-	private Handler timeoutForPasscodeHandler = new Handler();
+	private static Handler timeoutForPasscodeHandler;
 	private Runnable timeoutForPasscodeRunnable = new Runnable() {
 		
 		@Override
@@ -1083,7 +1082,10 @@ public class BaseActivity extends SlidingFragmentActivity {
 	};
 	
 	private void startTimeout(){
-		timeoutForPasscodeHandler.removeCallbacks(timeoutForPasscodeRunnable);
+		if (timeoutForPasscodeHandler == null) {
+			timeoutForPasscodeHandler = new Handler();
+		}
+		timeoutForPasscodeHandler.removeCallbacksAndMessages(null);
 		if(!isPasscodeEnabled) return;
 		Logger.custom("i", "TIMEOUT", "START");
 		timeoutForPasscodeHandler.postDelayed(timeoutForPasscodeRunnable, Const.PASSCODE_TIMEOUT_TIME);
@@ -1092,7 +1094,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 	private void stopTimeout(){
 		if(!isPasscodeEnabled) return;
 		Logger.custom("i", "TIMEOUT", "STOP");
-		timeoutForPasscodeHandler.removeCallbacks(timeoutForPasscodeRunnable);
+		timeoutForPasscodeHandler.removeCallbacksAndMessages(null);
 	}
 
 }
