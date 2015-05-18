@@ -105,6 +105,7 @@ public class CloverDaoGenerator {
 		message.addBooleanProperty("isFailed");
 		message.addStringProperty("attributes");
 		message.addStringProperty("country_code");
+		message.addIntProperty("seen_timestamp");
 		
 		Property chatIdProperty = message.addLongProperty("chatIdProperty").getProperty();
 

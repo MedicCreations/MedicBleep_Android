@@ -68,7 +68,7 @@ public class LocationSpice {
 							return finalAddress;
 						}
 						else {
-							Log.wtf("GEOCODER", "**************** WORKS ********************");
+							Log.i("GEOCODER", "**************** WORKS ********************");
 							return address.getCountryCode();
 						}
 					}
@@ -79,7 +79,7 @@ public class LocationSpice {
 			}
 
 			try {
-				Log.wtf("GEOCODER", "**************** FALLBACK ********************");
+				Log.i("GEOCODER", "**************** FALLBACK ********************");
 
 				String googleMapUrl = "http://maps.googleapis.com/maps/api/geocode/json";
 

@@ -655,7 +655,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, mess.seen_timestamp,
+				Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insertOrReplace(messDao);
 		adapter.addNewMessage(mess, tempMess);
 
@@ -687,7 +688,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, mess.seen_timestamp,
+				Long.valueOf(mess.getChat_id()));
 		getDaoSession().getMessageDao().insert(messDao);
 		adapter.addNewMessage(mess);
 
@@ -830,7 +832,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		com.clover.spika.enterprise.chat.models.greendao.Message messDao = new com.clover.spika.enterprise.chat.models.greendao.Message(
 				Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image, mess.text,
 				mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list, mess.image_thumb,
-				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, Long.valueOf(mess.getChat_id()));
+				mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, mess.seen_timestamp,
+				Long.valueOf(mess.getChat_id()));
 
 		getDaoSession().getMessageDao().update(messDao);
 	}

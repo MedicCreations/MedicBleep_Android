@@ -122,7 +122,8 @@ public class ChatCaching {
                     .getDaoSession()
                     .getMessageDao()
                     .queryBuilder()
-                    .where(MessageDao.Properties.Created.lt((System.currentTimeMillis() / 1000L) - (72 * 60 * 60)))
+                    .where(MessageDao.Properties.Seen_timestamp.lt((System.currentTimeMillis() / 1000L) - (72 * 60 * 60)))
+					.where(MessageDao.Properties.Seen_timestamp.gt(0))
                     .buildDelete()
                     .executeDeleteWithoutDetachingEntities();
 
@@ -290,7 +291,8 @@ public class ChatCaching {
 				com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = new com.clover.spika.enterprise.chat.models.greendao.Message(
 						Long.valueOf(mess.id), Long.valueOf(mess.chat_id), Long.valueOf(mess.user_id), mess.firstname, mess.lastname, mess.image,
 						mess.text, mess.file_id, mess.thumb_id, mess.longitude, mess.latitude, mess.created, mess.modified, mess.child_list,
-						mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, (long) networkData.chat.getId());
+						mess.image_thumb, mess.type, mess.root_id, mess.parent_id, mess.isMe, mess.isFailed, mess.attributes, mess.country_code, mess.seen_timestamp,
+						(long) networkData.chat.getId());
 
 				messageDao.insertOrReplace(finalMessageModel);
 			}

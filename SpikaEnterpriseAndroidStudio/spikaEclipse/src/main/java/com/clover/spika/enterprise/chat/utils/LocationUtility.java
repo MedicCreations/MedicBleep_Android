@@ -4,8 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -18,14 +16,17 @@ import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by mislav on 21/04/15.
@@ -35,6 +36,9 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     public static final String COUNTRY_CODE_FIRST_TIME_OBTAINED = "COUNTRY_CODE_FIRST_TIME_OBTAINED";
     public static final String COUNTRY_CODE_UPDATED = "COUNTRY_CODE_UPDATED";
     public static final String LOCATION_UPDATED = "LOCATION_UPDATED";
+    public static final String LOCATION_SETTINGS_ERROR = "LOCATION_SETTINGS_ERROR";
+
+    public boolean isLocationSettingsStatusOK = false;
 
     private GoogleApiClient client;
     private LocationRequest locationRequest;
@@ -54,6 +58,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
      * @param appContext
      */
     public static void createInstance (Context appContext) {
+        Log.wtf("Instance", "Created");
         instance = new LocationUtility(appContext);
     }
 
@@ -82,12 +87,12 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         IntentFilter intentFilter = new IntentFilter(ApplicationStateManager.APPLICATION_PAUSED);
         intentFilter.addAction(ApplicationStateManager.APPLICATION_RESUMED);
         LocalBroadcastManager.getInstance(appContext).registerReceiver(new BroadcastReceiverImplementation(), intentFilter);
-
     }
 
     public void start () {
         spiceManager.start(appContext);
         client.connect();
+        checkSettings();
     }
 
     public void stop () {
@@ -103,11 +108,11 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            Log.e("**** LOCATION ****", "LL: " + latitude + " " + longitude);
+            Log.i("**** LOCATION ****", "LL: " + latitude + " " + longitude);
             updateCountryCodeAsync();
         }
         else {
-            Log.e("**** LOCATION ****", "NULL");
+            Log.i("**** LOCATION ****", "NULL");
         }
     }
 
@@ -124,15 +129,13 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         return location;
     }
 
-
-
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
             this.location = location;
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            Log.e("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
+            Log.i("**** LOCATION ****", "CHANGE TO: " + latitude + " " + longitude);
             updateCountryCodeAsync();
             locationUpdated();
         }
@@ -140,7 +143,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.e("**** LOCATION ****", "API CONNECTED");
+        Log.i("**** LOCATION ****", "API CONNECTED");
         getLastLocation();
         LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this);
     }
@@ -152,15 +155,17 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.e("**** LOCATION ****", "API SUSPENDED " + i);
+        Log.i("**** LOCATION ****", "API SUSPENDED " + i);
     }
 
     private class BroadcastReceiverImplementation extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApplicationStateManager.APPLICATION_PAUSED)) {
+                Log.e("CATCH", "PAUSE");
                 stop();
             } else if (intent.getAction().equals(ApplicationStateManager.APPLICATION_RESUMED)) {
+                Log.e("CATCH", "START");
                 start();
             }
         }
@@ -191,21 +196,74 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     }
 
     void locationUpdated () {
-        Log.wtf("******************", "LOCATION UPDATE");
+        Log.i("******************", "LOCATION UPDATE");
         Intent i = new Intent(LOCATION_UPDATED);
         localBroadcastManager.sendBroadcast(i);
     }
 
     void firstCountryCodeUpdate () {
-        Log.wtf("******************", "COUNRY CODE FIRST: " + countryCode);
+        Log.i("******************", "COUNRY CODE FIRST: " + countryCode);
         Intent i = new Intent(COUNTRY_CODE_FIRST_TIME_OBTAINED);
         localBroadcastManager.sendBroadcast(i);
         countryCodeUpdate();
     }
 
     void countryCodeUpdate () {
-        Log.wtf("******************", "COUNRY CODE: " + countryCode);
+        Log.i("******************", "COUNTRY CODE: " + countryCode);
         Intent i = new Intent(COUNTRY_CODE_UPDATED);
         localBroadcastManager.sendBroadcast(i);
+    }
+
+    void checkSettings () {
+        //******* CHECK SETTINGS *******
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(client, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                Log.i("**** SETTINGS ****", "SETIINGS RESULT: " + status);
+//                final LocationSettingsStates = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                        Log.i("**** SETTINGS ****", "SETIINGS OK");
+
+                        isLocationSettingsStatusOK = true;
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user
+                        // a dialog.
+                        Log.i("**** SETTINGS ****", "SETIINGS CHANGE");
+                        isLocationSettingsStatusOK = false;
+
+                        Intent i = new Intent(LOCATION_SETTINGS_ERROR);
+                        localBroadcastManager.sendBroadcast(i);
+
+//                        Intent intent = new Intent(appContext, AlertDialogActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        appContext.startActivity(intent);
+
+//                        try {
+//                            // Show the dialog by calling startResolutionForResult(),
+//                            // and check the result in onActivityResult().
+//                            status.startResolutionForResult(
+//                                    OuterClass.this,
+//                                    REQUEST_CHECK_SETTINGS);
+//                        } catch (IntentSender.SendIntentException e) {
+//                            // Ignore the error.
+//                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        Log.e("**** SETTINGS ****", "SETIINGS FAIL");
+                        break;
+                }
+            }
+        });
     }
 }

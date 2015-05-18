@@ -50,7 +50,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
         public final static Property IsFailed = new Property(19, Boolean.class, "isFailed", false, "IS_FAILED");
         public final static Property Attributes = new Property(20, String.class, "attributes", false, "ATTRIBUTES");
         public final static Property Country_code = new Property(21, String.class, "country_code", false, "COUNTRY_CODE");
-        public final static Property ChatIdProperty = new Property(22, Long.class, "chatIdProperty", false, "CHAT_ID_PROPERTY");
+        public final static Property Seen_timestamp = new Property(22, Integer.class, "seen_timestamp", false, "SEEN_TIMESTAMP");
+        public final static Property ChatIdProperty = new Property(23, Long.class, "chatIdProperty", false, "CHAT_ID_PROPERTY");
     };
 
     private DaoSession daoSession;
@@ -92,7 +93,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
                 "'IS_FAILED' INTEGER," + // 19: isFailed
                 "'ATTRIBUTES' TEXT," + // 20: attributes
                 "'COUNTRY_CODE' TEXT," + // 21: country_code
-                "'CHAT_ID_PROPERTY' INTEGER);"); // 22: chatIdProperty
+                "'SEEN_TIMESTAMP' INTEGER," + // 22: seen_timestamp
+                "'CHAT_ID_PROPERTY' INTEGER);"); // 23: chatIdProperty
     }
 
     /** Drops the underlying database table. */
@@ -212,9 +214,14 @@ public class MessageDao extends AbstractDao<Message, Long> {
             stmt.bindString(22, country_code);
         }
  
+        Integer seen_timestamp = entity.getSeen_timestamp();
+        if (seen_timestamp != null) {
+            stmt.bindLong(23, seen_timestamp);
+        }
+ 
         Long chatIdProperty = entity.getChatIdProperty();
         if (chatIdProperty != null) {
-            stmt.bindLong(23, chatIdProperty);
+            stmt.bindLong(24, chatIdProperty);
         }
     }
 
@@ -256,7 +263,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
             cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0, // isFailed
             cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // attributes
             cursor.isNull(offset + 21) ? null : cursor.getString(offset + 21), // country_code
-            cursor.isNull(offset + 22) ? null : cursor.getLong(offset + 22) // chatIdProperty
+            cursor.isNull(offset + 22) ? null : cursor.getInt(offset + 22), // seen_timestamp
+            cursor.isNull(offset + 23) ? null : cursor.getLong(offset + 23) // chatIdProperty
         );
         return entity;
     }
@@ -286,7 +294,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
         entity.setIsFailed(cursor.isNull(offset + 19) ? null : cursor.getShort(offset + 19) != 0);
         entity.setAttributes(cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20));
         entity.setCountry_code(cursor.isNull(offset + 21) ? null : cursor.getString(offset + 21));
-        entity.setChatIdProperty(cursor.isNull(offset + 22) ? null : cursor.getLong(offset + 22));
+        entity.setSeen_timestamp(cursor.isNull(offset + 22) ? null : cursor.getInt(offset + 22));
+        entity.setChatIdProperty(cursor.isNull(offset + 23) ? null : cursor.getLong(offset + 23));
      }
     
     /** @inheritdoc */

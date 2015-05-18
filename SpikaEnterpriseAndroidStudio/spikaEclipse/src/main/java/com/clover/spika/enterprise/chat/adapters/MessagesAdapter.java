@@ -28,6 +28,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;

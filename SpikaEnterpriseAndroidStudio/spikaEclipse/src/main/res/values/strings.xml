@@ -370,5 +370,7 @@
     <string name="e_organization_suspended">Selected organization has been currently suspended. Please contact user support for more details.</string>
     <string name="e_room_limit_exceeded">Your organization has exceeded room limit and cannot create new rooms any more.</string>
     <string name="e_file_limit_exceeded">Your organization has exceeded file upload. Please contact yout administrator for more details.</string>
-    
+
+    <string name="location_services_turned_off_go_to_settings">Location services are turned off. Go to settings?</string>
+
 </resources>

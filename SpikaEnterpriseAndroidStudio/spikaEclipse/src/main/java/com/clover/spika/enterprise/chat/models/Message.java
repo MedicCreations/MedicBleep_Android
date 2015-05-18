@@ -36,6 +36,7 @@ public class Message implements Parcelable {
 	public String image_thumb;
 	public String attributes;
     public String country_code;
+	public int seen_timestamp;
 
 	private int textWidth = -1;
 	private int timeWidth = -1;
@@ -224,14 +225,6 @@ public class Message implements Parcelable {
 	public void setAttributes(String attributes) {
 		this.attributes = attributes;
 	}
-
-    public String getCountry_code() {
-        return country_code;
-    }
-
-    public void setCountry_code(String country_code) {
-        this.country_code = country_code;
-    }
 	
 	public void setIsCodeTextStyle(){
 		if(TextUtils.isEmpty(attributes)){
@@ -335,39 +328,40 @@ public class Message implements Parcelable {
 	}
 
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "isMe=" + isMe +
-                ", isFailed=" + isFailed +
-                ", id='" + id + '\'' +
-                ", chat_id='" + chat_id + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", image='" + image + '\'' +
-                ", text='" + text + '\'' +
-                ", file_id='" + file_id + '\'' +
-                ", thumb_id='" + thumb_id + '\'' +
-                ", longitude='" + longitude + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", type=" + type +
-                ", created='" + created + '\'' +
-                ", modified='" + modified + '\'' +
-                ", root_id=" + root_id +
-                ", parent_id=" + parent_id +
-                ", child_list='" + child_list + '\'' +
-                ", image_thumb='" + image_thumb + '\'' +
-                ", attributes='" + attributes + '\'' +
-                ", country_code='" + country_code + '\'' +
-                ", textWidth=" + textWidth +
-                ", timeWidth=" + timeWidth +
-                ", isUserExpandContent=" + isUserExpandContent +
-                ", isTextCodeStyle=" + isTextCodeStyle +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Message{" +
+				"isMe=" + isMe +
+				", isFailed=" + isFailed +
+				", id='" + id + '\'' +
+				", chat_id='" + chat_id + '\'' +
+				", user_id='" + user_id + '\'' +
+				", firstname='" + firstname + '\'' +
+				", lastname='" + lastname + '\'' +
+				", image='" + image + '\'' +
+				", text='" + text + '\'' +
+				", file_id='" + file_id + '\'' +
+				", thumb_id='" + thumb_id + '\'' +
+				", longitude='" + longitude + '\'' +
+				", latitude='" + latitude + '\'' +
+				", type=" + type +
+				", created='" + created + '\'' +
+				", modified='" + modified + '\'' +
+				", root_id=" + root_id +
+				", parent_id=" + parent_id +
+				", child_list='" + child_list + '\'' +
+				", image_thumb='" + image_thumb + '\'' +
+				", attributes='" + attributes + '\'' +
+				", country_code='" + country_code + '\'' +
+				", seen_timestamp=" + seen_timestamp +
+				", textWidth=" + textWidth +
+				", timeWidth=" + timeWidth +
+				", isUserExpandContent=" + isUserExpandContent +
+				", isTextCodeStyle=" + isTextCodeStyle +
+				'}';
+	}
 
-    public static Message decryptContent(Context ctx, Message msg) {
+	public static Message decryptContent(Context ctx, Message msg) {
 		
 		switch (msg.getType()) {
 
@@ -436,10 +430,11 @@ public class Message implements Parcelable {
         dest.writeString(this.image_thumb);
         dest.writeString(this.attributes);
         dest.writeString(this.country_code);
+		dest.writeInt(seen_timestamp);
         dest.writeInt(this.textWidth);
-        dest.writeInt(this.timeWidth);
+		dest.writeInt(this.timeWidth);
         dest.writeByte(isUserExpandContent ? (byte) 1 : (byte) 0);
-        dest.writeByte(isTextCodeStyle ? (byte) 1 : (byte) 0);
+		dest.writeByte(isTextCodeStyle ? (byte) 1 : (byte) 0);
     }
 
     private Message(Parcel in) {
@@ -465,6 +460,7 @@ public class Message implements Parcelable {
         this.image_thumb = in.readString();
         this.attributes = in.readString();
         this.country_code = in.readString();
+		this.seen_timestamp = in.readInt();
         this.textWidth = in.readInt();
         this.timeWidth = in.readInt();
         this.isUserExpandContent = in.readByte() != 0;
