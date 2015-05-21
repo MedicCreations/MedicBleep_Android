@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.api.robospice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.models.Chat;
+import com.clover.spika.enterprise.chat.models.SeenTimestamps;
 import com.clover.spika.enterprise.chat.models.SendMessageResponse;
 import com.clover.spika.enterprise.chat.security.JNAesCrypto;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
@@ -20,6 +22,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class ChatSpice {
 
@@ -577,6 +581,40 @@ public class ChatSpice {
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responseBody, Chat.class);
+		}
+	}
+
+	public static class CheckTimestamps extends CustomSpiceRequest<SeenTimestamps> {
+
+		private String messageIds;
+
+		public CheckTimestamps (ArrayList<String> messageIds) {
+			super(SeenTimestamps.class);
+			this.messageIds = StringUtils.join(messageIds, ",");
+		}
+
+		@Override
+		public SeenTimestamps loadDataFromNetwork() throws Exception {
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders())
+					.url(Const.BASE_URL + Const.F_GET_SEEN_TIMESTAMPS + "?" + Const.MESSAGE_IDS + "=" + messageIds).get();
+
+			Logger.e("URL: " + Const.BASE_URL + Const.F_GET_SEEN_TIMESTAMPS + "?" + Const.MESSAGE_IDS + "=" + messageIds);
+
+			Call connection = getOkHttpClient().newCall(requestBuilder.build());
+
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responseBody = resBody.string();
+
+			Logger.e(responseBody);
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			SeenTimestamps seenTimeStamps = mapper.readValue(responseBody, SeenTimestamps.class);
+			Logger.e(seenTimeStamps.toString());
+
+			return seenTimeStamps;
 		}
 	}
 }

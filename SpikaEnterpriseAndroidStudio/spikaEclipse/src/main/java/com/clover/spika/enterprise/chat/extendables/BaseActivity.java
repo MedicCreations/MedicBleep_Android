@@ -47,6 +47,7 @@ import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
+import com.clover.spika.enterprise.chat.caching.ChatCaching;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -218,6 +219,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 		getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(internetChageStateRec, intentFilterInternetChangeState);
+
+
 	}
 
 	// ***********DEBUG DROP TABLE MESSAGES
@@ -263,6 +266,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 			isPasscodeEnabled = false;
 		}
 
+		ChatCaching.updateTimestamps(this);
 	}
 
 	@Override

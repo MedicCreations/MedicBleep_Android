@@ -205,6 +205,7 @@ public class Const {
 	public static final String ORGANIZATION_ID = "organization_id";
 	public static final String ORGANIZATION_NAME = "organization_name";
 	public static final String ORGANIZATIONS = "organizations";
+	public static final String MESSAGE_IDS = "message_ids";
 
 	public static final int MSG_TYPE_DEFAULT = 1;
 	public static final int MSG_TYPE_PHOTO = 2;
@@ -278,6 +279,7 @@ public class Const {
 	public static final String F_GLOBAL_SEARCH_URL = "/search/list";
 	public static final String F_GLOBAL_MEMBERS_URL = "/member/list";
 	public static final String F_STICKERS_URL = "/message/stickers";
+	public static final String F_GET_SEEN_TIMESTAMPS = "/message/checkTimestamps";
 
 	public static final int API_SUCCESS = 2000;
 

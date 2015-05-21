@@ -1,5 +1,6 @@
 package com.clover.spika.enterprise.chat.caching;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -13,6 +14,7 @@ import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Message;
+import com.clover.spika.enterprise.chat.models.SeenTimestamps;
 import com.clover.spika.enterprise.chat.models.greendao.CategoryDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao;
 import com.clover.spika.enterprise.chat.models.greendao.ChatDao.Properties;
@@ -22,9 +24,11 @@ import com.clover.spika.enterprise.chat.models.greendao.UserDao;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 public class ChatCaching {
 
@@ -117,17 +121,6 @@ public class ChatCaching {
 			if (chatBase == null)
 				return null;
 
-
-            ((BaseActivity) activity)
-                    .getDaoSession()
-                    .getMessageDao()
-                    .queryBuilder()
-                    .where(MessageDao.Properties.Seen_timestamp.lt((System.currentTimeMillis() / 1000L) - (72 * 60 * 60)))
-					.where(MessageDao.Properties.Seen_timestamp.gt(0))
-                    .buildDelete()
-                    .executeDeleteWithoutDetachingEntities();
-
-
 			long tempCount = ((BaseActivity) activity)
 					.getDaoSession()
 					.getMessageDao()
@@ -146,7 +139,6 @@ public class ChatCaching {
 								com.clover.spika.enterprise.chat.models.greendao.MessageDao.Properties.Root_id.eq(0)).build().list();
 				chat.messages = DaoUtils.converDaoMessagesToMessagesModel(tempMess);
 			}
-
 		}
 
 		return chat;
@@ -357,4 +349,67 @@ public class ChatCaching {
 		public void onChatNetworkResult(int totalCount);
 	}
 
+	public static void deleteOldMessages (final Activity activity) {
+		if (activity instanceof BaseActivity) {
+			((BaseActivity) activity)
+					.getDaoSession()
+					.getMessageDao()
+					.queryBuilder()
+					.where(MessageDao.Properties.Seen_timestamp.lt((System.currentTimeMillis() / 1000L) - (1 * 60 * 60)))
+					.where(MessageDao.Properties.Seen_timestamp.gt(0))
+					.buildDelete()
+					.executeDeleteWithoutDetachingEntities();
+		}
+	}
+
+	public static void updateTimestamps (final Activity activity) {
+		if (activity instanceof BaseActivity) {
+
+			List<com.clover.spika.enterprise.chat.models.greendao.Message> messages = ((BaseActivity) activity)
+					.getDaoSession()
+					.getMessageDao()
+					.queryBuilder()
+					.where(MessageDao.Properties.Seen_timestamp.eq(0))
+					.build()
+					.list();
+
+			ArrayList<String> messageIds = new ArrayList<String>();
+			for (com.clover.spika.enterprise.chat.models.greendao.Message message : messages) {
+				messageIds.add(String.valueOf(message.getId()));
+			}
+
+			if (messageIds.size() <= 0) {
+				return;
+			}
+
+			ChatSpice.CheckTimestamps seenTimestampsAPI = new ChatSpice.CheckTimestamps(messageIds);
+
+			((BaseActivity) activity).spiceManager.execute(seenTimestampsAPI, new RequestListener<SeenTimestamps>() {
+				@Override
+				public void onRequestFailure(SpiceException e) {
+					Logger.e("********** FAIL **********");
+				}
+
+				@Override
+				public void onRequestSuccess(SeenTimestamps seenTimestamps) {
+					Logger.e("********** SUCCESS **********");
+
+					for (SeenTimestamps.SeenTimestamp seenTimestamp : seenTimestamps.result) {
+
+						MessageDao messageDao = ((BaseActivity) activity).getDaoSession().getMessageDao();
+
+						com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = messageDao.queryBuilder()
+								.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(seenTimestamp.message_id))
+								.unique();
+
+						finalMessageModel.setSeen_timestamp(seenTimestamp.seen_timestamp);
+
+						messageDao.update(finalMessageModel);
+					}
+
+					deleteOldMessages(activity);
+				}
+			});
+		}
+	}
 }
