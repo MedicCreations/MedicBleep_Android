@@ -38,6 +38,9 @@ public class Const {
 	public static final int REQUEST_PHONE_NUMBER = 9003;
 	public static final int REQUEST_VERIFICATION_CODE = 9004;
 
+	//database
+	public static final String DATABASE_NAME_SPIKA = "SpikaEnterprise.db";
+
 	// Preferences keys
 	public static final String CLIENT_TOKEN_EXPIRES = "ClientTokenExpires";
 	public static final String CURRENT_APP_VERSION = "CurrentAppVersion";
@@ -280,6 +283,7 @@ public class Const {
 	public static final String F_GLOBAL_MEMBERS_URL = "/member/list";
 	public static final String F_STICKERS_URL = "/message/stickers";
 	public static final String F_GET_SEEN_TIMESTAMPS = "/message/checkTimestamps";
+	public static final String F_GET_PUSH_MESSAGES = "/message/push";
 
 	public static final int API_SUCCESS = 2000;
 

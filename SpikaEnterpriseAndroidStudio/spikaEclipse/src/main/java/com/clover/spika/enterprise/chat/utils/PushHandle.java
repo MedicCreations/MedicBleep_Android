@@ -14,18 +14,28 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.clover.spika.enterprise.chat.ChatActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.caching.BackgroundChatCaching;
+import com.clover.spika.enterprise.chat.caching.robospice.BackgroundChatDataCacheSpice;
+import com.clover.spika.enterprise.chat.models.GetBackroundDataResponse;
+import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
+import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
+import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
+import com.octo.android.robospice.SpiceManager;
 
 public class PushHandle {
 
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
-	public static void handlePushNotification(final String chatId, String organizationId, String firstName, String chatPassword, String type, Context context) {
+	public static void handlePushNotification(final String chatId, String messageId, String organizationId, String firstName, String chatPassword, String type, Context context) {
 
 		String message = context.getResources().getString(R.string.msg_from) + " " + firstName;
 
@@ -54,6 +64,7 @@ public class PushHandle {
 			Intent inBroadcast = new Intent();
 			inBroadcast.setAction(Const.PUSH_INTENT_ACTION);
 			inBroadcast.putExtra(Const.CHAT_ID, chatId);
+			inBroadcast.putExtra(Const.MESSAGE_ID, messageId);
 			inBroadcast.putExtra(Const.PUSH_TYPE, type);
 			inBroadcast.putExtra(Const.PUSH_MESSAGE, message);
 			inBroadcast.putExtra(Const.PASSWORD, chatPassword);
@@ -70,6 +81,7 @@ public class PushHandle {
 
 			Intent pushIntent = new Intent(context, ChatActivity.class);
 			pushIntent.putExtra(Const.CHAT_ID, chatId);
+			pushIntent.putExtra(Const.MESSAGE_ID, messageId);
 			pushIntent.putExtra(Const.PUSH_TYPE, type);
 			pushIntent.putExtra(Const.FROM_NOTIFICATION, true);
 			pushIntent.putExtra(Const.PASSWORD, chatPassword);
@@ -111,10 +123,38 @@ public class PushHandle {
 			}
 
 			mNotificationManager.notify(Integer.valueOf(chatId), notification);
+
+			if(messageId != null){
+				updateDBInBackground(context, chatId, messageId);
+			}
 		}
 	}
-	
-	
+
+	private static void updateDBInBackground(Context context, final String chatId, String messageId){
+		SQLiteDatabase db;
+		DaoMaster daoMaster;
+		final DaoSession daoSession;
+		final DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, Const.DATABASE_NAME_SPIKA, null);
+		db = helper.getWritableDatabase();
+		daoMaster = new DaoMaster(db);
+		daoSession = daoMaster.newSession();
+
+		final SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
+		spiceManager.start(context);
+		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatId, messageId,
+				new BackgroundChatCaching.OnChatDBChanged() {
+
+					@Override
+					public void onChatDBChanged(GetBackroundDataResponse response) {
+						helper.close();
+						spiceManager.shouldStop();
+					}
+
+				});
+		spiceManager.execute(spice, new CustomSpiceListener<Integer>());
+	}
+
+
 	public static boolean isActivePCG(ActivityManager am) {
 		final Set<String> activePackages = new HashSet<String>();
 		final List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();

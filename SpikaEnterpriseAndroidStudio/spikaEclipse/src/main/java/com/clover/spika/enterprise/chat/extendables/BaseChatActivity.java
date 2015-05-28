@@ -730,8 +730,19 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 	}
 
 	@Override
-	public void pushCall(String msg, String chatIdPush, String pushType, String password) {
+	public void pushCall(String msg, String chatIdPush, String pushType, String password, String messageId) {
+		handleNewPushMessageInBackground(chatIdPush, messageId);
 		getFromPush(msg, chatIdPush, pushType, password);
+	}
+
+	@Override
+	protected void handleNewPushMessageInBackground(String chatIdPush, String messageId) {
+		if(chatId != null && chatId.equals(chatIdPush)){
+			//don't add to database in background
+		}else{
+			//different chat add message in background
+			super.handleNewPushMessageInBackground(chatIdPush, messageId);
+		}
 	}
 
 	@Override

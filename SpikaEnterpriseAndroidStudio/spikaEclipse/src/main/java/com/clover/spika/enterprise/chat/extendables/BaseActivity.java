@@ -48,6 +48,7 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.animation.AnimUtils;
 import com.clover.spika.enterprise.chat.caching.ChatCaching;
+import com.clover.spika.enterprise.chat.caching.robospice.BackgroundChatDataCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
@@ -59,6 +60,7 @@ import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.models.greendao.DaoSession;
 import com.clover.spika.enterprise.chat.services.gcm.PushBroadcastReceiver;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceManager;
 import com.clover.spika.enterprise.chat.services.robospice.OkHttpService;
 import com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService;
@@ -209,8 +211,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 				String chatId = intent.getExtras().getString(Const.CHAT_ID);
 				String pushType = intent.getExtras().getString(Const.PUSH_TYPE);
 				String password = intent.getExtras().getString(Const.PASSWORD);
+				String messageId = intent.getExtras().getString(Const.MESSAGE_ID);
 
-				pushCall(message, chatId, pushType, password);
+				pushCall(message, chatId, pushType, password, messageId);
 			}
 		};
 		// end: handle notifications
@@ -312,13 +315,20 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	}
 
-	public void pushCall(String msg, String chatIdPush, String pushType, String password) {
+	public void pushCall(String msg, String chatIdPush, String pushType, String password, String messageId) {
 
 		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
 			showPopUp(msg, chatIdPush, password);
 			lobbyPushHandle(chatIdPush);
+			handleNewPushMessageInBackground(chatIdPush, messageId);
 		}
 	}
+
+	protected void handleNewPushMessageInBackground(final String chatIdPush, String messageId) {
+		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatIdPush, messageId, null);
+		spiceManager.execute(spice, new CustomSpiceListener<Integer>());
+	}
+
 
 	public void lobbyPushHandle(String chatId) {
 	}

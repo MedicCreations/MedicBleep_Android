@@ -26,6 +26,7 @@ public class GcmIntentService extends GCMBaseIntentService {
 			Logger.i("PushReceived: " + extras.toString());
 
 			String chatId = "";
+			String messageId = null;
 			String organizationId = "";
 			String firstName = "";
 			String type = "";
@@ -51,7 +52,11 @@ public class GcmIntentService extends GCMBaseIntentService {
 				chatPassword = extras.getString(Const.PUSH_CHAT_PASSWORD);
 			}
 
-			PushHandle.handlePushNotification(chatId, organizationId, firstName, chatPassword, type, this);
+			if (extras.containsKey(Const.MESSAGE_ID)) {
+				messageId = extras.getString(Const.MESSAGE_ID);
+			}
+
+			PushHandle.handlePushNotification(chatId, messageId, organizationId, firstName, chatPassword, type, this);
 		}
 	}
 
