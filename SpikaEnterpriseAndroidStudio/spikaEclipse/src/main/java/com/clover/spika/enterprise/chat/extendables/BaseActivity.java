@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -316,11 +317,15 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	public void pushCall(String msg, String chatIdPush, String pushType, String password, String messageId) {
-
-		if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
-			showPopUp(msg, chatIdPush, password);
-			lobbyPushHandle(chatIdPush);
-			handleNewPushMessageInBackground(chatIdPush, messageId);
+		try {
+			if (Integer.parseInt(pushType) != Const.PUSH_TYPE_SEEN) {
+				showPopUp(msg, chatIdPush, password);
+				lobbyPushHandle(chatIdPush);
+				handleNewPushMessageInBackground(chatIdPush, messageId);
+			}
+		}
+		catch (NumberFormatException e) {
+			Log.e(this.getClass().toString(), e.getMessage());
 		}
 	}
 
