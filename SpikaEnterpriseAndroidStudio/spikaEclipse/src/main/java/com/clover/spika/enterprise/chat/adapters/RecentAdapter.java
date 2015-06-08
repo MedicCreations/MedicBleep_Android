@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
@@ -196,6 +198,12 @@ public class RecentAdapter extends BaseAdapter {
 			holder.unreadText.setText("");
 		}
 
+        if(position == getCount() - 1){
+            ((RelativeLayout.LayoutParams)holder.clickLayout.getLayoutParams()).bottomMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, mContext.getResources().getDisplayMetrics());
+        }else{
+            ((RelativeLayout.LayoutParams)holder.clickLayout.getLayoutParams()).bottomMargin = 0;
+        }
+
 		return convertView;
 	}
 
@@ -222,6 +230,7 @@ public class RecentAdapter extends BaseAdapter {
 		public TextView unreadText;
 		public TextView lastMessage;
 		public TextView lastMessageTime;
+        public RelativeLayout clickLayout;
 
 		public ViewHolderCharacter(View view) {
 
@@ -230,6 +239,7 @@ public class RecentAdapter extends BaseAdapter {
 			unreadText = (TextView) view.findViewById(R.id.unreadText);
 			lastMessage = (TextView) view.findViewById(R.id.lastMessage);
 			lastMessageTime = (TextView) view.findViewById(R.id.lastMessageTime);
+            clickLayout = (RelativeLayout) view.findViewById(R.id.clickLayout);
 		}
 
 	}

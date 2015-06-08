@@ -11,22 +11,27 @@
         android:paddingBottom="15dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
+        android:layout_marginRight="20dp"
         android:singleLine="true"
-        android:hint="@string/search_for_people"
+        android:hint="@string/search_for_colleagues"
         android:background="@color/trans"
-        android:textColorHint="@color/text_gray_image"
+        android:textColorHint="@color/medic_bleep_text_gray"
         android:textCursorDrawable="@drawable/shape_text_cursor_drawable"
         android:textColor="@android:color/black"
         android:imeOptions="actionSearch"/>
-    
-    <View android:id="@+id/lineBelowSearch"
-        android:layout_below="@id/etSearchPeople"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/light_light_gray"/>
 
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/searchIcon"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/search_icon"
+        android:layout_alignTop="@id/etSearchPeople"
+        android:layout_alignBottom="@id/etSearchPeople"
+        android:layout_marginRight="10dp"/>
+    
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
-        android:layout_below="@id/lineBelowSearch"
+        android:layout_below="@id/etSearchPeople"
         android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

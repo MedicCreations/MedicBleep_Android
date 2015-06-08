@@ -66,6 +66,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		case R.id.rlRecent:
 			if(btnRecent.isSelected()) return;
 			btnRecent.setSelected(true);
+            ((ViewGroup)btnRecent.getParent()).setSelected(true);
 			setSelected(btnRecent);
 			setFragment(RECENT_FRAGMENT);
 			break;
@@ -73,6 +74,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		case R.id.rlPeople:
 			if(btnPeople.isSelected()) return;
 			btnPeople.setSelected(true);
+            ((ViewGroup)btnPeople.getParent()).setSelected(true);
 			setSelected(btnPeople);
 			setFragment(PEOPLE_FRAGMENT);
 			break;
@@ -80,6 +82,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		case R.id.rlGroups:
 			if(btnGroups.isSelected()) return;
 			btnGroups.setSelected(true);
+            ((ViewGroup)btnGroups.getParent()).setSelected(true);
 			setSelected(btnGroups);
 			setFragment(GROUPS_FRAGMENT);
 			break;
@@ -99,7 +102,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 			break;
 			
 		case PEOPLE_FRAGMENT:
-			if(getActivity() instanceof MainActivity)((MainActivity)getActivity()).setScreenTitle(getString(R.string.people));
+			if(getActivity() instanceof MainActivity)((MainActivity)getActivity()).setScreenTitle(getString(R.string.colleagues));
 			getFragmentManager().beginTransaction().replace(fragmentHolder.getId(), peopleFragment, peopleFragment.getClass().toString()).commit();
 			activeFragment = PEOPLE_FRAGMENT;
 			break;
@@ -116,9 +119,18 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 	}
 
 	private void setSelected(View view) {
-		if(view.getId() != btnRecent.getId()) btnRecent.setSelected(false);
-		if(view.getId() != btnPeople.getId()) btnPeople.setSelected(false);
-		if(view.getId() != btnGroups.getId()) btnGroups.setSelected(false);
+		if(view.getId() != btnRecent.getId()) {
+            btnRecent.setSelected(false);
+            ((ViewGroup)btnRecent.getParent()).setSelected(false);
+        }
+        if(view.getId() != btnPeople.getId()) {
+            btnPeople.setSelected(false);
+            ((ViewGroup)btnPeople.getParent()).setSelected(false);
+        }
+        if(view.getId() != btnGroups.getId()) {
+            btnGroups.setSelected(false);
+            ((ViewGroup)btnGroups.getParent()).setSelected(false);
+        }
 	}
 
 	private void initView(View view) {
@@ -133,6 +145,7 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		view.findViewById(R.id.rlGroups).setOnClickListener(this);
 		
 		btnRecent.setSelected(true);
+        ((ViewGroup)btnRecent.getParent()).setSelected(true);
 		
 		fragmentHolder = (FrameLayout) view.findViewById(R.id.contentForFragments);
 	}

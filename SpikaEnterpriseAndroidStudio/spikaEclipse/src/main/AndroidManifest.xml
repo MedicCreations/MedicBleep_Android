@@ -73,7 +73,7 @@
             android:name="com.clover.spika.enterprise.chat.LoginActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.MainActivity"
             android:launchMode="singleTop"

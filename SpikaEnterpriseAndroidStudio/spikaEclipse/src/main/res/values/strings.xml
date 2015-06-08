@@ -110,7 +110,7 @@
     <string name="change_password_title">Change password</string>
     <string name="re_type_password">Re-type a new password</string>
     <string name="password">Password</string>
-    <string name="login_big">LOGIN</string>
+    <string name="login_big">LOG IN</string>
     <string name="confirm_big">CONFIRM</string>
     <string name="hi">Hi!</string>
     <string name="john_doe">Vasilije Dimitrijev</string>
@@ -155,7 +155,7 @@
     <string name="pull_to_refresh_from_bottom_pull_label">@string/pull_to_refresh_pull_label</string>
     <string name="pull_to_refresh_from_bottom_release_label">@string/pull_to_refresh_release_label</string>
     <string name="pull_to_refresh_from_bottom_refreshing_label">@string/pull_to_refresh_refreshing_label</string>
-    <string name="login_remember_me">Remember me</string>
+    <string name="login_remember_me">Remember me?</string>
     <string name="enable_passcode_label">Enable passcode</string>
     <string name="enter_a_passcode">Enter a passcode</string>
     <string name="enter_your_passcode">Enter your passcode</string>
@@ -372,5 +372,13 @@
     <string name="e_file_limit_exceeded">Your organization has exceeded file upload. Please contact yout administrator for more details.</string>
 
     <string name="location_services_turned_off_go_to_settings">Location services are turned off. Go to settings?</string>
+    <string name="medic_small_caps">medic</string>
+    <string name="bleep_small_caps">bleep</string>
+    <string name="connect_communicate_collaborate">connect, communicate, collaborate</string>
+    <string name="email_address">Email Address</string>
+    <string name="what_is_this_">What is this?</string>
+    <string name="enter_your_valid_email">Enter Your valid email. We will send \n you your password right away.</string>
+    <string name="colleagues">Colleagues</string>
+    <string name="search_for_colleagues">Search for colleagues</string>
 
 </resources>

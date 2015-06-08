@@ -3,15 +3,16 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparent" >
-    
+    android:background="@color/transparent">
+
     <LinearLayout
         android:id="@+id/callControl"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
+        android:layout_marginRight="10dp"
         android:layout_alignParentRight="true"
         android:background="#f123d1"
-        android:visibility="invisible" >
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/videoCall"
@@ -38,7 +39,7 @@
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
-        
+
         <TextView
             android:id="@+id/openChat"
             android:layout_width="wrap_content"
@@ -57,38 +58,32 @@
         android:id="@+id/clickLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white" >
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/medic_bleep_gray_background_cell">
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/item_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
             android:contentDescription="@null"
             android:src="@drawable/default_user_image" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <TextView
             android:id="@+id/item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="25dp"
+            android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/item_image"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingLeft="5dp"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textColor="@color/medic_bleep_text_gray"
+            android:textSize="18sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignLeft="@id/item_name"
-            android:layout_below="@id/item_image"
-            android:layout_marginTop="5dp"
-            android:background="@color/light_light_gray" />
     </RelativeLayout>
 
 </RelativeLayout>

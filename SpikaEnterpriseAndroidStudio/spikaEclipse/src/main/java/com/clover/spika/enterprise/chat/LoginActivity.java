@@ -7,13 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -29,7 +33,7 @@ public class LoginActivity extends LoginBaseActivity {
 	private EditText password;
 	private CheckBox rememberMeCheckBox;
 	Bundle extras;
-	private RobotoRegularTextView tvForgotPassword;
+	private TextView tvForgotPassword;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class LoginActivity extends LoginBaseActivity {
 
 		username = (EditText) findViewById(R.id.username);
 		password = (EditText) findViewById(R.id.password);
-		tvForgotPassword = (RobotoRegularTextView) findViewById(R.id.tvForgotPassword);
+		tvForgotPassword = (TextView) findViewById(R.id.tvForgotPassword);
 		tvForgotPassword.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -63,6 +67,11 @@ public class LoginActivity extends LoginBaseActivity {
 				SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, isChecked);
 			}
 		});
+
+        TextView whatIsThis = (TextView) findViewById(R.id.tvWhatIsThis);
+        SpannableString span = new SpannableString(getString(R.string.what_is_this_));
+        span.setSpan(new UnderlineSpan(), 0, span.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        whatIsThis.setText(span);
 	}
 
 	@Override

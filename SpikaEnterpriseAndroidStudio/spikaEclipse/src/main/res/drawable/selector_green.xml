@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@color/default_green_light" android:state_pressed="true"/> <!-- pressed -->
-    <item android:drawable="@color/default_green_light" android:state_focused="true"/> <!-- focused -->
-    <item android:drawable="@color/default_green"/> <!-- default -->
+    <item android:drawable="@drawable/shape_rounded_green_light_button" android:state_pressed="true"/> <!-- pressed -->
+    <item android:drawable="@drawable/shape_rounded_green_light_button" android:state_focused="true"/> <!-- focused -->
+    <item android:drawable="@drawable/shape_rounded_green_button"/> <!-- default -->
 
 </selector>

@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:background="@color/light_light_gray" >
 
     <FrameLayout
         android:id="@+id/contentForFragments"
@@ -10,23 +10,30 @@
         android:layout_above="@+id/footer" >
     </FrameLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/footer"
+        android:background="@color/medic_bleep_hint_gray" />
+
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/light_light_gray"
+        android:background="@color/white"
         android:baselineAligned="true"
         android:orientation="horizontal"
-        android:paddingTop="5dp"
         android:splitMotionEvents="false"
         android:weightSum="3" >
 
         <RelativeLayout
             android:id="@+id/rlRecent"
             android:layout_width="0dp"
+            android:paddingTop="5dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" >
+            android:layout_weight="1"
+            android:background="@drawable/shape_rect_tab_blue">
 
             <Button
                 android:id="@+id/btnRecent"
@@ -43,14 +50,16 @@
                 android:layout_centerHorizontal="true"
                 android:paddingBottom="5dp"
                 android:text="@string/recent"
-                android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textColor="@color/white_gray_selected_selector"
+                android:textSize="13sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rlPeople"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/shape_rect_tab_blue"
+            android:paddingTop="5dp"
             android:layout_weight="1" >
 
             <Button
@@ -67,15 +76,17 @@
                 android:layout_below="@id/btnPeople"
                 android:layout_centerHorizontal="true"
                 android:paddingBottom="5dp"
-                android:text="@string/people"
-                android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:text="@string/colleagues"
+                android:textColor="@color/white_gray_selected_selector"
+                android:textSize="13sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rlGroups"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/shape_rect_tab_blue"
+            android:paddingTop="5dp"
             android:layout_weight="1" >
 
             <Button
@@ -93,8 +104,8 @@
                 android:layout_centerHorizontal="true"
                 android:paddingBottom="5dp"
                 android:text="@string/groups"
-                android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textColor="@color/white_gray_selected_selector"
+                android:textSize="13sp" />
         </RelativeLayout>
     </LinearLayout>
 

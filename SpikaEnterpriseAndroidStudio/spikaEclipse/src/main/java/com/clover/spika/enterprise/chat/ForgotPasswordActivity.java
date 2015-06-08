@@ -1,8 +1,12 @@
 package com.clover.spika.enterprise.chat;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
@@ -12,13 +16,11 @@ import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Utils;
-import com.clover.spika.enterprise.chat.views.RobotoThinButton;
-import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ForgotPasswordActivity extends BaseActivity implements OnClickListener {
 
-	private RobotoThinEditText etUsername;
+	private EditText etUsername;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -26,10 +28,10 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 
 		setContentView(R.layout.activity_forgot_password);
 
-		etUsername = (RobotoThinEditText) findViewById(R.id.username);
+		etUsername = (EditText) findViewById(R.id.username);
 
-		RobotoThinButton submitBtn = (RobotoThinButton) findViewById(R.id.submitBtn);
-		RobotoThinButton cancelBtn = (RobotoThinButton) findViewById(R.id.cancelBtn);
+		Button submitBtn = (Button) findViewById(R.id.submitBtn);
+        ImageButton cancelBtn = (ImageButton) findViewById(R.id.cancelBtn);
 
 		submitBtn.setOnClickListener(this);
 		cancelBtn.setOnClickListener(this);
@@ -53,6 +55,18 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 	}
 
 	private void forgotPassword(String username) {
+
+        boolean errorLock = false;
+        etUsername.setError(null);
+
+        if (TextUtils.isEmpty(etUsername.getText().toString())) {
+            etUsername.setError(getString(R.string.login_empty_username));
+            errorLock = true;
+        }
+
+        if(errorLock){
+            return;
+        }
 
 		handleProgress(true);
 

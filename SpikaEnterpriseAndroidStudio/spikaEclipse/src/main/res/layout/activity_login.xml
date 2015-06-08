@@ -1,142 +1,152 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_blue">
+    android:background="@color/white">
 
-    <com.clover.spika.enterprise.chat.views.RobotoThinTextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:id="@+id/logoAndName"
+        android:layout_marginTop="50dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:layout_gravity="bottom"
+            android:paddingBottom="8dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/medic_small_caps"
+            android:textColor="@color/medic_bleep_blue"/>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ic_launcher"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="5dp"
+            android:paddingBottom="8dp"
+            android:text="@string/bleep_small_caps"
+            android:textColor="@color/medic_bleep_text_gray"/>
+
+        </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/loginLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:text="@string/spika_big"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:id="@+id/connectCommunicateCollaborate"
+        android:text="@string/connect_communicate_collaborate"
+        android:textColor="@color/medic_bleep_text_gray"/>
+
 
     <LinearLayout
         android:id="@+id/loginLayout"
+        android:layout_below="@id/connectCommunicateCollaborate"
         android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@android:color/white"
-        android:orientation="vertical"
-        android:paddingBottom="30dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="30dp" >
+        android:orientation="vertical" >
 
-        <RelativeLayout
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp" >
-
-            <ImageView
-                android:id="@+id/usernameImg"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
-                android:contentDescription="@null"
-                android:src="@drawable/login_avatar" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinEditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/usernameImg"
-                android:layout_alignTop="@+id/usernameImg"
-                android:layout_toRightOf="@+id/usernameImg"
-                android:background="@null"
-                android:hint="@string/username"
-                android:maxLines="1"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:singleLine="true" />
-
-            <View
-                android:id="@+id/bottomLine"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/usernameImg"
-                android:layout_marginTop="10dp"
-                android:background="@color/default_blue" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp" >
-
-            <ImageView
-                android:id="@+id/passwordImg"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
-                android:contentDescription="@null"
-                android:src="@drawable/login_key" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoThinEditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/passwordImg"
-                android:layout_alignTop="@+id/passwordImg"
-                android:layout_toRightOf="@+id/passwordImg"
-                android:background="@null"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:singleLine="true" />
-
-            <View
-                android:id="@+id/bottomLinePass"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/passwordImg"
-                android:layout_marginTop="10dp"
-                android:background="@color/default_blue" />
-        </RelativeLayout>
-        
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
-            android:id="@+id/tvForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:paddingBottom="10dp"
             android:textSize="16sp"
-            android:textColor="@color/default_blue"
-            android:text="@string/forgot_password"/>
+            android:textColor="@color/medic_bleep_text_gray"
+            android:hint="@string/email_address"
+            android:textColorHint="@color/medic_bleep_hint_gray"
+            android:background="@drawable/et_background"
+            android:id="@+id/username"
+            android:maxLines="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
-        <com.clover.spika.enterprise.chat.views.RobotoCheckBox
-            android:id="@+id/checkBoxRememberLogin"
-            android:layout_width="wrap_content"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/login_remember_me" />
+            android:textSize="16sp"
+            android:textColor="@color/medic_bleep_text_gray"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:textColorHint="@color/medic_bleep_hint_gray"
+            android:background="@drawable/et_background"
+            android:id="@+id/password"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <Button
             android:id="@+id/loginBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="15dp"
             android:background="@drawable/selector_green"
             android:gravity="center"
             android:onClick="onLoginClick"
+            android:textStyle="bold"
             android:padding="10dp"
             android:text="@string/login_big"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="16sp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/gray_to_default"
+            android:text="@string/forgot_password"/>
+
+        <CheckBox
+            android:id="@+id/checkBoxRememberLogin"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textSize="16sp"
+            android:textColor="@color/medic_bleep_hint_gray"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/login_remember_me" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvWhatIsThis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/gray_to_default"
+        android:text="@string/what_is_this_"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/partOfTheFamily"
+        android:src="@drawable/part_of_the_family"
+        android:layout_above="@id/tvWhatIsThis"
+        android:layout_marginBottom="15dp"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

@@ -8,6 +8,7 @@ import java.util.Locale;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -235,7 +236,7 @@ public class PeopleAdapter extends BaseAdapter {
 	public class ViewHolderCharacter {
 
 		public ImageView itemImage;
-		public RobotoRegularTextView itemName;
+		public TextView itemName;
 		public LinearLayout controlHolder;
 		public RelativeLayout dataHolder;
 		public TextView videoCall;
@@ -244,7 +245,7 @@ public class PeopleAdapter extends BaseAdapter {
 
 		public ViewHolderCharacter(View view) {
 			itemImage = (ImageView) view.findViewById(R.id.item_image);
-			itemName = (RobotoRegularTextView) view.findViewById(R.id.item_name);
+			itemName = (TextView) view.findViewById(R.id.item_name);
 			controlHolder = (LinearLayout) view.findViewById(R.id.callControl);
 			videoCall = (TextView) view.findViewById(R.id.videoCall);
 			voiceCall = (TextView) view.findViewById(R.id.voiceCall);

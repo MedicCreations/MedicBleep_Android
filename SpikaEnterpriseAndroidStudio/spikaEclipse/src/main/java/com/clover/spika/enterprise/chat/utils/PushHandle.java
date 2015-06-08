@@ -15,6 +15,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -105,7 +107,8 @@ public class PushHandle {
 				notifBuilder.setContentIntent(contentIntent);
 				notifBuilder.setAutoCancel(true);
 				notifBuilder.setContentText(message);
-				notifBuilder.setSmallIcon(R.drawable.ic_launcher);
+				notifBuilder.setSmallIcon(R.drawable.ic_stat_notify);
+                notifBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
 
 				notifBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS);
 				notifBuilder.setLights(rgbLed, ledOn, ledOff);

@@ -33,10 +33,10 @@
     <color name="gray_trans">#99999999</color>
 
     <!-- Enterprise style -->
-    <color name="default_blue">#43A5DA</color>
+    <color name="default_blue">#1252A1</color>
     <color name="default_blue_light">#74B1E2</color>
     <color name="default_blue_light_trans">#803E92D7</color>
-    <color name="default_green">#57D171</color>
+    <color name="default_green">#40b02c</color>
     <color name="default_green_light">#61E680</color>
     <color name="trans">#00000000</color>
     <color name="text_time_gray">#616161</color>
@@ -49,5 +49,13 @@
     <color name="red_in_people_row">#EB232F</color>
     
     <color name="code_preview_black">#232323</color>
+
+    <!--Medic bleep-->
+    <color name="medic_bleep_blue">#1252A1</color>
+    <color name="medic_bleep_text_gray">#616466</color>
+    <color name="medic_bleep_hint_gray">#AAAAAA</color>
+    <color name="medic_bleep_gray_background">#DBDBDB</color>
+    <color name="medic_bleep_gray_background_cell">#EAEAEA</color>
+
 
 </resources>
