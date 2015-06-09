@@ -343,8 +343,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	 * 
 	 * @param msg
 	 * @param chatId
-	 * @param chatName
-	 * @param chatImage
 	 */
 	public void showPopUp(final String msg, final String chatId, final String password) {
 
@@ -484,7 +482,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	/**
 	 * Set search bar
 	 * 
-	 * @param listener
 	 */
 	public void setSearch(ImageButton search, OnClickListener lis, EditText searchEt, OnEditorActionListener editorLis) {
 
@@ -913,7 +910,44 @@ public class BaseActivity extends SlidingFragmentActivity {
 			@Override
 			public void onAnimationEnd(Animator animation) {
 				super.onAnimationEnd(animation);
-				if (!receive)
+				if (!receive){
+                    boolean isSuccess = mService.callOffer(String.valueOf(user.getId()));
+                    if(!isSuccess) {
+                        callTimeoutHandler.removeCallbacks(callTimeoutRunnable);
+                        mService.callCancel(sessionId);
+                        if (mPlayer != null)
+                            mPlayer.stop();
+
+                        AppDialog dialog = new AppDialog(BaseActivity.this, false);
+                        dialog.setYesNo(tempActiveUser.getFirstName() + " " + tempActiveUser.getLastName()
+                                + getString(R.string._didn_t_answer_on_your_call_do_you_want_to_leave_voice_message_), "Yes", "No");
+                        OnPositiveButtonClickListener positiveListener = new OnPositiveButtonClickListener() {
+
+                            @Override
+                            public void onPositiveButtonClick(View v, Dialog d) {
+                                d.dismiss();
+                                openRecordActivity(tempActiveUser);
+                            }
+                        };
+                        OnNegativeButtonCLickListener negativeListener = new OnNegativeButtonCLickListener() {
+
+                            @Override
+                            public void onNegativeButtonClick(View v, Dialog d) {
+                                d.dismiss();
+                            }
+                        };
+                        OnDismissListener dissmisListener = new OnDismissListener() {
+
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                callEnded();
+                            }
+                        };
+                        dialog.setOnPositiveButtonClick(positiveListener);
+                        dialog.setOnNegativeButtonClick(negativeListener);
+                        dialog.setOnDismissListener(dissmisListener);
+                    }
+                }
 					mService.callOffer(String.valueOf(user.getId()));
 			}
 

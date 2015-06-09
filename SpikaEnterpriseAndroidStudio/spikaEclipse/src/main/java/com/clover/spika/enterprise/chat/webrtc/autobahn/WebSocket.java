@@ -64,5 +64,5 @@ public interface WebSocket {
 	public boolean isConnected();
 	public void sendBinaryMessage(byte[] payload);
 	public void sendRawTextMessage(byte[] payload);
-	public void sendTextMessage(String payload);
+	public boolean sendTextMessage(String payload);
 }

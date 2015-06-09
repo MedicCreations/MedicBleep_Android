@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/baseLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <RelativeLayout
         android:id="@+id/actionBarLayout"
@@ -36,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animationCache="false"
-        android:background="@color/transparent"
+        android:background="@color/trans"
         android:cacheColorHint="#00000000"
         android:divider="@color/transparent"
         android:dividerHeight="0dp"

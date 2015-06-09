@@ -72,9 +72,14 @@ public class WebSocketConnection implements WebSocket {
 
 	//
 	// Forward to the writer thread
-	public void sendTextMessage(String payload) {
+	public boolean sendTextMessage(String payload) {
+        if(mWebSocketWriter == null){
+            Log.d("WEBSOCKET", "WRITTER IS NULL");
+            return false;
+        }
 		mWebSocketWriter.forward(new WebSocketMessage.TextMessage(payload));
 		Log.d("WEBSOCKET", "SENDING MESSAGE: " + payload);
+        return true;
 	}
 
 	public void sendRawTextMessage(byte[] payload) {

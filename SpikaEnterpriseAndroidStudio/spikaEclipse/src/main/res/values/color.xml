@@ -52,6 +52,7 @@
 
     <!--Medic bleep-->
     <color name="medic_bleep_blue">#1252A1</color>
+    <color name="medic_bleep_blue_light">#24A0FF</color>
     <color name="medic_bleep_text_gray">#616466</color>
     <color name="medic_bleep_hint_gray">#AAAAAA</color>
     <color name="medic_bleep_you_text_gray">#43494D</color>

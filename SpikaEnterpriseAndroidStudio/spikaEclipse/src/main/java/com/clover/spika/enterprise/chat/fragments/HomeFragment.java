@@ -149,6 +149,13 @@ public class HomeFragment extends CustomFragment implements View.OnClickListener
 		
 		fragmentHolder = (FrameLayout) view.findViewById(R.id.contentForFragments);
 	}
+
+    public int whoIsActive(){
+        if (btnRecent.isSelected()) return 1;
+        else if (btnPeople.isSelected()) return 2;
+        else if (btnGroups.isSelected()) return 3;
+        return 1;
+    }
 	
 	public PeopleFragment getPeopleFragment(){
 		return peopleFragment;

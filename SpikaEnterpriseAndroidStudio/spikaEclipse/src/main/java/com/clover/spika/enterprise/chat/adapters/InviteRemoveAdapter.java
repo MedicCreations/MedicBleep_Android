@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -233,51 +234,52 @@ public class InviteRemoveAdapter extends BaseAdapter {
 			}
 
 			holder.personName.setText(name);
-			holder.personName.setTextColor(Color.BLACK);
 		}
 
 		if (!disableNameClick) {
 
 			holder.personName.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
 
-					if (getItem(position).type == Type.GROUP) {
+                    if (getItem(position).type == Type.GROUP) {
 
-						ArrayList<String> ids = null;
-						if (usersFromGroups.get(getItem(position).getId()) != null) {
+                        ArrayList<String> ids = null;
+                        if (usersFromGroups.get(getItem(position).getId()) != null) {
 
-							List<String> idsList = usersFromGroups.get(getItem(position).getId());
-							ids = new ArrayList<String>();
+                            List<String> idsList = usersFromGroups.get(getItem(position).getId());
+                            ids = new ArrayList<String>();
 
-							for (String item : idsList) {
-								ids.add(item);
-							}
-						}
+                            for (String item : idsList) {
+                                ids.add(item);
+                            }
+                        }
 
-						DeselectUsersInGroupActivity.startActivity(((Group) getItem(position).getModel()).getGroupName(), getItem(position).getId(), getItem(position)
-								.getSelected(), ids, mContext, FROM_GROUP_MEMBERS, fragment);
-					} else if (getItem(position).type == Type.CHAT) {
+                        DeselectUsersInGroupActivity.startActivity(((Group) getItem(position).getModel()).getGroupName(), getItem(position).getId(), getItem(position)
+                                .getSelected(), ids, mContext, FROM_GROUP_MEMBERS, fragment);
+                    } else if (getItem(position).type == Type.CHAT) {
 
-						ArrayList<String> ids = null;
+                        ArrayList<String> ids = null;
 
-						if (usersFromRooms.get(getItem(position).getId()) != null) {
+                        if (usersFromRooms.get(getItem(position).getId()) != null) {
 
-							List<String> idsList = usersFromRooms.get(getItem(position).getId());
-							ids = new ArrayList<String>();
+                            List<String> idsList = usersFromRooms.get(getItem(position).getId());
+                            ids = new ArrayList<String>();
 
-							for (String item : idsList) {
-								ids.add(item);
-							}
-						}
+                            for (String item : idsList) {
+                                ids.add(item);
+                            }
+                        }
 
-						DeselectUsersInRoomActivity.startActivity(((Chat) getItem(position).getModel()).chat_name, getItem(position).getId(), getItem(position).getSelected(),
-								ids, mContext, FROM_ROOM_MEMBERS, fragment);
-					}
-				}
-			});
-		} else {
+                        DeselectUsersInRoomActivity.startActivity(((Chat) getItem(position).getModel()).chat_name, getItem(position).getId(), getItem(position).getSelected(),
+                                ids, mContext, FROM_ROOM_MEMBERS, fragment);
+                    }
+                }
+                                                 }
+
+                );
+            }else {
 			holder.personName.setClickable(false);
 		}
 

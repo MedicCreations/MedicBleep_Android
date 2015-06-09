@@ -202,7 +202,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 	private void getUsers(int page, String search, final boolean toClear) {
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.ALL, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.USER, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")

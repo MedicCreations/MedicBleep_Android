@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/baseLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <include layout="@layout/layout_search_actionbar" />
     
@@ -18,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/selector_toggle_tab_gray"
+            android:background="@drawable/selector_toggle_tab"
             android:textColor="@drawable/selector_tab_toggle"
             android:textOff="@string/invite"
             android:textOn="@string/invite" />
@@ -28,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/selector_toggle_tab_gray"
+            android:background="@drawable/selector_toggle_tab"
             android:textColor="@drawable/selector_tab_toggle"
             android:textOff="@string/remove"
             android:textOn="@string/remove" />

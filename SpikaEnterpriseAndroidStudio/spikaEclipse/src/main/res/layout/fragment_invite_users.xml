@@ -40,12 +40,6 @@
         android:imeOptions="actionSearch"
         android:visibility="gone"/>
     
-    <View
-        android:id="@+id/bottomLineAboveListView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/chat_menu_gray" />
-
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"

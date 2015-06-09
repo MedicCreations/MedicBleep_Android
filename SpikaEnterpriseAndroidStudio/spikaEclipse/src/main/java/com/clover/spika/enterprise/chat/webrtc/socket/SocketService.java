@@ -467,10 +467,11 @@ public class SocketService extends Service {
 		id++;
 	}
 
-	public void callOffer(String userId) {
+	public boolean callOffer(String userId) {
 		action = Const.ACTION_CHECK;
-		mConn.sendTextMessage(checkIsRoomAvailableMessage(userId));
+        boolean isWritterNotNull = mConn.sendTextMessage(checkIsRoomAvailableMessage(userId));
 		Logger.custom("d", "LOG", "CHECK USER ID: " + userId);
+        return isWritterNotNull;
 	}
 
 	public void call(String sessionId, boolean isVideo) {

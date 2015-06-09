@@ -199,6 +199,15 @@ public class MainActivity extends BaseActivity {
 		mFragment = (CustomFragment) fragment;
 		if(getSupportFragmentManager().findFragmentByTag(fragment.getClass().toString()) != null){
 			Logger.custom("i", "LOG", "same fragment");// it is same fragment
+            if(fragment instanceof HomeFragment){
+                if(((HomeFragment)fragment).whoIsActive() == 3){
+                    setScreenTitle(getString(R.string.groups));
+                }else if(((HomeFragment)fragment).whoIsActive() == 2){
+                    setScreenTitle(getString(R.string.colleagues));
+                }else{
+                    setScreenTitle(getString(R.string.recent));
+                }
+            }
 		}else{
 			getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, fragment, fragment.getClass().toString()).commit();
 		}

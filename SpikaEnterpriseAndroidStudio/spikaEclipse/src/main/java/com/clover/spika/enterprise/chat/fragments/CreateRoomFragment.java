@@ -41,6 +41,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
+import com.clover.spika.enterprise.chat.dialogs.NewAppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -493,8 +494,10 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	}
 
 	private void showDialog() {
-		AppDialog dialog = new AppDialog(getActivity(), false);
-		dialog.choseCamGalleryRoom();
+        NewAppDialog dialog = new NewAppDialog(getActivity(), false);
+        dialog.choseCamGalleryRoom();;
+//		AppDialog dialog = new AppDialog(getActivity(), false);
+//		dialog.choseCamGalleryRoom();
 	}
 
 	@Override

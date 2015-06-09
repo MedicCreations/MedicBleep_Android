@@ -17,6 +17,14 @@ public class AnimUtils {
 		fadeObjectAnim.start();
 	}
 
+    public static void fadeAnim(View view, float from, float to, int duration, final AnimatorListenerAdapter listener) {
+        ObjectAnimator fadeObjectAnim = ObjectAnimator.ofFloat(view, "alpha", from, to);
+        fadeObjectAnim.setDuration(duration);
+        fadeObjectAnim.start();
+
+        if(listener != null) fadeObjectAnim.addListener(listener);
+    }
+
 	private static int counter;
 
 	public static void blinkView(View view, int singleDuration, final int times, final AnimatorListenerAdapter listener) {
