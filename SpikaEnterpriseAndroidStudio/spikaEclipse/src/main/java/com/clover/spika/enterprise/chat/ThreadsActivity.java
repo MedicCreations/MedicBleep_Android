@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -98,6 +99,9 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			
 			findViewById(R.id.settingsBtn).setVisibility(View.INVISIBLE);
 			setMenuByChatType(true);
+
+            SwipeRefreshLayout swipeControll = (SwipeRefreshLayout) findViewById(R.id.swipeControll);
+            swipeControll.setEnabled(false);
 		}
 	}
 

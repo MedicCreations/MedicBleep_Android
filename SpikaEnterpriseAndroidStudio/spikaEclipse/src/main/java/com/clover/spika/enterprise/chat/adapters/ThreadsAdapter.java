@@ -349,8 +349,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private View inflateMessage(final ViewHolder holder, final ViewGroup parent) {
 		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_message, parent, false);
 
-		holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
-		((RoundImageView) holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
 		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
 		holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
 		holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
@@ -369,8 +367,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private View inflatePhoto(final ViewHolder holder, final ViewGroup parent) {
 		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_photo, parent, false);
 
-		holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
-		((RoundImageView) holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
 		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
 		holder.imageViewPhoto = (ImageView) convertView.findViewById(R.id.image_view_photo);
 		holder.imageViewPhoto.setOnClickListener(mOnClickPhoto);
@@ -382,8 +378,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private View inflateGif(final ViewHolder holder, final ViewGroup parent) {
 		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_gif, parent, false);
 
-		holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
-		((RoundImageView) holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
 		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
 		holder.gifWebView = (WebView) convertView.findViewById(R.id.webViewGif);
 		holder.gifWebView.setOnClickListener(mOnClickGif);
@@ -401,8 +395,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private View inflateMedia(final ViewHolder holder, final ViewGroup parent, int viewType) {
 		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_media, parent, false);
 
-		holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
-		((RoundImageView) holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
 		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
 		holder.textViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
 		holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
@@ -427,8 +419,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private View inflateSound(final ViewHolder holder, final ViewGroup parent) {
 		View convertView = LayoutInflater.from(mContext).inflate(R.layout.item_thread_sound, parent, false);
 
-		holder.imageViewUser = (ImageView) convertView.findViewById(R.id.image_view_user);
-		((RoundImageView) holder.imageViewUser).setBorderColor(mContext.getResources().getColor(R.color.light_light_gray));
 		holder.textViewUser = (TextView) convertView.findViewById(R.id.text_view_user);
 		holder.threadTime = (TextView) convertView.findViewById(R.id.timeThread);
 		holder.soundControl = (RelativeLayout) convertView.findViewById(R.id.rlSoundControl);
@@ -438,29 +428,8 @@ public class ThreadsAdapter extends BaseAdapter {
 
 	private void populateTempMessage(ViewHolder holder, TreeNode node, int position) {
 		holder.textViewUser.setVisibility(View.INVISIBLE);
-		holder.imageViewUser.setVisibility(View.INVISIBLE);
 		holder.textViewMessage.setText(node.getMessage().getText());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
-
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
-		}
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 
 		holder.textViewUser.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
 		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
@@ -473,27 +442,7 @@ public class ThreadsAdapter extends BaseAdapter {
 	private void populateTempMessageError(ViewHolder holder, TreeNode node, int position) {
 		holder.textViewUser.setVisibility(View.INVISIBLE);
 		holder.textViewMessage.setText(node.getMessage().getText());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
-
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
-		}
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 
 		holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.red));
 		holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
@@ -503,31 +452,10 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 	
 	private void populateMessage(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
 		holder.textViewMessage.setText(node.getMessage().getText());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (node.getMessage().getIsCodeTextStyle() || textWidth > displayWidth - Utils.getPxFromDp(75, mContext.getResources()) - timeWidth - getIndentPadding(node.getLevel())) {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) holder.textViewMessage.getLayoutParams()).weight = 0;
-		}
-		
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
 			holder.textViewUser.setTextColor(Color.WHITE);
@@ -537,9 +465,8 @@ public class ThreadsAdapter extends BaseAdapter {
 				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
 			}else{
-				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
 				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.devil_gray));
-				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
 			}
 			holder.threadTime.setTextColor(Color.WHITE);
@@ -552,9 +479,8 @@ public class ThreadsAdapter extends BaseAdapter {
 				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 				holder.textViewMessage.setTypeface(Typeface.MONOSPACE);
 			}else{
-				holder.textViewMessage.setBackgroundResource(R.drawable.shape_you_chat_bubble);
 				holder.textViewMessage.setTextColor(mContext.getResources().getColor(R.color.black));
-				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				holder.textViewMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				holder.textViewMessage.setTypeface(null, Typeface.NORMAL);
 			}
 			holder.threadTime.setTextColor(mContext.getResources().getColor(R.color.text_gray_image));
@@ -581,9 +507,8 @@ public class ThreadsAdapter extends BaseAdapter {
 //	}
 
 	private void populatePhoto(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 
 		imageLoaderSpice.displayImage(holder.imageViewPhoto, node.getMessage().getThumb_id(), 0);
 		holder.imageViewPhoto.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
@@ -601,9 +526,8 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 
 	private void populateGif(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 
 		String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-left:5%;margin-top:5%\"";
 		gifLoaderSpice.displayImage(mContext, node.getMessage().getText(), holder.gifWebView, style);
@@ -620,37 +544,13 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 
 	private void populateLocation(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 		holder.textViewMessage.setText(mContext.getResources().getString(R.string.location_tap_to_view));
 
 		holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_location, 0);
 		holder.textViewMessage.setTag(R.id.tag_latitude, node.getMessage().getLatitude());
 		holder.textViewMessage.setTag(R.id.tag_longitude, node.getMessage().getLongitude());
-
-		Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_location);
-		int widthOfIcon = iconLoc.getWidth();
-
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(mContext.getResources().getString(R.string.location_tap_to_view), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())) {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
-		}
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -666,36 +566,12 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 
 	private void populateVideo(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 		holder.textViewMessage.setText(mContext.getResources().getString(R.string.video_tap_to_play));
 
 		holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_video, 0);
 		holder.textViewMessage.setTag(R.id.tag_file_id, node.getMessage().getFile_id());
-
-		Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_video);
-		int widthOfIcon = iconLoc.getWidth();
-
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(mContext.getResources().getString(R.string.video_tap_to_play), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())) {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
-		}
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -712,9 +588,8 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 
 	private void populateSound(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()).toLowerCase(Locale.getDefault()));
 
 		setVoiceControls(node.getMessage(), holder.soundControl);
 
@@ -730,36 +605,12 @@ public class ThreadsAdapter extends BaseAdapter {
 	}
 
 	private void populateFile(ViewHolder holder, TreeNode node, int position) {
-		imageLoaderSpice.displayImage(holder.imageViewUser, node.getMessage().getImage(), R.drawable.default_user_image);
-		holder.textViewUser.setText(node.getMessage().getName());
-		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()));
+		holder.textViewUser.setText("~ " + node.getMessage().getName());
+		holder.threadTime.setText(getCreatedTime(node.getMessage().getCreated()).toLowerCase(Locale.getDefault()));
 		holder.textViewMessage.setText(node.getMessage().getText());
 
 		holder.textViewMessage.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_file, 0);
 		holder.textViewMessage.setTag(R.id.tag_file_id, node.getMessage());
-
-		Bitmap iconLoc = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.icon_file);
-		int widthOfIcon = iconLoc.getWidth();
-
-		int textWidth = node.getMessage().getTextWidth();
-
-		if (textWidth == -1) {
-			textWidth = calculateNeedTextWidth(node.getMessage().getText(), mContext);
-			node.getMessage().setTextWidth(textWidth);
-		}
-
-		int timeWidth = node.getMessage().getTimeWidth();
-
-		if (timeWidth == -1) {
-			timeWidth = calculateNeedTextWidth(getCreatedTime(node.getMessage().getCreated()), mContext);
-			node.getMessage().setTimeWidth(timeWidth);
-		}
-
-		if (textWidth > displayWidth - Utils.getPxFromDp(80, mContext.getResources()) - timeWidth - widthOfIcon - getIndentPadding(node.getLevel())) {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 1;
-		} else {
-			((LayoutParams) ((View) holder.textViewMessage.getParent()).getLayoutParams()).weight = 0;
-		}
 
 		if (position == this.mSelectedItem) {
 			holder.relativeLayoutHolder.setBackgroundResource(R.drawable.shape_selected_item);
@@ -780,7 +631,8 @@ public class ThreadsAdapter extends BaseAdapter {
 		public void onClick(View v) {
 			if (v.getTag(R.id.tag_file_id) != null) {
 				String fileId = (String) v.getTag(R.id.tag_file_id);
-				boolean isEncrypted = (boolean) v.getTag(R.id.tag_is_encrypted);
+				boolean isEncrypted = true;
+                if(v.getTag(R.id.tag_is_encrypted) != null) isEncrypted = (boolean) v.getTag(R.id.tag_is_encrypted);
 				Intent photoIntent = new Intent(mContext, PhotoActivity.class);
 				photoIntent.putExtra(Const.IMAGE, fileId);
 				photoIntent.putExtra(Const.IS_ENCRYPTED, isEncrypted);
@@ -838,7 +690,6 @@ public class ThreadsAdapter extends BaseAdapter {
 	private static final class ViewHolder {
 		RelativeLayout relativeLayoutHolder;
 
-		ImageView imageViewUser;
 		ImageView imageViewPhoto;
 		TextView textViewMessage;
 		TextView textViewUser;
@@ -853,7 +704,7 @@ public class ThreadsAdapter extends BaseAdapter {
 
 			Timestamp stamp = new Timestamp(Long.valueOf(created) * 1000);
 			Date date = new Date(stamp.getTime());
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+			SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
 			return sdf.format(date);
 		} catch (Exception e) {
@@ -861,25 +712,6 @@ public class ThreadsAdapter extends BaseAdapter {
 		}
 
 		return "";
-	}
-
-	private int calculateNeedTextWidth(String text, Context c) {
-		Paint paint = new Paint();
-		Rect bounds = new Rect();
-
-		int text_width = 0;
-
-		paint.setTypeface(typeface);// your preference here
-		paint.setTextSize(Utils.getPxFromSp(20, c.getResources()));// have this
-																	// the same
-																	// as your
-																	// text size
-
-		paint.getTextBounds(text, 0, text.length(), bounds);
-
-		text_width = bounds.width();
-
-		return text_width;
 	}
 
 	// ***********SOUND CONTROLERS

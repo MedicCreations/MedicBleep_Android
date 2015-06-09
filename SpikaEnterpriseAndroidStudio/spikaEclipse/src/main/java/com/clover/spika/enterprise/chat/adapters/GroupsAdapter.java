@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -147,13 +148,12 @@ public class GroupsAdapter extends BaseAdapter {
 	public class ViewHolderCharacter {
 
 		public ImageView groupImage;
-		public RobotoRegularTextView groupName;
-		public RobotoRegularTextView lastMessage;
+		public TextView groupName;
 
 		public ViewHolderCharacter(View view) {
 
 			groupImage = (ImageView) view.findViewById(R.id.item_image);
-			groupName = (RobotoRegularTextView) view.findViewById(R.id.item_name);
+			groupName = (TextView) view.findViewById(R.id.item_name);
 
 		}
 

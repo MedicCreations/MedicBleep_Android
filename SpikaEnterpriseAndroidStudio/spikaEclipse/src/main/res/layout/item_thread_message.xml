@@ -8,56 +8,46 @@
         android:id="@+id/relative_layout_thread_item_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="10dp" >
-
-        <TextView
-            android:id="@+id/text_view_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/messageRl"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/text_gray_image"
-            android:textSize="12sp"
-            tools:text="Stiven Spilberg" />
-
-        <com.clover.spika.enterprise.chat.views.RoundImageView
-            android:id="@+id/image_view_user"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_below="@id/text_view_user"
-            android:layout_marginLeft="10dp"
-            android:contentDescription="@null"
-            android:src="@drawable/default_user_image" />
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp">
 
         <LinearLayout
             android:id="@+id/messageRl"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/image_view_user"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/image_view_user"
+            android:paddingLeft="15dp"
+            android:background="@drawable/you_message_bubble"
             android:gravity="left"
-            android:orientation="horizontal" >
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/text_view_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/medic_bleep_hint_gray"
+                android:textSize="10sp"
+                android:paddingRight="10dp"
+                tools:text="Stiven Spilberg" />
 
             <github.ankushsachdeva.emojicon.EmojiconTextView
                 android:id="@+id/text_view_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/shape_you_chat_bubble"
-                android:padding="10dp"
-                android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textColor="@color/medic_bleep_text_gray"
+                android:textSize="15sp"
+                android:paddingRight="20dp"
                 tools:text="Stigla ti je poruka" />
 
             <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                 android:id="@+id/timeThread"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginRight="10dp"
-                android:textColor="@color/text_time_gray"
-                android:layout_marginLeft="10dp"
-                android:textSize="13sp" />
+                android:layout_gravity="right"
+                android:paddingRight="10dp"
+                android:textColor="@color/medic_bleep_hint_gray"
+                android:textSize="10sp" />
         </LinearLayout>
     </RelativeLayout>
 

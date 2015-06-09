@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_blue"
+    android:background="@color/medic_bleep_gray_background_menu"
     android:gravity="center_horizontal"
     android:orientation="vertical" >
 
@@ -9,14 +9,14 @@
         android:id="@+id/userInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:padding="10dp" >
+        android:background="@color/medic_bleep_gray_background_menu_profile" >
 
         <RelativeLayout
             android:id="@+id/userImageLayout"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_alignParentLeft="true" >
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true" >
 
             <ImageView
                 android:layout_width="match_parent"
@@ -32,36 +32,24 @@
                 android:contentDescription="@null" />
         </RelativeLayout>
 
-        <LinearLayout
+        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            android:id="@+id/userName"
+            android:layout_below="@id/userImageLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/userImageLayout"
-            android:orientation="vertical"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="10dp" >
-
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="@string/hi"
-                android:textStyle="italic"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
-
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
-                android:id="@+id/userName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="@string/john_doe"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            android:gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/john_doe"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
     </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/medic_bleep_gray_background_menu_separator" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -85,10 +73,17 @@
                 android:drawableLeft="@drawable/icon_home"
                 android:drawablePadding="10dp"
                 android:gravity="left"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 android:text="@string/messenger"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/medic_bleep_gray_background_menu_separator" />
             
             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/profile"
@@ -100,10 +95,17 @@
                 android:drawableLeft="@drawable/icon_profile"
                 android:drawablePadding="10dp"
                 android:gravity="left"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 android:text="@string/profile"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/medic_bleep_gray_background_menu_separator" />
 
              <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/information"
@@ -115,10 +117,17 @@
                 android:drawableLeft="@drawable/icon_info"
                 android:drawablePadding="10dp"
                 android:gravity="left"
-                android:padding="10dp"
+                 android:paddingLeft="10dp"
+                 android:paddingTop="15dp"
+                 android:paddingBottom="15dp"
                 android:text="@string/information"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/medic_bleep_gray_background_menu_separator" />
 
             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
                 android:id="@+id/logout"
@@ -131,7 +140,9 @@
                 android:drawablePadding="10dp"
                 android:gravity="left"
                 android:onClick="klik"
-                android:padding="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 android:text="@string/logout"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
@@ -139,38 +150,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@android:color/transparent"/>
+                android:background="@color/medic_bleep_gray_background_menu_separator" />
         </LinearLayout>
     </ScrollView>
 	
-    <RelativeLayout 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="bottom"
-        android:layout_weight="1"
-        android:padding="5dp"
-        >
-        
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
-            android:id="@+id/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="@string/app_name"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"/>
-        
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView 
-            android:id="@+id/app_version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:layout_below="@+id/app_name"
-            android:text="@string/version"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"/>
-        
-    </RelativeLayout>
-    
 </LinearLayout>

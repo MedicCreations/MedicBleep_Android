@@ -11,7 +11,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@color/white">
+        android:background="@drawable/shape_recent_background">
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/recentImage"
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/medic_bleep_blue"
+                    android:textColor="@color/blue_to_white_selector"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 

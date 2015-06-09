@@ -60,16 +60,12 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
-		RobotoRegularTextView tvAppVersion = (RobotoRegularTextView) view.findViewById(R.id.app_version);
-		String version = Helper.getAppVersion();
-		tvAppVersion.setText(tvAppVersion.getText() + version);
-
 		userImage = (ImageView) view.findViewById(R.id.userImage);
 
 		setUserImage();
 
 		userName = (TextView) view.findViewById(R.id.userName);
-		userName.setText(Helper.getUserFirstName() + "\n" + Helper.getUserLastName());
+		userName.setText(Helper.getUserFirstName() + " " + Helper.getUserLastName());
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(this);

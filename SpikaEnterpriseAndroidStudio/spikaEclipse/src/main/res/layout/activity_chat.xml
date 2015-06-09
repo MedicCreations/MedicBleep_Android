@@ -107,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@color/chat_menu_gray"
+            android:background="@color/medic_bleep_blue"
             android:minHeight="@dimen/menu_height"
             android:padding="5dp" >
 

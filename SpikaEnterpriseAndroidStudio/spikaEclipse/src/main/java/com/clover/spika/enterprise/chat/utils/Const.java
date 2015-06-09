@@ -51,7 +51,7 @@ public class Const {
 
 	// Timestamp
 	public static final String DEFAULT_DATE_FORMAT = "MM.dd. - EEEE";
-	public static final String DATE_SEPARATOR_FORMAT = "EEE d MMM HH:mm";
+	public static final String DATE_SEPARATOR_FORMAT = "dd MMMM yyyy";
 	public static final long WEEK = 604800;
 	public static final long DAY = 86400;
 

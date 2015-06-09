@@ -156,13 +156,13 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.meMsgContent.setVisibility(View.GONE);
 		holder.meMsgContent.setTypeface(null, Typeface.NORMAL);
 		holder.meMsgContent.setTextColor(Color.WHITE);
-		holder.meMsgContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+		holder.meMsgContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 		holder.meViewForReadMore.setVisibility(View.GONE);
 		holder.meViewForReadMore.setOnClickListener(null);
 		holder.youMsgContent.setVisibility(View.GONE);
 		holder.youMsgContent.setTypeface(null, Typeface.NORMAL);
-		holder.youMsgContent.setTextColor(Color.BLACK);
-		holder.youMsgContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+		holder.youMsgContent.setTextColor(ctx.getResources().getColor(R.color.medic_bleep_you_text_gray));
+		holder.youMsgContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 		holder.youViewForReadMore.setVisibility(View.GONE);
 		holder.youViewForReadMore.setOnClickListener(null);
 
@@ -193,11 +193,11 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youWebView.setVisibility(View.GONE);
 		holder.youFlForGif.setVisibility(View.GONE);
 
-		holder.meMsgLayoutBack.setBackgroundResource(R.drawable.shape_my_chat_bubble);
+		holder.meMsgLayoutBack.setBackgroundResource(R.drawable.me_message_bubble);
 		((LayoutParams) holder.meMsgLayoutBack.getLayoutParams()).weight = 0; 
 		holder.meFlForGif.getChildAt(0).setVisibility(View.VISIBLE); // progress for gif
 
-		holder.youMsgLayoutBack.setBackgroundResource(R.drawable.shape_you_chat_bubble);
+		holder.youMsgLayoutBack.setBackgroundResource(R.drawable.you_message_bubble);
 		holder.youFlForGif.getChildAt(0).setVisibility(View.VISIBLE); // progress fpr gif
 
 		// Assign values
@@ -208,14 +208,14 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.meMsgLayout.setVisibility(View.VISIBLE);
 
-			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()));
+			holder.meMsgTime.setText(getCreatedTime(msg.getCreated()).toLowerCase(Locale.getDefault()));
 
-			if (msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF) {
-				holder.meMsgLayoutBack.setPadding(0, 0, 0, 0);
-			} else {
-				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
-				holder.meMsgLayoutBack.setPadding(padding, padding, padding, padding);
-			}
+//			if (msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF) {
+//				holder.meMsgLayoutBack.setPadding(0, 0, 0, 0);
+//			} else {
+//				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
+//				holder.meMsgLayoutBack.setPadding(padding, padding, padding, 0);
+//			}
 			
 			if (msg.getType() == Const.MSG_TYPE_TEMP_MESS_ERROR) {
 				holder.meMsgLayout.setAlpha(.4f);
@@ -397,26 +397,23 @@ public class MessagesAdapter extends BaseAdapter {
 
 			holder.youMsgLayout.setVisibility(View.VISIBLE);
 
-			holder.profileImage.setImageDrawable(null);
-			imageLoaderSpice.displayImage(holder.profileImage, msg.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
-
-			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()));
-			holder.youPersonName.setText(msg.getFirstname() + " " + msg.getLastname());
+			holder.youMsgTime.setText(getCreatedTime(msg.getCreated()).toLowerCase(Locale.getDefault()));
+			holder.youPersonName.setText("~ " + msg.getFirstname() + " " + msg.getLastname());
 
 			if (msg.getType() == Const.MSG_TYPE_PHOTO || msg.getType() == Const.MSG_TYPE_GIF) {
-				holder.youMsgLayoutBack.setPadding(0, 0, 0, 0);
+//				holder.youMsgLayoutBack.setPadding(0, 0, 0, 0);
 				((LayoutParams) holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
 			} else if (msg.getType() == Const.MSG_TYPE_LOCATION || msg.getType() == Const.MSG_TYPE_VIDEO) {
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
-				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+//				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
 				((LayoutParams) holder.youMsgLayoutBack.getLayoutParams()).weight = 0;
 			} else if (msg.getType() == Const.MSG_TYPE_VOICE) {
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
-				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+//				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
 				((LayoutParams) holder.youMsgLayoutBack.getLayoutParams()).weight = 1;
 			} else {
 				int padding = Utils.getPxFromDp(10, convertView.getContext().getResources());
-				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
+//				holder.youMsgLayoutBack.setPadding(padding, padding, padding, padding);
 
 				int textWidth = msg.getTextWidth();
 
@@ -603,7 +600,7 @@ public class MessagesAdapter extends BaseAdapter {
 			holder.dateSeparator.setVisibility(View.GONE);
 		} else {
 			holder.dateSeparator.setVisibility(View.VISIBLE);
-			holder.sectionDate.setText(getDateFormat(msg.getCreated()));
+			holder.sectionDate.setText(getDateFormat(msg.getCreated()).toUpperCase(Locale.getDefault()));
 		}
 
 		// Paging animation
@@ -949,7 +946,7 @@ public class MessagesAdapter extends BaseAdapter {
 
 			Timestamp stamp = new Timestamp(Long.valueOf(created) * 1000);
 			Date date = new Date(stamp.getTime());
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+			SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
 			return sdf.format(date);
 		} catch (Exception e) {
@@ -1235,7 +1232,6 @@ public class MessagesAdapter extends BaseAdapter {
 		public TextView youMsgContent;
 		public ImageView youThreadIndicator;
 		public TextView youMsgTime;
-		public ImageView profileImage;
 		public FrameLayout youFlForGif;
 		public WebView youWebView;
 		public View youViewForReadMore;
@@ -1293,10 +1289,7 @@ public class MessagesAdapter extends BaseAdapter {
 			youPersonName = (TextView) view.findViewById(R.id.youPersonName);
 			youMsgContent = (TextView) view.findViewById(R.id.youMsgContent);
 			youThreadIndicator = (ImageView) view.findViewById(R.id.you_image_view_threads_indicator);
-			profileImage = (ImageView) view.findViewById(R.id.youProfileImage);
 			youViewForReadMore = view.findViewById(R.id.youViewForReadMoreClick);
-
-			((RoundImageView) profileImage).setBorderColor(ctx.getResources().getColor(R.color.light_light_gray));
 
 			youFlForGif = (FrameLayout) view.findViewById(R.id.youFlForWebView);
 			// youGifView = (ImageView) view.findViewById(R.id.youGifView);

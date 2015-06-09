@@ -54,8 +54,12 @@
     <color name="medic_bleep_blue">#1252A1</color>
     <color name="medic_bleep_text_gray">#616466</color>
     <color name="medic_bleep_hint_gray">#AAAAAA</color>
+    <color name="medic_bleep_you_text_gray">#43494D</color>
     <color name="medic_bleep_gray_background">#DBDBDB</color>
     <color name="medic_bleep_gray_background_cell">#EAEAEA</color>
+    <color name="medic_bleep_gray_background_menu">#292F33</color>
+    <color name="medic_bleep_gray_background_menu_profile">#1D2226</color>
+    <color name="medic_bleep_gray_background_menu_separator">#43494D</color>
 
 
 </resources>

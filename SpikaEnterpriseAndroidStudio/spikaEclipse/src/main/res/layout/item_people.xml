@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@color/medic_bleep_gray_background_cell">
+        android:background="@drawable/shape_people_background">
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/item_image"
@@ -81,7 +81,7 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingLeft="5dp"
-            android:textColor="@color/medic_bleep_text_gray"
+            android:textColor="@color/gray_to_white_selector"
             android:textSize="18sp" />
 
     </RelativeLayout>

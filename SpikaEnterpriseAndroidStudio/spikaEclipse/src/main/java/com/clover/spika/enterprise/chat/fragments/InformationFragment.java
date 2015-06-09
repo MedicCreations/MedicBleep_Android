@@ -31,12 +31,11 @@ public class InformationFragment extends CustomFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_information, container, false);
-		
-		
-		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
-		mWebView.setWebViewClient(new CustomWebViewClient());
-		mWebView.setWebChromeClient(new WebChromeClient());
-		mWebView.getSettings().setJavaScriptEnabled(true);
+
+//		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
+//		mWebView.setWebViewClient(new CustomWebViewClient());
+//		mWebView.setWebChromeClient(new WebChromeClient());
+//		mWebView.getSettings().setJavaScriptEnabled(true);
 		
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
@@ -48,7 +47,7 @@ public class InformationFragment extends CustomFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		getInformation();
+//		getInformation();
 	}
 	
 	private void getInformation(){
