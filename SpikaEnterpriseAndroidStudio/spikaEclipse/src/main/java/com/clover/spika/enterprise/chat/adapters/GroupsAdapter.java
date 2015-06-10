@@ -1,10 +1,5 @@
 package com.clover.spika.enterprise.chat.adapters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +10,15 @@ import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
-import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.Chat;
-import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.octo.android.robospice.SpiceManager;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 public class GroupsAdapter extends BaseAdapter {
 
@@ -95,7 +94,7 @@ public class GroupsAdapter extends BaseAdapter {
 			return;
 		}
 		for (int i = 0; i < data.size(); i++) {
-			if (Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId) {
+			if (((Chat) data.get(i).getModel()).category != null && Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId) {
 				continue;
 			} else {
 				data.remove(i);

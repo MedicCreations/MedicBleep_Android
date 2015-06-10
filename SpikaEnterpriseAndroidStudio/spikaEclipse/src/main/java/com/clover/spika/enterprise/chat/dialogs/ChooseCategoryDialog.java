@@ -168,7 +168,10 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 		if(!categoryList.categories.equals(listCategory)){
 			findViewById(R.id.progressLoading).setVisibility(View.GONE);
 			setData(categoryList.categories);
-		}
+		}else if(categoryList.categories.size() == 0){
+            findViewById(R.id.progressLoading).setVisibility(View.GONE);
+            noItems.setVisibility(View.VISIBLE);
+        }
 	}
 	
 }
