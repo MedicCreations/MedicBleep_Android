@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle" >
     <solid 
-        android:color="@color/medic_bleep_blue"/>
+        android:color="@color/medic_bleep_gray_background_cell"/>
 </shape>

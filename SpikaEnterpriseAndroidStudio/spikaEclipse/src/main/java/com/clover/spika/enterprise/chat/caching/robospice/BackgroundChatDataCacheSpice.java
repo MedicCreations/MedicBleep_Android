@@ -16,23 +16,25 @@ public class BackgroundChatDataCacheSpice {
 		private SpiceManager spiceManager;
 		private String chatId;
 		private String msgId;
+        private boolean isChatActive;
 		private OnChatDBChanged onDBChangeListener;
 		
 		
-		public GetData(DaoSession daoSession, SpiceManager spiceManager, String chatId, String msgId, OnChatDBChanged onDBChangeListener) {
+		public GetData(DaoSession daoSession, SpiceManager spiceManager, String chatId, String msgId, boolean isChatActive, OnChatDBChanged onDBChangeListener) {
 			super(Integer.class);
 
 			this.daoSession = daoSession;
 			this.spiceManager = spiceManager;
 			this.chatId = chatId;
 			this.msgId = msgId;
+            this.isChatActive = isChatActive;
 			this.onDBChangeListener = onDBChangeListener;
 		}
 
 		@Override
 		public Integer loadDataFromNetwork() throws Exception {
 
-			return BackgroundChatCaching.getData(daoSession, spiceManager, chatId, msgId, onDBChangeListener);
+			return BackgroundChatCaching.getData(daoSession, spiceManager, chatId, msgId, isChatActive, onDBChangeListener);
 		}
 	}
 	

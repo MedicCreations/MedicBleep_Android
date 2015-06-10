@@ -144,7 +144,8 @@ public class PushHandle {
 
 		final SpiceManager spiceManager = new CustomSpiceManager(OkHttpService.class);
 		spiceManager.start(context);
-		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatId, messageId,
+        boolean isChatActive = false;
+		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatId, messageId, isChatActive,
 				new BackgroundChatCaching.OnChatDBChanged() {
 
 					@Override

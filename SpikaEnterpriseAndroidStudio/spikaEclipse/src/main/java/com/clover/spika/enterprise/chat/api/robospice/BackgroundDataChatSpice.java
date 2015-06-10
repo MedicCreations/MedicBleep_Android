@@ -20,30 +20,33 @@ public class BackgroundDataChatSpice {
 
         private String chatId;
         private String msgId;
+        private int isChatActive;
 
-        public GetMessages(String chatId, String msgId) {
+        public GetMessages(String chatId, String msgId, boolean isChatActive) {
             super(GetBackroundDataResponse.class);
 
             this.chatId = chatId;
             this.msgId = msgId;
+            this.isChatActive = isChatActive ? 1 : 0;
         }
 
         @Override
         public GetBackroundDataResponse loadDataFromNetwork() throws Exception {
 
-            String url = Const.BASE_URL + Const.F_GET_PUSH_MESSAGES + "?" + Const.CHAT_ID + "=" + chatId + "&" + Const.MESSAGE_ID + "=" + msgId;
+            String url = Const.BASE_URL + Const.F_GET_PUSH_MESSAGES + "?" + Const.CHAT_ID + "=" + chatId + "&" + Const.MESSAGE_ID + "=" + msgId
+                    + "&" + Const.IS_CHAT_ACTIVE + "=" + isChatActive;
 
             Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(url).get();
 
             Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
-//            Logger.custom("i", "LOG", url);
+            Logger.custom("i", "LOG", url);
 
             Response res = connection.execute();
             ResponseBody resBody = res.body();
             String responseBody = resBody.string();
 
-//            Logger.custom("i", "LOG", responseBody);
+            Logger.custom("i", "LOG", responseBody);
 
             ObjectMapper mapper = new ObjectMapper();
 

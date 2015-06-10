@@ -101,12 +101,13 @@
                 android:background="@drawable/me_message_bubble"
                 android:minWidth="100dp"
                 android:orientation="vertical"
-                android:paddingTop="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp">
+                >
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
                     android:layout_height="wrap_content" >
 
                     <github.ankushsachdeva.emojicon.EmojiconTextView
@@ -133,6 +134,9 @@
 
                 <RelativeLayout
                     android:id="@+id/meRlSound"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
@@ -196,6 +200,9 @@
                     android:id="@+id/meWatchVideo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
                     android:drawablePadding="5dp"
                     android:drawableRight="@drawable/icon_video"
                     android:gravity="right|center_vertical"
@@ -208,6 +215,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="5dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
                     android:drawableRight="@drawable/icon_location"
                     android:gravity="right|center_vertical"
                     android:text="@string/location_tap_to_view"
@@ -219,13 +229,20 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="right"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
                     android:contentDescription="@null"
                     android:scaleType="centerCrop" />
 
                 <FrameLayout
                     android:id="@+id/meFlForWebView"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp" >
+                    android:layout_width="175dp"
+                    android:layout_height="160dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
+                    >
                     
                     <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
                         android:id="@+id/meWebView"
@@ -253,6 +270,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="5dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="15dp"
                     android:drawableRight="@drawable/icon_file"
                     android:gravity="right|center_vertical"
                     android:text=""
@@ -265,6 +285,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:layout_gravity="right"
+                    android:paddingRight="15dp"
                     android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>
@@ -298,20 +319,23 @@
                     android:orientation="vertical"
                     android:paddingBottom="0dp"
                     android:paddingTop="0dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="10dp">
+                    >
 
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/youPersonName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
                         android:layout_alignLeft="@+id/temp"
                         android:textColor="@color/medic_bleep_hint_gray"
                         android:textSize="10sp" />
 
                     <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp">
 
                         <github.ankushsachdeva.emojicon.EmojiconTextView
                             android:id="@+id/youMsgContent"
@@ -338,7 +362,9 @@
                         android:id="@+id/youRlSound"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left" >
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="10dp">
 
                         <Button
                             android:id="@+id/youPlayPause"
@@ -402,6 +428,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawablePadding="5dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
                         android:drawableRight="@drawable/icon_video"
                         android:gravity="left|center_vertical"
                         android:text="@string/video_tap_to_play"
@@ -412,6 +440,8 @@
                         android:id="@+id/youViewLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
                         android:drawablePadding="5dp"
                         android:drawableRight="@drawable/icon_location"
                         android:gravity="left|center_vertical"
@@ -423,13 +453,17 @@
                         android:id="@+id/youViewImage"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="10dp"
                         android:layout_gravity="left"
                         android:contentDescription="@null"
                         android:scaleType="centerCrop" />
 
                     <FrameLayout
                         android:id="@+id/youFlForWebView"
-                        android:layout_width="150dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_width="175dp"
                         android:layout_height="150dp" >
                         
                         <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
@@ -457,6 +491,8 @@
                         android:id="@+id/youDownloadFile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
                         android:drawablePadding="5dp"
                         android:drawableRight="@drawable/icon_file"
                         android:gravity="left|center_vertical"
@@ -467,6 +503,7 @@
                     <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
                         android:id="@+id/timeYou"
                         android:layout_gravity="right"
+                        android:paddingRight="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/medic_bleep_hint_gray"

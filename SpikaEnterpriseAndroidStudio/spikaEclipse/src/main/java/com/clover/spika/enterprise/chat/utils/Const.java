@@ -406,4 +406,5 @@ public class Const {
 
     public static final String COUNTRY_CODE = "Country-Code";
 	public static final String NEW = "new";
+    public static final String IS_CHAT_ACTIVE = "is_chat_active";
 }

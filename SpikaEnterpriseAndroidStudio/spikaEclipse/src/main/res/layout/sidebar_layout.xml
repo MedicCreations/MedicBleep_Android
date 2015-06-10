@@ -43,7 +43,7 @@
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
+            android:paddingBottom="10dp"/>
     </RelativeLayout>
 
     <View

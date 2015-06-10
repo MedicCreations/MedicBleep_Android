@@ -330,7 +330,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	}
 
 	protected void handleNewPushMessageInBackground(final String chatIdPush, String messageId) {
-		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatIdPush, messageId, null);
+        boolean isChatActive = false;
+		BackgroundChatDataCacheSpice.GetData spice = new BackgroundChatDataCacheSpice.GetData(daoSession, spiceManager, chatIdPush, messageId, isChatActive, null);
 		spiceManager.execute(spice, new CustomSpiceListener<Integer>());
 	}
 

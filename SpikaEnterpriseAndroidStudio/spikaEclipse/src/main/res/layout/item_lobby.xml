@@ -11,13 +11,16 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@drawable/shape_recent_background">
+        android:paddingBottom="10dp"
+        android:background="@drawable/shape_recent_background_selector">
 
         <com.clover.spika.enterprise.chat.views.RoundImageView
             android:id="@+id/recentImage"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            android:layout_margin="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
             android:contentDescription="@null"
             android:padding="1dp"
             android:src="@drawable/default_user_image" />

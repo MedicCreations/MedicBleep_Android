@@ -18,10 +18,10 @@ import com.octo.android.robospice.SpiceManager;
 
 public class BackgroundChatCaching {
 
-	public static Integer getData(final DaoSession daoSession, final SpiceManager spiceManager, final String chatId, String msgId, 
+	public static Integer getData(final DaoSession daoSession, final SpiceManager spiceManager, final String chatId, String msgId,  boolean isChatActive,
 			final OnChatDBChanged onDBChangeListener) {
 		
-		BackgroundDataChatSpice.GetMessages spice = new BackgroundDataChatSpice.GetMessages(chatId, msgId);
+		BackgroundDataChatSpice.GetMessages spice = new BackgroundDataChatSpice.GetMessages(chatId, msgId, isChatActive);
 		spiceManager.execute(spice, new CustomSpiceListener<GetBackroundDataResponse>(){
 			
 			@Override

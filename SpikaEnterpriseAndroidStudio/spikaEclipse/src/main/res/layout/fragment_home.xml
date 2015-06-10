@@ -33,7 +33,7 @@
             android:paddingTop="5dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/shape_rect_tab_blue">
+            android:background="@drawable/shape_rect_tab_selector">
 
             <Button
                 android:id="@+id/btnRecent"
@@ -58,7 +58,7 @@
             android:id="@+id/rlPeople"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_rect_tab_blue"
+            android:background="@drawable/shape_rect_tab_selector"
             android:paddingTop="5dp"
             android:layout_weight="1" >
 
@@ -85,7 +85,7 @@
             android:id="@+id/rlGroups"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_rect_tab_blue"
+            android:background="@drawable/shape_rect_tab_selector"
             android:paddingTop="5dp"
             android:layout_weight="1" >
 
