@@ -216,10 +216,10 @@ public class JNAesCrypto {
 
 	public static void decryptIs(InputStream is, File out, Context ctx) throws Exception {
 
-		File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+		File tempOut = new File(Utils.getFileDir(ctx), System.currentTimeMillis() + Const.APP_SPEN_TEMP_FILE);
 		tempOut.createNewFile();
 
-		File tempIn = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+		File tempIn = new File(Utils.getFileDir(ctx), System.currentTimeMillis() + Const.APP_SPEN_FILE);
 		tempIn.createNewFile();
 
 		OutputStream os = new FileOutputStream(tempIn.getAbsolutePath());
@@ -258,14 +258,17 @@ public class JNAesCrypto {
 
     public static void decryptIsForLoader(InputStream is, File out, Context ctx) throws Exception {
 
-        File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+        File tempOut = new File(Utils.getFileDir(ctx), System.currentTimeMillis() + Const.APP_SPEN_TEMP_FILE);
         tempOut.createNewFile();
 
-        File tempIn = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+        File tempIn = new File(Utils.getFileDir(ctx), System.currentTimeMillis() + Const.APP_SPEN_FILE);
         tempIn.createNewFile();
 
         OutputStream os = new FileOutputStream(tempIn.getAbsolutePath());
         Helper.copyStream(is, os);
+
+        is.close();
+        os.close();
 
         try {
             FileOutputStream ouputHex = new FileOutputStream(tempOut);
@@ -288,13 +291,14 @@ public class JNAesCrypto {
             ouputHex.close();
             cryptor.decryptData(Const.getPassword(), tempOut, out);
         }catch(Exception e){
-            Helper.copyStream(new FileInputStream(tempIn), new FileOutputStream(out));
+            try {
+                Helper.copyStream(new FileInputStream(tempIn), new FileOutputStream(out));
+            }catch(Exception e2){}
         }
 
         tempOut.delete();
         tempIn.delete();
-        is.close();
-        os.close();
+
     }
 
 	// to hex methods

@@ -1,9 +1,11 @@
 package com.clover.spika.enterprise.chat.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -411,6 +413,19 @@ public class Helper {
             ex.printStackTrace();
 		}
 	}
+
+    public static void copyStreamWithByte(byte[] bytesAll, OutputStream os) {
+
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        try {
+            bos.write(bytesAll);
+            bos.flush();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 	/**
 	 * Get error description
