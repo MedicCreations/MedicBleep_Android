@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.CameraCropActivity;
@@ -44,7 +45,6 @@ public class NewAppDialog extends Dialog {
 				intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
 				intent.putExtra(Const.ROOM_INTENT, true);
 				intent.putExtra(Const.IS_SQUARE, true);
-				// getContext().startActivity(intent);
 				getOwnerActivity().startActivityForResult(intent, 1);
 			}
 		});
@@ -74,5 +74,62 @@ public class NewAppDialog extends Dialog {
 
 		show();
 	}
+
+    /**
+     * Go to recording screen from gallery or camera on update room
+     */
+    public void choseCamGalleryRoomUpdate(final String chatId, final String chatName) {
+        this.setContentView(R.layout.dialog_chose_cam_rec_new);
+
+        TextView camera = (TextView) findViewById(R.id.takePhoto);
+        TextView gallery = (TextView) findViewById(R.id.selectPhoto);
+
+        camera.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dismiss();
+
+                Intent intent = new Intent(getContext(), CameraCropActivity.class);
+                intent.putExtra(Const.INTENT_TYPE, Const.PHOTO_INTENT);
+                intent.putExtra(Const.ROOM_INTENT, true);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(Const.CHAT_NAME, chatName);
+                intent.putExtra(Const.UPDATE_PICTURE, true);
+                intent.putExtra(Const.IS_SQUARE, true);
+
+                getOwnerActivity().startActivity(intent);
+            }
+        });
+
+        gallery.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dismiss();
+
+                Intent intent = new Intent(getContext(), CameraCropActivity.class);
+                intent.putExtra(Const.INTENT_TYPE, Const.GALLERY_INTENT);
+                intent.putExtra(Const.ROOM_INTENT, true);
+                intent.putExtra(Const.CHAT_ID, chatId);
+                intent.putExtra(Const.CHAT_NAME, chatName);
+                intent.putExtra(Const.UPDATE_PICTURE, true);
+                intent.putExtra(Const.IS_SQUARE, true);
+
+                getOwnerActivity().startActivity(intent);
+            }
+        });
+
+        Button cancel = (Button) findViewById(R.id.cancelBtn);
+        cancel.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        show();
+    }
 
 }

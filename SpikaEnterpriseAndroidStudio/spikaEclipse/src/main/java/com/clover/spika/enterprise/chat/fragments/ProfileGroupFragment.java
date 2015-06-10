@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog;
 import com.clover.spika.enterprise.chat.dialogs.ChooseCategoryDialog.UseType;
+import com.clover.spika.enterprise.chat.dialogs.NewAppDialog;
 import com.clover.spika.enterprise.chat.dialogs.SetAdminDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -282,7 +283,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	}
 
 	private void showDialog() {
-		AppDialog dialog = new AppDialog(getActivity(), false);
+		NewAppDialog dialog = new NewAppDialog(getActivity(), false);
 		dialog.choseCamGalleryRoomUpdate(chatId, chatName);
 	}
 
