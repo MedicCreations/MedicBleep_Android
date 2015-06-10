@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -485,7 +486,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	private void checkForEncryption(){
 		if (!getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
 			
-			afterCheck(true);
+			afterCheck(false);
 			
 		} else{
 			Utils.checkForEncryption(this, null, new OnCheckEncryptionListener() {
@@ -557,7 +558,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 			public void onApiResponse(Result<UploadFileModel> result) {
 
 				if (result.isSuccess()) {
-					thumbUploadAsync(thumbPath, result.getResultData().getFileId(), toCrypt);
+                    thumbUploadAsync(thumbPath, result.getResultData().getFileId(), toCrypt);
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);
@@ -570,7 +571,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 	}
 
 	private void thumbUploadAsync(final String thumbPath, final String fileId, final boolean toCrypt) {
-		new FileManageApi().uploadFile(true, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
+		new FileManageApi().uploadFile(toCrypt, thumbPath, this, true, new ApiCallback<UploadFileModel>() {
 
 			@Override
 			public void onApiResponse(Result<UploadFileModel> result) {
@@ -596,6 +597,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 						ChooseLobbyActivity.start(CameraCropActivity.this, fileId, result.getResultData().getFileId());
 						finish();
 					}
+
 				} else {
 					if (result.hasResultData()) {
 						AppDialog dialog = new AppDialog(CameraCropActivity.this, true);

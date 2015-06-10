@@ -210,7 +210,7 @@ public class ImageLoaderSpice {
 					fos.flush();
 					fos.close();
 				}else{
-					JNAesCrypto.decryptIs(resBody.byteStream(), file, ctx);
+                    JNAesCrypto.decryptIsForLoader(resBody.byteStream(), file, ctx);
 				}
 			}
 

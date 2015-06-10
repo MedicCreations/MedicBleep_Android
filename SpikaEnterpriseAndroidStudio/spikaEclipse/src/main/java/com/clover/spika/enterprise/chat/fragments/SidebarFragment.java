@@ -92,6 +92,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 	}
 
 	private void setUserImage() {
+        userImage.setTag(false);
 		getImageLoader().displayImage(userImage, image, ImageLoaderSpice.DEFAULT_USER_IMAGE);
 	}
 

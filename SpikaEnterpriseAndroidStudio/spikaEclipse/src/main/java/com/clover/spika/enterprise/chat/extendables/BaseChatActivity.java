@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -575,9 +576,9 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 				@Override
 				public void onAnimationEnd(Animator animation) {
 					rlDrawerEmoji.setSelected(true);
-					RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) chatListView.getLayoutParams();
+					RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ((ViewGroup)chatListView.getParent()).getLayoutParams();
 					params.bottomMargin = Helper.dpToPx(BaseChatActivity.this, drawerHeight);
-					chatListView.setLayoutParams(params);
+                    ((ViewGroup)chatListView.getParent()).setLayoutParams(params);
 
 					hideKeyboard(etMessage);
 
@@ -610,9 +611,9 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 				}
 			});
 			AnimUtils.translationY(chatLayout, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) chatListView.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ((ViewGroup)chatListView.getParent()).getLayoutParams();
 			params.bottomMargin = 0;
-			chatListView.setLayoutParams(params);
+            ((ViewGroup)chatListView.getParent()).setLayoutParams(params);
 			AnimUtils.translationY(chatListView, -Helper.dpToPx(this, drawerHeight), 0, drawerDuration, null);
 		}
 	}

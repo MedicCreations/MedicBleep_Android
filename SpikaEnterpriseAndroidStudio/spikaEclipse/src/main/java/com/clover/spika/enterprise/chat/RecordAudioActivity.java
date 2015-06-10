@@ -461,17 +461,19 @@ public class RecordAudioActivity extends BaseActivity {
 	}
 	
 	private void checkForEncryption(final String mFilePath2) throws FileNotFoundException {
-		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
-			
-			@Override
-			public void onCheckFinish(String path, boolean toCrypt) {
-				try {
-					uploadAudio(mFilePath2, toCrypt);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+        //always crypt
+        uploadAudio(mFilePath2, true);
+//		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+//
+//			@Override
+//			public void onCheckFinish(String path, boolean toCrypt) {
+//				try {
+//					uploadAudio(mFilePath2, toCrypt);
+//				} catch (FileNotFoundException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 	}
 	
 	private void uploadAudio(String filePath, final boolean toCrypt) throws FileNotFoundException {

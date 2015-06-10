@@ -711,13 +711,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	}
 	
 	private void checkForEncryption(final String mFilePath2, final String fileName) {
-		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
-
-			@Override
-			public void onCheckFinish(String path, boolean toCrypt) {
-				uploadFile(mFilePath2, fileName, toCrypt);
-			}
-		});
+        //always crypt
+        uploadFile(mFilePath2, fileName, true);
+//		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+//
+//			@Override
+//			public void onCheckFinish(String path, boolean toCrypt) {
+//				uploadFile(mFilePath2, fileName, toCrypt);
+//			}
+//		});
 	}
 	
 	private void uploadFile(final String filePath, final String fileName, final boolean toCrypt){

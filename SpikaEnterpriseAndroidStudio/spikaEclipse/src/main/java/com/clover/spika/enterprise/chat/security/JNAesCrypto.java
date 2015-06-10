@@ -225,7 +225,7 @@ public class JNAesCrypto {
 		OutputStream os = new FileOutputStream(tempIn.getAbsolutePath());
 		Helper.copyStream(is, os);
 		os.close();
-		is.close();
+        is.close();
 
 		FileOutputStream ouputHex = new FileOutputStream(tempOut);
 		FileInputStream inputHex = new FileInputStream(tempIn);
@@ -246,11 +246,56 @@ public class JNAesCrypto {
 		inputHex.close();
 		ouputHex.close();
 
-		cryptor.decryptData(Const.getPassword(), tempOut, out);
+        try {
+            cryptor.decryptData(Const.getPassword(), tempOut, out);
+        }catch(Exception e){
+            Helper.copyStream(new FileInputStream(tempOut), new FileOutputStream(out));
+        }
 
 		tempOut.delete();
 		tempIn.delete();
 	}
+
+    public static void decryptIsForLoader(InputStream is, File out, Context ctx) throws Exception {
+
+        File tempOut = new File(Utils.getFileDir(ctx), Const.APP_SPEN_TEMP_FILE);
+        tempOut.createNewFile();
+
+        File tempIn = new File(Utils.getFileDir(ctx), Const.APP_SPEN_FILE);
+        tempIn.createNewFile();
+
+        OutputStream os = new FileOutputStream(tempIn.getAbsolutePath());
+        Helper.copyStream(is, os);
+
+        try {
+            FileOutputStream ouputHex = new FileOutputStream(tempOut);
+            FileInputStream inputHex = new FileInputStream(tempIn);
+
+            int size = 32 * 1024;
+            byte[] chunk = new byte[size];
+            int chunkLen = 0;
+
+            while ((chunkLen = inputHex.read(chunk)) != -1) {
+                byte[] temp = new byte[chunkLen];
+                for (int i = 0; i < chunkLen; i++) {
+                    temp[i] = chunk[i];
+                }
+                byte[] deHex = toByte(new String(temp));
+                ouputHex.write(deHex, 0, deHex.length);
+            }
+
+            inputHex.close();
+            ouputHex.close();
+            cryptor.decryptData(Const.getPassword(), tempOut, out);
+        }catch(Exception e){
+            Helper.copyStream(new FileInputStream(tempIn), new FileOutputStream(out));
+        }
+
+        tempOut.delete();
+        tempIn.delete();
+        is.close();
+        os.close();
+    }
 
 	// to hex methods
 	public static String toHex(String txt) {

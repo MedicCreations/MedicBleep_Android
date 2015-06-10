@@ -136,6 +136,7 @@ public class PeopleAdapter extends BaseAdapter {
 
 		GlobalModel item = getItem(position);
 
+        holder.itemImage.setTag(false);
 		imageLoaderSpice.displayImage(holder.itemImage, item.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
 		((RoundImageView) holder.itemImage).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 

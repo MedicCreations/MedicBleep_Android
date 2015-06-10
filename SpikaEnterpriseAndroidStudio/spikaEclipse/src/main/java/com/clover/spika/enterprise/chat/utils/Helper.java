@@ -395,7 +395,7 @@ public class Helper {
 
 				int count = is.read(bytes, 0, buffer_size);
 				if (count == -1) {
-					listener.onFinish();
+					if(listener != null) listener.onFinish();
 					break;
 				}
 
@@ -408,6 +408,7 @@ public class Helper {
 				os.write(bytes, 0, count);
 			}
 		} catch (Exception ex) {
+            ex.printStackTrace();
 		}
 	}
 

@@ -426,19 +426,21 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 	}
 	
 	private void checkForEncryption(){
-		if (!getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
-			
-			afterCheck(true);
-			
-		} else{
-			Utils.checkForEncryption(this, null, new OnCheckEncryptionListener() {
-				
-				@Override
-				public void onCheckFinish(String path, final boolean toCrypt) {
-					afterCheck(toCrypt);
-				}
-			});
-		}
+        //allways crypt
+        afterCheck(true);
+//		if (!getIntent().getBooleanExtra(Const.FROM_WAll, false)) {
+//
+//			afterCheck(true);
+//
+//		} else{
+//			Utils.checkForEncryption(this, null, new OnCheckEncryptionListener() {
+//
+//				@Override
+//				public void onCheckFinish(String path, final boolean toCrypt) {
+//					afterCheck(toCrypt);
+//				}
+//			});
+//		}
 	}
 	
 	private void afterCheck(final boolean toCrypt){

@@ -103,6 +103,7 @@ public class ProfileOtherActivity extends BaseActivity {
 
 		if (intent != null && intent.getExtras() != null) {
 
+            profileImage.setTag(false);
 			getImageLoader().displayImage(profileImage, intent.getExtras().getString(Const.IMAGE), ImageLoaderSpice.DEFAULT_USER_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override

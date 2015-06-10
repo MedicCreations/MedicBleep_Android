@@ -98,6 +98,7 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
 		Helper.setRoomThumbId(imageId);
 
+        profileImage.setTag(false);
 		getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_GROUP_IMAGE, new OnImageDisplayFinishListener() {
 
 			@Override

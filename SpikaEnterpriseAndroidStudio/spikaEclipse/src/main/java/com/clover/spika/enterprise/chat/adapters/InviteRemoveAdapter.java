@@ -211,6 +211,7 @@ public class InviteRemoveAdapter extends BaseAdapter {
 
 		holder.personType.setVisibility(View.GONE);
 
+        holder.profileImg.setTag(false);
 		imageLoaderSpice.displayImage(holder.profileImg, item.getImageThumb(), ImageLoaderSpice.DEFAULT_USER_IMAGE);
 		((RoundImageView) holder.profileImg).setBorderColor(convertView.getContext().getResources().getColor(R.color.light_light_gray));
 

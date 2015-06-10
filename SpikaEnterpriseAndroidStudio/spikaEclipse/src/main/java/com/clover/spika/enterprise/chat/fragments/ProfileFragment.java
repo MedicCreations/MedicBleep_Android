@@ -115,6 +115,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 			}
 
 			mLoadingLayout.setVisibility(View.VISIBLE);
+            profileImage.setTag(false);
 			getImageLoader().displayImage(profileImage, imageId, ImageLoaderSpice.DEFAULT_USER_IMAGE, new OnImageDisplayFinishListener() {
 
 				@Override

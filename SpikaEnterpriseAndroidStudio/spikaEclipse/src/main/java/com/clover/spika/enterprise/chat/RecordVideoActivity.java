@@ -165,17 +165,19 @@ public class RecordVideoActivity extends BaseActivity {
 	}
 	
 	private void checkForEncryption(final String mFilePath2) throws FileNotFoundException {
-		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
-			
-			@Override
-			public void onCheckFinish(String path, boolean toCrypt) {
-				try {
-					uploadVideo(path, toCrypt);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+        //always crypt
+        uploadVideo(mFilePath2, true);
+//		Utils.checkForEncryption(this, mFilePath2, new OnCheckEncryptionListener() {
+//
+//			@Override
+//			public void onCheckFinish(String path, boolean toCrypt) {
+//				try {
+//					uploadVideo(path, toCrypt);
+//				} catch (FileNotFoundException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 	}
 
 	private void uploadVideo(String filePath, final boolean toCrypt) throws FileNotFoundException {

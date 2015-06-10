@@ -134,6 +134,7 @@ public class GroupsAdapter extends BaseAdapter {
 		}
 
 		// set image to null
+        holder.groupImage.setTag(false);
 		holder.groupImage.setImageDrawable(null);
 		GlobalModel item = getItem(position);
 

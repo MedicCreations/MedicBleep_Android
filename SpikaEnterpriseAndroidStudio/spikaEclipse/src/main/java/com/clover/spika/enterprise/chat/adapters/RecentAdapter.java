@@ -149,6 +149,7 @@ public class RecentAdapter extends BaseAdapter {
 
 		Chat item = getItem(position);
 
+        holder.recentImage.setTag(false);
 		imageLoaderSpice.displayImage(holder.recentImage, item.image_thumb, defaultImage);
 
 		holder.recentName.setText(item.chat_name);
