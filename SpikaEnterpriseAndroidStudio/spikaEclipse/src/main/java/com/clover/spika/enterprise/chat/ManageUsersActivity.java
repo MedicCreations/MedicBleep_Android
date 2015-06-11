@@ -128,7 +128,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.ALL, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.USER, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")

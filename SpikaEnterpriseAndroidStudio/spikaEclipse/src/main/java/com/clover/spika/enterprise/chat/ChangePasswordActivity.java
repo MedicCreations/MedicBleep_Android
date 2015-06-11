@@ -48,7 +48,7 @@ public class ChangePasswordActivity extends BaseActivity {
 			username = extras.getString(Const.USERNAME);
 		}
 
-		goBack = (ImageButton) findViewById(R.id.goBack);
+		goBack = (ImageButton) findViewById(R.id.cancelBtn);
 		goBack.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -60,7 +60,7 @@ public class ChangePasswordActivity extends BaseActivity {
 		newPassword = (EditText) findViewById(R.id.newPassword);
 		confirmNewPassword = (EditText) findViewById(R.id.confirmNewPassword);
 
-		confirmBtn = (Button) findViewById(R.id.confirmBtn);
+		confirmBtn = (Button) findViewById(R.id.submitBtn);
 		confirmBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -123,7 +123,10 @@ public class ChangePasswordActivity extends BaseActivity {
 							intent.putExtra(Const.PASSWORD, password);
 
 							startActivity(intent);
-						}
+						}else{
+                            Intent intent = new Intent(ChangePasswordActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
 
 					}
 

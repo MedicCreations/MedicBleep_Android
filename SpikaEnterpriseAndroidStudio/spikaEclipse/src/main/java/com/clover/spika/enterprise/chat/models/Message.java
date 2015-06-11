@@ -323,6 +323,8 @@ public class Message implements Parcelable {
 			return false;
 		if (type != message.type)
 			return false;
+        if (seen_timestamp != message.seen_timestamp)
+            return false;
 		
 		return true;
 	}

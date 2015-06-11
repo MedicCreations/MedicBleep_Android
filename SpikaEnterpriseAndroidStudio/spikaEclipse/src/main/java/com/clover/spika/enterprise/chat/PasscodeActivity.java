@@ -1,19 +1,35 @@
 package com.clover.spika.enterprise.chat;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.utils.Utils;
 
 public class PasscodeActivity extends NewPasscodeActivity {
 
-	@Override
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_passcode);
+
+        if(Utils.isBuildOver(Build.VERSION_CODES.KITKAT_WATCH)){
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//			window.setNavigationBarColor(getResources().getColor(R.color.default_blue));
+            window.setBackgroundDrawableResource(R.drawable.shape_black_hole);
+            window.setStatusBarColor(getResources().getColor(R.color.default_blue));
+        }
 
 		ImageButton backButton = (ImageButton) findViewById(R.id.goBack);
 		if (backButton != null) {

@@ -773,8 +773,16 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		if (tempMessage != null)
 			setNoItemsVisibility();
 
-		if (type == Const.MSG_TYPE_DEFAULT)
-			chatListView.setSelectionFromTop(adapter.getCount(), 0);
+		if (type == Const.MSG_TYPE_DEFAULT){
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    chatListView.setSelection(adapter.getCount());
+                }
+            }, 100);
+            adapter.setSeenBy("");
+        }
 
 		etMessage.setText("");
 		

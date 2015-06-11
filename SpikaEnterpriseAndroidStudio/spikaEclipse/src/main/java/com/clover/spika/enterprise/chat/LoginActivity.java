@@ -1,19 +1,19 @@
 package com.clover.spika.enterprise.chat;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -26,7 +26,10 @@ import com.clover.spika.enterprise.chat.models.greendao.DaoMaster;
 import com.clover.spika.enterprise.chat.models.greendao.DaoMaster.DevOpenHelper;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.views.RobotoRegularTextView;
+import com.clover.spika.enterprise.chat.utils.Utils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends LoginBaseActivity {
 
@@ -36,7 +39,7 @@ public class LoginActivity extends LoginBaseActivity {
 	Bundle extras;
 	private TextView tvForgotPassword;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
@@ -75,7 +78,7 @@ public class LoginActivity extends LoginBaseActivity {
         whatIsThis.setText(span);
 	}
 
-	@Override
+    @Override
 	protected void onResume() {
 		super.onResume();
 		hideKeyboard(username);

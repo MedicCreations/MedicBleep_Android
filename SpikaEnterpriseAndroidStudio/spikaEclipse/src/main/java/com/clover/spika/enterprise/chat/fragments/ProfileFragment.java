@@ -22,6 +22,7 @@ import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.ShowProfileActivity;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.dialogs.NewAppDialog;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
@@ -166,7 +167,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 	}
 
 	private void showDialog() {
-		AppDialog dialog = new AppDialog(getActivity(), false);
+		NewAppDialog dialog = new NewAppDialog(getActivity(), false);
 		dialog.choseCamGalleryProfile();
 	}
 

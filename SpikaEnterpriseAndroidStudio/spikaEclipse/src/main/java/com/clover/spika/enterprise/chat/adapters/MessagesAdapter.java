@@ -166,6 +166,8 @@ public class MessagesAdapter extends BaseAdapter {
 		holder.youViewForReadMore.setVisibility(View.GONE);
 		holder.youViewForReadMore.setOnClickListener(null);
 
+        holder.meMessageStatus.setBackgroundResource(0);
+
 		holder.meViewImage.setVisibility(View.GONE);
 		holder.meViewImage.setTag(null);
 		holder.youViewImage.setVisibility(View.GONE);
@@ -377,6 +379,14 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meMsgContent.setText(ctx.getString(R.string.message_deleted));
 				holder.meMsgContent.setTypeface(null, Typeface.ITALIC);
 			}
+
+            if(msg.getType() != Const.MSG_TYPE_TEMP_MESS_ERROR && msg.getType() != Const.MSG_TYPE_TEMP_MESS && msg.getType() != Const.MSG_TYPE_DELETED){
+                if(msg.seen_timestamp > 0){
+                    holder.meMessageStatus.setBackgroundResource(R.drawable.message_seen_white);
+                }else{
+                    holder.meMessageStatus.setBackgroundResource(R.drawable.message_sent_white);
+                }
+            }
 
 			if (!TextUtils.isEmpty(msg.getChildListText())) {
 				holder.meThreadIndicator.setVisibility(View.VISIBLE);
@@ -615,7 +625,7 @@ public class MessagesAdapter extends BaseAdapter {
 		// Check if last message
 		if (position == (getCount() - 1) && !TextUtils.isEmpty(seenBy)) {
 			holder.seenByTv.setText("Seen by " + seenBy);
-			holder.seenByTv.setVisibility(View.VISIBLE);
+			holder.seenByTv.setVisibility(View.GONE); //wait to confirm without seen by
 			convertView.setPadding(0, 0, 0, Utils.getPxFromDp(10, convertView.getContext().getResources()));
 		} else {
 			holder.seenByTv.setVisibility(View.GONE);
@@ -1006,9 +1016,11 @@ public class MessagesAdapter extends BaseAdapter {
 				for (int j = 0; j < data.size(); j++) {
 					if (newItems.get(i).getId().equals(data.get(j).getId())) {
 						isFound = true;
-						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())) {
+						if (Long.parseLong(newItems.get(i).getModified()) > Long.parseLong(data.get(j).getModified())
+                                || newItems.get(i).seen_timestamp != data.get(j).seen_timestamp) {
 							msg = newItems.get(i);
 							msg.setMe(isMe(newItems.get(i).getUser_id()));
+                            msg.seen_timestamp = newItems.get(i).seen_timestamp;
 							msg = Message.decryptContent(ctx, newItems.get(i));
 							data.set(j, newItems.get(i));
 						}
@@ -1202,6 +1214,7 @@ public class MessagesAdapter extends BaseAdapter {
 		public ImageView meThreadIndicator;
 		public TextView meMsgTime;
 		public FrameLayout meFlForGif;
+        public View meMessageStatus;
 		// public ImageView meGifView;
 		public WebView meWebView;
 		public View meViewForReadMore;
@@ -1258,6 +1271,7 @@ public class MessagesAdapter extends BaseAdapter {
 			meMsgContent = (TextView) view.findViewById(R.id.meMsgContent);
 			meThreadIndicator = (ImageView) view.findViewById(R.id.me_image_view_threads_indicator);
 			meViewForReadMore = view.findViewById(R.id.meViewForReadMoreClick);
+            meMessageStatus = view.findViewById(R.id.meMessageStatus);
 
 			meFlForGif = (FrameLayout) view.findViewById(R.id.meFlForWebView);
 			// meGifView = (ImageView) view.findViewById(R.id.meGifView);

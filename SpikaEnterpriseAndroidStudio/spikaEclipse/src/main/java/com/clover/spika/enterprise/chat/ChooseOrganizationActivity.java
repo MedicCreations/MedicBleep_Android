@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -25,9 +26,9 @@ public class ChooseOrganizationActivity extends LoginBaseActivity implements OnI
 	private Bundle extras;
 	private String username;
 	private String password;
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_choose_organization);

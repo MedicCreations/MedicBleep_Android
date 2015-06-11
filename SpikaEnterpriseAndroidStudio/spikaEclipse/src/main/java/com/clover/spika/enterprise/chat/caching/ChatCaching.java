@@ -394,18 +394,20 @@ public class ChatCaching {
 				public void onRequestSuccess(SeenTimestamps seenTimestamps) {
 					Logger.e("********** SUCCESS **********");
 
-					for (SeenTimestamps.SeenTimestamp seenTimestamp : seenTimestamps.result) {
+                    if(seenTimestamps != null && seenTimestamps.result != null){
+                        for (SeenTimestamps.SeenTimestamp seenTimestamp : seenTimestamps.result) {
 
-						MessageDao messageDao = ((BaseActivity) activity).getDaoSession().getMessageDao();
+                            MessageDao messageDao = ((BaseActivity) activity).getDaoSession().getMessageDao();
 
-						com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = messageDao.queryBuilder()
-								.where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(seenTimestamp.message_id))
-								.unique();
+                            com.clover.spika.enterprise.chat.models.greendao.Message finalMessageModel = messageDao.queryBuilder()
+                                    .where(com.clover.spika.enterprise.chat.models.greendao.CategoryDao.Properties.Id.eq(seenTimestamp.message_id))
+                                    .unique();
 
-						finalMessageModel.setSeen_timestamp(seenTimestamp.seen_timestamp);
+                            finalMessageModel.setSeen_timestamp(seenTimestamp.seen_timestamp);
 
-						messageDao.update(finalMessageModel);
-					}
+                            messageDao.update(finalMessageModel);
+                        }
+                    }
 
 					deleteOldMessages(activity);
 				}

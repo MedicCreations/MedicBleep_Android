@@ -66,6 +66,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.StickersCacheSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnNegativeButtonCLickListener;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog.OnPositiveButtonClickListener;
+import com.clover.spika.enterprise.chat.dialogs.NewAppDialog;
 import com.clover.spika.enterprise.chat.models.Message;
 import com.clover.spika.enterprise.chat.models.Stickers;
 import com.clover.spika.enterprise.chat.models.StickersHolder;
@@ -869,7 +870,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 
 			} else if (id == R.id.btnVideo || id == R.id.chooseVideo) {
 				forceClose();
-				AppDialog dialog = new AppDialog(BaseChatActivity.this, false);
+				NewAppDialog dialog = new NewAppDialog(BaseChatActivity.this, false);
 				dialog.choseCamGallery(chatId, getRootId(), getMessageId());
 				hideSettings();
 

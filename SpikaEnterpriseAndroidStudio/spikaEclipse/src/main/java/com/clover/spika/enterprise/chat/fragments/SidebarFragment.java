@@ -61,6 +61,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		View view = inflater.inflate(R.layout.sidebar_layout, container, false);
 
 		userImage = (ImageView) view.findViewById(R.id.userImage);
+        userImage.setOnClickListener(this);
 
 		setUserImage();
 
@@ -124,6 +125,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 			break;
 
 		case R.id.profile:
+        case R.id.userImage:
 
 			if (profileFragment == null) {
 				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(), Helper.getUserFirstName(), Helper.getUserLastName());

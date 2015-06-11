@@ -6,6 +6,7 @@ import java.util.List;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -18,6 +19,7 @@ import android.content.ServiceConnection;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -29,6 +31,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -68,6 +72,7 @@ import com.clover.spika.enterprise.chat.services.robospice.SpiceOfflineService;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.RoundImageView;
 import com.clover.spika.enterprise.chat.webrtc.CallActivity;
 import com.clover.spika.enterprise.chat.webrtc.socket.SocketService;
@@ -178,9 +183,11 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 	}
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        setStatusColor();
 
 		/* GreenDAO */
 		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
@@ -226,6 +233,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 
 	}
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    protected void setStatusColor(){
+        if(Utils.isBuildOver(Build.VERSION_CODES.KITKAT_WATCH)){
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.setBackgroundDrawableResource(R.drawable.shape_black_hole);
+            window.setStatusBarColor(getResources().getColor(R.color.default_blue));
+        }
+    }
 
 	// ***********DEBUG DROP TABLE MESSAGES
 	protected void dropAllMessages() {
