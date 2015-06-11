@@ -45,6 +45,6 @@
     <bool name="enable_static_emoji">true</bool>
     
     <!-- Enable WEB RETCi -->
-    <bool name="enable_web_rtc">true</bool>
+    <bool name="enable_web_rtc">false</bool>
 
 </resources>
