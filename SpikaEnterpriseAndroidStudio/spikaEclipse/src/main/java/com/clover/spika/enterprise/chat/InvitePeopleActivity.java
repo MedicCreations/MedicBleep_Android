@@ -6,15 +6,18 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -59,22 +62,15 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	ImageButton goBack;
 	TextView screenTitle;
 
-	LinearLayout invitationOptions;
 	ImageButton inviteBtn;
-
-	/* Search bar */
-	ImageButton searchBtn;
-	EditText searchEt;
-	ImageButton closeSearchBtn;
-	boolean isOpenSearch = false;
-
-	int screenWidth;
-	int speedSearchAnimation = 300;// android.R.integer.config_shortAnimTime;
-	OnSearchListener mSearchListener;
 
 	TextView invitedPeople;
 
 	List<User> usersToAdd = new ArrayList<User>();
+
+    private EditText etSearch;
+    private boolean isDataFromNet = false;
+    private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
 	public static void startActivity(String chatId, int type, boolean isAdmin, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
@@ -103,9 +99,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		screenTitle = (TextView) findViewById(R.id.screenTitle);
 
-		screenWidth = getResources().getDisplayMetrics().widthPixels;
-
-		invitationOptions = (LinearLayout) findViewById(R.id.invitationOptions);
 		inviteBtn = (ImageButton) findViewById(R.id.inviteBtn);
 		inviteBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -114,25 +107,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 				invitePeople();
 			}
 		});
-
-		searchBtn = (ImageButton) findViewById(R.id.searchBtn);
-		searchEt = (EditText) findViewById(R.id.searchEt);
-		closeSearchBtn = (ImageButton) findViewById(R.id.close_search);
-
-		closeSearchBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				closeSearchAnimation();
-			}
-		});
-
-		mSearchListener = this;
-
-		searchBtn.setOnClickListener(searchOnClickListener);
-
-		searchEt.setOnEditorActionListener(editorActionListener);
-		searchEt.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
 
 		invitedPeople = (TextView) findViewById(R.id.invitedPeople);
 		invitedPeople.setMovementMethod(new ScrollingMovementMethod());
@@ -147,7 +121,56 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		handleIntent(getIntent());
 
 		setInitialTextToTxtUsers();
+
+        etSearch = (EditText) findViewById(R.id.etSearchUsers);
+        etSearch.setOnEditorActionListener(new OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                    onSearch(etSearch.getText().toString());
+                }
+                return false;
+            }
+        });
+
+        etSearch.addTextChangedListener(textWatacher);
 	}
+
+    private TextWatcher textWatacher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @SuppressWarnings("rawtypes")
+        @Override
+        public void afterTextChanged(Editable s) {
+            if(isDataFromNet){
+                GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(InvitePeopleActivity.this, spiceManager, 0, null, null, Type.USER,
+                        null, true, true, InvitePeopleActivity.this, InvitePeopleActivity.this);
+                spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public void onRequestSuccess(List result) {
+                        super.onRequestSuccess(result);
+                        allData.clear();
+                        allData.addAll(result);
+                    }
+                });
+                isDataFromNet = false;
+            }else {
+                adapter.manageData(s.toString(), allData);
+            }
+        }
+    };
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -198,9 +221,16 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		} else if (currentCount < mTotalCount) {
 			mainList.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
 		}
+
+        allData.clear();
+        allData.addAll(adapter.getData());
 	}
 
 	private void getUsers(int page, String search, final boolean toClear) {
+
+        if(!TextUtils.isEmpty(search)){
+            isDataFromNet = true;
+        }
 
 		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.USER, search, toClear, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
@@ -233,74 +263,6 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			mSearchData = data;
 		}
 		getUsers(mCurrentIndex, mSearchData, true);
-	}
-
-	/**
-	 * Set search bar
-	 * 
-	 * @param listener
-	 */
-	public void setSearch(OnSearchListener listener) {
-
-		mSearchListener = listener;
-		setSearch(searchBtn, searchOnClickListener, searchEt, editorActionListener);
-
-	}
-
-	/**
-	 * Disable search bar
-	 */
-	public void disableSearch() {
-
-		disableSearch(searchBtn, searchEt, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
-
-	}
-
-	private OnClickListener searchOnClickListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if (searchEt.getVisibility() == View.GONE) {
-				openSearchAnimation();
-			} else {
-				if (mSearchListener != null) {
-					String data = searchEt.getText().toString();
-					hideKeyboard(searchEt);
-					mSearchListener.onSearch(data);
-				}
-			}
-		}
-	};
-
-	private OnEditorActionListener editorActionListener = new OnEditorActionListener() {
-
-		@Override
-		public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-			if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-				hideKeyboard(searchEt);
-				if (mSearchListener != null)
-					mSearchListener.onSearch(v.getText().toString());
-			}
-			return false;
-		}
-	};
-
-	private void openSearchAnimation() {
-		openSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
-	}
-
-	private void closeSearchAnimation() {
-		closeSearchAnimation(searchBtn, (ImageButton) findViewById(R.id.goBack), closeSearchBtn, searchEt, screenTitle, screenWidth, speedSearchAnimation, invitationOptions);
-	}
-
-	@Override
-	public void onBackPressed() {
-		if (searchEt != null && searchEt.getVisibility() == View.VISIBLE) {
-			closeSearchAnimation();
-			return;
-		}
-
-		finish();
 	}
 
 	private void invitePeople() {

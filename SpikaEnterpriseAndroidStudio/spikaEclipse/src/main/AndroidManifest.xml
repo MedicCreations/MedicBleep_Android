@@ -167,7 +167,8 @@
         <activity
             android:name="com.clover.spika.enterprise.chat.InvitePeopleActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ThreadsActivity"
             android:screenOrientation="portrait"
@@ -183,10 +184,6 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.clover.spika.enterprise.chat.CameraActivityForSamsung"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.clover.spika.enterprise.chat.EditProfileActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.clover.spika.enterprise.chat.ForgotPasswordActivity"
