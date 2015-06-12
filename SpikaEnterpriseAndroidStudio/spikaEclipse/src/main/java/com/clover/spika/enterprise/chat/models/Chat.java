@@ -1,11 +1,18 @@
 package com.clover.spika.enterprise.chat.models;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
+import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.extendables.BaseModel;
 
 public class Chat extends BaseModel implements Parcelable{
@@ -39,6 +46,8 @@ public class Chat extends BaseModel implements Parcelable{
 	public boolean isPagging = false;
 	public int adapterCount = -1;
 
+    private String timestampFormated = null;
+
 	public Chat() {
 	}
 
@@ -50,6 +59,52 @@ public class Chat extends BaseModel implements Parcelable{
 			return chat_id;
 		}
 	}
+
+    public String getTimeLastMessage(Resources res){
+        if(!TextUtils.isEmpty(timestampFormated)){
+            return timestampFormated;
+        }else{
+            if(last_message == null && last_message.created != null){
+                return "";
+            }else{
+                timestampFormated = formatTime(Long.valueOf(last_message.created), res);
+                return timestampFormated;
+            }
+        }
+    }
+
+    private String formatTime(long time, Resources res){
+        long currentTime = System.currentTimeMillis();
+
+        long currentTimeDay = currentTime / 86400000;
+        long timeDay = time / 86400;
+        if(currentTimeDay == timeDay){
+            return justTime(time);
+        }else{
+            long offset = currentTimeDay - timeDay;
+            if(offset == 1){
+                return res.getString(R.string.yesterday);
+            }else{
+                return offset + " " + res.getString(R.string._days_ago);
+            }
+        }
+
+    }
+
+    private String justTime(long time){
+        try {
+
+            Timestamp stamp = new Timestamp(time * 1000);
+            Date date = new Date(stamp.getTime());
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+            return sdf.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
 	
 	public boolean isMember(){
 		return this.is_member == 0 ? false : true;

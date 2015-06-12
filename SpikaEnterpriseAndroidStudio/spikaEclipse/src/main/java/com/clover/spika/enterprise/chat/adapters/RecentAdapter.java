@@ -188,8 +188,12 @@ public class RecentAdapter extends BaseAdapter {
 				break;
 			}
 
-			holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
-		}
+//			holder.lastMessageTime.setText(getCreatedTime(item.last_message.getCreated()));
+            holder.lastMessageTime.setText(item.getTimeLastMessage(mContext.getResources()));
+		}else{
+            holder.lastMessageTime.setText("");
+            holder.lastMessage.setText("");
+        }
 
 		if (item.unread != null && Integer.parseInt(item.unread) > 0) {
 			holder.unreadText.setVisibility(View.VISIBLE);

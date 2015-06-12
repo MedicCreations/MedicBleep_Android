@@ -384,5 +384,7 @@
     <string name="select_photo_small">Select Photo</string>
     <string name="select_video">Select Video</string>
     <string name="record_video">Record Video</string>
+    <string name="_days_ago">days ago</string>
+    <string name="yesterday">yesterday</string>
 
 </resources>

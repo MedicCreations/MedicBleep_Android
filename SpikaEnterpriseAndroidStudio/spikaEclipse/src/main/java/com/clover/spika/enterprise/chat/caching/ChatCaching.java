@@ -301,9 +301,9 @@ public class ChatCaching {
 					usedChatModel.setSeen_by(networkData.chat.seen_by);
 				if ((Integer) networkData.total_count != null)
 					usedChatModel.setTotal_count(networkData.total_count);
-				if (networkData.chat.image_thumb != null)
+				if (!TextUtils.isEmpty(networkData.chat.image_thumb))
 					usedChatModel.setImage_thumb(networkData.chat.image_thumb);
-				if (networkData.chat.image != null)
+				if (!TextUtils.isEmpty(networkData.chat.image))
 					usedChatModel.setImage(networkData.chat.image);
 				if (networkData.chat.admin_id != null)
 					usedChatModel.setAdmin_id(networkData.chat.admin_id);
@@ -355,7 +355,7 @@ public class ChatCaching {
 					.getDaoSession()
 					.getMessageDao()
 					.queryBuilder()
-					.where(MessageDao.Properties.Seen_timestamp.lt((System.currentTimeMillis() / 1000L) - (1 * 60 * 60)))
+					.where(MessageDao.Properties.Seen_timestamp.lt((System.currentTimeMillis() / 1000L) - (72 * 60 * 60)))
 					.where(MessageDao.Properties.Seen_timestamp.gt(0))
 					.buildDelete()
 					.executeDeleteWithoutDetachingEntities();
