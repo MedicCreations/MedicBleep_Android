@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
@@ -76,6 +77,8 @@ public class LoginActivity extends LoginBaseActivity {
         SpannableString span = new SpannableString(getString(R.string.what_is_this_));
         span.setSpan(new UnderlineSpan(), 0, span.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         whatIsThis.setText(span);
+
+
 	}
 
     @Override
@@ -83,8 +86,29 @@ public class LoginActivity extends LoginBaseActivity {
 		super.onResume();
 		hideKeyboard(username);
 
-		username.setText(Helper.getUsername());
-		password.setText(Helper.getPassword());
+        username.setText(Helper.getUsername());
+        password.setText(Helper.getPassword());
+
+        if (this.extras != null) {
+            boolean outsideStart = extras.getBoolean("medic_bleep_outside_start", false);
+
+            if (outsideStart == true) {
+
+                String username = extras.getString("medic_bleep_email");
+                String password = extras.getString("medic_bleep_password");
+
+                if (username.length() == 0 || password.length() == 0){
+                    Toast.makeText(getApplicationContext(), "Missing login parameter", Toast.LENGTH_LONG).show();
+                }else{
+
+                    this.username.setText(username);
+                    this.password.setText(password);
+
+
+                }
+            }
+        }
+
 	}
 
 	@Override
