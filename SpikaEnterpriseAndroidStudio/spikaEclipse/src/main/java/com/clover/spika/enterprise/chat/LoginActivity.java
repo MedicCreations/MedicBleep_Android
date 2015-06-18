@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -78,6 +79,12 @@ public class LoginActivity extends LoginBaseActivity {
         span.setSpan(new UnderlineSpan(), 0, span.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         whatIsThis.setText(span);
 
+		findViewById(R.id.tvWhatIsThis).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("about:blank")));
+			}
+		});
 
 	}
 
