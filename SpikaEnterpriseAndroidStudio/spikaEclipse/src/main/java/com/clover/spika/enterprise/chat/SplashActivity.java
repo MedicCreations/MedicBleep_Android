@@ -11,6 +11,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
@@ -18,11 +19,15 @@ import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.LocationUtility;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends LoginBaseActivity {
+
+	static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1234567890;
 
 	Bundle extras;
 	boolean goToLogin;
@@ -31,6 +36,18 @@ public class SplashActivity extends LoginBaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
+
+		int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
+		if (errorCode == ConnectionResult.SUCCESS) {
+			Log.e("PlayServicesAvailable", "SUCCESS");
+			LocationUtility.createInstance(this);
+		}
+		else {
+			GooglePlayServicesUtil.getErrorDialog(errorCode, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
+			Log.e("PlayServicesAvailable", "FAIL");
+			return;
+		}
 
 		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
 			goToLogin = false;
@@ -88,6 +105,9 @@ public class SplashActivity extends LoginBaseActivity {
 	};
 
 	void continueToNextScreen () {
+		if (LocationUtility.getInstance() == null) {
+			return;
+		}
 		if (!TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
 			if (goToLogin) {
 				Intent i = new Intent(SplashActivity.this, LoginActivity.class);
@@ -127,5 +147,24 @@ public class SplashActivity extends LoginBaseActivity {
 				finish();
 			}
 		});
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_RECOVER_PLAY_SERVICES:
+				if (resultCode == RESULT_CANCELED) {
+					Toast.makeText(this, "Google Play Services must be installed.",
+							Toast.LENGTH_SHORT).show();
+					finish();
+				}
+				else if (resultCode == RESULT_OK) {
+					Intent i = getIntent();
+					finish();
+					startActivity(i);
+				}
+				return;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

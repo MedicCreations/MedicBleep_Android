@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
@@ -48,14 +49,6 @@ public class SpikaEnterpriseApp extends Application {
 		} else {
 			stopService(poolingIntent);
 		}
-
-        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
-            Log.e("PlayServicesAvailable", "SUCCESS");
-            LocationUtility.createInstance(this);
-        }
-        else {
-            Log.e("PlayServicesAvailable", "FAIL");
-        }
 
         new ApplicationStateManager(this);
 	}
