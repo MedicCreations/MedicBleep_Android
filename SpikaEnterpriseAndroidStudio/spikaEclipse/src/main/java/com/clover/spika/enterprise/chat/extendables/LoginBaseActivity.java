@@ -6,27 +6,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 
 import com.clover.spika.enterprise.chat.ChangePasswordActivity;
 import com.clover.spika.enterprise.chat.ChooseOrganizationActivity;
 import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
-import com.clover.spika.enterprise.chat.SMSVerificationActivity;
 import com.clover.spika.enterprise.chat.R;
-import com.clover.spika.enterprise.chat.SplashActivity;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
@@ -80,22 +70,6 @@ public abstract class LoginBaseActivity extends Activity {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverImplementation);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		IntentFilter intentFilter = new IntentFilter(LocationUtility.COUNTRY_CODE_UPDATED);
-		intentFilter.addAction(LocationUtility.LOCATION_SETTINGS_ERROR);
-		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
-		Log.i("Broadcast", "Broadcast receiver set up");
 	}
 
 	@Override
@@ -336,48 +310,5 @@ public abstract class LoginBaseActivity extends Activity {
         }else{
             dialog.setInfo(getString(R.string.please_install_google_play_service_for_receiving_push_notification_));
         }
-	}
-
-	BroadcastReceiver broadcastReceiverImplementation = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(LocationUtility.COUNTRY_CODE_UPDATED)) {
-				if (!TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
-
-					Intent restartIntent = getIntent();
-					finish();
-					startActivity(restartIntent);
-				}
-			}
-			else if (intent.getAction().equals(LocationUtility.LOCATION_SETTINGS_ERROR)) {
-				showLocationSettings();
-			}
-		}
-	};
-
-	boolean dialogExists = false;
-	void showLocationSettings () {
-		if (dialogExists) return;
-		dialogExists = true;
-		final AppDialog dialog = new AppDialog(LoginBaseActivity.this, true);
-		dialog.setYesNo(getString(R.string.location_services_turned_off_go_to_settings), getString(R.string.yes), getString(R.string.no));
-		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
-			@Override
-			public void onPositiveButtonClick(View v, Dialog d) {
-				dialogExists = false;
-				d.dismiss();
-				Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-			}
-		});
-		dialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
-			@Override
-			public void onNegativeButtonClick(View v, Dialog d) {
-				dialogExists = false;
-				d.dismiss();
-				finish();
-			}
-		});
 	}
 }
