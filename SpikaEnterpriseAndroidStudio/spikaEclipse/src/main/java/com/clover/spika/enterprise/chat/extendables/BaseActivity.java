@@ -332,7 +332,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();
-
+		stopTimeout();
 	}
 
 	public void pushCall(String msg, String chatIdPush, String pushType, String password, String messageId) {
@@ -1137,7 +1137,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onUserInteraction() {
 		super.onUserInteraction();
-		stopTimeout();
 		startTimeout();
 	}
 	
