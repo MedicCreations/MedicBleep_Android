@@ -65,6 +65,7 @@
             android:id="@+id/frameLayoutPasscode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_below="@id/profileName" >
 
             <com.clover.spika.enterprise.chat.views.RobotoThinTextView
@@ -101,7 +102,7 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/selector_color_transp"
             android:padding="10dp"
-            android:text="@string/update_password"
+            android:text="@string/change_password_title"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 

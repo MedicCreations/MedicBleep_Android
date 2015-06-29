@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.clover.spika.enterprise.chat.api.ApiCallback;
 import com.clover.spika.enterprise.chat.api.FileManageApi;
@@ -122,6 +123,11 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 		} else {
 			mIsSamsung = false;
 		}
+
+        if(getIntent().getBooleanExtra(Const.PROFILE_INTENT, false) || getIntent().getBooleanExtra(Const.ROOM_INTENT, false) ){
+            ((TextView) findViewById(R.id.sendButton)).setText(getString(R.string.save));
+            ((TextView) findViewById(R.id.cancelButton)).setText(getString(R.string.cancel));
+        }
 
 		getImageIntents();
 	}

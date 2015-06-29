@@ -13,6 +13,7 @@ import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.networking.GetUrl;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceRequest;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Request;
@@ -64,11 +65,15 @@ public class GlobalSpice {
 			Request.Builder requestBuilder = new Request.Builder().headers(getGetHeaders())
 					.url(Const.BASE_URL + Const.F_GLOBAL_SEARCH_URL + getParameters.toString()).get();
 
+            Logger.custom("e", "LOG", Const.BASE_URL + Const.F_GLOBAL_SEARCH_URL + getParameters.toString());
+
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+
+            Logger.custom("i", "LOG", "SEARCH: " + responseBody);
 			
 			ObjectMapper mapper = new ObjectMapper();
 

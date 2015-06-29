@@ -76,7 +76,7 @@ public class GroupsAdapter extends BaseAdapter {
 		data.addAll(allData);
 		for (int i = 0; i < data.size(); i++) {
 			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())
-					&& Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId) {
+					&& (((Chat) data.get(i).getModel()).category == null || Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId)) {
 				continue;
 			} else {
 				data.remove(i);

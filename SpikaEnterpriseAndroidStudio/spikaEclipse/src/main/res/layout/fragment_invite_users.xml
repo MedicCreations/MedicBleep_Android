@@ -38,8 +38,16 @@
         android:textCursorDrawable="@drawable/shape_text_cursor_drawable"
         android:textColor="@android:color/black"
         android:imeOptions="actionSearch"
-        android:visibility="gone"/>
-    
+        android:visibility="visible"/>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBarLoading"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"/>
+
     <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"

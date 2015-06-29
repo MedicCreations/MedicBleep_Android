@@ -31,6 +31,7 @@ import com.clover.spika.enterprise.chat.listeners.OnInternetErrorListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
 import com.clover.spika.enterprise.chat.models.User;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -69,7 +70,7 @@ public class MainActivity extends BaseActivity {
 
 		// start: set behind view (menu)
 		setBehindContentView(R.layout.sidebar_layout_empty);
-		getSupportFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment()).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.emptyLayout, new SidebarFragment(), SidebarFragment.class.getSimpleName()).commit();
 		// end: set behind view (menu)
 
 		// start: set the above view (content)
@@ -153,6 +154,13 @@ public class MainActivity extends BaseActivity {
 		}
 		
 	}
+
+    public void updateSidebarImage(){
+        SidebarFragment fragment = (SidebarFragment) getSupportFragmentManager().findFragmentByTag(SidebarFragment.class.getSimpleName());
+        if(fragment != null){
+            fragment.setUserImage(Helper.getUserImage());
+        }
+    }
 	
 	@Override
 	protected void onNewIntent(Intent intent) {

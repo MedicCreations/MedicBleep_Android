@@ -507,6 +507,8 @@ public class ChatSpice {
 
 			Call connection = getOkHttpClient().newCall(requestBuilder.build());
 
+//            Logger.custom("i", "LOG", "URL: " + url);
+
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();

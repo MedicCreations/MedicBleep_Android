@@ -52,6 +52,7 @@ import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.LocationUtility;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.Utils;
 import com.clover.spika.enterprise.chat.views.emoji.SelectEmojiListener;
 import com.octo.android.robospice.exception.NoNetworkException;
@@ -98,8 +99,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 						showResendDialog(message);
 					} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 						int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
-								chatImage, chatName, mUserId);
+//						ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
+//								chatImage, chatName, mUserId);
 					}
 				}
 			}
@@ -134,8 +135,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 					showResendDialog(message);
 				} else if (message.getType() != Const.MSG_TYPE_DELETED && message.getType() != Const.MSG_TYPE_TEMP_MESS) {
 					int rootId = message.getRootId() == 0 ? message.getIntegerId() : message.getRootId();
-					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
-							chatImage, chatName, mUserId);
+//					ThreadsActivity.start(ChatActivity.this, String.valueOf(rootId), message.getChat_id(), message.getId(), chatImageThumb,
+//							chatImage, chatName, mUserId);
 				}
 			}
 		});
@@ -499,6 +500,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			if (intent.getExtras().containsKey(Const.CATEGORY_ID)) {
 				categoryId = intent.getExtras().getString(Const.CATEGORY_ID, null);
 			}
+
+            Log.i("LOG", "category id: " + categoryId);
 
 			if (intent.getExtras().containsKey(Const.CATEGORY_NAME)) {
 				categoryName = intent.getExtras().getString(Const.CATEGORY_NAME, null);
@@ -1102,6 +1105,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onRequestSuccess(BaseModel result) {
+                Intent inBroadcast = new Intent();
+                inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
+                LocalBroadcastManager.getInstance(ChatActivity.this).sendBroadcast(inBroadcast);
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
@@ -1184,6 +1190,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onRequestSuccess(BaseModel result) {
+                Intent inBroadcast = new Intent();
+                inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
+                LocalBroadcastManager.getInstance(ChatActivity.this).sendBroadcast(inBroadcast);
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {

@@ -2,6 +2,12 @@ package com.clover.spika.enterprise.chat.utils;
 
 import android.util.Log;
 
+import com.squareup.okhttp.Request;
+
+import java.io.IOException;
+
+import okio.Buffer;
+
 public class Logger {
 
 	public static void custom(String tag, String message) {
@@ -48,6 +54,18 @@ public class Logger {
 			}
 		}
 	}
+
+    public static void logRequest(String i, String log, Request.Builder requestBuilder){
+        try {
+            final Request copy = requestBuilder.build();
+            final Buffer buffer = new Buffer();
+            copy.body().writeTo(buffer);
+            Logger.custom(i, log, "REQ: " + buffer.readUtf8());
+
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	public static void d(String message) {
 

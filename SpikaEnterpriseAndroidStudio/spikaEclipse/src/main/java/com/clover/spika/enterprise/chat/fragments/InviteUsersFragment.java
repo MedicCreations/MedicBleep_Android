@@ -512,4 +512,20 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 		setData(usableData, isClear);
 	}
 
+    public void showProgress(){
+
+        if(getView() != null){
+            getView().findViewById(R.id.progressBarLoading).setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    public void hideProgress(){
+
+        if(getView() != null){
+            getView().findViewById(R.id.progressBarLoading).setVisibility(View.GONE);
+        }
+
+    }
+
 }

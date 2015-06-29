@@ -40,6 +40,24 @@
             android:layout_height="1dp"
             android:background="@color/white" />
 
+        <TextView
+            android:id="@+id/removePhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/white_to_blue_selector"
+            android:layout_margin="20dp"
+            android:visibility="gone"
+            android:gravity="center"
+            android:text="@string/remove_photo"/>
+
+        <View
+            android:id="@+id/removePhotoView"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="1dp"
+            android:background="@color/white" />
+
         <Button
             android:id="@+id/cancelBtn"
             android:layout_width="match_parent"

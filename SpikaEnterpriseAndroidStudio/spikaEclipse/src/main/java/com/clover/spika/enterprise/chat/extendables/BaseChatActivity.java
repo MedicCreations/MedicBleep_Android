@@ -981,8 +981,10 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 						ProfileGroupActivity.openProfile(BaseChatActivity.this, chatImage, chatName, chatId, true, true, isPrivate, chatPassword, categoryId, categoryName);
 					}
 				} else if (position == SETTINGS_POSITION_SECOND) {
+                    String activeUserId = "";
+                    if(currentUser != null) activeUserId = String.valueOf(currentUser.getId());
 					if (chatType == Const.C_PRIVATE) {
-						InvitePeopleActivity.startActivity(chatId, chatType, isAdmin, BaseChatActivity.this);
+						InvitePeopleActivity.startActivity(chatId, chatType, isAdmin, activeUserId, BaseChatActivity.this);
 					} else if (chatType == Const.C_ROOM) {
 						leaveChat();
 					} else if (chatType == Const.C_ROOM_ADMIN_ACTIVE) {
