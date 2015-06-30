@@ -107,15 +107,11 @@ public class LoginActivity extends LoginBaseActivity {
                 if (username.length() == 0 || password.length() == 0){
                     Toast.makeText(getApplicationContext(), "Missing login parameter", Toast.LENGTH_LONG).show();
                 }else{
-
                     this.username.setText(username);
                     this.password.setText(password);
-
-
                 }
             }
         }
-
 	}
 
 	@Override

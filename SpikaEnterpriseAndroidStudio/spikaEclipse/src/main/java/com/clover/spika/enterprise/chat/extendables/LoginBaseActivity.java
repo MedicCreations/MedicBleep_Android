@@ -17,6 +17,7 @@ import com.clover.spika.enterprise.chat.LoginActivity;
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
+import com.clover.spika.enterprise.chat.SMSVerificationActivity;
 import com.clover.spika.enterprise.chat.api.robospice.LoginSpice;
 import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.dialogs.AppProgressAlertDialog;
@@ -226,10 +227,10 @@ public abstract class LoginBaseActivity extends Activity {
 	void checkPasscodeSet (final Bundle extras) {
 		if (!PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			tempExtras = extras;
-//			Intent intent = new Intent(this, SMSVerificationActivity.class);
-//			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
-//			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
-			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
+			Intent intent = new Intent(this, SMSVerificationActivity.class);
+			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
+			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
+//			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
 		}
 		else {
 			if (this instanceof LoginActivity) {

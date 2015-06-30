@@ -1,29 +1,35 @@
 package com.clover.spika.enterprise.chat;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
+import com.clover.spika.enterprise.chat.extendables.BaseActivity;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
+import com.clover.spika.enterprise.chat.models.UserDetail;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
-import com.clover.spika.enterprise.chat.views.RobotoThinEditText;
-import com.clover.spika.enterprise.chat.views.RobotoThinTextView;
-//import com.google.i18n.phonenumbers.NumberParseException;
-//import com.google.i18n.phonenumbers.PhoneNumberUtil;
-//import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
-//import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-public class SMSVerificationActivity extends Activity {
+public class SMSVerificationActivity extends BaseActivity {
 
 	public static final String PHONE_NUMBER = "phone_number";
 	
@@ -31,18 +37,18 @@ public class SMSVerificationActivity extends Activity {
 	public static final int TYPE_VERIFICATION_CODE = 1;
 	
 	private int type;
-	
-	RobotoThinEditText editText;
-	RobotoThinTextView textView;
+
+	EditText editText;
+	TextView textView;
 	String phoneNumber;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sms_verfication);
 		
-		editText = (RobotoThinEditText)findViewById(R.id.inputEditText);
-		textView = (RobotoThinTextView)findViewById(R.id.phoneNumberTextView);
+		editText = (EditText)findViewById(R.id.inputEditText);
+		textView = (TextView)findViewById(R.id.phoneNumberTextView);
 		
 		type = getIntent().getIntExtra(Const.TYPE, TYPE_PHONE_NUMBER);
 		if (type == TYPE_PHONE_NUMBER) {
@@ -58,12 +64,6 @@ public class SMSVerificationActivity extends Activity {
 					return false;
 				}
 			});
-			editText.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					editText.setBackgroundColor(Color.WHITE);
-				}
-			});
 		}
 		else {
 			Button changePhoneNumberButton = (Button)findViewById(R.id.changePhoneNumberButton);
@@ -76,10 +76,10 @@ public class SMSVerificationActivity extends Activity {
 				}
 			});
 			findViewById(R.id.phoneNumberTextView).setVisibility(View.VISIBLE);
-			editText.setHint(R.string.verification_code);
+			editText.setVisibility(View.GONE);
 			textView.setVisibility(View.VISIBLE);
 			phoneNumber = getIntent().getStringExtra(PHONE_NUMBER);
-			textView.setText(getString(R.string.sms_sent_to) + phoneNumber);
+			textView.setText(getString(R.string.verify_phone_number) + phoneNumber);
 		}
 		
 		Button submitButton = (Button) findViewById(R.id.submitButton);
@@ -106,10 +106,27 @@ public class SMSVerificationActivity extends Activity {
 	}
 	
 	void submitVerificationCodeAPI () {
-		Intent resultData = new Intent();
-		resultData.putExtra(Const.TYPE, PasscodeUtility.getInstance().getTemporaryPasscode());
-		setResult(RESULT_OK, resultData);
-		finish();
+		UserDetail userDetail = new UserDetail();
+		userDetail.key = "phone_number";
+		userDetail.value = phoneNumber;
+		ArrayList<UserDetail> userDetails = new ArrayList<>();
+		userDetails.add(userDetail);
+		UserSpice.UpdateUserDetails updateDetails = new UserSpice.UpdateUserDetails(userDetails);
+		spiceManager.execute(updateDetails, new CustomSpiceListener<BaseModel>() {
+			@Override
+			public void onRequestSuccess(BaseModel arg0) {
+				super.onRequestSuccess(arg0);
+				Logger.e(arg0.toString());
+				setResult(RESULT_OK);
+				finish();
+			}
+
+			@Override
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				Logger.e(arg0.getMessage());
+			}
+		});
 	}
 	
 	@Override
@@ -138,34 +155,31 @@ public class SMSVerificationActivity extends Activity {
 	boolean checkPhoneNumber () {
 		boolean result = false;
 		
-//		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-//		PhoneNumber phoneNumber;
-//
-//		String defaultLocale = Locale.getDefault().getCountry();
-//
-//		String phoneNumberToCheck = editText.getText().toString();
-//
-//		if (phoneNumberToCheck.startsWith("00")) {
-//			phoneNumberToCheck = phoneNumberToCheck.replaceFirst("00", "+");
-//		}
-//		
-//		try {
-//			phoneNumber = phoneUtil.parse(phoneNumberToCheck, defaultLocale);
-//			if (phoneUtil.isValidNumber(phoneNumber)) {
-//				editText.setText(phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL));
-//				editText.setBackgroundColor(Color.GREEN);
-//				result = true;
-//			} else {
-//				editText.setBackgroundColor(Color.RED);
-//				result = false;
-//			}
-//		} catch (NumberParseException e) {
-//			e.printStackTrace();
-//			editText.setBackgroundColor(Color.RED);
-//			result = false;
-//		} 
-//		return result;
+		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+		PhoneNumber phoneNumber;
+
+		String defaultLocale = Locale.getDefault().getCountry();
+
+		String phoneNumberToCheck = editText.getText().toString();
+
+		if (phoneNumberToCheck.startsWith("00")) {
+			phoneNumberToCheck = phoneNumberToCheck.replaceFirst("00", "+");
+		}
+
+		try {
+			phoneNumber = phoneUtil.parse(phoneNumberToCheck, defaultLocale);
+			if (phoneUtil.isValidNumber(phoneNumber)) {
+				editText.setText(phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL));
+				result = true;
+			} else {
+				result = false;
+			}
+		} catch (NumberParseException e) {
+			e.printStackTrace();
+			result = false;
+		}
+		return result;
 		
-		return true;
+//		return true;
 	}
 }
