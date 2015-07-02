@@ -13,6 +13,7 @@ public class Login extends BaseModel {
 	public String firstname;
 	public String lastname;
 	public List<Organization> organizations;
+	public String email;
 
 	public Login() {
 	}

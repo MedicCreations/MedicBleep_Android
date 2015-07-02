@@ -218,7 +218,7 @@ public abstract class LoginBaseActivity extends Activity {
 
 				if (result.getCode() == Const.API_SUCCESS) {
                     
-                    Helper.setUserProperties(result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken());
+                    Helper.setUserProperties(result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken(), result.email);
 					checkPasscodeSet(extras);
                     
 				} else {

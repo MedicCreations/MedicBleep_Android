@@ -197,6 +197,7 @@ public class Const {
 	public static final String ROOM_NAME = "room_name";
 	public static final String FIRSTNAME = "firstname";
 	public static final String LASTNAME = "lastname";
+	public static final String EMAIL = "email";
 	public static final String SCREEN_TITLE = "ScreenTitle";
 	public static final String REMEMBER_CREDENTIALS = "remember_credentials";
 	public static final String USER_WRAPPER = "user_wrapper";
