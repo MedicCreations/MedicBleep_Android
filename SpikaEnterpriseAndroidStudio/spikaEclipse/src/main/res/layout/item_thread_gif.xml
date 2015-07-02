@@ -34,14 +34,14 @@
                 android:layout_height="150dp"
                 android:paddingRight="10dp">
 
-                <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                <com.medicbleep.app.chat.views.emoji.ClickableWebView
                     android:id="@+id/webViewGif"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="none" />
             </FrameLayout>
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/timeThread"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

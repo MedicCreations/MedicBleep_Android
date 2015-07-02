@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white" >
 
-        <com.clover.spika.enterprise.chat.views.RoundImageView
+        <com.medicbleep.app.chat.views.RoundImageView
             android:id="@+id/img_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
             android:padding="10dp"
             android:src="@drawable/add_photo"/>
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+        <com.medicbleep.app.chat.views.RobotoThinEditText
             android:id="@+id/et_room_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:background="@color/white"
         android:visibility="gone" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/tvPrivate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
         android:background="@color/white"
         android:visibility="gone" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+        <com.medicbleep.app.chat.views.RobotoThinEditText
             android:id="@+id/etPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
         android:background="@color/white" 
         android:visibility="gone">
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+        <com.medicbleep.app.chat.views.RobotoThinEditText
             android:id="@+id/etPasswordRepeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -14,7 +14,7 @@
         android:paddingRight="30dp"
         android:paddingTop="20dp" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/procTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/dot1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/dot2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:textColor="@color/default_blue"
             android:textSize="20sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/dot3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

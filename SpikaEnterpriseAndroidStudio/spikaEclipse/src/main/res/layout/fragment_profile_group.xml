@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <com.clover.spika.enterprise.chat.views.RoundImageView
+        <com.medicbleep.app.chat.views.RoundImageView
             android:id="@+id/profileImage"
             android:layout_width="220dp"
             android:layout_height="220dp"
@@ -45,7 +45,7 @@
             android:background="@drawable/add_photo"
             android:contentDescription="@null" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/profileName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:orientation="horizontal"
             android:weightSum="2" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/tvPrivate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             android:orientation="horizontal"
             android:weightSum="2" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/tvPasswordLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                 android:textColor="@color/white"
                 android:textSize="15sp" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/tvPassword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
             android:orientation="horizontal"
             android:weightSum="2" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/tvSetANewAdmin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
                 android:textColor="@color/white"
                 android:textSize="15sp" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/tvSetAdmin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
             android:orientation="horizontal"
             android:weightSum="2" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/tvChangeCategory"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -178,7 +178,7 @@
                 android:textColor="@color/white"
                 android:textSize="15sp" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/tvChangeCat"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

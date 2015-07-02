@@ -70,7 +70,7 @@
         </LinearLayout>
     </FrameLayout>
     
-    <com.clover.spika.enterprise.chat.views.RoundImageView
+    <com.medicbleep.app.chat.views.RoundImageView
         android:id="@+id/imageInCall"
         android:layout_width="100dp"
         android:layout_height="100dp"

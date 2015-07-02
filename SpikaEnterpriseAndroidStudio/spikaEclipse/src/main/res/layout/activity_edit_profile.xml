@@ -20,7 +20,7 @@
             android:padding="10dp"
             android:src="@drawable/btn_back" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:textColor="@android:color/white"
             android:textSize="20sp" />
         
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/cancelProfile"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -42,7 +42,7 @@
             android:textColor="@color/white_selector"
             android:textSize="16sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/saveProfile"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

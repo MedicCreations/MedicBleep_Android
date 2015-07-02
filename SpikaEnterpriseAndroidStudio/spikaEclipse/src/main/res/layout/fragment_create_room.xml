@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white" >
 
-        <com.clover.spika.enterprise.chat.views.RoundImageView
+        <com.medicbleep.app.chat.views.RoundImageView
             android:id="@+id/img_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             android:src="@drawable/add_photo"
             tools:src="@drawable/@drawable/add_photo" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinEditText
+        <com.medicbleep.app.chat.views.RobotoThinEditText
             android:id="@+id/et_room_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
             android:src="@drawable/icon_search" />
     </RelativeLayout> -->
 
-    <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
+    <com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshListView
         android:id="@+id/mainListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -149,7 +149,7 @@
         android:listSelector="@color/transparent"
         android:scrollbars="none" />
 
-    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+    <com.medicbleep.app.chat.views.RobotoRegularTextView
         android:id="@+id/noItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

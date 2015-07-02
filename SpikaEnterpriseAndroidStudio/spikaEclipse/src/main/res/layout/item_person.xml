@@ -18,7 +18,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp">
 
-            <com.clover.spika.enterprise.chat.views.RoundImageView
+            <com.medicbleep.app.chat.views.RoundImageView
                 android:id="@+id/userImage"
                 android:layout_width="35dp"
                 android:layout_height="35dp"

@@ -12,7 +12,7 @@
         android:layout_toLeftOf="@+id/switchLayout"
         android:orientation="vertical" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/editDetailLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
             android:textColor="@color/devil_gray"
             android:textSize="16sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/editDetailValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

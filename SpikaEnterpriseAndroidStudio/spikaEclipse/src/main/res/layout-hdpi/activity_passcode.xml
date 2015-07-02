@@ -17,7 +17,7 @@
         android:visibility="invisible"
         tools:visibility="visible" />
 
-    <com.clover.spika.enterprise.chat.views.RobotoThinTextView 
+    <com.medicbleep.app.chat.views.RobotoThinTextView
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
         android:padding="16dp"
         android:useDefaultMargins="true" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="fill"
@@ -87,7 +87,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_width="50dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
@@ -98,7 +98,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_width="50dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
@@ -109,7 +109,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_height="50dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
@@ -120,7 +120,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -130,7 +130,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -140,7 +140,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_height="50dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
@@ -151,7 +151,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -161,7 +161,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -171,7 +171,7 @@
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_height="50dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
@@ -182,7 +182,7 @@
             android:textColor="@color/white_selector"
             android:textSize="15sp" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinButton
+        <com.medicbleep.app.chat.views.RobotoThinButton
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"

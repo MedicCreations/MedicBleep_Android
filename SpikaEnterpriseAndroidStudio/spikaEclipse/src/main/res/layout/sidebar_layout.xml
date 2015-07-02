@@ -24,7 +24,7 @@
                 android:contentDescription="@null"
                 android:src="@drawable/white_circle" />
 
-            <com.clover.spika.enterprise.chat.views.RoundImageView
+            <com.medicbleep.app.chat.views.RoundImageView
                 android:id="@+id/userImage"
                 android:layout_width="match_parent"
                 android:src="@drawable/default_user_image"
@@ -32,7 +32,7 @@
                 android:contentDescription="@null" />
         </RelativeLayout>
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/userName"
             android:layout_below="@id/userImageLayout"
             android:layout_width="match_parent"
@@ -63,7 +63,7 @@
             android:layout_marginRight="15dp"
             android:orientation="vertical" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/lobby"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 android:layout_height="1dp"
                 android:background="@color/medic_bleep_gray_background_menu_separator" />
             
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                 android:layout_height="1dp"
                 android:background="@color/medic_bleep_gray_background_menu_separator" />
 
-             <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+             <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/information"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 android:layout_height="1dp"
                 android:background="@color/medic_bleep_gray_background_menu_separator" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularButton
+            <com.medicbleep.app.chat.views.RobotoRegularButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

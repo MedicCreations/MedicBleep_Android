@@ -10,7 +10,7 @@
         android:layout_centerInParent="true"
         android:background="@color/white" >
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/infoText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"

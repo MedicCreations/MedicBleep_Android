@@ -21,7 +21,7 @@
             android:padding="20dp"
             android:src="@drawable/btn_back" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         android:background="@color/default_blue_light"
         android:layout_centerInParent="true" >
 
-        <com.clover.spika.enterprise.chat.views.TouchImageView
+        <com.medicbleep.app.chat.views.TouchImageView
             android:id="@+id/mImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
