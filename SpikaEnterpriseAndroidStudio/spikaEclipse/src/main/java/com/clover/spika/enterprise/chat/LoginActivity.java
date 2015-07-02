@@ -96,6 +96,7 @@ public class LoginActivity extends LoginBaseActivity {
 
                 String username = extras.getString("medic_bleep_email");
                 String password = extras.getString("medic_bleep_password");
+				String ocrUserId = extras.getString("ocr_user_id");
 
                 if (username.length() == 0 || password.length() == 0){
                     Toast.makeText(getApplicationContext(), "Missing login parameter", Toast.LENGTH_LONG).show();
@@ -104,6 +105,7 @@ public class LoginActivity extends LoginBaseActivity {
                     this.username.setText(username);
                     this.password.setText(password);
 
+					login();
 
                 }
             }
