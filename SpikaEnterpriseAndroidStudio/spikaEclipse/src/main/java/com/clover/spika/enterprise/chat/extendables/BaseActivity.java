@@ -84,9 +84,9 @@ import com.octo.android.robospice.SpiceManager;
 public class BaseActivity extends SlidingFragmentActivity {
 
 	/* GreenDAO cache */
-	private SQLiteDatabase db;
-	private DaoMaster daoMaster;
-	private DaoSession daoSession;
+	private static SQLiteDatabase db;
+	private static DaoMaster daoMaster;
+	private static DaoSession daoSession;
 
 	/* Handling push notifications display */
 	List<LocalPush> qPush = new ArrayList<LocalPush>();
@@ -189,11 +189,22 @@ public class BaseActivity extends SlidingFragmentActivity {
 
         setStatusColor();
 
-		/* GreenDAO */
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
-		db = helper.getWritableDatabase();
-		daoMaster = new DaoMaster(db);
-		daoSession = daoMaster.newSession();
+		/* GreenDAO Singletons */
+		if (db == null) {
+			db = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null).getWritableDatabase();
+		}
+		if (daoMaster == null) {
+			daoMaster = new DaoMaster(db);
+		}
+		if (daoSession == null) {
+			daoSession = daoMaster.newSession();
+		}
+
+//		/* GreenDAO */
+//		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "SpikaEnterprise.db", null);
+//		db = helper.getWritableDatabase();
+//		daoMaster = new DaoMaster(db);
+//		daoSession = daoMaster.newSession();
 
 		imageLoaderSpice = ImageLoaderSpice.getInstance(this);
 		imageLoaderSpice.setSpiceManager(spiceManager);
@@ -332,7 +343,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		// passcode callback injected methods are important for tracking active
 		// session
 		PasscodeUtility.getInstance().onPause();
-
+		stopTimeout();
 	}
 
 	public void pushCall(String msg, String chatIdPush, String pushType, String password, String messageId) {
@@ -1137,7 +1148,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onUserInteraction() {
 		super.onUserInteraction();
-		stopTimeout();
 		startTimeout();
 	}
 	

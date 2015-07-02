@@ -70,7 +70,13 @@ public class ChangePasswordActivity extends BaseActivity {
 		});
 	}
 
-	private void changePassword() {
+    @Override
+    protected void onPause() {
+        hideKeyboard(confirmNewPassword);
+        super.onPause();
+    }
+
+    private void changePassword() {
 
 		newPassword.setError(null);
 		confirmNewPassword.setError(null);
@@ -92,8 +98,22 @@ public class ChangePasswordActivity extends BaseActivity {
 			confirmNewPassword.setError(getString(R.string.new_passwords_not_identical));
 			return;
 		}
+
+        boolean atLeastOneAlpha = password.matches(".*[a-zA-Z]+.*");
+        if (!atLeastOneAlpha) {
+            confirmNewPassword.setError(getString(R.string.password_at_least_one_letter));
+            return;
+        }
+
+        boolean atLeastOneNumber = password.matches(".*[0-9]+.*");
+        if (!atLeastOneNumber) {
+            confirmNewPassword.setError(getString(R.string.password_at_least_one_number));
+            return;
+        }
 		
 		handleProgress(true);
+
+        hideKeyboard(confirmNewPassword);
 
 		UserSpice.UpdateUserPassword updateUserImage = new UserSpice.UpdateUserPassword(isUpdate, tempPassword, password);
 		spiceManager.execute(updateUserImage, new CustomSpiceListener<Login>() {

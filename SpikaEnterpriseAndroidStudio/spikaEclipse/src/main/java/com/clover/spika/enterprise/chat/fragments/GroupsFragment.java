@@ -205,6 +205,12 @@ public class GroupsFragment extends CustomFragment implements OnItemClickListene
 					adapter.manageData(s.toString(), allData);
 				}
 			}
+
+            if (adapter.getCount() == 0) {
+                noItems.setVisibility(View.VISIBLE);
+            } else {
+                noItems.setVisibility(View.GONE);
+            }
 			
 		}
 	};

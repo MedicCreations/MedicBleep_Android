@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.clover.spika.enterprise.chat.MainActivity;
 import com.clover.spika.enterprise.chat.R;
@@ -35,13 +36,18 @@ public class GlobalCaching {
 
 	/* start: Caching calls */
 	public static List<GlobalModel> GlobalSearch(final boolean justDatabase, final Activity activity, final SpiceManager spiceManager, int page, String chatId,
-			String categoryId, final int type, final String searchTerm, final boolean toClear, final OnGlobalSearchDBChanged onDBChangeListener,
+			String categoryId, final int type, final String searchTerm, final boolean toClear, final String withoutUserId, final OnGlobalSearchDBChanged onDBChangeListener,
 			final OnGlobalSearchNetworkResult onNetworkListener) {
 
 		final String myId = Helper.getUserId();
 
-		List<GlobalModel> resultArray = getDBData(activity, type, Integer.valueOf(myId), searchTerm);
-		
+		List<GlobalModel> resultArray = null;
+        if(TextUtils.isEmpty(withoutUserId)){
+            resultArray = getDBData(activity, type, Integer.valueOf(myId), searchTerm);
+        }else{
+            resultArray = getDBDataUserWithoutId(activity, Integer.valueOf(myId), searchTerm, withoutUserId);
+        }
+
 		if(justDatabase){
 			return resultArray;
 		}
@@ -70,7 +76,7 @@ public class GlobalCaching {
 					}
 
 					HandleNewSearchData handleNewData = new HandleNewSearchData(activity, result.getModelsList(), toClear, type, Integer
-							.valueOf(myId), searchTerm, onDBChangeListener);
+							.valueOf(myId), searchTerm, withoutUserId, onDBChangeListener);
 					spiceManager.execute(handleNewData, null);
 
 				} else {
@@ -154,9 +160,10 @@ public class GlobalCaching {
 		private int type;
 		private int myId = 0;
 		private String search = null;
+        private String withoutUserId = null;
 		private OnGlobalSearchDBChanged onDBChangeListener;
 
-		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId, String search,
+		public HandleNewSearchData(Activity activity, List<GlobalModel> globalModel, boolean toClear, int type, int myId, String search, String withoutUserId,
 				OnGlobalSearchDBChanged onDBChangeListener) {
 			super(Void.class);
 
@@ -165,6 +172,7 @@ public class GlobalCaching {
 			this.toClear = toClear;
 			this.type = type;
 			this.myId = myId;
+            this.withoutUserId = withoutUserId;
 			this.search = search;
 			this.onDBChangeListener = onDBChangeListener;
 		}
@@ -174,17 +182,31 @@ public class GlobalCaching {
 
 			handleNewData(activity, globalModel);
 
-			final List<GlobalModel> finalResult = getDBData(activity, type, myId, search);
+            if(TextUtils.isEmpty(withoutUserId)){
+                final List<GlobalModel> finalResult = getDBData(activity, type, myId, search);
 
-			activity.runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
 
-				@Override
-				public void run() {
-					if (onDBChangeListener != null) {
-						onDBChangeListener.onGlobalSearchDBChanged(finalResult, toClear);
-					}
-				}
-			});
+                    @Override
+                    public void run() {
+                        if (onDBChangeListener != null) {
+                            onDBChangeListener.onGlobalSearchDBChanged(finalResult, toClear);
+                        }
+                    }
+                });
+            }else{
+                final List<GlobalModel> finalResult = getDBDataUserWithoutId(activity, myId, search, withoutUserId);
+
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (onDBChangeListener != null) {
+                            onDBChangeListener.onGlobalSearchDBChanged(finalResult, toClear);
+                        }
+                    }
+                });
+            }
 
 			return null;
 		}
@@ -397,6 +419,48 @@ public class GlobalCaching {
 
 		return resultArray;
 	}
+
+    private static List<GlobalModel> getDBDataUserWithoutId(Activity activity, int myUserId, String search, String withoutUserId) {
+
+        List<GlobalModel> resultArray = new ArrayList<GlobalModel>();
+
+        if (activity instanceof BaseActivity) {
+
+            UserDao userDao = ((BaseActivity) activity).getDaoSession().getUserDao();
+
+            List<com.clover.spika.enterprise.chat.models.greendao.User> lista;
+
+            if(TextUtils.isEmpty(search)){
+                lista = userDao.queryBuilder()
+                        .where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId),
+                                UserDao.Properties.Id.notEq(Integer.valueOf(withoutUserId)))
+                        .build().list();
+            }else{
+                lista = userDao.queryBuilder()
+                        .where(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Id.notEq(myUserId),
+                                UserDao.Properties.Id.notEq(Integer.valueOf(withoutUserId)))
+                        .whereOr(com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Firstname.like("%" + search +"%"),
+                                com.clover.spika.enterprise.chat.models.greendao.UserDao.Properties.Lastname.like("%" + search +"%")).build().list();
+
+//					SELECT * FROM user WHERE (CONCAT(firstname, ' ', lastname) LIKE '%ivo pe%')
+            }
+
+            if (lista != null) {
+
+                for (com.clover.spika.enterprise.chat.models.greendao.User user : lista) {
+
+                    GlobalModel item = handleOldUserData(user);
+
+                    if (item.user != null) {
+                        resultArray.add(item);
+                    }
+                }
+            }
+
+        }
+
+        return resultArray;
+    }
 
 	private static GlobalModel handleOldChatData(com.clover.spika.enterprise.chat.models.greendao.Chat chat) {
 

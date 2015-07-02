@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,7 @@ import com.clover.spika.enterprise.chat.caching.robospice.GlobalCacheSpice;
 import com.clover.spika.enterprise.chat.extendables.BaseActivity;
 import com.clover.spika.enterprise.chat.listeners.OnChangeListener;
 import com.clover.spika.enterprise.chat.listeners.OnSearchListener;
+import com.clover.spika.enterprise.chat.models.Category;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
@@ -58,6 +60,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 	private int mCurrentIndex = 0;
 	private String mSearchData = null;
 	private int mTotalCount = 0;
+    private String activeUserId = "";
 
 	ImageButton goBack;
 	TextView screenTitle;
@@ -72,11 +75,12 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
     private boolean isDataFromNet = false;
     private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 
-	public static void startActivity(String chatId, int type, boolean isAdmin, Context context) {
+	public static void startActivity(String chatId, int type, boolean isAdmin, String activeUserId, Context context) {
 		Intent intent = new Intent(context, InvitePeopleActivity.class);
 		intent.putExtra(Const.CHAT_ID, chatId);
 		intent.putExtra(Const.TYPE, type);
 		intent.putExtra(Const.IS_ADMIN, isAdmin);
+        intent.putExtra(Const.USER_ID, activeUserId);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}
@@ -154,7 +158,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
         public void afterTextChanged(Editable s) {
             if(isDataFromNet){
                 GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(InvitePeopleActivity.this, spiceManager, 0, null, null, Type.USER,
-                        null, true, true, InvitePeopleActivity.this, InvitePeopleActivity.this);
+                        null, true, true, activeUserId, InvitePeopleActivity.this, InvitePeopleActivity.this);
                 spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
                     @SuppressWarnings("unchecked")
@@ -182,6 +186,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 		if (intent != null && intent.getExtras() != null) {
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatType = intent.getExtras().getInt(Const.TYPE);
+            activeUserId = getIntent().getStringExtra(Const.USER_ID);
 			getUsers(0, mSearchData, false);
 		}
 	}
@@ -232,7 +237,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
             isDataFromNet = true;
         }
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.USER, search, toClear, this, this);
+		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.USER, search, toClear, activeUserId, this, this);
 		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
 
 			@SuppressWarnings("unchecked")
@@ -302,7 +307,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 				if (result.getCode() == Const.API_SUCCESS) {
 
-					ChatActivity.startWithChatId(InvitePeopleActivity.this, result, result.user);
+					ChatActivity.startWithChatId(InvitePeopleActivity.this, result.chat, result.user);
 					finish();
 
 				} else {

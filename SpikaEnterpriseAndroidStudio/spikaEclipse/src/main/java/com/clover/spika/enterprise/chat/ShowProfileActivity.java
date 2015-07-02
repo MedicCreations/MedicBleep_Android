@@ -166,9 +166,9 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 
 		case R.id.saveProfile:
 
-			if (adapter.getCount() == 0) {
-				break;
-			}
+//			if (adapter.getCount() == 0) {
+//				break;
+//			}
 
 			if (!isInEditMode) {
 				setEditModeData();

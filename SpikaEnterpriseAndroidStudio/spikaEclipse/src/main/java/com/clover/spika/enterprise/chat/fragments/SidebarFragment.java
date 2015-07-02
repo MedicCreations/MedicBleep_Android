@@ -63,7 +63,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		userImage = (ImageView) view.findViewById(R.id.userImage);
         userImage.setOnClickListener(this);
 
-		setUserImage();
+		setUserImage(image);
 
 		userName = (TextView) view.findViewById(R.id.userName);
 		userName.setText(Helper.getUserFirstName() + " " + Helper.getUserLastName());
@@ -88,11 +88,11 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 		super.onResume();
 		if (!image.equals(Helper.getUserImage())) {
 			image = Helper.getUserImage();
-			setUserImage();
+			setUserImage(image);
 		}
 	}
 
-	private void setUserImage() {
+	public void setUserImage(String image) {
         userImage.setTag(false);
 		getImageLoader().displayImage(userImage, image, ImageLoaderSpice.DEFAULT_USER_IMAGE);
 	}

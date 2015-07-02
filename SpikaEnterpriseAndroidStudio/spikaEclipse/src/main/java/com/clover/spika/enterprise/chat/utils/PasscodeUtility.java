@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.clover.spika.enterprise.chat.ForgotPasswordActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 
 public class PasscodeUtility {
@@ -40,6 +41,9 @@ public class PasscodeUtility {
 	 * @return true if passcode has been enabled
 	 */
 	public boolean isPasscodeEnabled(Context ctx) {
+		if (ctx instanceof ForgotPasswordActivity) {
+			return false;
+		}
 		String passcode = SpikaEnterpriseApp.getSharedPreferences().getPasscode();
 		return ((passcode != null) && (passcode.length() == 4));
 	}

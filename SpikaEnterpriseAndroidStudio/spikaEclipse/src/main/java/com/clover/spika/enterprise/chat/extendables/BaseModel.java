@@ -51,4 +51,11 @@ public class BaseModel {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "BaseModel{" +
+				"message='" + message + '\'' +
+				", code=" + code +
+				'}';
+	}
 }

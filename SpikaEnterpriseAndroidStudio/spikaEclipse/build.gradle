@@ -76,6 +76,7 @@ dependencies {
     compile files('libs/robospice-cache-1.4.11.jar')
     compile files('libs/robospice-okhttp-1.4.14.jar')
     compile files('libs/socketio.jar')
+    compile files('libs/libphonenumber-7.0.7.jar')
     compile 'com.android.support:support-v13:22.0.0'
     compile files('libs/gcm.jar')
     compile 'com.android.support:support-v4:22.2.0'

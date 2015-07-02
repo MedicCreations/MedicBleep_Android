@@ -146,7 +146,7 @@
     <string name="verification_code">Verification Code</string>
     <string name="submit">Submit</string>
     <string name="change_phone_number">Change Phone Number</string>
-    <string name="sms_sent_to">SMS with verification code sent to:\n</string>
+    <string name="verify_phone_number">Verify phone number:\n</string>
 
     <!-- PullToRefresh -->
     <string name="pull_to_refresh_pull_label">Pull to refresh…</string>
@@ -234,7 +234,7 @@
     <string name="edit">Edit</string>
     <string name="private_room">Private Room</string>
     <string name="password_repeat">Repeat password</string>
-    <string name="room_name_empty">Room name is empty</string>
+    <string name="room_name_empty">Group name is empty</string>
     <string name="password_error">Wrong password</string>
     <string name="requires_password">This chat requires password</string>
     <string name="old_password">Enter current password</string>
@@ -243,6 +243,8 @@
     <string name="login_empty_username">Username should not be empty</string>
     <string name="login_empty_password">Password should not be empty</string>
     <string name="new_passwords_not_identical">Passwords are not identical.</string>
+    <string name="password_at_least_one_letter">Password must contain at least one letter.</string>
+    <string name="password_at_least_one_number">Password must contain at least one number.</string>
     <string name="update_password">Update Password</string>
     <string name="set_password">Set password</string>
     <string name="set">Set</string>
@@ -386,5 +388,6 @@
     <string name="record_video">Record Video</string>
     <string name="_days_ago">days ago</string>
     <string name="yesterday">yesterday</string>
+    <string name="remove_photo">Remove Photo</string>
 
 </resources>

@@ -137,6 +137,10 @@ public class NewAppDialog extends Dialog {
      * Go to recording screen from gallery or camera
      */
     public void choseCamGalleryProfile() {
+        choseCamGalleryProfile(null);
+    }
+
+    public void choseCamGalleryProfile(final RemoveImageListener listener) {
         this.setContentView(R.layout.dialog_chose_cam_rec_new);
 
         TextView camera = (TextView) findViewById(R.id.takePhoto);
@@ -179,7 +183,25 @@ public class NewAppDialog extends Dialog {
             }
         });
 
+        if(listener != null){
+            TextView remove = (TextView) findViewById(R.id.removePhoto);
+            remove.setVisibility(View.VISIBLE);
+            findViewById(R.id.removePhotoView).setVisibility(View.VISIBLE);
+
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                    listener.onRemove();
+                }
+            });
+        }
+
         show();
+    }
+
+    public interface RemoveImageListener{
+        public void onRemove();
     }
 
     /**

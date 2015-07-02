@@ -58,6 +58,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
                 android:text="@string/cancel_big"
+                android:id="@+id/cancelButton"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -93,6 +94,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
                 android:text="@string/send_big"
+                android:id="@+id/sendButton"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

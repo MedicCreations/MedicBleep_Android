@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
 
+import com.clover.spika.enterprise.chat.api.robospice.GlobalSpice;
 import com.clover.spika.enterprise.chat.caching.ChatMembersCaching.OnChatMembersDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberDBChanged;
 import com.clover.spika.enterprise.chat.caching.GlobalCaching.OnGlobalMemberNetworkResult;
@@ -37,8 +38,12 @@ import com.clover.spika.enterprise.chat.listeners.OnSearchManageUsersListener;
 import com.clover.spika.enterprise.chat.models.Chat;
 import com.clover.spika.enterprise.chat.models.GlobalModel;
 import com.clover.spika.enterprise.chat.models.GlobalModel.Type;
+import com.clover.spika.enterprise.chat.models.GlobalResponse;
 import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
+import com.clover.spika.enterprise.chat.utils.Logger;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPageChangeListener, InviteUsersFragment.Callbacks, RemoveUsersFragment.Callbacks, OnClickListener,
 		OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult, OnGlobalMemberDBChanged, OnGlobalMemberNetworkResult, OnChatMembersDBChanged {
@@ -128,28 +133,61 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 	@Override
 	public void getUsers(int currentIndex, String search, final boolean toClear, final boolean toUpdateMember) {
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.USER, search, toClear, this, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+//		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, currentIndex, chatId, null, Type.USER, search, toClear, this, this);
+//		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+//
+//			@SuppressWarnings("unchecked")
+//			@Override
+//			public void onRequestSuccess(List result) {
+//				super.onRequestSuccess(result);
+//
+//				for (int i = 0; i < result.size(); i++) {
+//					if (((GlobalModel) result.get(i)).isMember()) {
+//						((GlobalModel) result.get(i)).setSelected(true);
+//					}
+//				}
+//
+//				mPagerAdapter.setInviteUsers(result, toClear);
+//
+//				if (toUpdateMember) {
+//					mPagerAdapter.resetMembers();
+//					getMembers(0, false);
+//				}
+//			}
+//		});
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void onRequestSuccess(List result) {
-				super.onRequestSuccess(result);
+        mPagerAdapter.showProgress();
 
-				for (int i = 0; i < result.size(); i++) {
-					if (((GlobalModel) result.get(i)).isMember()) {
-						((GlobalModel) result.get(i)).setSelected(true);
-					}
-				}
+        GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(currentIndex, chatId, null, Type.USER, search);
+        spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
-				mPagerAdapter.setInviteUsers(result, toClear);
+            @Override
+            public void onRequestFailure(SpiceException arg0) {
+                super.onRequestFailure(arg0);
+                mPagerAdapter.hideProgress();
+                Utils.onFailedUniversal(null, ManageUsersActivity.this, 0 , false);
+            }
 
-				if (toUpdateMember) {
-					mPagerAdapter.resetMembers();
-					getMembers(0, false);
-				}
-			}
-		});
+            @Override
+            public void onRequestSuccess(GlobalResponse result) {
+                super.onRequestSuccess(result);
+                mPagerAdapter.hideProgress();
+
+                if (result.getCode() == Const.API_SUCCESS) {
+
+                    mPagerAdapter.setInviteUsers(result.getModelsList(), toClear);
+
+                    if (toUpdateMember) {
+                        mPagerAdapter.resetMembers();
+                        getMembers(0, false);
+                    }
+
+                } else {
+                    String message = getString(R.string.e_something_went_wrong);
+                    Utils.onFailedUniversal(message, ManageUsersActivity.this, result.getCode(), false);
+                }
+            }
+        });
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -221,6 +259,22 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 				}
 			}
 		}
+
+        public void showProgress() {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof InviteUsersFragment) {
+                    ((InviteUsersFragment) fragment).showProgress();
+                }
+            }
+        }
+
+        public void hideProgress() {
+            for (Fragment fragment : mFragmentList) {
+                if (fragment instanceof InviteUsersFragment) {
+                    ((InviteUsersFragment) fragment).hideProgress();
+                }
+            }
+        }
 
 		public void setUserTotalCount(int totalCount) {
 			for (Fragment fragment : mFragmentList) {

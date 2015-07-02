@@ -1,35 +1,58 @@
 package com.clover.spika.enterprise.chat;
 
-import android.annotation.TargetApi;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.provider.Settings;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
-import com.clover.spika.enterprise.chat.extendables.BaseAsyncTask;
+import com.clover.spika.enterprise.chat.dialogs.AppDialog;
 import com.clover.spika.enterprise.chat.extendables.LoginBaseActivity;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
-import com.clover.spika.enterprise.chat.utils.Utils;
+import com.clover.spika.enterprise.chat.utils.LocationUtility;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends LoginBaseActivity {
 
+	static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1234567890;
+
 	Bundle extras;
+	boolean goToLogin;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 
+		int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
+		if (errorCode == ConnectionResult.SUCCESS) {
+			Log.e("PlayServicesAvailable", "SUCCESS");
+			LocationUtility.createInstance(this);
+		}
+		else {
+			GooglePlayServicesUtil.getErrorDialog(errorCode, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
+			Log.e("PlayServicesAvailable", "FAIL");
+			return;
+		}
+
 		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
-			pause(0, false);
+			goToLogin = false;
 		} else {
-            pause(750, true);
+			goToLogin = true;
 		}
 	}
 
@@ -37,45 +60,17 @@ public class SplashActivity extends LoginBaseActivity {
 	protected void onResume() {
 		super.onResume();
 		extras = getIntent().getExtras();
+		IntentFilter intentFilter = new IntentFilter(LocationUtility.COUNTRY_CODE_UPDATED);
+		intentFilter.addAction(LocationUtility.LOCATION_SETTINGS_ERROR);
+		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
+		Log.i("Broadcast", "Broadcast receiver set up: " + broadcastReceiverImplementation);
+		continueToNextScreen();
 	}
-	
-	private void pause(final int time, final boolean toLogin) {
-		new BaseAsyncTask<Void, Void, Void>(this, false) {
 
-			boolean goToLogin = toLogin;
-
-			@Override
-			protected Void doInBackground(Void... params) {
-
-				try {
-					Thread.sleep(time);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				if (goToLogin) {
-
-					Intent intent = new Intent(context, LoginActivity.class);
-
-					if (extras != null) {
-						intent.putExtras(extras);
-					}
-
-					startActivity(intent);
-					finish();
-
-					return;
-				}
-
-				login();
-
-			}
-		}.execute();
+	@Override
+	protected void onPause() {
+		super.onPause();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverImplementation);
 	}
 
 	private void login() {
@@ -97,4 +92,79 @@ public class SplashActivity extends LoginBaseActivity {
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
+	BroadcastReceiver broadcastReceiverImplementation = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(LocationUtility.COUNTRY_CODE_UPDATED)) {
+				continueToNextScreen();
+			}
+			else if (intent.getAction().equals(LocationUtility.LOCATION_SETTINGS_ERROR)) {
+				showLocationSettings();
+			}
+		}
+	};
+
+	void continueToNextScreen () {
+		if (LocationUtility.getInstance() == null) {
+			return;
+		}
+		if (!TextUtils.isEmpty(LocationUtility.getInstance().getCountryCode())) {
+			if (goToLogin) {
+				Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+				if (extras != null) {
+					i.putExtras(extras);
+				}
+				startActivity(i);
+				finish();
+			}
+			else {
+				login();
+			}
+		}
+	}
+
+	boolean dialogExists = false;
+	protected void showLocationSettings () {
+		if (dialogExists) return;
+		dialogExists = true;
+		final AppDialog dialog = new AppDialog(SplashActivity.this, true);
+		dialog.setYesNo(getString(R.string.location_services_turned_off_go_to_settings), getString(R.string.yes), getString(R.string.no));
+		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
+			@Override
+			public void onPositiveButtonClick(View v, Dialog d) {
+				dialogExists = false;
+				d.dismiss();
+				Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+			}
+		});
+		dialog.setOnNegativeButtonClick(new AppDialog.OnNegativeButtonCLickListener() {
+			@Override
+			public void onNegativeButtonClick(View v, Dialog d) {
+				dialogExists = false;
+				d.dismiss();
+				finish();
+			}
+		});
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQUEST_CODE_RECOVER_PLAY_SERVICES:
+				if (resultCode == RESULT_CANCELED) {
+					Toast.makeText(this, "Google Play Services must be installed.",
+							Toast.LENGTH_SHORT).show();
+					finish();
+				}
+				else if (resultCode == RESULT_OK) {
+					Intent i = getIntent();
+					finish();
+					startActivity(i);
+				}
+				return;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 }

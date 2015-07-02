@@ -179,4 +179,13 @@ public class GlobalModel {
 		return "";
 	}
 
+    @Override
+    public String toString() {
+        return "GlobalModel{" +
+                "type=" + type +
+                ", user=" + user +
+                ", group=" + group +
+                ", chat=" + chat +
+                '}';
+    }
 }

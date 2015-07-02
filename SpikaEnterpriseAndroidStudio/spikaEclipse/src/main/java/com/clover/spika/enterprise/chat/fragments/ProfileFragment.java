@@ -21,16 +21,20 @@ import com.clover.spika.enterprise.chat.NewPasscodeActivity;
 import com.clover.spika.enterprise.chat.PasscodeActivity;
 import com.clover.spika.enterprise.chat.R;
 import com.clover.spika.enterprise.chat.ShowProfileActivity;
-import com.clover.spika.enterprise.chat.dialogs.AppDialog;
+import com.clover.spika.enterprise.chat.api.robospice.UserSpice;
 import com.clover.spika.enterprise.chat.dialogs.NewAppDialog;
+import com.clover.spika.enterprise.chat.extendables.BaseModel;
 import com.clover.spika.enterprise.chat.extendables.CustomFragment;
 import com.clover.spika.enterprise.chat.extendables.SpikaEnterpriseApp;
 import com.clover.spika.enterprise.chat.lazy.ImageLoaderSpice;
 import com.clover.spika.enterprise.chat.listeners.OnEditProfileListener;
 import com.clover.spika.enterprise.chat.listeners.OnImageDisplayFinishListener;
+import com.clover.spika.enterprise.chat.services.robospice.CustomSpiceListener;
 import com.clover.spika.enterprise.chat.utils.Const;
 import com.clover.spika.enterprise.chat.utils.Helper;
 import com.clover.spika.enterprise.chat.utils.PasscodeUtility;
+import com.clover.spika.enterprise.chat.utils.Utils;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ProfileFragment extends CustomFragment implements OnClickListener, OnEditProfileListener, OnCheckedChangeListener {
 
@@ -124,6 +128,8 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 					mLoadingLayout.setVisibility(View.GONE);
 				}
 			});
+
+            if (getActivity() instanceof MainActivity)((MainActivity)getActivity()).updateSidebarImage();
 		}
 	}
 
@@ -168,7 +174,37 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 	private void showDialog() {
 		NewAppDialog dialog = new NewAppDialog(getActivity(), false);
-		dialog.choseCamGalleryProfile();
+		dialog.choseCamGalleryProfile(new NewAppDialog.RemoveImageListener() {
+            @Override
+            public void onRemove() {
+                handleProgress(true);
+
+                UserSpice.UpdateUserImage updateUserImage = new UserSpice.UpdateUserImage("", "");
+                spiceManager.execute(updateUserImage, new CustomSpiceListener<BaseModel>() {
+
+                    @Override
+                    public void onRequestFailure(SpiceException arg0) {
+                        super.onRequestFailure(arg0);
+                        handleProgress(false);
+                        Utils.onFailedUniversal(null, getActivity());
+                    }
+
+                    @Override
+                    public void onRequestSuccess(BaseModel result) {
+                        super.onRequestSuccess(result);
+                        handleProgress(false);
+
+                        if (result.getCode() == Const.API_SUCCESS) {
+                            Helper.setUserImage("");
+                            profileImage.setImageResource(R.drawable.default_user_image);
+                            if (getActivity() instanceof MainActivity)((MainActivity)getActivity()).updateSidebarImage();
+                        } else {
+                            Utils.onFailedUniversal(Helper.errorDescriptions(getActivity(), result.getCode()), getActivity());
+                        }
+                    }
+                });
+            }
+        });
 	}
 
 	private void onCheckedChanged(boolean isChecked) {
