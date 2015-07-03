@@ -312,13 +312,18 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			boolean outsideStart = extras.getBoolean("medic_bleep_outside_start", false);
 
-			if (outsideStart == true) {
+			if (outsideStart && PasscodeUtility.getInstance().isSessionValid()) {
 
 				String username = extras.getString("medic_bleep_email");
 				String password = extras.getString("medic_bleep_password");
 				String ocrUserId = String.valueOf(extras.getInt("ocr_user_id"));
 
 				Logger.e("CHAT: " + extras.toString() + "\n" + username + "\n" + password + "\n" + ocrUserId);
+
+				getIntent().removeExtra("medic_bleep_outside_start");
+				getIntent().removeExtra("medic_bleep_email");
+				getIntent().removeExtra("medic_bleep_password");
+				getIntent().removeExtra("ocr_user_id");
 
 				if (username.length() == 0 || password.length() == 0){
 					Toast.makeText(getApplicationContext(), "Missing login parameter", Toast.LENGTH_LONG).show();
@@ -331,8 +336,16 @@ public class BaseActivity extends SlidingFragmentActivity {
 						}
 
 						@Override
-						public void onRequestSuccess(UserWrapper user) {
-							Logger.e("USER ID COOLIO\n" + user.toString());
+						public void onRequestSuccess(UserWrapper userWrapper) {
+							Logger.e("USER ID COOLIO\n" + userWrapper.toString());
+							User user = userWrapper.user;
+							if (user != null) {
+								ChatActivity.startWithUserId(BaseActivity.this, String.valueOf(user.id), false, user.firstname, user.lastname, user);
+							}
+							else {
+								AppDialog dialog = new AppDialog(BaseActivity.this, true);
+								dialog.setFailed(getResources().getString(R.string.e_user_not_found));
+							}
 						}
 					});
 				}
