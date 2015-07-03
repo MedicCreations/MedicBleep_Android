@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.medicbleep.app.chat.ForgotPasswordActivity;
+import com.medicbleep.app.chat.SMSVerificationActivity;
 import com.medicbleep.app.chat.extendables.SpikaEnterpriseApp;
 
 public class PasscodeUtility {
@@ -41,7 +42,7 @@ public class PasscodeUtility {
 	 * @return true if passcode has been enabled
 	 */
 	public boolean isPasscodeEnabled(Context ctx) {
-		if (ctx instanceof ForgotPasswordActivity) {
+		if ((ctx instanceof ForgotPasswordActivity) || (ctx instanceof SMSVerificationActivity)) {
 			return false;
 		}
 		String passcode = SpikaEnterpriseApp.getSharedPreferences().getPasscode();
