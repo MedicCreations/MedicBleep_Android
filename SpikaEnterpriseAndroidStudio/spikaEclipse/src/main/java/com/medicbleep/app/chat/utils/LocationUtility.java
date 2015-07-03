@@ -143,14 +143,14 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i("**** LOCATION ****", "API CONNECTED");
+        Logger.i("**** LOCATION **** API CONNECTED");
         getLastLocation();
         LocationServices.FusedLocationApi.requestLocationUpdates(client, locationRequest, this);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("**** LOCATION ****", "API CONNECTED FAIL");
+        Logger.e("**** LOCATION **** API CONNECTED FAIL");
     }
 
     @Override
@@ -162,10 +162,8 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApplicationStateManager.APPLICATION_PAUSED)) {
-                Log.e("CATCH", "PAUSE");
                 stop();
             } else if (intent.getAction().equals(ApplicationStateManager.APPLICATION_RESUMED)) {
-                Log.e("CATCH", "START");
                 start();
             }
         }
@@ -260,7 +258,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         // Location settings are not satisfied. However, we have no way to fix the
                         // settings so we won't show the dialog.
-                        Log.e("**** SETTINGS ****", "SETIINGS FAIL");
+                        Logger.e("**** SETTINGS **** SETIINGS FAIL");
                         break;
                 }
             }

@@ -46,12 +46,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 import com.medicbleep.app.chat.ChatActivity;
 import com.medicbleep.app.chat.MainActivity;
 import com.medicbleep.app.chat.PasscodeActivity;
 import com.medicbleep.app.chat.R;
 import com.medicbleep.app.chat.animation.AnimUtils;
+import com.medicbleep.app.chat.api.robospice.UserSpice;
 import com.medicbleep.app.chat.caching.ChatCaching;
 import com.medicbleep.app.chat.caching.robospice.BackgroundChatDataCacheSpice;
 import com.medicbleep.app.chat.dialogs.AppDialog;
@@ -61,6 +63,7 @@ import com.medicbleep.app.chat.dialogs.AppProgressAlertDialog;
 import com.medicbleep.app.chat.lazy.ImageLoaderSpice;
 import com.medicbleep.app.chat.models.LocalPush;
 import com.medicbleep.app.chat.models.User;
+import com.medicbleep.app.chat.models.UserWrapper;
 import com.medicbleep.app.chat.models.greendao.DaoMaster;
 import com.medicbleep.app.chat.models.greendao.DaoSession;
 import com.medicbleep.app.chat.services.gcm.PushBroadcastReceiver;
@@ -79,6 +82,8 @@ import com.medicbleep.app.chat.webrtc.socket.SocketService.LocalBinder;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 public class BaseActivity extends SlidingFragmentActivity {
 
@@ -300,6 +305,39 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 
 		ChatCaching.updateTimestamps(this);
+
+		Bundle extras = getIntent().getExtras();
+
+		if (extras != null) {
+
+			boolean outsideStart = extras.getBoolean("medic_bleep_outside_start", false);
+
+			if (outsideStart == true) {
+
+				String username = extras.getString("medic_bleep_email");
+				String password = extras.getString("medic_bleep_password");
+				String ocrUserId = String.valueOf(extras.getInt("ocr_user_id"));
+
+				Logger.e("CHAT: " + extras.toString() + "\n" + username + "\n" + password + "\n" + ocrUserId);
+
+				if (username.length() == 0 || password.length() == 0){
+					Toast.makeText(getApplicationContext(), "Missing login parameter", Toast.LENGTH_LONG).show();
+				}
+				else {
+					spiceManager.execute(new UserSpice.GetOcrUser(ocrUserId), new RequestListener<UserWrapper>() {
+						@Override
+						public void onRequestFailure(SpiceException e) {
+							Logger.e("USER ID FAILED");
+						}
+
+						@Override
+						public void onRequestSuccess(UserWrapper user) {
+							Logger.e("USER ID COOLIO\n" + user.toString());
+						}
+					});
+				}
+			}
+		}
 	}
 
 	@Override

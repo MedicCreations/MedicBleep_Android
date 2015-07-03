@@ -237,7 +237,7 @@ public class GPSTracker extends Service implements LocationListener {
 			countryCode = addresses.get(0).getCountryCode();
 		}
 
-        Log.e("HELLO", "Country code: " + countryCode);
+		Logger.e("Country code: " + countryCode);
 
 		return countryCode;
 	}
@@ -249,6 +249,6 @@ public class GPSTracker extends Service implements LocationListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e("GPS","GPS DESTROYED");
+        Logger.e("GPS DESTROYED");
     }
 }

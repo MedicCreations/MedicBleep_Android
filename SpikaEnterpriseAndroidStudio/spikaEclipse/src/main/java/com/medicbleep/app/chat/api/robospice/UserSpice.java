@@ -13,12 +13,14 @@ import com.medicbleep.app.chat.extendables.SpikaEnterpriseApp;
 import com.medicbleep.app.chat.models.Chat;
 import com.medicbleep.app.chat.models.Information;
 import com.medicbleep.app.chat.models.Login;
+import com.medicbleep.app.chat.models.User;
 import com.medicbleep.app.chat.models.UserDetail;
 import com.medicbleep.app.chat.models.UserWrapper;
 import com.medicbleep.app.chat.networking.GetUrl;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceRequest;
 import com.medicbleep.app.chat.utils.Const;
 import com.medicbleep.app.chat.utils.Helper;
+import com.medicbleep.app.chat.utils.Logger;
 import com.medicbleep.app.chat.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Call;
@@ -147,6 +149,8 @@ public class UserSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+
+			Logger.e(responseBody);
 
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -350,4 +354,39 @@ public class UserSpice {
 		}
 	}
 
+	public static class GetOcrUser extends CustomSpiceRequest<UserWrapper> {
+
+		private String ocrUserId;
+
+		public GetOcrUser(String ocrUserId) {
+			super(UserWrapper.class);
+
+			this.ocrUserId = ocrUserId;
+		}
+
+		@Override
+		public UserWrapper loadDataFromNetwork() throws Exception {
+
+			HashMap<String, String> getParams = new HashMap<String, String>();
+//			getParams.put(Const.USER_ID, ocrUserId);
+			getParams.put(Const.USER_ID, "289");
+
+			GetUrl getParameters = new GetUrl(getParams);
+
+			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders())
+					.url(Const.BASE_URL + Const.F_OCR_USER + getParameters.toString()).get();
+
+			Call connection = getOkHttpClient().newCall(requestBuilder.build());
+
+			Response res = connection.execute();
+			ResponseBody resBody = res.body();
+			String responseBody = resBody.string();
+
+			Logger.e(responseBody);
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(responseBody, UserWrapper.class);
+		}
+	}
 }
