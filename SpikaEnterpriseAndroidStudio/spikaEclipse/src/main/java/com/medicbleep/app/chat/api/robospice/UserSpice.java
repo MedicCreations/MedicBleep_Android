@@ -368,8 +368,8 @@ public class UserSpice {
 		public UserWrapper loadDataFromNetwork() throws Exception {
 
 			HashMap<String, String> getParams = new HashMap<String, String>();
-//			getParams.put(Const.USER_ID, ocrUserId);
-			getParams.put(Const.USER_ID, "289");
+			getParams.put(Const.USER_ID, ocrUserId);
+//			getParams.put(Const.USER_ID, "289");
 
 			GetUrl getParameters = new GetUrl(getParams);
 
