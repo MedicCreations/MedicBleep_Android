@@ -105,12 +105,7 @@ public class SMSVerificationActivity extends BaseActivity {
 	}
 	
 	void submitVerificationCodeAPI () {
-		UserDetail userDetail = new UserDetail();
-		userDetail.key = "phone_number";
-		userDetail.value = phoneNumber;
-		ArrayList<UserDetail> userDetails = new ArrayList<>();
-		userDetails.add(userDetail);
-		UserSpice.UpdateUserDetails updateDetails = new UserSpice.UpdateUserDetails(userDetails);
+		UserSpice.UpdateUserDetails updateDetails = new UserSpice.UpdateUserDetails(phoneNumber);
 		spiceManager.execute(updateDetails, new CustomSpiceListener<BaseModel>() {
 			@Override
 			public void onRequestSuccess(BaseModel arg0) {

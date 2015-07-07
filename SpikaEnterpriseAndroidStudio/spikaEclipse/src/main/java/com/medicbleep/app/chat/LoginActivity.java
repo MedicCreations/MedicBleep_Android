@@ -110,6 +110,10 @@ public class LoginActivity extends LoginBaseActivity {
                 }else{
                     this.username.setText(username);
                     this.password.setText(password);
+
+					Helper.setUsername(this.username.getText().toString());
+					Helper.setPassword(this.password.getText().toString());
+					SpikaEnterpriseApp.getSharedPreferences().setCustomBoolean(Const.REMEMBER_CREDENTIALS, true);
                 }
             }
         }

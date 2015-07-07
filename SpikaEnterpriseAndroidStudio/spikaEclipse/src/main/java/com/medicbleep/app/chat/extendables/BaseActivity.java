@@ -7,6 +7,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -49,6 +50,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.medicbleep.app.chat.ChatActivity;
+import com.medicbleep.app.chat.LoginActivity;
 import com.medicbleep.app.chat.MainActivity;
 import com.medicbleep.app.chat.PasscodeActivity;
 import com.medicbleep.app.chat.R;
@@ -72,6 +74,7 @@ import com.medicbleep.app.chat.services.robospice.CustomSpiceManager;
 import com.medicbleep.app.chat.services.robospice.OkHttpService;
 import com.medicbleep.app.chat.services.robospice.SpiceOfflineService;
 import com.medicbleep.app.chat.utils.Const;
+import com.medicbleep.app.chat.utils.Helper;
 import com.medicbleep.app.chat.utils.Logger;
 import com.medicbleep.app.chat.utils.PasscodeUtility;
 import com.medicbleep.app.chat.utils.Utils;
@@ -191,6 +194,8 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Logger.e("onCreate\n" + this.getIntent().getExtras());
+
         setStatusColor();
 
 		/* GreenDAO Singletons */
@@ -249,7 +254,12 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 	}
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	@Override
+	protected void onNewIntent(Intent intent) {
+		Logger.e("onNewIntent\n" + intent.getExtras() + "\n" + this.getIntent().getExtras());
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected void setStatusColor(){
         if(Utils.isBuildOver(Build.VERSION_CODES.KITKAT_WATCH)){
             Window window = getWindow();
@@ -314,9 +324,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 
 			if (outsideStart && PasscodeUtility.getInstance().isSessionValid()) {
 
-				String username = extras.getString("medic_bleep_email");
-				String password = extras.getString("medic_bleep_password");
-				String ocrUserId = String.valueOf(extras.getInt("ocr_user_id"));
+				final String username = extras.getString("medic_bleep_email");
+				final String password = extras.getString("medic_bleep_password");
+				final String ocrUserId = String.valueOf(extras.getInt("ocr_user_id"));
 
 				Logger.e("CHAT: " + extras.toString() + "\n" + username + "\n" + password + "\n" + ocrUserId);
 
@@ -339,12 +349,53 @@ public class BaseActivity extends SlidingFragmentActivity {
 						public void onRequestSuccess(UserWrapper userWrapper) {
 							Logger.e("USER ID COOLIO\n" + userWrapper.toString());
 							User user = userWrapper.user;
-							if (user != null) {
-								ChatActivity.startWithUserId(BaseActivity.this, String.valueOf(user.id), false, user.firstname, user.lastname, user);
+
+							String userLoggedInEmail = Helper.getUserEmail();
+
+							if (username.equals(userLoggedInEmail)) {
+								if (user != null) {
+									ChatActivity.startWithUserId(BaseActivity.this, String.valueOf(user.id), false, user.firstname, user.lastname, user);
+								}
+								else {
+									AppDialog dialog = new AppDialog(BaseActivity.this, false);
+									dialog.setFailed(getResources().getString(R.string.e_user_not_found));
+								}
 							}
 							else {
-								AppDialog dialog = new AppDialog(BaseActivity.this, true);
-								dialog.setFailed(getResources().getString(R.string.e_user_not_found));
+								handleProgress(true);
+								UserSpice.Logout logout = new UserSpice.Logout();
+								spiceManager.execute(logout, new CustomSpiceListener<BaseModel>() {
+
+									@Override
+									public void onRequestFailure(SpiceException arg0) {
+										super.onRequestFailure(arg0);
+										handleProgress(false);
+										new AppDialog(BaseActivity.this, false).setFailed(getResources().getString(R.string.e_error_while_logout));
+									}
+
+									@Override
+									public void onRequestSuccess(BaseModel arg0) {
+										super.onRequestSuccess(arg0);
+										handleProgress(false);
+//										Helper.logout(BaseActivity.this);
+
+										SpikaEnterpriseApp.getSharedPreferences().clear();
+										Intent logoutIntent = new Intent(BaseActivity.this, LoginActivity.class);
+										logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+										logoutIntent.putExtra("medic_bleep_outside_start", true);
+										logoutIntent.putExtra("medic_bleep_email", username);
+										logoutIntent.putExtra("medic_bleep_password", password);
+										logoutIntent.putExtra("ocr_user_id", Integer.valueOf(ocrUserId));
+
+										SpikaEnterpriseApp.stopSocket();
+										BaseActivity.this.startActivity(logoutIntent);
+										((Activity) BaseActivity.this).finish();
+
+										finish();
+									}
+								});
+
 							}
 						}
 					});

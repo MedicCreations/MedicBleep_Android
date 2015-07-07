@@ -219,8 +219,15 @@ public abstract class LoginBaseActivity extends Activity {
 				if (result.getCode() == Const.API_SUCCESS) {
                     
                     Helper.setUserProperties(result.getUserId(), result.image, result.image_thumb, result.firstname, result.lastname, result.getToken(), result.email);
-					checkPasscodeSet(extras);
-                    
+
+					if (TextUtils.isEmpty(result.phone_number)) {
+						Intent intent = new Intent(LoginBaseActivity.this, SMSVerificationActivity.class);
+						intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
+						startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
+					}
+					else {
+						checkPasscodeSet(extras);
+					}
 				} else {
 
 					String message = "";
@@ -252,14 +259,13 @@ public abstract class LoginBaseActivity extends Activity {
 		});
 	}
 
+
+
 	
 	void checkPasscodeSet (final Bundle extras) {
 		if (!PasscodeUtility.getInstance().isPasscodeEnabled(this)) {
 			tempExtras = extras;
-			Intent intent = new Intent(this, SMSVerificationActivity.class);
-			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_PHONE_NUMBER);
-			startActivityForResult(intent, Const.REQUEST_PHONE_NUMBER);
-//			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
+			startActivityForResult(new Intent(this, NewPasscodeActivity.class), Const.REQUEST_NEW_PASSCODE);
 		}
 		else {
 			if (this instanceof LoginActivity) {
@@ -313,7 +319,8 @@ public abstract class LoginBaseActivity extends Activity {
         
         if (extras != null) {
             intent.putExtras(extras);
-        }
+			extras.clear();
+		}
         
         SpikaEnterpriseApp.startSocket();
         

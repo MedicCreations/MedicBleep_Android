@@ -59,7 +59,9 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
      */
     public static void createInstance (Context appContext) {
         Log.wtf("Instance", "Created");
-        instance = new LocationUtility(appContext);
+        if (instance == null) {
+            instance = new LocationUtility(appContext);
+        }
     }
 
     /**

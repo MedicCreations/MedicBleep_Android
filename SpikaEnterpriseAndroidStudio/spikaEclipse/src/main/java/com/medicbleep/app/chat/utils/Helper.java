@@ -297,6 +297,10 @@ public class Helper {
 		}
 	}
 
+	public static String getUserEmail() {
+		return SpikaEnterpriseApp.getSharedPreferences().getCustomString(Const.EMAIL);
+	}
+
 	/**
 	 * Return JSON array from string
 	 * 

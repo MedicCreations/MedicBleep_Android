@@ -1,5 +1,7 @@
 package com.medicbleep.app.chat.api.robospice;
 
+import android.text.TextUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -184,6 +186,7 @@ public class UserSpice {
 	public static class UpdateUserDetails extends CustomSpiceRequest<BaseModel> {
 
 		private List<UserDetail> userDetails;
+		String phoneNumber;
 
 		public UpdateUserDetails(List<UserDetail> userDetails) {
 			super(BaseModel.class);
@@ -191,22 +194,35 @@ public class UserSpice {
 			this.userDetails = userDetails;
 		}
 
+		public UpdateUserDetails(String phoneNumber) {
+			super(BaseModel.class);
+
+			this.phoneNumber = phoneNumber;
+		}
+
 		@Override
 		public BaseModel loadDataFromNetwork() throws Exception {
 
-			JSONArray detailsArray = new JSONArray();
+			RequestBody formBody;
 
-			for (UserDetail detail : userDetails) {
-
-				if (detail.getValue() != null) {
-					JSONObject object = new JSONObject();
-					object.put(detail.getKey(), detail.getValue());
-					object.put(Const.PUBLIC, detail.isPublicValue());
-					detailsArray.put(object);
-				}
+			if (!TextUtils.isEmpty(phoneNumber)) {
+				formBody = new FormEncodingBuilder().add("phone_number", phoneNumber).build();
 			}
+			else {
+				JSONArray detailsArray = new JSONArray();
 
-			RequestBody formBody = new FormEncodingBuilder().add(Const.DETAILS, detailsArray.toString()).build();
+				for (UserDetail detail : userDetails) {
+
+					if (detail.getValue() != null) {
+						JSONObject object = new JSONObject();
+						object.put(detail.getKey(), detail.getValue());
+						object.put(Const.PUBLIC, detail.isPublicValue());
+						detailsArray.put(object);
+					}
+				}
+
+				formBody = new FormEncodingBuilder().add(Const.DETAILS, detailsArray.toString()).build();
+			}
 
 			Request.Builder requestBuilder = new Request.Builder().headers(getPostHeaders()).url(Const.BASE_URL + Const.F_UPDATE_USER)
 					.post(formBody);
