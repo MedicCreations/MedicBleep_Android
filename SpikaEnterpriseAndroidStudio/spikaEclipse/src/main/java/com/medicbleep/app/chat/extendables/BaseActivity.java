@@ -194,8 +194,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Logger.e("onCreate\n" + this.getIntent().getExtras());
-
         setStatusColor();
 
 		/* GreenDAO Singletons */
@@ -252,11 +250,6 @@ public class BaseActivity extends SlidingFragmentActivity {
 		LocalBroadcastManager.getInstance(this).registerReceiver(internetChageStateRec, intentFilterInternetChangeState);
 
 
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		Logger.e("onNewIntent\n" + intent.getExtras() + "\n" + this.getIntent().getExtras());
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)

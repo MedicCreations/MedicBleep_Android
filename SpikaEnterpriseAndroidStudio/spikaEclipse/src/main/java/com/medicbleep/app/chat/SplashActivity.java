@@ -21,6 +21,7 @@ import com.medicbleep.app.chat.utils.Helper;
 import com.medicbleep.app.chat.utils.LocationUtility;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.medicbleep.app.chat.utils.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -59,7 +60,12 @@ public class SplashActivity extends LoginBaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
+			getIntent().putExtra("medic_bleep_outside_start", false);
+		}
 		extras = getIntent().getExtras();
+
 		IntentFilter intentFilter = new IntentFilter(LocationUtility.COUNTRY_CODE_UPDATED);
 		intentFilter.addAction(LocationUtility.LOCATION_SETTINGS_ERROR);
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
