@@ -104,7 +104,7 @@ public class SMSVerificationActivity extends BaseActivity {
 			startActivityForResult(intent, Const.REQUEST_VERIFICATION_CODE);
 		}else{
             AppDialog dialog = new AppDialog(this, false);
-            dialog.setFailed("Invalid Phone Number");
+            dialog.setFailed(getString(R.string.invalid_phone_number));
         }
 	}
 	
