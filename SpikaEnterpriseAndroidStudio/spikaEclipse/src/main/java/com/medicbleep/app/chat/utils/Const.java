@@ -286,6 +286,7 @@ public class Const {
 	public static final String F_GET_SEEN_TIMESTAMPS = "/message/checkTimestamps";
 	public static final String F_GET_PUSH_MESSAGES = "/message/push";
 	public static final String F_OCR_USER = "/OCR/fetchOCRuser";
+    public static final String ABOUT_LINK = "http://www.google.com";
 
 	public static final int API_SUCCESS = 2000;
 

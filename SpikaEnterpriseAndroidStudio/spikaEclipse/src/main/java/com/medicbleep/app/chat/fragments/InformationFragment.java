@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -31,10 +32,10 @@ public class InformationFragment extends CustomFragment {
 
 		View rootView = inflater.inflate(R.layout.fragment_information, container, false);
 
-//		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
-//		mWebView.setWebViewClient(new CustomWebViewClient());
-//		mWebView.setWebChromeClient(new WebChromeClient());
-//		mWebView.getSettings().setJavaScriptEnabled(true);
+		mWebView = (WebView) rootView.findViewById(R.id.webViewInformation);
+		mWebView.setWebViewClient(new CustomWebViewClient());
+		mWebView.setWebChromeClient(new WebChromeClient());
+		mWebView.getSettings().setJavaScriptEnabled(true);
 		
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();
@@ -47,6 +48,9 @@ public class InformationFragment extends CustomFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 //		getInformation();
+
+        mUrl = Const.ABOUT_LINK;
+        setUrl();
 	}
 	
 	private void getInformation(){

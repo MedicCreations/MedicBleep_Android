@@ -273,7 +273,7 @@ public class FileManageApi {
 				mBuilder.setAutoCancel(true);
 				mBuilder.setOngoing(true);
 				mBuilder.setContentTitle(context.getResources().getString(R.string.file_download) + ":" + fileName)
-						.setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.ic_launcher);
+						.setContentText(context.getResources().getString(R.string.download_in_progress)).setSmallIcon(R.drawable.splash_icon);
 
 				mBuilder.setProgress(0, 0, true);
 				mNotifyManager.notify(id, mBuilder.build());

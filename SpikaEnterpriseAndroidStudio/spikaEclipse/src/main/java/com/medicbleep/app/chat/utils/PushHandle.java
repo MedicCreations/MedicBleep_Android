@@ -107,7 +107,7 @@ public class PushHandle {
 				notifBuilder.setAutoCancel(true);
 				notifBuilder.setContentText(message);
 				notifBuilder.setSmallIcon(R.drawable.ic_stat_notify);
-                notifBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+                notifBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.splash_icon));
 
 				notifBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS);
 				notifBuilder.setLights(rgbLed, ledOn, ledOff);
@@ -115,7 +115,7 @@ public class PushHandle {
 				notification = notifBuilder.build();
 			} else {
 
-				notification = new Notification(R.drawable.ic_launcher, message, System.currentTimeMillis());
+				notification = new Notification(R.drawable.splash_icon, message, System.currentTimeMillis());
 				notification.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.FLAG_GROUP_SUMMARY | Notification.FLAG_SHOW_LIGHTS;
 				notification.ledARGB = rgbLed;
 				notification.ledOnMS = ledOn;
