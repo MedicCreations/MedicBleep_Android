@@ -66,6 +66,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 
 		userName = (TextView) view.findViewById(R.id.userName);
 		userName.setText(Helper.getUserFirstName() + " " + Helper.getUserLastName());
+        userName.setOnClickListener(this);
 
 		profile = (Button) view.findViewById(R.id.profile);
 		profile.setOnClickListener(this);
@@ -125,6 +126,7 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 
 		case R.id.profile:
         case R.id.userImage:
+        case R.id.userName:
 
 			if (profileFragment == null) {
 				profileFragment = ProfileFragment.newInstance(Helper.getUserImage(), Helper.getUserFirstName(), Helper.getUserLastName());

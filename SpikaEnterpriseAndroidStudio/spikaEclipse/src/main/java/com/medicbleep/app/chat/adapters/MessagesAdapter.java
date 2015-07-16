@@ -241,13 +241,14 @@ public class MessagesAdapter extends BaseAdapter {
 				
 				String myMsg = msg.getText();
 				if(myMsg.length() > MAX_CHARACTER){
-					String endString = "more";
+					String endString = "\nMore...";
 					if(msg.isUserExpandContent()){
-						endString = "less";
+						endString = "\nLess...";
 					}else{
 						int index = myMsg.indexOf(" ", SUBSTRING_MESSAGE_AT);
 						if(index == -1) index = SUBSTRING_MESSAGE_AT;
 						myMsg = myMsg.substring(0, index);
+                        myMsg = myMsg + "...";
 					}
 					Spannable span = new SpannableString(myMsg + " " + endString);
 					span.setSpan(new UnderlineSpan(), myMsg.length() + 1, myMsg.length() + 1 + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -459,13 +460,14 @@ public class MessagesAdapter extends BaseAdapter {
 				
 				String youMsg = msg.getText();
 				if(youMsg.length() > MAX_CHARACTER){
-					String endString = "more";
+					String endString = "\nMore...";
 					if(msg.isUserExpandContent()){
-						endString = "less";
+						endString = "\nLess...";
 					}else{
 						int index = youMsg.indexOf(" ", SUBSTRING_MESSAGE_AT);
 						if(index == -1) index = SUBSTRING_MESSAGE_AT;
 						youMsg = youMsg.substring(0, index);
+                        youMsg = youMsg + "...";
 					}
 					Spannable span = new SpannableString(youMsg + " " + endString);
 					span.setSpan(new UnderlineSpan(), youMsg.length() + 1, youMsg.length() + 1 + endString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
