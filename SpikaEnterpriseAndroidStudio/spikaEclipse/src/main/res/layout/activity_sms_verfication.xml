@@ -68,7 +68,9 @@
             android:textColorHint="@color/medic_bleep_hint_gray"
             android:background="@drawable/et_background"
             android:id="@+id/inputEditText"
+            android:imeOptions="actionDone"
             android:maxLines="1"
+            android:singleLine="true"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"/>
 

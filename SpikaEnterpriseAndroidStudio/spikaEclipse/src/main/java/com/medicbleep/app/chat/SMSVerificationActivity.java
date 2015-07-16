@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.medicbleep.app.chat.api.robospice.UserSpice;
+import com.medicbleep.app.chat.dialogs.AppDialog;
 import com.medicbleep.app.chat.extendables.BaseActivity;
 import com.medicbleep.app.chat.extendables.BaseModel;
 import com.medicbleep.app.chat.models.UserDetail;
@@ -101,7 +102,10 @@ public class SMSVerificationActivity extends BaseActivity {
 			intent.putExtra(Const.TYPE, SMSVerificationActivity.TYPE_VERIFICATION_CODE);
 			intent.putExtra(PHONE_NUMBER, editText.getText().toString());
 			startActivityForResult(intent, Const.REQUEST_VERIFICATION_CODE);
-		}
+		}else{
+            AppDialog dialog = new AppDialog(this, false);
+            dialog.setFailed("Invalid Phone Number");
+        }
 	}
 	
 	void submitVerificationCodeAPI () {
