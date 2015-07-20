@@ -14,9 +14,9 @@
             android:layout_width="220dp"
             android:layout_height="220dp"
             android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
             android:layout_marginTop="30dp"
-            android:background="@drawable/circle_with_white_border"
-            tools:src="@drawable/@drawable/default_user_image" />
+            android:background="@drawable/circle_with_white_border" />
 
         <FrameLayout
             android:id="@+id/loadingLayout"
