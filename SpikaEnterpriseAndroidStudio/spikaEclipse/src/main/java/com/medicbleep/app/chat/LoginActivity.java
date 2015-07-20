@@ -78,7 +78,7 @@ public class LoginActivity extends LoginBaseActivity {
 		findViewById(R.id.tvWhatIsThis).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Const.ABOUT_LINK)));
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Const.WHAT_IS_THIS)));
 			}
 		});
 
