@@ -357,7 +357,20 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 			}
 		});
 
+		findViewById(R.id.hideSettingView).setOnClickListener(dissmissSettingListener);
+
 	}
+
+	private View.OnClickListener dissmissSettingListener = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			findViewById(R.id.hideSettingView).setVisibility(View.GONE);
+			if(settingsListView.getVisibility() == View.VISIBLE){
+				hideSettings();
+			}
+		}
+	};
 
 	private void changeEmojiKeyboardIcon(ImageButton iconToBeChanged, int drawableResourceId) {
 		iconToBeChanged.setImageResource(drawableResourceId);
@@ -465,10 +478,12 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 
 	private void showSettings() {
 		settingsListView.startAnimation(animShowSettings);
+		findViewById(R.id.hideSettingView).setVisibility(View.VISIBLE);
 	}
 
 	private void hideSettings() {
 		if (settingsListView.getVisibility() == View.VISIBLE) {
+			findViewById(R.id.hideSettingView).setVisibility(View.GONE);
 			settingsListView.startAnimation(animHideSettings);
 		}
 	}
@@ -930,6 +945,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		intent.putExtra(Const.EXTRA_ROOT_ID, getRootId());
 		intent.putExtra(Const.EXTRA_MESSAGE_ID, getMessageId());
 		startActivity(intent);
+		hideSettings();
 	};
 
 	protected void kill() {
@@ -1002,6 +1018,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 					// delete chat
 					deleteChat();
 				}
+				hideSettings();
 			}
 		}
 	};

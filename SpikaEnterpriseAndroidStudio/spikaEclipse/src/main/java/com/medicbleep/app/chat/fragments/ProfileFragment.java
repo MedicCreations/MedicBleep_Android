@@ -85,7 +85,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 		mLoadingLayout = (FrameLayout) rootView.findViewById(R.id.loadingLayout);
 
-		((MainActivity) getActivity()).enableEditProfile(this);
+//		((MainActivity) getActivity()).enableEditProfile(this);
 
 		if (getActivity() instanceof MainActivity) {
 			((MainActivity) getActivity()).disableCreateRoom();

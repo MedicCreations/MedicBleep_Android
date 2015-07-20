@@ -92,7 +92,7 @@
     <string name="temp_password_is_not_valid_">Temp password is not valid.</string>
     <string name="login_with_temp_password_">Login with temp password.</string>
     <string name="dir_not_writable_on_the_server_">Dir not writable on the server.</string>
-    <string name="invalid_login_">Invalid login.</string>
+    <string name="invalid_login_">Incorrect username or password.</string>
     <string name="no_child_messages_">No child messages.</string>
     <string name="invalid_temp_password_">Invalid temp password.</string>
     <string name="password_already_in_use_">Password already in use.</string>

@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -183,12 +184,16 @@ public class RecordVideoActivity extends BaseActivity {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 			uploadVideoAsync(filePath, toCrypt);
 		} else {
-			new BaseChatActivity.BuildTempFileAsync(this, getVideoName(Uri.parse(filePath)), new BaseChatActivity.OnTempFileCreatedListener() {
-				@Override
-				public void onTempFileCreated(String path, String name) {
-					uploadVideoAsync(path, toCrypt);
-				}
-			}).execute(getContentResolver().openInputStream(Uri.parse(filePath)));
+			if(filePath.equals(Utils.getFileDir(this) + "/video.mp4")){
+				uploadVideoAsync(filePath, toCrypt);
+			}else{
+				new BaseChatActivity.BuildTempFileAsync(this, getVideoName(Uri.parse(filePath)), new BaseChatActivity.OnTempFileCreatedListener() {
+					@Override
+					public void onTempFileCreated(String path, String name) {
+						uploadVideoAsync(path, toCrypt);
+					}
+				}).execute(getContentResolver().openInputStream(Uri.parse(filePath)));
+			}
 		}
 	}
 
@@ -283,15 +288,24 @@ public class RecordVideoActivity extends BaseActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		try {
-			Uri selectedVideoUri = data.getData();
 
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-				mFilePath = getVideoPath(selectedVideoUri);
-			} else {
-				mFilePath = selectedVideoUri.toString();
+			if(data == null){
+
+				mFilePath = Utils.getFileDir(this) + "/video.mp4";
+				SpikaEnterpriseApp.setVideoPath(mFilePath);
+
+			}else{
+				Uri selectedVideoUri = data.getData();
+
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+					mFilePath = getVideoPath(selectedVideoUri);
+				} else {
+					mFilePath = selectedVideoUri.toString();
+				}
+
+				SpikaEnterpriseApp.setVideoPath(mFilePath);
+
 			}
-
-			SpikaEnterpriseApp.setVideoPath(mFilePath);
 
 			super.onActivityResult(requestCode, resultCode, data);
 		} catch (Exception e) {
