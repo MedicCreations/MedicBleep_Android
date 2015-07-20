@@ -287,7 +287,8 @@ public class Const {
 	public static final String F_GET_PUSH_MESSAGES = "/message/push";
 	public static final String F_OCR_USER = "/OCR/fetchOCRuser";
     public static final String ABOUT_LINK = "https://www.theoncallroom.com/staticservices/getstaticpages/1";
-	public static final String WHAT_IS_THIS = "https://www.theoncallroom.com/";
+	public static final String WHAT_IS_THIS_PLAY_URL = "market://details?id=com.ocr.theoncallroom";
+	public static final String WHAT_IS_THIS_URL = "https://play.google.com/store/apps/details?id=com.ocr.theoncallroom";
 
 	public static final int API_SUCCESS = 2000;
 

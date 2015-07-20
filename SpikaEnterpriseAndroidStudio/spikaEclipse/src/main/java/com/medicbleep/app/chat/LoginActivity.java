@@ -78,7 +78,11 @@ public class LoginActivity extends LoginBaseActivity {
 		findViewById(R.id.tvWhatIsThis).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Const.WHAT_IS_THIS)));
+				try {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Const.WHAT_IS_THIS_PLAY_URL)));
+				} catch (android.content.ActivityNotFoundException anfe) {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Const.WHAT_IS_THIS_URL)));
+				}
 			}
 		});
 
