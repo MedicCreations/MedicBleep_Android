@@ -1,5 +1,7 @@
 package com.medicbleep.app.chat.api.robospice;
 
+import android.util.Log;
+
 import com.medicbleep.app.chat.models.Login;
 import com.medicbleep.app.chat.models.PreLogin;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceRequest;
@@ -75,7 +77,7 @@ public class LoginSpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responsBody = resBody.string();
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 
 			return mapper.readValue(responsBody, Login.class);
