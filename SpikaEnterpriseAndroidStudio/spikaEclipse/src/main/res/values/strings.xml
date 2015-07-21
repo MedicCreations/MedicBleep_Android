@@ -58,7 +58,7 @@
     <string name="send">Send</string>
     <string name="create_room">Create room</string>
     <string name="create">Create</string>
-    <string name="searchUsers">Search users and groups</string>
+    <string name="searchUsers">Search users</string>
     <string name="enterGroupName">Enter group name</string>
     <string name="enableEditPhoto">Do you want to use full size or cropped image?</string>
     <string name="compression_confirmation_question">Do you want to send compressed image?</string>

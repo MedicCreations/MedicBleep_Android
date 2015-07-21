@@ -94,7 +94,7 @@ public class CreateRoomFragment extends CustomFragment implements OnSearchListen
 	private TextView filterGroups;
 	private TextView filterRooms;
 
-	private int currentFilter = GlobalModel.Type.ALL;
+	private int currentFilter = GlobalModel.Type.USER;
 
 	private List<GlobalModel> allData = new ArrayList<GlobalModel>();
 	
