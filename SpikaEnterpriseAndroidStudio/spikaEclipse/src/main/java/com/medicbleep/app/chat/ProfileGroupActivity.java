@@ -159,7 +159,11 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 
 		public ProfileFragmentPagerAdapter(Intent intent) {
 			super(getSupportFragmentManager());
-			mFragmentList.add(new ProfileGroupFragment(intent));
+
+			ProfileGroupFragment profileGroupFragment = new ProfileGroupFragment();
+			profileGroupFragment.setData(intent);
+
+			mFragmentList.add(profileGroupFragment);
 			mFragmentList.add(MembersFragment.newInstance());
 		}
 

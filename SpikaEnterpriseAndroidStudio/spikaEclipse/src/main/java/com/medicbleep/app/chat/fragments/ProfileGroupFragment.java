@@ -61,10 +61,6 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 	public ProfileGroupFragment() {
 	}
 
-	public ProfileGroupFragment(Intent intent) {
-		setData(intent);
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
