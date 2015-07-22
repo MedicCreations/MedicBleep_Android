@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.medicbleep.app.chat.adapters.InviteRemoveAdapter;
+import com.medicbleep.app.chat.api.robospice.GlobalSpice;
 import com.medicbleep.app.chat.api.robospice.UserSpice;
 import com.medicbleep.app.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
 import com.medicbleep.app.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
@@ -35,6 +36,7 @@ import com.medicbleep.app.chat.listeners.OnSearchListener;
 import com.medicbleep.app.chat.models.Chat;
 import com.medicbleep.app.chat.models.GlobalModel;
 import com.medicbleep.app.chat.models.GlobalModel.Type;
+import com.medicbleep.app.chat.models.GlobalResponse;
 import com.medicbleep.app.chat.models.User;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceListener;
 import com.medicbleep.app.chat.utils.Const;
@@ -44,8 +46,7 @@ import com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshBase;
 import com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshListView;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel>, OnGlobalSearchDBChanged,
-		OnGlobalSearchNetworkResult {
+public class InvitePeopleActivity extends BaseActivity implements OnItemClickListener, OnSearchListener, OnChangeListener<GlobalModel> {
 
 	PullToRefreshListView mainList;
 	InviteRemoveAdapter adapter;
@@ -152,23 +153,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
         @SuppressWarnings("rawtypes")
         @Override
         public void afterTextChanged(Editable s) {
-            if(isDataFromNet){
-                GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(InvitePeopleActivity.this, spiceManager, 0, null, null, Type.USER,
-                        null, true, true, activeUserId, InvitePeopleActivity.this, InvitePeopleActivity.this);
-                spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
-
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onRequestSuccess(List result) {
-                        super.onRequestSuccess(result);
-                        allData.clear();
-                        allData.addAll(result);
-                    }
-                });
-                isDataFromNet = false;
-            }else {
-                adapter.manageData(s.toString(), allData);
-            }
+			getUsers(0, s.toString(), true);
         }
     };
 
@@ -233,14 +218,25 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
             isDataFromNet = true;
         }
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(this, spiceManager, page, null, chatId, Type.USER, search, toClear, activeUserId, this, this);
-		spiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, chatId, null, Type.USER, search);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
-			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestSuccess(List result) {
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				Utils.onFailedUniversal(null, InvitePeopleActivity.this, 0 , false);
+			}
+
+			@Override
+			public void onRequestSuccess(GlobalResponse result) {
 				super.onRequestSuccess(result);
-				setData(result, toClear);
+
+				if (result.getCode() == Const.API_SUCCESS) {
+					setData(result.getModelsList(), toClear);
+				} else {
+					String message = getString(R.string.e_something_went_wrong);
+					Utils.onFailedUniversal(message, InvitePeopleActivity.this, result.getCode(), false);
+				}
 			}
 		});
 	}
@@ -356,15 +352,4 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 
 		invitedPeople.setText(span);
 	}
-
-	@Override
-	public void onGlobalSearchNetworkResult(int totalCount) {
-		mTotalCount = totalCount;
-	}
-
-	@Override
-	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
-		setData(usableData, isClear);
-	}
-
 }
