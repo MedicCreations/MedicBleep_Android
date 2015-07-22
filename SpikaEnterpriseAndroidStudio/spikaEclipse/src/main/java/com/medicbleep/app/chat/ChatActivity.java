@@ -290,7 +290,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 
+		setIntent(intent);
+
 		isResume = false;
+
 		if (intent.getBooleanExtra(Const.UPDATE_PICTURE, false)) {
 			chatImage = intent.getExtras().getString(Const.IMAGE, chatImage);
 			chatImageThumb = intent.getExtras().getString(Const.IMAGE_THUMB, chatImageThumb);
