@@ -349,7 +349,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 								if (user != null) {
 									ChatActivity.startWithUserId(BaseActivity.this, String.valueOf(user.id), false, user.firstname, user.lastname, user);
 								}
-								else {
+								else if (!ocrUserId.equals("0")) {
 									AppDialog dialog = new AppDialog(BaseActivity.this, false);
 									dialog.setFailed(getResources().getString(R.string.e_user_not_found));
 								}
