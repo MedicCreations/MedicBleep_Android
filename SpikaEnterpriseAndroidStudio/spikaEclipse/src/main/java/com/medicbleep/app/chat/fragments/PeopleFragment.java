@@ -23,6 +23,7 @@ import com.medicbleep.app.chat.MainActivity;
 import com.medicbleep.app.chat.ProfileOtherActivity;
 import com.medicbleep.app.chat.R;
 import com.medicbleep.app.chat.adapters.PeopleAdapter;
+import com.medicbleep.app.chat.api.robospice.GlobalSpice;
 import com.medicbleep.app.chat.caching.GlobalCaching.OnGlobalSearchDBChanged;
 import com.medicbleep.app.chat.caching.GlobalCaching.OnGlobalSearchNetworkResult;
 import com.medicbleep.app.chat.caching.robospice.GlobalCacheSpice;
@@ -31,12 +32,15 @@ import com.medicbleep.app.chat.extendables.CustomFragment;
 import com.medicbleep.app.chat.listeners.OnSearchListener;
 import com.medicbleep.app.chat.models.GlobalModel;
 import com.medicbleep.app.chat.models.GlobalModel.Type;
+import com.medicbleep.app.chat.models.GlobalResponse;
 import com.medicbleep.app.chat.models.User;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceListener;
+import com.medicbleep.app.chat.utils.Utils;
 import com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshBase;
 import com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshListView;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 
-public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener, OnGlobalSearchDBChanged, OnGlobalSearchNetworkResult {
+public class PeopleFragment extends CustomFragment implements OnItemClickListener, OnSearchListener {
 
 	private TextView noItems;
 
@@ -114,24 +118,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 		@SuppressWarnings("rawtypes")
 		@Override
 		public void afterTextChanged(final Editable s) {
-			if(isDataFromNet){
-				GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, 
-						0, null, null, Type.USER, null, true, true, PeopleFragment.this, PeopleFragment.this);
-				offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public void onRequestSuccess(List result) {
-						super.onRequestSuccess(result);
-						allData.clear();
-						allData.addAll(result);
-						adapter.manageData(s.toString(), allData);
-					}
-				});
-				isDataFromNet = false;
-			}else {
-				adapter.manageData(s.toString(), allData);
-			}
+			getUsers(0, s.toString(), true);
 		}
 	};
 
@@ -206,14 +193,19 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			isDataFromNet = true;
 		}
 
-		GlobalCacheSpice.GlobalSearch globalSearch = new GlobalCacheSpice.GlobalSearch(getActivity(), spiceManager, page, null, null, Type.USER, search, toClear, this, this);
-		offlineSpiceManager.execute(globalSearch, new CustomSpiceListener<List>() {
+		GlobalSpice.GlobalSearch globalSearch = new GlobalSpice.GlobalSearch(page, null, null, Type.USER, search);
+		spiceManager.execute(globalSearch, new CustomSpiceListener<GlobalResponse>() {
 
-			@SuppressWarnings("unchecked")
 			@Override
-			public void onRequestSuccess(List result) {
+			public void onRequestSuccess(GlobalResponse result) {
 				super.onRequestSuccess(result);
-				setData(result, toClear);
+				setData(result.getModelsList(), toClear);
+			}
+
+			@Override
+			public void onRequestFailure(SpiceException arg0) {
+				super.onRequestFailure(arg0);
+				Utils.onFailedUniversal(null, getActivity(), 0, false);
 			}
 		});
 	}
@@ -246,15 +238,5 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 				ChatActivity.startWithUserId(getActivity(), String.valueOf(user.getId()), false, user.getFirstName(), user.getLastName(), user);
 			}
 		}
-	}
-
-	@Override
-	public void onGlobalSearchNetworkResult(int totalCount) {
-		mTotalCount = totalCount;
-	}
-
-	@Override
-	public void onGlobalSearchDBChanged(List<GlobalModel> usableData, boolean isClear) {
-		setData(usableData, isClear);
 	}
 }
