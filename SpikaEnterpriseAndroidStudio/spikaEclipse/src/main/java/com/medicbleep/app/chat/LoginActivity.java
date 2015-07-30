@@ -144,10 +144,14 @@ public class LoginActivity extends LoginBaseActivity {
 		password.setError(null);
 
 		if (TextUtils.isEmpty(username.getText().toString())) {
-			username.setError(getString(R.string.login_empty_username));
+			username.requestFocus();
+			username.setError(getString(R.string.login_empty_email));
 			errorLock = true;
 		}
 		if (TextUtils.isEmpty(password.getText().toString())) {
+			if (!errorLock) {
+				password.requestFocus();
+			}
 			password.setError(getString(R.string.login_empty_password));
 			errorLock = true;
 		}

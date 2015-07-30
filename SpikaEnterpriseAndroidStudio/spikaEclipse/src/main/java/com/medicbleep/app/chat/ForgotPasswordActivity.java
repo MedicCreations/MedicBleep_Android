@@ -60,7 +60,7 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
         etUsername.setError(null);
 
         if (TextUtils.isEmpty(etUsername.getText().toString())) {
-            etUsername.setError(getString(R.string.login_empty_username));
+            etUsername.setError(getString(R.string.login_empty_email));
             errorLock = true;
         }
 

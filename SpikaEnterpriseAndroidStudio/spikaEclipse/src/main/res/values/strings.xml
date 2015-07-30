@@ -241,8 +241,8 @@
     <string name="old_password">Enter current password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="email_sent">You have got an email with temporary password, please login</string>
-    <string name="login_empty_username">Username should not be empty</string>
-    <string name="login_empty_password">Password should not be empty</string>
+    <string name="login_empty_email">Email is required</string>
+    <string name="login_empty_password">Password is required</string>
     <string name="new_passwords_not_identical">Passwords are not identical.</string>
     <string name="password_at_least_one_letter">Password must contain at least one letter.</string>
     <string name="password_at_least_one_number">Password must contain at least one number.</string>
