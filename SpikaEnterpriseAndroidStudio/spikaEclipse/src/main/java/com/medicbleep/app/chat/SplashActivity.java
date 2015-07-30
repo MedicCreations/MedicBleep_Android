@@ -50,7 +50,12 @@ public class SplashActivity extends LoginBaseActivity {
 			return;
 		}
 
-		if (SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS)) {
+		boolean hasUsername = !TextUtils.isEmpty(Helper.getUsername());
+		boolean hasPassword = !TextUtils.isEmpty(Helper.getPassword());
+		boolean isRemember = SpikaEnterpriseApp.getSharedPreferences().getCustomBoolean(Const.REMEMBER_CREDENTIALS);
+
+
+		if (hasUsername && hasPassword && isRemember) {
 			goToLogin = false;
 		} else {
 			goToLogin = true;
@@ -135,6 +140,7 @@ public class SplashActivity extends LoginBaseActivity {
 		dialogExists = true;
 		final AppDialog dialog = new AppDialog(SplashActivity.this, true);
 		dialog.setYesNo(getString(R.string.location_services_turned_off_go_to_settings), getString(R.string.yes), getString(R.string.no));
+		dialog.setCancelable(false);
 		dialog.setOnPositiveButtonClick(new AppDialog.OnPositiveButtonClickListener() {
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
