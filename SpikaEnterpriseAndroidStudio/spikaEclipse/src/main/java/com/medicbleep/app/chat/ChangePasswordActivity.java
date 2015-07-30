@@ -85,28 +85,40 @@ public class ChangePasswordActivity extends BaseActivity {
 		String confirmPassword = confirmNewPassword.getText().toString();
 
 		if (TextUtils.isEmpty(password)) {
+			newPassword.requestFocus();
 			newPassword.setError(getString(R.string.new_password));
 			return;
 		}
 
 		if (TextUtils.isEmpty(confirmPassword)) {
+			confirmNewPassword.requestFocus();
 			confirmNewPassword.setError(getString(R.string.re_type_password));
 			return;
 		}
 
 		if (!password.equals(confirmPassword)) {
+			confirmNewPassword.requestFocus();
 			confirmNewPassword.setError(getString(R.string.new_passwords_not_identical));
+			return;
+		}
+
+		boolean isGoodLenght = password.length() > 3 && password.length() < 16;
+		if (!isGoodLenght) {
+			confirmNewPassword.requestFocus();
+			confirmNewPassword.setError(getString(R.string.password_lenghth_error));
 			return;
 		}
 
         boolean atLeastOneAlpha = password.matches(".*[a-zA-Z]+.*");
         if (!atLeastOneAlpha) {
+			confirmNewPassword.requestFocus();
             confirmNewPassword.setError(getString(R.string.password_at_least_one_letter));
             return;
         }
 
         boolean atLeastOneNumber = password.matches(".*[0-9]+.*");
         if (!atLeastOneNumber) {
+			confirmNewPassword.requestFocus();
             confirmNewPassword.setError(getString(R.string.password_at_least_one_number));
             return;
         }

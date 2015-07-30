@@ -247,6 +247,7 @@
     <string name="new_passwords_not_identical">Passwords are not identical.</string>
     <string name="password_at_least_one_letter">Password must contain at least one letter.</string>
     <string name="password_at_least_one_number">Password must contain at least one number.</string>
+    <string name="password_lenghth_error">Password is too short or empty.</string>
     <string name="update_password">Update Password</string>
     <string name="set_password">Set password</string>
     <string name="set">Set</string>
