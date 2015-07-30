@@ -9,6 +9,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -146,6 +147,11 @@ public class LoginActivity extends LoginBaseActivity {
 		if (TextUtils.isEmpty(username.getText().toString())) {
 			username.requestFocus();
 			username.setError(getString(R.string.login_empty_email));
+			errorLock = true;
+		}
+		else if (!Patterns.EMAIL_ADDRESS.matcher(username.getText().toString()).matches()) {
+			username.requestFocus();
+			username.setError(getString(R.string.login_invalid_email));
 			errorLock = true;
 		}
 		if (TextUtils.isEmpty(password.getText().toString())) {

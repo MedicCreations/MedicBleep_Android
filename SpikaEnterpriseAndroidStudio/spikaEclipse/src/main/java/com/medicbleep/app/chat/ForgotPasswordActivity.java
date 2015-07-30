@@ -2,6 +2,7 @@ package com.medicbleep.app.chat;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -63,6 +64,10 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
             etUsername.setError(getString(R.string.login_empty_email));
             errorLock = true;
         }
+		else if (!Patterns.EMAIL_ADDRESS.matcher(etUsername.getText().toString()).matches()) {
+			etUsername.setError(getString(R.string.login_invalid_email));
+			errorLock = true;
+		}
 
         if(errorLock){
             return;

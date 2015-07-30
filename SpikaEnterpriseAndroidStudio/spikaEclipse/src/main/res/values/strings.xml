@@ -242,6 +242,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="email_sent">You have got an email with temporary password, please login</string>
     <string name="login_empty_email">Email is required</string>
+    <string name="login_invalid_email">Email is not valid</string>
     <string name="login_empty_password">Password is required</string>
     <string name="new_passwords_not_identical">Passwords are not identical.</string>
     <string name="password_at_least_one_letter">Password must contain at least one letter.</string>
