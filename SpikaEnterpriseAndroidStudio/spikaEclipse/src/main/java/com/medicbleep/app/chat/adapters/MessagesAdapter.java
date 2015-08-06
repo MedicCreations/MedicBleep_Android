@@ -295,7 +295,7 @@ public class MessagesAdapter extends BaseAdapter {
 				holder.meWebView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				holder.meWebView.getSettings().setBuiltInZoomControls(true);
 				holder.meWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-				holder.meMsgLayoutBack.setBackgroundColor(Color.RED);
+				holder.meMsgLayoutBack.setBackgroundResource(R.drawable.me_message_bubble);//setBackgroundColor(Color.RED);
 
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
 				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.meWebView, style);
