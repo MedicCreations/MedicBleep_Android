@@ -26,7 +26,7 @@
         android:src="@drawable/icon_search"
         android:visibility="invisible" />
 
-    <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+    <com.medicbleep.app.chat.views.RobotoThinTextView
         android:id="@+id/screenTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

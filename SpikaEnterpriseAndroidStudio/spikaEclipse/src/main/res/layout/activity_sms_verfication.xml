@@ -24,7 +24,7 @@
         <View
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/ic_launcher"/>
+            android:background="@drawable/splash_icon"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,7 +68,9 @@
             android:textColorHint="@color/medic_bleep_hint_gray"
             android:background="@drawable/et_background"
             android:id="@+id/inputEditText"
+            android:imeOptions="actionDone"
             android:maxLines="1"
+            android:singleLine="true"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"/>
 

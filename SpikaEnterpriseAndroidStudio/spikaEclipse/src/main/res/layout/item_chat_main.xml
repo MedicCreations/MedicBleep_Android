@@ -45,7 +45,7 @@
             android:background="@color/medic_bleep_blue"
             android:layout_centerVertical="true"/>
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/sectionDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -196,7 +196,7 @@
                         android:visibility="invisible" />
                 </RelativeLayout>
 
-                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                <com.medicbleep.app.chat.views.RobotoRegularTextView
                     android:id="@+id/meWatchVideo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -210,7 +210,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="15sp"  />
 
-                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                <com.medicbleep.app.chat.views.RobotoRegularTextView
                     android:id="@+id/meViewLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -224,7 +224,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="15sp" />
 
-                <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                <com.medicbleep.app.chat.views.RoundCornersImageView
                     android:id="@+id/meViewImage"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
@@ -244,7 +244,7 @@
                     android:paddingRight="15dp"
                     >
                     
-                    <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView
+                    <com.medicbleep.app.chat.views.emoji.ClickableWebView
                         android:id="@+id/meWebView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -265,7 +265,7 @@
                         android:scaleType="fitCenter" /> -->
                 </FrameLayout>
 
-                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                <com.medicbleep.app.chat.views.RobotoRegularTextView
                     android:id="@+id/meDownloadFile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -286,7 +286,7 @@
                     android:paddingRight="10dp"
                     android:orientation="horizontal">
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/timeMe"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -336,7 +336,7 @@
                     android:paddingTop="0dp"
                     >
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/youPersonName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -438,7 +438,7 @@
                             android:visibility="invisible" />
                     </RelativeLayout>
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/youWatchVideo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -451,7 +451,7 @@
                         android:textColor="@color/medic_bleep_you_text_gray"
                         android:textSize="15sp" />
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/youViewLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -464,7 +464,7 @@
                         android:textColor="@color/medic_bleep_you_text_gray"
                         android:textSize="15sp" />
 
-                    <com.clover.spika.enterprise.chat.views.RoundCornersImageView
+                    <com.medicbleep.app.chat.views.RoundCornersImageView
                         android:id="@+id/youViewImage"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
@@ -481,7 +481,7 @@
                         android:layout_width="175dp"
                         android:layout_height="150dp" >
                         
-                        <com.clover.spika.enterprise.chat.views.emoji.ClickableWebView 
+                        <com.medicbleep.app.chat.views.emoji.ClickableWebView
                             android:id="@+id/youWebView"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -502,7 +502,7 @@
                             android:scaleType="fitCenter" /> -->
                     </FrameLayout>
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/youDownloadFile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -515,7 +515,7 @@
                         android:textColor="@color/medic_bleep_you_text_gray"
                         android:textSize="15sp" />
 
-                    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                    <com.medicbleep.app.chat.views.RobotoRegularTextView
                         android:id="@+id/timeYou"
                         android:layout_gravity="right"
                         android:paddingRight="10dp"

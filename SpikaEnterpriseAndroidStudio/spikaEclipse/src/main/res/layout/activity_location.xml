@@ -27,7 +27,7 @@
             android:paddingRight="10dp"
             android:src="@drawable/btn_back" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/locationAddress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

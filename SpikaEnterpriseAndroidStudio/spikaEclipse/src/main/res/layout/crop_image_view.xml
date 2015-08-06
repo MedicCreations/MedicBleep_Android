@@ -2,12 +2,12 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
-    <com.clover.spika.enterprise.chat.views.TouchImageView
+    <com.medicbleep.app.chat.views.TouchImageView
         android:id="@+id/ImageView_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.clover.spika.enterprise.chat.views.cropper.cropwindow.CropOverlayView
+    <com.medicbleep.app.chat.views.cropper.cropwindow.CropOverlayView
         android:id="@+id/CropOverlayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

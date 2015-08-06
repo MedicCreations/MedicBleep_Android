@@ -20,7 +20,7 @@
             android:padding="10dp"
             android:src="@drawable/btn_back" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
             android:textSize="20sp" />
     </RelativeLayout>
 
-    <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
+    <com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshListView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"

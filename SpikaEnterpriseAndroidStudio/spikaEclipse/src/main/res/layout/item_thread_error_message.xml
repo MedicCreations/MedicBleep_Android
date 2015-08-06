@@ -53,7 +53,7 @@
                 android:textSize="20sp"
                 tools:text="Stigla ti je poruka" />
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:id="@+id/timeThread"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -14,7 +14,7 @@
         android:paddingBottom="10dp"
         android:background="@drawable/shape_recent_background_selector">
 
-        <com.clover.spika.enterprise.chat.views.RoundImageView
+        <com.medicbleep.app.chat.views.RoundImageView
             android:id="@+id/recentImage"
             android:layout_width="65dp"
             android:layout_height="65dp"
@@ -60,7 +60,7 @@
                 android:layout_toLeftOf="@+id/lastMessageTime"
                 android:gravity="center_vertical">
 
-                <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+                <com.medicbleep.app.chat.views.RobotoRegularTextView
                     android:id="@+id/recentName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

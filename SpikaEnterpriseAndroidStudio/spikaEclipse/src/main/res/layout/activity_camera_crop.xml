@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/default_blue" >
 
-    <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+    <com.medicbleep.app.chat.views.RobotoRegularTextView
         android:id="@+id/topText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <com.clover.spika.enterprise.chat.views.cropper.CropImageView
+    <com.medicbleep.app.chat.views.cropper.CropImageView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/CropImageView"
         android:layout_width="match_parent"
@@ -51,7 +51,7 @@
             android:orientation="vertical"
             android:padding="5dp" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -87,7 +87,7 @@
             android:orientation="vertical"
             android:padding="5dp" >
 
-            <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+            <com.medicbleep.app.chat.views.RobotoRegularTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"

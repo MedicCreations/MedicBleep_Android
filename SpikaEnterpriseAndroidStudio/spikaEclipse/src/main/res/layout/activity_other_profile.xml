@@ -26,7 +26,7 @@
             android:padding="10dp"
             android:src="@drawable/btn_back" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+        <com.medicbleep.app.chat.views.RobotoThinTextView
             android:id="@+id/screenTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/icon_info"
-            android:visibility="visible" />
+            android:visibility="gone" />
     </RelativeLayout>
 
     <ScrollView
@@ -62,16 +62,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
 
-                <com.clover.spika.enterprise.chat.views.RoundImageView
+                <com.medicbleep.app.chat.views.RoundImageView
                     android:id="@+id/profileImage"
                     android:layout_width="220dp"
                     android:layout_height="220dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
+                    android:scaleType="centerCrop"
                     android:background="@drawable/circle_with_white_border"
                     tools:src="@drawable/white_circle" />
 
-                <com.clover.spika.enterprise.chat.views.RobotoThinTextView
+                <com.medicbleep.app.chat.views.RobotoThinTextView
                     android:id="@+id/profileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

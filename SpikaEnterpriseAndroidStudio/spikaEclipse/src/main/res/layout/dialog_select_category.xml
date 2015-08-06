@@ -52,7 +52,7 @@
         android:layout_below="@id/actionBarLayout"
         android:visibility="visible" >
 
-        <com.clover.spika.enterprise.chat.views.pulltorefresh.PullToRefreshListView
+        <com.medicbleep.app.chat.views.pulltorefresh.PullToRefreshListView
             android:id="@+id/mainListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -63,7 +63,7 @@
             android:listSelector="@color/transparent"
             android:scrollbars="none" />
 
-        <com.clover.spika.enterprise.chat.views.RobotoRegularTextView
+        <com.medicbleep.app.chat.views.RobotoRegularTextView
             android:id="@+id/noItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
