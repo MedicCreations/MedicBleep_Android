@@ -126,6 +126,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.medicbleep.app.chat.CameraCropActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
@@ -184,6 +185,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="com.medicbleep.app.chat.CameraActivityForSamsung"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.medicbleep.app.chat.ForgotPasswordActivity"
