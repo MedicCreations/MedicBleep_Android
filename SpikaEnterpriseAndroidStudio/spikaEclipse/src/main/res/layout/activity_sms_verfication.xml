@@ -65,6 +65,7 @@
             android:textSize="16sp"
             android:textColor="@color/medic_bleep_text_gray"
             android:hint="@string/phone_number"
+            android:inputType="phone"
             android:textColorHint="@color/medic_bleep_hint_gray"
             android:background="@drawable/et_background"
             android:id="@+id/inputEditText"
