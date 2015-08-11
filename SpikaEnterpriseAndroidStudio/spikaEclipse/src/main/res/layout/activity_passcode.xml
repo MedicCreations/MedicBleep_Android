@@ -34,7 +34,7 @@
         android:layout_below="@id/description"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal"
-        android:padding="16dp" >
+        android:padding="8dp" >
 
         <View
             android:layout_width="25dp"
@@ -61,25 +61,24 @@
             android:background="@drawable/circle_with_white_border" />
     </LinearLayout>
 
-    <Space
-        android:id="@+id/space_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_alignParentBottom="true" />
+    <!--<Space-->
+        <!--android:id="@+id/space_bottom"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:layout_alignParentBottom="true" />-->
 
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/space_bottom"
+        android:layout_below="@id/linear_layout_characters_in_passcode"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
         android:columnCount="3"
-        android:padding="16dp"
+        android:padding="8dp"
         android:useDefaultMargins="true" >
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
             android:gravity="center"
@@ -89,7 +88,7 @@
             android:textSize="45sp" />
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_width="75dp"
+            android:layout_width="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -100,7 +99,7 @@
             android:textSize="45sp" />
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_width="75dp"
+            android:layout_width="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -111,7 +110,7 @@
             android:textSize="45sp" />
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -142,7 +141,7 @@
             android:textSize="45sp" />
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
@@ -173,7 +172,7 @@
             android:textSize="45sp" />
 
         <com.medicbleep.app.chat.views.RobotoThinButton
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
             android:background="@drawable/circle_with_white_border"
