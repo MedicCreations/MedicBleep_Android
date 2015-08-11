@@ -28,6 +28,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -269,7 +270,7 @@ public class MessagesAdapter extends BaseAdapter {
 			} else if (msg.getType() == Const.MSG_TYPE_PHOTO) {
 				
 				holder.meViewImage.setImageDrawable(null);
-//				holder.meViewImage.setTag(msg.isEncrypted());
+				holder.meViewImage.setTag(msg.isEncrypted());
 				imageLoaderSpice.displayImage(holder.meViewImage, msg.thumb_id, ImageLoaderSpice.NO_IMAGE);
 
 				holder.meViewImage.setVisibility(View.VISIBLE);
@@ -300,19 +301,19 @@ public class MessagesAdapter extends BaseAdapter {
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px;\"";
 				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.meWebView, style);
 
-				holder.meWebView.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getText());
-						intent.putExtra(Const.FILE, (String) holder.meWebView.getTag());
-						intent.putExtra(Const.TYPE, msg.getType());
-						ctx.startActivity(intent);
-						if (ctx instanceof ChatActivity)
-							((ChatActivity) ctx).setIsResume(false);
-					}
-				});
+//				holder.meWebView.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, PhotoActivity.class);
+//						intent.putExtra(Const.IMAGE, msg.getText());
+//						intent.putExtra(Const.FILE, (String) holder.meWebView.getTag());
+//						intent.putExtra(Const.TYPE, msg.getType());
+//						ctx.startActivity(intent);
+//						if (ctx instanceof ChatActivity)
+//							((ChatActivity) ctx).setIsResume(false);
+//					}
+//				});
 
 				holder.meWebView.setOnLongClickListener(setLongClickListener(msg));
 				
@@ -518,19 +519,20 @@ public class MessagesAdapter extends BaseAdapter {
 				String style = "style=\"border: solid #fff 1px;border-radius: 10px; margin-top:5%; margin-left:5%;\"";
 				gifLoaderSpice.displayImage(ctx, msg.getText(), holder.youWebView, style);
 
-				holder.youWebView.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ctx, PhotoActivity.class);
-						intent.putExtra(Const.IMAGE, msg.getText());
-						intent.putExtra(Const.FILE, (String) holder.youWebView.getTag());
-						intent.putExtra(Const.TYPE, msg.getType());
-						ctx.startActivity(intent);
-						if (ctx instanceof ChatActivity)
-							((ChatActivity) ctx).setIsResume(false);
-					}
-				});
+//				holder.youWebView.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent(ctx, PhotoActivity.class);
+//						intent.putExtra(Const.IMAGE, msg.getText());
+//						intent.putExtra(Const.FILE, (String) holder.youWebView.getTag());
+//						Log.d("webViewTag",holder.youWebView.getTag().toString());
+//						intent.putExtra(Const.TYPE, msg.getType());
+//						ctx.startActivity(intent);
+//						if (ctx instanceof ChatActivity)
+//							((ChatActivity) ctx).setIsResume(false);
+//					}
+//				});
 				
 			}else if (msg.getType() == Const.MSG_TYPE_VIDEO) {
 
