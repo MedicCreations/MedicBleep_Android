@@ -4,11 +4,19 @@
     android:layout_height="wrap_content"
     android:background="@color/notification_shadow" >
 
-    <TextView
-        android:id="@+id/msgPop"
+    <ImageView
+        android:id="@+id/notification_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_stat_notify"/>
+
+    <TextView
+        android:id="@+id/msgPop"
+        android:layout_toRightOf="@id/notification_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:gravity="center"
         android:padding="10dp"
         android:textColor="@color/white"

@@ -131,7 +131,7 @@
     <string name="record">Record</string>
     <string name="gallery">Gallery</string>
     <string name="invalid_token_message">INVALID TOKEN</string>
-    <string name="msg_from">You have received a message from</string>
+    <string name="msg_from">New message from</string>
     <string name="no_items">No Items</string>
     <string name="no_messages">No Messages</string>
     <string name="file_download">File</string>

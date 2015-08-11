@@ -23,7 +23,7 @@
     <color name="person_blue">#379cc8</color>
     <color name="time_gray">#b5c2cb</color>
     <color name="blocked_shadow">#0D000000</color>
-    <color name="notification_shadow">#8074B1E2</color>
+    <color name="notification_shadow">#FF74B1E2</color>
     <color name="chat_menu_gray">#dde1e4</color>
     <color name="cloud_color">#9ecadc</color>
     <color name="text_gray_image">#7e7e7e</color>
