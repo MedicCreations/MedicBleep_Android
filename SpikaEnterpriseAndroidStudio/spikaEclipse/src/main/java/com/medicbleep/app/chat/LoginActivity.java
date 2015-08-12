@@ -121,6 +121,12 @@ public class LoginActivity extends LoginBaseActivity {
 					login();
                 }
             }
+			else {
+				boolean fromChangePassword = extras.getBoolean(Const.FROM_CHANGE_PASS);
+				if (fromChangePassword) {
+					login();
+				}
+			}
         }
 	}
 

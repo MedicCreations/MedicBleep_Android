@@ -91,6 +91,7 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
+					Helper.setPassword("");
 
 					AppDialog dialog = new AppDialog(ForgotPasswordActivity.this, true);
 					dialog.setInfo(getString(R.string.email_sent));

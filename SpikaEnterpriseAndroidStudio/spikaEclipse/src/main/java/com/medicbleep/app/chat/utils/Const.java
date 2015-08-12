@@ -112,6 +112,7 @@ public class Const {
 	public static final String IS_UPDATE_PRIVATE_PASSWORD = "IsUpdatePrivatePassword";
 	public static final String IS_UPDATE_PASSWORD = "IsUpdatePassword";
 	public static final String IS_UPDATE_CATEGORY = "IsUpdateCategory";
+	public static final String FROM_CHANGE_PASS = "from_change_pass";
 
 	// Recording constants
 	public static final long MAX_RECORDING_TIME_VIDEO = 30; // seconds

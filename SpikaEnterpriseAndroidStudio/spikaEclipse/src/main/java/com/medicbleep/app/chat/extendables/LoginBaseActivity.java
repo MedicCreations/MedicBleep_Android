@@ -180,6 +180,7 @@ public abstract class LoginBaseActivity extends Activity {
 					} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
 
 						Intent intent = new Intent(LoginBaseActivity.this, ChangePasswordActivity.class);
+						intent.putExtra(Const.USERNAME, user);
 						intent.putExtra(Const.TEMP_PASSWORD, pass);
 						startActivity(intent);
 						finish();
@@ -197,7 +198,7 @@ public abstract class LoginBaseActivity extends Activity {
 		});
 	}
 
-	protected void executeLoginApi(String user, final String pass, String organization_id, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException,
+	protected void executeLoginApi(final String user, final String pass, String organization_id, final Bundle extras, boolean showProgress) throws UnsupportedEncodingException,
 			NoSuchAlgorithmException {
 
 		handleProgress(showProgress);
@@ -242,6 +243,7 @@ public abstract class LoginBaseActivity extends Activity {
 					} else if (result.getCode() == Const.E_LOGIN_WITH_TEMP_PASS) {
 
 						Intent intent = new Intent(LoginBaseActivity.this, ChangePasswordActivity.class);
+						intent.putExtra(Const.USERNAME, user);
 						intent.putExtra(Const.TEMP_PASSWORD, pass);
 						startActivity(intent);
 						finish();

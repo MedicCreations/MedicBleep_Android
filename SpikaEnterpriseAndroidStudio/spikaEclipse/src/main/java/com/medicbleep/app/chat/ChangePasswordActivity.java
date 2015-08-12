@@ -156,7 +156,10 @@ public class ChangePasswordActivity extends BaseActivity {
 
 							startActivity(intent);
 						}else{
-                            Intent intent = new Intent(ChangePasswordActivity.this, MainActivity.class);
+                            Intent intent = new Intent(ChangePasswordActivity.this, LoginActivity.class);
+							intent.putExtra(Const.FROM_CHANGE_PASS, true);
+							Helper.setUsername(username);
+							Helper.setPassword(password);
                             startActivity(intent);
                         }
 
