@@ -71,6 +71,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:contentDescription="@null"
+            android:scaleType="centerCrop"
             android:src="@drawable/default_user_image" />
 
         <TextView

@@ -28,6 +28,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:scaleType="centerCrop"
                 android:contentDescription="@null" />
             <!--
                 <com.medicbleep.app.chat.views.RoundCornersImageView
