@@ -32,6 +32,7 @@ public class SplashActivity extends LoginBaseActivity {
 
 	Bundle extras;
 	boolean goToLogin;
+	boolean shouldShowLocationDialogOnResume = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,11 @@ public class SplashActivity extends LoginBaseActivity {
 		intentFilter.addAction(LocationUtility.LOCATION_SETTINGS_ERROR);
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
 		Log.i("Broadcast", "Broadcast receiver set up: " + broadcastReceiverImplementation);
-		continueToNextScreen();
+
+		if(shouldShowLocationDialogOnResume){
+			dialogExists = false;
+			showLocationSettings();
+		}
 	}
 
 	@Override
@@ -138,6 +143,7 @@ public class SplashActivity extends LoginBaseActivity {
 	protected void showLocationSettings () {
 		if (dialogExists) return;
 		dialogExists = true;
+		shouldShowLocationDialogOnResume = true;
 		final AppDialog dialog = new AppDialog(SplashActivity.this, true);
 		dialog.setYesNo(getString(R.string.location_services_turned_off_go_to_settings), getString(R.string.yes), getString(R.string.no));
 		dialog.setCancelable(false);
@@ -145,6 +151,7 @@ public class SplashActivity extends LoginBaseActivity {
 			@Override
 			public void onPositiveButtonClick(View v, Dialog d) {
 				dialogExists = false;
+				shouldShowLocationDialogOnResume = false;
 				d.dismiss();
 				Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -155,6 +162,7 @@ public class SplashActivity extends LoginBaseActivity {
 			@Override
 			public void onNegativeButtonClick(View v, Dialog d) {
 				dialogExists = false;
+				shouldShowLocationDialogOnResume = false;
 				d.dismiss();
 				finish();
 			}

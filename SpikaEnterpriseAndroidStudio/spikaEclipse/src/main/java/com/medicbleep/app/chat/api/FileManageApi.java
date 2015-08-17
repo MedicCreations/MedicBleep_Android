@@ -286,11 +286,15 @@ public class FileManageApi {
 					downloadedFile.mkdir();
 				}
 
-				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS + "/" + fileName);
+				downloadedFile = new File(android.os.Environment.getExternalStorageDirectory(), Const.APP_FILES_DIRECTORY + Const.APP_FILED_DOWNLOADS + "/" + id + "_" + fileName);
 				Log.e("LOG", "FILE: " + downloadedFile.getAbsolutePath());
 			};
 
 			protected Void doInBackground(Void... paramss) {
+
+				if(downloadedFile.exists()){
+					return null;
+				}
 
 				HashMap<String, String> getParams = new HashMap<String, String>();
 				getParams.put(Const.FILE_ID, fileId);
