@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -210,6 +211,10 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 		}
 
 		adapter.notifyDataSetChanged();
+
+		if(!TextUtils.isEmpty(chatId)){
+			removeNotificationForChat(chatId);
+		}
 	}
 
 	IntentFilter adminFilter = new IntentFilter(Const.IS_ADMIN);
@@ -512,6 +517,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 				adapter.clearItems();
 			}
 
+			removeNotificationForChat(chatId);
+
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
@@ -588,6 +595,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 					chatId = String.valueOf(result.getId());
 					chatName = result.chat_name;
+
+					removeNotificationForChat(chatId);
 
 					setTitle(chatName);
 
@@ -1191,9 +1200,9 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			@Override
 			public void onRequestSuccess(BaseModel result) {
-                Intent inBroadcast = new Intent();
-                inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
-                LocalBroadcastManager.getInstance(ChatActivity.this).sendBroadcast(inBroadcast);
+				Intent inBroadcast = new Intent();
+				inBroadcast.setAction(Const.ACTION_REFRESH_ROOMS);
+				LocalBroadcastManager.getInstance(ChatActivity.this).sendBroadcast(inBroadcast);
 				handleProgress(false);
 
 				if (result.getCode() == Const.API_SUCCESS) {
@@ -1225,5 +1234,15 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 	@Override
 	public void onInternetError() {
 		setViewNoInternetConnection(R.id.rootView, R.id.actionBarLayout);
+	}
+
+	private void removeNotificationForChat(String chatId){
+		try {
+			int chatIdInt = Integer.valueOf(chatId);
+			NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+			notificationManager.cancel(chatIdInt);
+		}catch (Exception e){
+
+		}
 	}
 }

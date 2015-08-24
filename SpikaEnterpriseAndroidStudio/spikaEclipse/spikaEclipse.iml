@@ -12,10 +12,12 @@
         <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDevDebug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileDevDebugSources" />
-        <option name="SOURCE_GEN_TASK_NAME" value="generateDevDebugSources" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDevDebugAndroidTest" />
         <option name="COMPILE_JAVA_TEST_TASK_NAME" value="compileDevDebugAndroidTestSources" />
-        <option name="TEST_SOURCE_GEN_TASK_NAME" value="generateDevDebugAndroidTestSources" />
+        <afterSyncTasks>
+          <task>generateDevDebugAndroidTestSources</task>
+          <task>generateDevDebugSources</task>
+        </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
@@ -115,12 +117,12 @@
     <orderEntry type="library" exported="" name="play-services-base-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.5.0" level="project" />
-    <orderEntry type="library" exported="" name="httpclient-4.3.6" level="project" />
     <orderEntry type="library" exported="" name="robospice-cache-1.4.11" level="project" />
-    <orderEntry type="library" exported="" name="robospice-okhttp-1.4.14" level="project" />
+    <orderEntry type="library" exported="" name="httpclient-4.3.6" level="project" />
     <orderEntry type="library" exported="" name="lib_android_websockets" level="project" />
-    <orderEntry type="library" exported="" name="jackson-databind-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="robospice-okhttp-1.4.14" level="project" />
     <orderEntry type="library" exported="" name="socketio" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.5.0" level="project" />
     <orderEntry type="library" exported="" name="support-v13-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="gcm" level="project" />
