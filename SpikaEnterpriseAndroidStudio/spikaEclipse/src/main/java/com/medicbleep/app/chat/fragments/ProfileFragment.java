@@ -71,7 +71,7 @@ public class ProfileFragment extends CustomFragment implements OnClickListener, 
 
 		View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-		rootView.findViewById(R.id.addPhoto).setOnClickListener(this);
+//		rootView.findViewById(R.id.addPhoto).setOnClickListener(this);
 		((TextView) rootView.findViewById(R.id.profileName)).setText(firstname + " " + lastname);
 
 		profileImage = (ImageView) rootView.findViewById(R.id.profileImage);
