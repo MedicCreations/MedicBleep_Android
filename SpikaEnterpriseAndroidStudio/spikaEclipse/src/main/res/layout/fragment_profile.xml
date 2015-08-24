@@ -59,7 +59,7 @@
             android:layout_marginRight="10dp"
             android:gravity="center"
             android:textColor="@android:color/white"
-            android:textSize="45sp"
+            android:textSize="35sp"
             tools:text="John Doe" />
 
         <FrameLayout
@@ -100,11 +100,12 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/frameLayoutPasscode"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/selector_color_transp"
+            android:background="@color/trans"
             android:padding="10dp"
             android:text="@string/change_password_title"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/white_selector" />
     </RelativeLayout>
 
 </ScrollView>

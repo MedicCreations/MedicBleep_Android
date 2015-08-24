@@ -23,7 +23,7 @@ public class RobotoThinTextView extends TextView {
 	}
 
 	private void setFont() {
-		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Regular.ttf");
+		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Thin.ttf");
 		setTypeface(typeface);
 	}
 

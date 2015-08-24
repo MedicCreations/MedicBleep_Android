@@ -175,10 +175,9 @@
             android:layout_height="70dp"
             android:layout_columnSpan="1"
             android:layout_gravity="fill"
-            android:background="@drawable/circle_with_white_border"
+            android:background="@color/trans"
             android:gravity="center"
-            android:onClick="onPasscodeExecute"
-            android:text="Delete"
+            android:text=""
             android:textColor="@color/white_selector"
             android:textSize="20sp" />
 
@@ -191,6 +190,17 @@
             android:text="0"
             android:textColor="@color/white_selector"
             android:textSize="45sp" />
+
+        <com.medicbleep.app.chat.views.RobotoRegularButton
+            android:layout_height="70dp"
+            android:layout_columnSpan="1"
+            android:layout_gravity="fill"
+            android:background="@color/trans"
+            android:gravity="center"
+            android:onClick="onPasscodeExecute"
+            android:text="Delete"
+            android:textColor="@color/white_selector"
+            android:textSize="20sp" />
     </GridLayout>
 
 </RelativeLayout>
