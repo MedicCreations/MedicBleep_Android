@@ -199,7 +199,10 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			@Override
 			public void onRequestSuccess(GlobalResponse result) {
 				super.onRequestSuccess(result);
-				setData(result.getModelsList(), toClear);
+				if (result.search_result != null){
+					setData(result.getModelsList(), toClear);
+				}
+
 			}
 
 			@Override
