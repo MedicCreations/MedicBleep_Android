@@ -79,7 +79,17 @@ public class Chat extends BaseModel implements Parcelable{
         long currentTimeDay = currentTime / 86400000;
         long timeDay = time / 86400;
         if(currentTimeDay == timeDay){
-            return justTime(time);
+            long offset = currentTime / 1000 - time;
+            if(offset < 60){
+                return offset + " " + res.getString(R.string._seconds_ago);
+            }else if(offset / 60 == 1){
+                return res.getString(R.string.a_minute_ago);
+            }else if(offset / 60 < 60){
+                return offset / 60 + " " + res.getString(R.string._minutes_ago);
+            }else if(offset / 3600 == 1){
+                return res.getString(R.string.an_hour_ago);
+            }
+            return offset / 3600 + " " + res.getString(R.string._hours_ago);
         }else{
             long offset = currentTimeDay - timeDay;
             if(offset == 1){

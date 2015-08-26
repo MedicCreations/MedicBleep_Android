@@ -86,7 +86,7 @@
     <string name="e_while_encrypting">Error while encrypting.</string>
     <string name="file_size_error">Files larger than 8MB cannot be uploaded.</string>
     <string name="e_chat_inactive">Unable to send message because chat is inactive</string>
-    <string name="chat_has_been_deleted_">Chat has been deleted.</string>
+    <string name="chat_has_been_deleted_">This group has been deleted.</string>
     <string name="page_has_not_been_found_">Page has not been found.</string>
     <string name="you_are_not_a_group_admin_">You are not a group admin.</string>
     <string name="temp_password_is_not_valid_">Temp password is not valid.</string>
@@ -175,15 +175,15 @@
     </string-array>
     <string-array name="room_chat_admin_active_settings_array">
         <item>Show profile</item>
-        <item>Manage members</item>
-        <item>Deactivate</item>
-        <item>Delete</item>
+        <item>Manage users</item>
+        <item>Deactivate group</item>
+        <item>Delete group</item>
     </string-array>
     <string-array name="room_chat_admin_inactive_settings_array">
         <item>Show profile</item>
-        <item>Manage members</item>
-        <item>Activate</item>
-        <item>Delete</item>
+        <item>Manage users</item>
+        <item>Activate group</item>
+        <item>Delete group</item>
     </string-array>
 
     <string name="selected_users">"Selected: "</string>
@@ -393,5 +393,10 @@
     <string name="yesterday">yesterday</string>
     <string name="remove_photo">Remove Photo</string>
     <string name="invalid_phone_number">Invalid Phone Number</string>
+    <string name="_seconds_ago">" seconds ago"</string>
+    <string name="a_minute_ago">A minute ago</string>
+    <string name="_minutes_ago">" minutes ago"</string>
+    <string name="an_hour_ago">An hour ago</string>
+    <string name="_hours_ago">" hours ago"</string>
 
 </resources>

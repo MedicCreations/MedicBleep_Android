@@ -164,7 +164,13 @@ public class SplashActivity extends LoginBaseActivity {
 				dialogExists = false;
 				shouldShowLocationDialogOnResume = false;
 				d.dismiss();
+				Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+				if (extras != null) {
+					i.putExtras(extras);
+				}
+				startActivity(i);
 				finish();
+
 			}
 		});
 	}

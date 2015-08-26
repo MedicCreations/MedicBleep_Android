@@ -23,7 +23,7 @@ public class RobotoThinButton extends Button {
 	}
 
 	private void init() {
-		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Regular.ttf");
+		Typeface typeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/Roboto-Thin.ttf");
 		setTypeface(typeface);
 	}
 
