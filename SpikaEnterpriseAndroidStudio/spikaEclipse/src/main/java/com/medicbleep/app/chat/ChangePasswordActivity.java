@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.medicbleep.app.chat.api.robospice.UserSpice;
+import com.medicbleep.app.chat.dialogs.AppDialog;
 import com.medicbleep.app.chat.extendables.BaseActivity;
 import com.medicbleep.app.chat.models.Login;
 import com.medicbleep.app.chat.models.Organization;
@@ -19,6 +20,7 @@ import com.medicbleep.app.chat.services.robospice.CustomSpiceListener;
 import com.medicbleep.app.chat.utils.Const;
 import com.medicbleep.app.chat.utils.Helper;
 import com.medicbleep.app.chat.utils.Utils;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class ChangePasswordActivity extends BaseActivity {
@@ -134,7 +136,11 @@ public class ChangePasswordActivity extends BaseActivity {
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ChangePasswordActivity.this);
+				if(arg0 instanceof NoNetworkException){
+					new AppDialog(ChangePasswordActivity.this, false).setFailed(getResources().getString(R.string.no_internet_connection_));
+				}else{
+					Utils.onFailedUniversal(null, ChangePasswordActivity.this, arg0);
+				}
 			}
 
 			@Override
@@ -168,7 +174,7 @@ public class ChangePasswordActivity extends BaseActivity {
 					finish();
 					
 				} else {
-					Utils.onFailedUniversal(Helper.errorDescriptions(ChangePasswordActivity.this, result.getCode()), ChangePasswordActivity.this);
+					Utils.onFailedUniversal(Helper.errorDescriptions(ChangePasswordActivity.this, result.getCode()), ChangePasswordActivity.this, null);
 				}
 			}
 		});

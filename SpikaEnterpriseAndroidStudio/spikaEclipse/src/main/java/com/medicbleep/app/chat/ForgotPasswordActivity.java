@@ -82,7 +82,7 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ForgotPasswordActivity.this);
+				Utils.onFailedUniversal(null, ForgotPasswordActivity.this, arg0);
 			}
 
 			@Override
@@ -97,7 +97,7 @@ public class ForgotPasswordActivity extends BaseActivity implements OnClickListe
 					dialog.setInfo(getString(R.string.email_sent));
 
 				} else {
-					Utils.onFailedUniversal(Helper.errorDescriptions(ForgotPasswordActivity.this, result.getCode()), ForgotPasswordActivity.this);
+					Utils.onFailedUniversal(Helper.errorDescriptions(ForgotPasswordActivity.this, result.getCode()), ForgotPasswordActivity.this, null);
 				}
 			}
 		});

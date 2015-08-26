@@ -157,7 +157,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
             public void onRequestFailure(SpiceException arg0) {
                 super.onRequestFailure(arg0);
                 mPagerAdapter.hideProgress();
-                Utils.onFailedUniversal(null, ManageUsersActivity.this, 0 , false);
+                Utils.onFailedUniversal(null, ManageUsersActivity.this, 0 , false, arg0);
             }
 
             @Override
@@ -176,7 +176,7 @@ public class ManageUsersActivity extends BaseActivity implements ViewPager.OnPag
 
                 } else {
                     String message = getString(R.string.e_something_went_wrong);
-                    Utils.onFailedUniversal(message, ManageUsersActivity.this, result.getCode(), false);
+                    Utils.onFailedUniversal(message, ManageUsersActivity.this, result.getCode(), false, null);
                 }
             }
         });

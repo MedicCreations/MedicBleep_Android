@@ -33,7 +33,7 @@ public class StickersCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, activity);
+				Utils.onFailedUniversal(null, activity, ex);
 			}
 
 			@Override
@@ -57,7 +57,7 @@ public class StickersCaching {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});

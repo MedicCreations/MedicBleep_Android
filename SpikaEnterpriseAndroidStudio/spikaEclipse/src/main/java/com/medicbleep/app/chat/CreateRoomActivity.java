@@ -188,7 +188,7 @@ public class CreateRoomActivity extends BaseActivity {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CreateRoomActivity.this);
+				Utils.onFailedUniversal(null, CreateRoomActivity.this, ex);
 			}
 
 			@Override

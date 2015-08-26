@@ -512,7 +512,7 @@ public class RecordAudioActivity extends BaseActivity {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, RecordAudioActivity.this);
+				Utils.onFailedUniversal(null, RecordAudioActivity.this, ex);
 			}
 
 			@Override

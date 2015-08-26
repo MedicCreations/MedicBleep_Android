@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 /**
@@ -37,6 +38,7 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
     public static final String COUNTRY_CODE_UPDATED = "COUNTRY_CODE_UPDATED";
     public static final String LOCATION_UPDATED = "LOCATION_UPDATED";
     public static final String LOCATION_SETTINGS_ERROR = "LOCATION_SETTINGS_ERROR";
+    public static final String NO_NETWORK = "NO_NETWORK";
 
     public boolean isLocationSettingsStatusOK = false;
 
@@ -178,6 +180,11 @@ public class LocationUtility implements GoogleApiClient.ConnectionCallbacks, Goo
             @Override
             public void onRequestFailure(SpiceException arg0) {
                 super.onRequestFailure(arg0);
+                if(arg0 instanceof NoNetworkException){
+                    Log.i("******************", "NO NETWORK");
+                    Intent i = new Intent(NO_NETWORK);
+                    localBroadcastManager.sendBroadcast(i);
+                }
             }
 
             @Override

@@ -571,7 +571,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 				@Override
 				public void onRequestFailure(SpiceException ex) {
 					super.onRequestFailure(ex);
-					Utils.onFailedUniversal(null, BaseChatActivity.this);
+					Utils.onFailedUniversal(null, BaseChatActivity.this, ex);
 				}
 
 				@Override
@@ -725,7 +725,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 					public void onRequestFailure(SpiceException arg0) {
 						super.onRequestFailure(arg0);
 //						handleProgress(false);
-						Utils.onFailedUniversal(null, BaseChatActivity.this);
+						Utils.onFailedUniversal(null, BaseChatActivity.this, arg0);
 					}
 
 					@Override

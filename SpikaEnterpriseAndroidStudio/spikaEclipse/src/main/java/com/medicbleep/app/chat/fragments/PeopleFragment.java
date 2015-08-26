@@ -205,7 +205,7 @@ public class PeopleFragment extends CustomFragment implements OnItemClickListene
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, getActivity(), 0, false);
+				Utils.onFailedUniversal(null, getActivity(), 0, false, arg0);
 			}
 		});
 	}

@@ -377,7 +377,7 @@ public class InviteUsersFragment extends CustomFragment implements AdapterView.O
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
+				Utils.onFailedUniversal(null, getActivity(), ex);
 			}
 
 			@Override

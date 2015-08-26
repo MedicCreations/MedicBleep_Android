@@ -211,7 +211,7 @@ public class ChooseLobbyActivity extends BaseActivity implements OnItemClickList
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ChooseLobbyActivity.this);
+				Utils.onFailedUniversal(null, ChooseLobbyActivity.this, ex);
 			}
 
 			@Override

@@ -50,7 +50,7 @@ public class ChatMembersCaching {
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, activity);
+				Utils.onFailedUniversal(null, activity, arg0);
 			}
 
 			@Override
@@ -64,7 +64,7 @@ public class ChatMembersCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});

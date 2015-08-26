@@ -43,7 +43,7 @@ public class LobbyCaching {
 				if(activity instanceof MainActivity){
 					Utils.onFailedUniversal(null, activity, 0 , false, ex, ((MainActivity)activity).getInternetErrorListener());
 				}else{
-					Utils.onFailedUniversal(null, activity, 0 , false);
+					Utils.onFailedUniversal(null, activity, 0 , false, ex);
 				}
 			}
 
@@ -68,7 +68,7 @@ public class LobbyCaching {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});

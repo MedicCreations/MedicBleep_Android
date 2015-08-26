@@ -277,7 +277,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ThreadsActivity.this);
+				Utils.onFailedUniversal(null, ThreadsActivity.this, ex);
 			}
 
 			@Override
@@ -297,7 +297,7 @@ public class ThreadsActivity extends BaseChatActivity implements AdapterView.OnI
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ThreadsActivity.this);
+				Utils.onFailedUniversal(null, ThreadsActivity.this, ex);
 			}
 
 			@Override

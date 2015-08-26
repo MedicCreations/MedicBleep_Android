@@ -298,7 +298,7 @@ public class ProfileGroupActivity extends BaseActivity implements OnPageChangeLi
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, ProfileGroupActivity.this);
+				Utils.onFailedUniversal(null, ProfileGroupActivity.this, ex);
 			}
 
 			@Override

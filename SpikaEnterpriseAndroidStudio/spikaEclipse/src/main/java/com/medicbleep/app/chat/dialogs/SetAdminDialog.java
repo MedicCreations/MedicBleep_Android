@@ -189,7 +189,7 @@ public class SetAdminDialog extends Dialog implements OnItemClickListener, OnGlo
 				@Override
 				public void onRequestFailure(SpiceException ex) {
 					((BaseActivity) getOwnerActivity()).handleProgress(false);
-					Utils.onFailedUniversal(null, getOwnerActivity());
+					Utils.onFailedUniversal(null, getOwnerActivity(), ex);
 				}
 
 				@Override

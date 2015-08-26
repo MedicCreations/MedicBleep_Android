@@ -187,7 +187,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 					@Override
 					public void onRequestFailure(SpiceException ex) {
 						super.onRequestFailure(ex);
-						Utils.onFailedUniversal(null, getActivity());
+						Utils.onFailedUniversal(null, getActivity(), ex);
 					}
 
 					@Override
@@ -209,7 +209,7 @@ public class RecentFragment extends CustomFragment implements OnItemClickListene
 								message = result.getMessage();
 							}
 
-							Utils.onFailedUniversal(message, getActivity(), result.getCode(), false);
+							Utils.onFailedUniversal(message, getActivity(), result.getCode(), false, null);
 						}
 					}
 				});

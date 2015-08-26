@@ -145,7 +145,7 @@ public class RecordVideoActivity extends BaseActivity {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, RecordVideoActivity.this);
+				Utils.onFailedUniversal(null, RecordVideoActivity.this, ex);
 			}
 
 			@Override

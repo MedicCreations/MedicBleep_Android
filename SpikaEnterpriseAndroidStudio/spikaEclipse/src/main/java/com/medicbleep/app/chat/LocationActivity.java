@@ -168,7 +168,7 @@ public class LocationActivity extends BaseActivity {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, LocationActivity.this);
+				Utils.onFailedUniversal(null, LocationActivity.this, ex);
 			}
 
 			@Override

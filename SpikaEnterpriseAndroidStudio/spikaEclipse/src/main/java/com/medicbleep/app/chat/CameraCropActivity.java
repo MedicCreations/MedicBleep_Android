@@ -631,7 +631,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CameraCropActivity.this);
+				Utils.onFailedUniversal(null, CameraCropActivity.this, ex);
 			}
 
 			@Override
@@ -662,7 +662,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CameraCropActivity.this);
+				Utils.onFailedUniversal(null, CameraCropActivity.this, arg0);
 			}
 
 			@Override
@@ -674,7 +674,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 					Helper.setUserImage(fileId);
 					finish();
 				} else {
-					Utils.onFailedUniversal(Helper.errorDescriptions(CameraCropActivity.this, result.getCode()), CameraCropActivity.this);
+					Utils.onFailedUniversal(Helper.errorDescriptions(CameraCropActivity.this, result.getCode()), CameraCropActivity.this, null);
 				}
 			}
 		});
@@ -692,7 +692,7 @@ public class CameraCropActivity extends BaseActivity implements OnClickListener 
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CameraCropActivity.this);
+				Utils.onFailedUniversal(null, CameraCropActivity.this, ex);
 			}
 
 			@Override

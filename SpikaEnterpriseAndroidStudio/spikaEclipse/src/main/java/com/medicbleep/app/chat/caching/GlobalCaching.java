@@ -60,7 +60,7 @@ public class GlobalCaching {
 				if(activity instanceof MainActivity){
 					Utils.onFailedUniversal(null, activity, 0 , false, arg0, ((MainActivity)activity).getInternetErrorListener());
 				}else{
-					Utils.onFailedUniversal(null, activity, 0 , false);
+					Utils.onFailedUniversal(null, activity, 0 , false, arg0);
 				}
 			}
 
@@ -80,7 +80,7 @@ public class GlobalCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});
@@ -102,7 +102,7 @@ public class GlobalCaching {
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, activity);
+				Utils.onFailedUniversal(null, activity, arg0);
 			}
 
 			@Override
@@ -121,7 +121,7 @@ public class GlobalCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});

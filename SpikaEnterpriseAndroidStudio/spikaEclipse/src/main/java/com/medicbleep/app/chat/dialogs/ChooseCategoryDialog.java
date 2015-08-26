@@ -124,7 +124,7 @@ public class ChooseCategoryDialog extends Dialog implements OnItemClickListener,
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
 				findViewById(R.id.progressLoading).setVisibility(View.GONE);
-				Utils.onFailedUniversal(null, getOwnerActivity());
+				Utils.onFailedUniversal(null, getOwnerActivity(), ex);
 			}
 
 			@Override

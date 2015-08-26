@@ -224,7 +224,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			@Override
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
-				Utils.onFailedUniversal(null, InvitePeopleActivity.this, 0 , false);
+				Utils.onFailedUniversal(null, InvitePeopleActivity.this, 0 , false, arg0);
 			}
 
 			@Override
@@ -235,7 +235,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 					setData(result.getModelsList(), toClear);
 				} else {
 					String message = getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, InvitePeopleActivity.this, result.getCode(), false);
+					Utils.onFailedUniversal(message, InvitePeopleActivity.this, result.getCode(), false, null);
 				}
 			}
 		});
@@ -289,7 +289,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, InvitePeopleActivity.this);
+				Utils.onFailedUniversal(null, InvitePeopleActivity.this, arg0);
 			}
 
 			@Override
@@ -303,7 +303,7 @@ public class InvitePeopleActivity extends BaseActivity implements OnItemClickLis
 					finish();
 
 				} else {
-					Utils.onFailedUniversal(Helper.errorDescriptions(InvitePeopleActivity.this, result.getCode()), InvitePeopleActivity.this);
+					Utils.onFailedUniversal(Helper.errorDescriptions(InvitePeopleActivity.this, result.getCode()), InvitePeopleActivity.this, null);
 				}
 			}
 		});

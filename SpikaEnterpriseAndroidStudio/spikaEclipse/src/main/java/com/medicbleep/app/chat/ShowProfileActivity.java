@@ -183,7 +183,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 					public void onRequestFailure(SpiceException arg0) {
 						super.onRequestFailure(arg0);
 						handleProgress(false);
-						Utils.onFailedUniversal(null, ShowProfileActivity.this);
+						Utils.onFailedUniversal(null, ShowProfileActivity.this, arg0);
 					}
 
 					@Override
@@ -194,7 +194,7 @@ public class ShowProfileActivity extends BaseActivity implements OnClickListener
 						if (result.getCode() == Const.API_SUCCESS) {
 							backToShow(true);
 						} else {
-							Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this);
+							Utils.onFailedUniversal(Helper.errorDescriptions(ShowProfileActivity.this, result.getCode()), ShowProfileActivity.this, null);
 						}
 					}
 				});

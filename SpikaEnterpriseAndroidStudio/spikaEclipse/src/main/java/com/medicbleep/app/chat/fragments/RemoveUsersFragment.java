@@ -94,7 +94,7 @@ public class RemoveUsersFragment extends MembersFragment implements AdapterView.
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
+				Utils.onFailedUniversal(null, getActivity(), ex);
 			}
 
 			@Override

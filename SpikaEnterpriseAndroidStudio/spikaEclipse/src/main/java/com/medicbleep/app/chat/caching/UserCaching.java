@@ -40,7 +40,7 @@ public class UserCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				Utils.onFailedUniversal(null, activity);
+				Utils.onFailedUniversal(null, activity, ex);
 			}
 
 			@Override
@@ -54,7 +54,7 @@ public class UserCaching {
 
 				} else {
 					String message = activity.getString(R.string.e_something_went_wrong);
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 		});

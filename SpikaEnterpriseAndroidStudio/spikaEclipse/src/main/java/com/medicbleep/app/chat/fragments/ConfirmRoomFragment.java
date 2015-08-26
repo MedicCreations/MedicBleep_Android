@@ -234,7 +234,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
+				Utils.onFailedUniversal(null, getActivity(), ex);
 			}
 
 			@Override
@@ -256,7 +256,7 @@ public class ConfirmRoomFragment extends CustomFragment implements OnCreateRoomL
 
 					setData(globalList);
 				} else {
-					Utils.onFailedUniversal(null, getActivity());
+					Utils.onFailedUniversal(null, getActivity(), null);
 				}
 			}
 		});

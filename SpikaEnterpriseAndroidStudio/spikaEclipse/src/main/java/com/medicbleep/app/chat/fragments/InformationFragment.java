@@ -64,7 +64,7 @@ public class InformationFragment extends CustomFragment {
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, getActivity());
+				Utils.onFailedUniversal(null, getActivity(), arg0);
 			}
 			
 			@Override
@@ -76,7 +76,7 @@ public class InformationFragment extends CustomFragment {
 					mUrl = result.url;
 					setUrl();
 				}else{
-					Utils.onFailedUniversal(Helper.errorDescriptions(getActivity(), result.getCode()), getActivity());
+					Utils.onFailedUniversal(Helper.errorDescriptions(getActivity(), result.getCode()), getActivity(), null);
 				}
 			}
 		});

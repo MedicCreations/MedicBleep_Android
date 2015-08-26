@@ -3,6 +3,7 @@ package com.medicbleep.app.chat;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class SplashActivity extends LoginBaseActivity {
 	Bundle extras;
 	boolean goToLogin;
 	boolean shouldShowLocationDialogOnResume = false;
+    boolean shouldShowNoNetworkDialogOnResume = false;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class SplashActivity extends LoginBaseActivity {
 		} else {
 			goToLogin = true;
 		}
+
 	}
 
 	@Override
@@ -74,6 +77,7 @@ public class SplashActivity extends LoginBaseActivity {
 
 		IntentFilter intentFilter = new IntentFilter(LocationUtility.COUNTRY_CODE_UPDATED);
 		intentFilter.addAction(LocationUtility.LOCATION_SETTINGS_ERROR);
+        intentFilter.addAction(LocationUtility.NO_NETWORK);
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
 		Log.i("Broadcast", "Broadcast receiver set up: " + broadcastReceiverImplementation);
 
@@ -81,6 +85,11 @@ public class SplashActivity extends LoginBaseActivity {
 			dialogExists = false;
 			showLocationSettings();
 		}
+
+        if(shouldShowNoNetworkDialogOnResume){
+            noNetworkDialogExist = false;
+            showNoNetworkDialog();
+        }
 	}
 
 	@Override
@@ -92,7 +101,7 @@ public class SplashActivity extends LoginBaseActivity {
 	private void login() {
 
 		try {
-			
+
 			executePreLoginApi(Helper.getUsername(), Helper.getPassword(), extras, false);
 			
 		} catch (UnsupportedEncodingException e) {
@@ -117,8 +126,12 @@ public class SplashActivity extends LoginBaseActivity {
 			else if (intent.getAction().equals(LocationUtility.LOCATION_SETTINGS_ERROR)) {
 				showLocationSettings();
 			}
+            else if (intent.getAction().equals(LocationUtility.NO_NETWORK)) {
+                showNoNetworkDialog();
+            }
 		}
-	};
+
+    };
 
 	void continueToNextScreen () {
 		if (LocationUtility.getInstance() == null) {
@@ -138,6 +151,29 @@ public class SplashActivity extends LoginBaseActivity {
 			}
 		}
 	}
+
+    boolean noNetworkDialogExist = false;
+    private void showNoNetworkDialog() {
+        if (noNetworkDialogExist) return;
+        noNetworkDialogExist = true;
+        shouldShowNoNetworkDialogOnResume = true;
+        final AppDialog dialog = new AppDialog(SplashActivity.this, false);
+        dialog.setFailed(getString(R.string.no_internet_connection_));
+        dialog.setCancelable(false);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                noNetworkDialogExist = false;
+                shouldShowNoNetworkDialogOnResume = false;
+                Intent i = new Intent(SplashActivity.this, LoginActivity.class);
+                if (extras != null) {
+                    i.putExtras(extras);
+                }
+                startActivity(i);
+                finish();
+            }
+        });
+    }
 
 	boolean dialogExists = false;
 	protected void showLocationSettings () {

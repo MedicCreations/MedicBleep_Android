@@ -455,16 +455,16 @@ public class Utils {
 		return false;
 	}
 
-	public static void onFailedUniversal(String message, final Context ctx, int code) {
-		onFailedUniversal(message, ctx, code, true);
+	public static void onFailedUniversal(String message, final Context ctx, int code, SpiceException ex) {
+		onFailedUniversal(message, ctx, code, false, ex);
 	}
 
-	public static void onFailedUniversal(String message, final Context ctx) {
-		onFailedUniversal(message, ctx, 0, true);
+	public static void onFailedUniversal(String message, final Context ctx, SpiceException ex) {
+		onFailedUniversal(message, ctx, 0, false, ex);
 	}
 
-	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity) {
-		onFailedUniversal(message, ctx, code, finishActivity, null, null);
+	public static void onFailedUniversal(String message, final Context ctx, int code, final boolean finishActivity, SpiceException ex) {
+		onFailedUniversal(message, ctx, code, finishActivity, ex, null);
 	}
 	
 	public static void onFailedUniversal(String message, final Context ctx, final int code, final boolean finishActivity, SpiceException ex, OnInternetErrorListener listener) {
@@ -474,11 +474,13 @@ public class Utils {
 				listener.onInternetError();
 				return;
 			}
-			message = ex.getMessage();
+			message = ctx.getString(R.string.no_internet_connection_);
 		}
-		
-		message = Helper.errorDescriptions(ctx, code);
-		
+
+		if (TextUtils.isEmpty(message)) {
+			message = Helper.errorDescriptions(ctx, code);
+		}
+
 		if (TextUtils.isEmpty(message)) {
 			message = ctx.getString(R.string.e_something_went_wrong);
 		}

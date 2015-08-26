@@ -130,7 +130,7 @@ public class FileManageApi {
 					} else {
 						result = new Result<UploadFileModel>(Result.ApiResponseState.FAILURE);
 						UploadFileModel data = new UploadFileModel();
-						data.setMessage(context.getResources().getString(R.string.e_while_encrypting));
+						data.setMessage(context.getResources().getString(R.string.e_error_uploading_file));
 						result.setResultData(data);
 					}
 

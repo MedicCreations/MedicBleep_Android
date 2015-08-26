@@ -64,7 +64,7 @@ public class ThreadCaching {
 						message = result.getMessage();
 					}
 
-					Utils.onFailedUniversal(message, activity, result.getCode(), false);
+					Utils.onFailedUniversal(message, activity, result.getCode(), false, null);
 				}
 			}
 

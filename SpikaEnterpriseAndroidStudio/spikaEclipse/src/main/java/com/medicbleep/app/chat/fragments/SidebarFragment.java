@@ -19,6 +19,7 @@ import com.medicbleep.app.chat.extendables.CustomFragment;
 import com.medicbleep.app.chat.lazy.ImageLoaderSpice;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceListener;
 import com.medicbleep.app.chat.utils.Helper;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
 public class SidebarFragment extends CustomFragment implements OnClickListener {
@@ -147,7 +148,11 @@ public class SidebarFragment extends CustomFragment implements OnClickListener {
 				public void onRequestFailure(SpiceException arg0) {
 					super.onRequestFailure(arg0);
 					handleProgress(false);
-					new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
+					if(arg0 instanceof NoNetworkException){
+						new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.no_internet_connection_));
+					}else{
+						new AppDialog(getActivity(), false).setFailed(getResources().getString(R.string.e_error_while_logout));
+					}
 				}
 				
 				@Override

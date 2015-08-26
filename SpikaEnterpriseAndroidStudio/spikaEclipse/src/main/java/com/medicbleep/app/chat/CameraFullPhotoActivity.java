@@ -566,7 +566,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this);
+				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this, ex);
 			}
 
 			@Override
@@ -597,7 +597,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 			public void onRequestFailure(SpiceException arg0) {
 				super.onRequestFailure(arg0);
 				handleProgress(false);
-				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this);
+				Utils.onFailedUniversal(null, CameraFullPhotoActivity.this, arg0);
 			}
 
 			@Override
@@ -609,7 +609,7 @@ public class CameraFullPhotoActivity extends BaseActivity implements OnClickList
 					Helper.setUserImage(fileId);
 					finish();
 				} else {
-					Utils.onFailedUniversal(Helper.errorDescriptions(CameraFullPhotoActivity.this, result.getCode()), CameraFullPhotoActivity.this);
+					Utils.onFailedUniversal(Helper.errorDescriptions(CameraFullPhotoActivity.this, result.getCode()), CameraFullPhotoActivity.this, null);
 				}
 			}
 		});
