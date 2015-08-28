@@ -15,4 +15,13 @@ public class LobbyModel extends BaseModel {
 		all_chats = new AllLobby();
 	}
 
+	@Override
+	public String toString() {
+		return "LobbyModel{" +
+				"page=" + page +
+				", users=" + users +
+				", groups=" + groups +
+				", all_chats=" + all_chats +
+				'}';
+	}
 }

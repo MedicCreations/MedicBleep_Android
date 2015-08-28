@@ -522,6 +522,23 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 			chatId = intent.getExtras().getString(Const.CHAT_ID);
 			chatPassword = intent.getExtras().getString(Const.PASSWORD);
 
+			//Check for connection
+			Chat chat = intent.getExtras().getParcelable(Const.CHAT);
+			if(chat.is_connection == -1){
+				etMessage.setEnabled(false);
+				etMessage.setClickable(false);
+				footerMore.setClickable(false);
+				findViewById(R.id.settingsBtn).setClickable(false);
+				findViewById(R.id.footerSmiley).setClickable(false);
+			}else{
+				etMessage.setEnabled(true);
+				etMessage.setClickable(true);
+				footerMore.setClickable(true);
+				findViewById(R.id.settingsBtn).setClickable(true);
+				findViewById(R.id.footerSmiley).setClickable(true);
+			}
+			//*********************
+
 			// adapter.clearItems();
 
 			if (!TextUtils.isEmpty(chatPassword)) {

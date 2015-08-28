@@ -514,7 +514,7 @@ public class ChatSpice {
 			
 			ObjectMapper mapper = new ObjectMapper();
 
-            Logger.i("get message: " + responseBody);
+//            Logger.custom("LOG", "get message: " + responseBody);
 
 			Chat result = mapper.readValue(responseBody, Chat.class);
 

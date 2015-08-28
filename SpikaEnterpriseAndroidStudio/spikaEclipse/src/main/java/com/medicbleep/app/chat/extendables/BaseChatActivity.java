@@ -104,14 +104,14 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 	protected String chatPassword = null;
 	private int drawerDuration = 300;
 	private int drawerHeight = 200;
-	private int drawerNewHeight = 395;
+	private int drawerNewHeight = 344;
 	protected String chatName = null;
 	protected String categoryName = null;
 	protected String categoryId = null;
 	protected int chatType = 0;
 
 	private ListView settingsListView;
-	private ImageButton footerMore;
+	protected ImageButton footerMore;
 	private ImageButton footerEmoji;
 	protected RelativeLayout rlDrawerNew;
 	protected RelativeLayout rlDrawerEmoji;
@@ -163,7 +163,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		findViewById(R.id.chooseVideo).setOnClickListener(thisClickListener);
 		findViewById(R.id.chooseVoice).setOnClickListener(thisClickListener);
 		findViewById(R.id.voiceCall).setOnClickListener(thisClickListener);
-		findViewById(R.id.chooseFile).setOnClickListener(thisClickListener);
+//		findViewById(R.id.chooseFile).setOnClickListener(thisClickListener);
 		findViewById(R.id.footerSend).setOnClickListener(thisClickListener);
 
 		chatListView = (ListView) findViewById(R.id.main_list_view);
@@ -382,8 +382,8 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 			if (isThread || chatType != Const.C_PRIVATE || !getResources().getBoolean(R.bool.enable_web_rtc)) {
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove call
 				rlDrawerNew.removeView(rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1)); // remove divider above call
-				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 344);
-				drawerNewHeight = Helper.dpToPx(this, 344);
+				rlDrawerNew.getLayoutParams().height = Helper.dpToPx(this, 293);
+				drawerNewHeight = Helper.dpToPx(this, 293);
 				rlDrawerNew.getChildAt(rlDrawerNew.getChildCount() - 1).setBackgroundResource(R.drawable.trans_to_gray_with_bottom_corners);
 			}
 		}
@@ -850,7 +850,7 @@ public abstract class BaseChatActivity extends BaseActivity implements OnSticker
 		public void onClick(View v) {
 			int id = v.getId();
 
-			if (id == R.id.bntFile || id == R.id.chooseFile) {
+			if (id == R.id.bntFile /*|| id == R.id.chooseFile*/) {
 				Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 				intent.setType("*/*");
 				startActivityForResult(intent, PICK_FILE_RESULT_CODE);

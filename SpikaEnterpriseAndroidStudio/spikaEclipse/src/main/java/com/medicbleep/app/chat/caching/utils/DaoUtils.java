@@ -33,6 +33,10 @@ public class DaoUtils {
 		finalChat.unread = chat.getUnread();
 		finalChat.is_member = chat.getIs_member();
 
+		if(chat.getIs_connection() != null){
+			finalChat.is_connection = chat.getIs_connection();
+		}
+
 		finalChat.chat = finalChat.copyChat(finalChat);
 
 		if (chat.getCategory() != null) {
@@ -157,7 +161,7 @@ public class DaoUtils {
 
 			chatDao = new com.medicbleep.app.chat.models.greendao.Chat(Long.valueOf(chat.getId()), chat.chat_name, chat.seen_by,
 					chat.total_count, chat.image_thumb, chat.image, chat.admin_id, chat.is_active, chat.type, chat.is_private, chat.password,
-					chat.unread, chat.is_member, chat.modified, isRecent, finalCategoryModelId, finalUserModelId, finalMessageModelId);
+					chat.unread, chat.is_member, chat.modified, isRecent, finalCategoryModelId, chat.is_connection, finalUserModelId, finalMessageModelId);
 
 		} else {
 
@@ -216,6 +220,8 @@ public class DaoUtils {
 			if (finalMessageModelId != 0L) {
 				chatDao.setMessageIdProperty(finalMessageModelId);
 			}
+
+			chatDao.setIs_connection(chat.is_connection);
 
 			chatDao.setIsRecent(isRecent);
 		}

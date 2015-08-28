@@ -15,4 +15,11 @@ public class AllLobby {
 		chats = new ArrayList<Chat>();
 	}
 
+	@Override
+	public String toString() {
+		return "AllLobby{" +
+				"total_count=" + total_count +
+				", chats=" + chats +
+				'}';
+	}
 }

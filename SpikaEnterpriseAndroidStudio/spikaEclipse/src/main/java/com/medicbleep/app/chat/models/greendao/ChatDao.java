@@ -210,8 +210,9 @@ public class ChatDao extends AbstractDao<Chat, Long> {
             cursor.isNull(offset + 13) ? null : cursor.getLong(offset + 13), // modified
             cursor.isNull(offset + 14) ? null : cursor.getShort(offset + 14) != 0, // isRecent
             cursor.isNull(offset + 15) ? null : cursor.getLong(offset + 15), // categoryId
-            cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16), // userIdProperty
-            cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17) // messageIdProperty
+            cursor.isNull(offset + 16) ? null : cursor.getInt(offset + 15), // is_connection
+            cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 16), // userIdProperty
+            cursor.isNull(offset + 18) ? null : cursor.getLong(offset + 17) // messageIdProperty
         );
         return entity;
     }
@@ -235,8 +236,9 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         entity.setModified(cursor.isNull(offset + 13) ? null : cursor.getLong(offset + 13));
         entity.setIsRecent(cursor.isNull(offset + 14) ? null : cursor.getShort(offset + 14) != 0);
         entity.setCategoryId(cursor.isNull(offset + 15) ? null : cursor.getLong(offset + 15));
-        entity.setUserIdProperty(cursor.isNull(offset + 16) ? null : cursor.getLong(offset + 16));
-        entity.setMessageIdProperty(cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17));
+        entity.setIs_active(cursor.isNull(offset + 16) ? null : cursor.getInt(offset + 16));
+        entity.setUserIdProperty(cursor.isNull(offset + 17) ? null : cursor.getLong(offset + 17));
+        entity.setMessageIdProperty(cursor.isNull(offset + 18) ? null : cursor.getLong(offset + 18));
      }
     
     /** @inheritdoc */

@@ -244,29 +244,29 @@
                 android:layout_below="@id/chooseVideo"
                 android:background="@color/light_light_gray" />
 
-            <TextView
-                android:id="@+id/chooseFile"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_below="@id/secondLine"
-                android:background="@drawable/trans_to_gray"
-                android:gravity="center"
-                android:text="@string/choose_file"
-                android:textColor="@color/default_blue"
-                android:textSize="20sp" />
+            <!--<TextView-->
+                <!--android:id="@+id/chooseFile"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:layout_below="@id/secondLine"-->
+                <!--android:background="@drawable/trans_to_gray"-->
+                <!--android:gravity="center"-->
+                <!--android:text="@string/choose_file"-->
+                <!--android:textColor="@color/default_blue"-->
+                <!--android:textSize="20sp" />-->
 
-            <View
-                android:id="@+id/thirdLine"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@id/chooseFile"
-                android:background="@color/light_light_gray" />
+            <!--<View-->
+                <!--android:id="@+id/thirdLine"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:layout_below="@id/chooseFile"-->
+                <!--android:background="@color/light_light_gray" />-->
 
             <TextView
                 android:id="@+id/chooseLocation"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@id/thirdLine"
+                android:layout_below="@id/secondLine"
                 android:background="@drawable/trans_to_gray"
                 android:gravity="center"
                 android:text="@string/location"

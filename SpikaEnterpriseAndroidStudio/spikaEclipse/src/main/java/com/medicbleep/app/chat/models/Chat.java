@@ -37,6 +37,7 @@ public class Chat extends BaseModel implements Parcelable{
 	public int is_member;
 	public Message last_message;
 	public long modified;
+    public int is_connection;
 
 	public boolean isSelected = false;
 	public boolean isNewMsg = false;
@@ -120,16 +121,42 @@ public class Chat extends BaseModel implements Parcelable{
 		return this.is_member == 0 ? false : true;
 	}
 
-	@Override
-	public String toString() {
-		return "Chat [chat=" + chat + ", id=" + id + ", chat_id=" + chat_id + ", chat_name=" + chat_name + ", seen_by=" + seen_by + ", total_count=" + total_count + ", messages=" + messages
-				+ ", user=" + user + ", image_thumb=" + image_thumb + ", image=" + image + ", admin_id=" + admin_id + ", is_active=" + is_active + ", type=" + type + ", is_private=" + is_private
-				+ ", password=" + password + ", unread=" + unread + ", category=" + category + ", is_member=" + is_member + ", last_message=" + last_message + ", modified=" + modified
-				+ ", isSelected=" + isSelected + ", isNewMsg=" + isNewMsg + ", isRefresh=" + isRefresh + ", isClear=" + isClear + ", isSend=" + isSend + ", isPagging=" + isPagging + ", adapterCount="
-				+ adapterCount + "]";
-	}
-	
-	public Chat copyChat(Chat toCopy){
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "chat=" + chat +
+                ", id=" + id +
+                ", chat_id=" + chat_id +
+                ", chat_name='" + chat_name + '\'' +
+                ", seen_by='" + seen_by + '\'' +
+                ", total_count=" + total_count +
+                ", messages=" + messages +
+                ", user=" + user +
+                ", image_thumb='" + image_thumb + '\'' +
+                ", image='" + image + '\'' +
+                ", admin_id='" + admin_id + '\'' +
+                ", is_active=" + is_active +
+                ", type=" + type +
+                ", is_private=" + is_private +
+                ", password='" + password + '\'' +
+                ", unread='" + unread + '\'' +
+                ", category=" + category +
+                ", is_member=" + is_member +
+                ", last_message=" + last_message +
+                ", modified=" + modified +
+                ", is_connection=" + is_connection +
+                ", isSelected=" + isSelected +
+                ", isNewMsg=" + isNewMsg +
+                ", isRefresh=" + isRefresh +
+                ", isClear=" + isClear +
+                ", isSend=" + isSend +
+                ", isPagging=" + isPagging +
+                ", adapterCount=" + adapterCount +
+                ", timestampFormated='" + timestampFormated + '\'' +
+                '}';
+    }
+
+    public Chat copyChat(Chat toCopy){
 		Chat chat = new Chat();
 		
 		chat.id = toCopy.id;
@@ -147,6 +174,7 @@ public class Chat extends BaseModel implements Parcelable{
 		chat.unread = toCopy.unread;
 		chat.is_member = toCopy.is_member;
 		chat.modified = toCopy.modified;
+        chat.is_connection = toCopy.is_connection;
 		
 		return chat;
 	}
@@ -184,6 +212,7 @@ public class Chat extends BaseModel implements Parcelable{
         isSend = in.readByte() != 0x00;
         isPagging = in.readByte() != 0x00;
         adapterCount = in.readInt();
+        is_connection = in.readInt();
     }
 
     @Override
@@ -225,6 +254,7 @@ public class Chat extends BaseModel implements Parcelable{
         dest.writeByte((byte) (isSend ? 0x01 : 0x00));
         dest.writeByte((byte) (isPagging ? 0x01 : 0x00));
         dest.writeInt(adapterCount);
+        dest.writeInt(is_connection);
     }
 
     public static final Parcelable.Creator<Chat> CREATOR = new Parcelable.Creator<Chat>() {
