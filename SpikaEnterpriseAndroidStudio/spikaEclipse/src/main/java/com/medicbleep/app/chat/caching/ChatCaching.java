@@ -335,7 +335,7 @@ public class ChatCaching {
 						Long.valueOf(networkData.chat.getId()), networkData.chat.chat_name, networkData.chat.seen_by, networkData.total_count,
 						networkData.chat.image_thumb, networkData.chat.image, networkData.chat.admin_id, networkData.chat.is_active, networkData.chat.type,
 						networkData.chat.is_private, networkData.chat.password, networkData.chat.unread, networkData.chat.is_member, 
-						networkData.chat.modified, true, finalCategoryModelId, finalUserModelId, 0L);
+						networkData.chat.modified, true, finalCategoryModelId, networkData.chat.is_connection, finalUserModelId, 0L);
 				chatDao.insert(finalChatModel);
 			}
 		}

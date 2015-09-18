@@ -31,6 +31,7 @@ public class Chat {
     private Long categoryId;
     private Long userIdProperty;
     private Long messageIdProperty;
+    private Integer is_connection;
 
     /** Used to resolve relations */
     private transient DaoSession daoSession;
@@ -59,7 +60,7 @@ public class Chat {
         this.id = id;
     }
 
-    public Chat(long id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Boolean isRecent, Long categoryId, Long userIdProperty, Long messageIdProperty) {
+    public Chat(long id, String chat_name, String seen_by, Integer total_count, String image_thumb, String image, String admin_id, Integer is_active, Integer type, Integer is_private, String password, String unread, Integer is_member, Long modified, Boolean isRecent, Long categoryId, Integer is_connection, Long userIdProperty, Long messageIdProperty) {
         this.id = id;
         this.chat_name = chat_name;
         this.seen_by = seen_by;
@@ -76,6 +77,7 @@ public class Chat {
         this.modified = modified;
         this.isRecent = isRecent;
         this.categoryId = categoryId;
+        this.is_connection = is_connection;
         this.userIdProperty = userIdProperty;
         this.messageIdProperty = messageIdProperty;
     }
@@ -212,6 +214,14 @@ public class Chat {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Integer getIs_connection() {
+        return is_connection;
+    }
+
+    public void setIs_connection(Integer is_connection) {
+        this.is_connection = is_connection;
     }
 
     public Long getUserIdProperty() {

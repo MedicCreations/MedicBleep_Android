@@ -1,8 +1,5 @@
 package com.medicbleep.app.chat.caching;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.text.TextUtils;
 
@@ -26,6 +23,9 @@ import com.medicbleep.app.chat.utils.Utils;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LobbyCaching {
 
 	/* start: Caching calls */
@@ -40,10 +40,10 @@ public class LobbyCaching {
 			@Override
 			public void onRequestFailure(SpiceException ex) {
 				super.onRequestFailure(ex);
-				if(activity instanceof MainActivity){
-					Utils.onFailedUniversal(null, activity, 0 , false, ex, ((MainActivity)activity).getInternetErrorListener());
-				}else{
-					Utils.onFailedUniversal(null, activity, 0 , false, ex);
+				if (activity instanceof MainActivity) {
+					Utils.onFailedUniversal(null, activity, 0, false, ex, ((MainActivity) activity).getInternetErrorListener());
+				} else {
+					Utils.onFailedUniversal(null, activity, 0, false, ex);
 				}
 			}
 

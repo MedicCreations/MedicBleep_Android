@@ -7,6 +7,7 @@ import com.medicbleep.app.chat.networking.GetUrl;
 import com.medicbleep.app.chat.services.robospice.CustomSpiceRequest;
 import com.medicbleep.app.chat.utils.Const;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.medicbleep.app.chat.utils.Logger;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -45,6 +46,8 @@ public class LobbySpice {
 			Response res = connection.execute();
 			ResponseBody resBody = res.body();
 			String responseBody = resBody.string();
+
+			Logger.custom("e", responseBody);
 			
 			ObjectMapper mapper = new ObjectMapper();
 
