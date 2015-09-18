@@ -968,7 +968,8 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
         Iterator<Message> iterator = chat.messages.iterator();
         while (iterator.hasNext()) {
             Message message = iterator.next();
-            if (!TextUtils.isEmpty(message.country_code) && !message.country_code.equals(LocationUtility.getInstance().getCountryCode())) {
+            if (!TextUtils.isEmpty(message.country_code) &&
+					!message.country_code.equals(LocationUtility.getInstance().getCountryCode())) {
                 iterator.remove();
             }
         }

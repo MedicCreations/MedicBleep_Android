@@ -135,6 +135,9 @@ public class ProfileGroupFragment extends CustomFragment implements OnClickListe
 			tvPassword.setOnClickListener(this);
 			tvSetAdmin.setOnClickListener(this);
 			tvChangeCat.setOnClickListener(this);
+
+			// added this for MB
+			layoutSetAdmin.setVisibility(View.GONE);
 		} else {
 
 			passwordLayout.setVisibility(View.GONE);

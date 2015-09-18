@@ -139,6 +139,7 @@ public class ChatSpice {
 				break;
 			case Const.UPDATE_CHAT_DELETE:
 				formBuilder.add(Const.IS_DELETED, "1");
+				formBuilder.add(Const.IS_ACTIVE, "0");
 				break;
 			case Const.UPDATE_CHAT_ACTIVATE:
 				formBuilder.add(Const.IS_ACTIVE, "1");

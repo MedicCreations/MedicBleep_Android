@@ -8,6 +8,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
+import com.crashlytics.android.Crashlytics;
 import com.medicbleep.app.chat.R;
 import com.medicbleep.app.chat.security.JNAesCrypto;
 import com.medicbleep.app.chat.services.custom.PoolingService;
@@ -15,6 +16,8 @@ import com.medicbleep.app.chat.utils.ApplicationStateManager;
 import com.medicbleep.app.chat.utils.Const;
 import com.medicbleep.app.chat.utils.Preferences;
 import com.medicbleep.app.chat.webrtc.socket.SocketService;
+
+import io.fabric.sdk.android.Fabric;
 
 public class SpikaEnterpriseApp extends Application {
 
@@ -28,7 +31,9 @@ public class SpikaEnterpriseApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
+
+		Fabric.with(this, new Crashlytics());
+
 		JNAesCrypto.isEncryptionEnabled = getResources().getBoolean(R.bool.enable_global_encryption);
 		setAppContext(getApplicationContext());
 

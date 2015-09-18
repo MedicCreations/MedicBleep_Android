@@ -17,6 +17,7 @@ import com.octo.android.robospice.SpiceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +31,7 @@ public class GroupsAdapter extends BaseAdapter {
 	public GroupsAdapter(SpiceManager manager, Context context, Collection<GlobalModel> users, int defaultImage) {
 		this.mContext = context;
 		this.data.addAll(users);
+		Collections.sort(data);
 
 		imageLoaderSpice = ImageLoaderSpice.getInstance(context);
 		imageLoaderSpice.setSpiceManager(manager);
@@ -45,6 +47,7 @@ public class GroupsAdapter extends BaseAdapter {
 
 	public void setData(List<GlobalModel> list) {
 		data = list;
+		Collections.sort(data);
 		notifyDataSetChanged();
 	}
 
@@ -60,6 +63,7 @@ public class GroupsAdapter extends BaseAdapter {
 	public void manageData(String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
+		Collections.sort(data);
 		for (int i = 0; i < data.size(); i++) {
 			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())) {
 				continue;
@@ -74,6 +78,8 @@ public class GroupsAdapter extends BaseAdapter {
 	public void manageData(int categoryId, String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
+		Collections.sort(data);
+
 		for (int i = 0; i < data.size(); i++) {
 			if (((Chat) data.get(i).getModel()).chat_name.toLowerCase(Locale.getDefault()).contains(manageWith.toLowerCase())
 					&& (((Chat) data.get(i).getModel()).category == null || Integer.valueOf(((Chat) data.get(i).getModel()).category.id) == categoryId)) {
@@ -89,6 +95,8 @@ public class GroupsAdapter extends BaseAdapter {
 	public void manageData(int categoryId, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
+		Collections.sort(data);
+
 		if (categoryId < 1) {
 			this.notifyDataSetChanged();
 			return;

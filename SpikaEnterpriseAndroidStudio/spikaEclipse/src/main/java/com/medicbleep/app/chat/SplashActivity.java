@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.medicbleep.app.chat.dialogs.AppDialog;
@@ -36,10 +39,19 @@ public class SplashActivity extends LoginBaseActivity {
 	boolean shouldShowLocationDialogOnResume = false;
     boolean shouldShowNoNetworkDialogOnResume = false;
 
+	ProgressBar progressBar;
+	TextView textView;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
+
+		progressBar = (ProgressBar)findViewById(R.id.splash_spinner);
+		textView = (TextView)findViewById(R.id.splash_text);
+
+		textView.setVisibility(View.VISIBLE);
+		progressBar.setVisibility(View.VISIBLE);
 
 		int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
@@ -80,6 +92,18 @@ public class SplashActivity extends LoginBaseActivity {
         intentFilter.addAction(LocationUtility.NO_NETWORK);
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
 		Log.i("Broadcast", "Broadcast receiver set up: " + broadcastReceiverImplementation);
+
+		LocationUtility.getInstance().getLastLocation();
+
+		LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+
+		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+				!locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)
+				|| !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+			shouldShowLocationDialogOnResume = true;
+		}else if (LocationUtility.getInstance().getCountryCode() != null){
+			continueToNextScreen();
+		}
 
 		if(shouldShowLocationDialogOnResume){
 			dialogExists = false;
@@ -124,7 +148,14 @@ public class SplashActivity extends LoginBaseActivity {
 				continueToNextScreen();
 			}
 			else if (intent.getAction().equals(LocationUtility.LOCATION_SETTINGS_ERROR)) {
-				showLocationSettings();
+				LocationManager locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
+
+				if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
+						!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+						!locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)){
+					showLocationSettings();
+				}
+
 			}
             else if (intent.getAction().equals(LocationUtility.NO_NETWORK)) {
                 showNoNetworkDialog();

@@ -2,6 +2,7 @@ package com.medicbleep.app.chat.adapters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -47,6 +48,7 @@ public class PeopleAdapter extends BaseAdapter {
 	public PeopleAdapter(SpiceManager manager, Context context, Collection<GlobalModel> users, int defaultImage) {
 		this.mContext = context;
 		this.data.addAll(users);
+		Collections.sort(data);
 
 		marginLeftForAnimation = Utils.getPxFromDp(10, context.getResources());
 
@@ -64,11 +66,13 @@ public class PeopleAdapter extends BaseAdapter {
 
 	public void setData(List<GlobalModel> list) {
 		data = list;
+		Collections.sort(data);
 		notifyDataSetChanged();
 	}
 
 	public void addData(List<GlobalModel> list) {
 		data.addAll(list);
+		Collections.sort(data);
 		notifyDataSetChanged();
 	}
 
@@ -79,6 +83,8 @@ public class PeopleAdapter extends BaseAdapter {
 	public void manageData(String manageWith, List<GlobalModel> allData) {
 		data.clear();
 		data.addAll(allData);
+		Collections.sort(data);
+
 		for (int i = 0; i < data.size(); i++) {
 			String firstName = ((User) data.get(i).getModel()).getFirstName();
 			String lastName = ((User) data.get(i).getModel()).getLastName();

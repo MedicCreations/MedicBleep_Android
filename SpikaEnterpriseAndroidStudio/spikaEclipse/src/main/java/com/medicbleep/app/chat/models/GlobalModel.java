@@ -8,7 +8,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GlobalModel {
+public class GlobalModel implements Comparable<GlobalModel>{
+
+	@Override
+	public int compareTo(GlobalModel another) {
+		switch (another.type){
+			case Type.USER:{
+				return user.lastname.compareToIgnoreCase(another.user.lastname);
+			}case Type.CHAT:{
+				return chat.chat_name.compareToIgnoreCase(another.chat.chat_name);
+			}
+			default:{
+				return 0;
+			}
+		}
+	}
 
 	public class Type {
 		public static final int USER = 1;

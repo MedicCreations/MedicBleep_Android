@@ -56,6 +56,8 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyAK0_v9NUtXN_ZZsDcSWLiZddHeWW_4D-U" />
+        <meta-data android:name="com.crashlytics.ApiKey"
+            android:value="0fbe71a7aa7fb02c2c921b912039b4f2f48ccc7b"/>
 
         <activity
             android:name="com.medicbleep.app.chat.SplashActivity"
