@@ -524,6 +524,11 @@ public class ChatActivity extends BaseChatActivity implements OnChatDBChanged, O
 
 			//Check for connection
 			Chat chat = intent.getExtras().getParcelable(Const.CHAT);
+
+			if (chat == null){
+				return;
+			}
+
 			if(chat.is_connection == -1){
 				etMessage.setEnabled(false);
 				etMessage.setClickable(false);

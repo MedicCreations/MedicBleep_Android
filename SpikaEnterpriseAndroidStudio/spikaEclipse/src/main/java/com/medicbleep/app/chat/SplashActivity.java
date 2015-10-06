@@ -93,6 +93,9 @@ public class SplashActivity extends LoginBaseActivity {
 		LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiverImplementation, intentFilter);
 		Log.i("Broadcast", "Broadcast receiver set up: " + broadcastReceiverImplementation);
 
+		if (LocationUtility.getInstance() == null){
+			LocationUtility.createInstance(this);
+		}
 		LocationUtility.getInstance().getLastLocation();
 
 		LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);

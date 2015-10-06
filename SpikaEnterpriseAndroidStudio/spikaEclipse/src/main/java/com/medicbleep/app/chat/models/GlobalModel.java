@@ -14,7 +14,10 @@ public class GlobalModel implements Comparable<GlobalModel>{
 	public int compareTo(GlobalModel another) {
 		switch (another.type){
 			case Type.USER:{
-				return user.lastname.compareToIgnoreCase(another.user.lastname);
+				if (user.lastname != null || another.user.lastname != null){
+					return user.lastname.compareToIgnoreCase(another.user.lastname);
+				}
+				return 0;
 			}case Type.CHAT:{
 				return chat.chat_name.compareToIgnoreCase(another.chat.chat_name);
 			}
